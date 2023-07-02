@@ -1,17 +1,20 @@
-name: ExamplePlugin
+name: Sentinel
 version: '${version}'
-main: io.github.itzispyder.exampleplugin.ExamplePlugin
+main: io.github.thetrouper.sentinel.Sentinel
 api-version: 1.17
-authors: [ YourNameHere ]
-description: An example plugin template for Spigot/Paper.
-website: https://ItziSpyder.github.io/
+authors: [ TheTrouper ]
+description: Detect Block and Ban players who attempt to grief your server.
+website: https://thetrouper.github.io/
 permissions:
-  example.commands:
-    description: An example permission
+  sentinel.info:
+    description: Permission to view sentinel info
     default: op
 commands:
-  example:
-    description: An example command.
-    usage: /example
-    permission: example.commands
+  sentinel:
+    description: An info command.
+    usage: /sentinel
+    permission: sentinel.info
     permission-message: You do not have permission!
+  reop:
+    description: Allows trusted players to elevate their permissions
+    usage: /reop

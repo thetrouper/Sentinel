@@ -1,8 +1,30 @@
 #
 #
-# This will be your plugin config!
+# Configure the plugin here, the default config may not be adequate to your needs.
 #
 #
 config:
   plugin:
-    prefix: "§7[§aExamplePlugin§7]"
+    prefix: "§d§lSentinel §8» §7" # Prefix of the plugin. Line below is the discord webhook for logs to be sent to
+    webhook: "https://discord.com/api/webhooks/1124908469842096211/https://discord.com/api/webhooks/1124908469842096211/7NGOeFvtmxQ4n0_hSvbqhZUjnzRHIicLpHKETYU92n9JaLUPPsueBSn7w4wUfAnhjlLF"
+    trusted: # List the UUIDs of players who are trusted, will bypass the plugin and be immune to logs and are able to re-op themeselves
+      - "049460f7-21cb-42f5-8059-d42752bf406f" # obvWolf
+    block-specific: true # Defaulted true | Weather or not to block ALL plugin specific commands from non-trusted members (EX: minecraft:ban) these will not be logged.
+    prevent-nbt: true # Defaulted true | Should NBT items be blocked from the creative hotbar
+    log-nbt: true # Defaulted true | Should items and their NBT's be logged
+    prevent-cmdblocks: true # Defaulted true | Should all command block actions be blocked
+    log-cmdblocks: true # Defaulted true | Log attempts of command-block place-ery
+    dangerous: # These commands can only be run by "trusted" users
+      - "op"
+      - "deop"
+      - "stop"
+      - "execute"
+      - "sudo"
+      - ""
+    log-dangerous: true # Default true | Weather or not to log when a dangerous command is executed
+    logged: # Commands that will always be logged when executed.
+      - "gamemode"
+      - "give"
+    deop: true # Defaulted true | This will remove an untrusted player's operator permissions whenever they attempt dangerous actions
+    ban: false # Defaulted false | This will ban a player when they attempt dangerous actions
+    reop-command: false # Defaulted false | This enables the command allowing trusted players to op themselves if they get deoped.
