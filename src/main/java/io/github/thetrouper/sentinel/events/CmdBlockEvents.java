@@ -22,7 +22,7 @@ public class CmdBlockEvents implements Listener {
             Player p = e.getPlayer();
             if (!Sentinel.isTrusted(p)) {
                 e.setCancelled(true);
-                Sentinel.log.info("Use of a command block has been denied for " + p.getName() + " at X:" + b.getX() + " Y:" + b.getY() + " Z:" + b.getZ());
+                DeniedActions.handleDeniedAction(p,b);
             }
         }
     }
@@ -30,16 +30,16 @@ public class CmdBlockEvents implements Listener {
     private void onCMDBlockPlace(BlockPlaceEvent e) {
         if (!Sentinel.preventCmdBlocks) return;
         Block b = e.getBlockPlaced();
-        if (b.getType() == Material.COMMAND_BLOCK || b.getType() == Material.REPEATING_COMMAND_BLOCK || b.getType() == Material.CHAIN_COMMAND_BLOCK) {
+        if (b.getType() == Material.COMMAND_BLOCK || b.getType() == Material.CHAIN_COMMAND_BLOCK || b.getType() == Material.REPEATING_COMMAND_BLOCK ) {
             Player p = e.getPlayer();
             if (!Sentinel.isTrusted(p)) {
                 e.setCancelled(true);
-                Sentinel.log.info("Placing a command block has been denied for " + p.getName() + " at X:" + b.getX() + " Y:" + b.getY() + " Z:" + b.getZ());
+                DeniedActions.handleDeniedAction(p,b);
             }
         }
     }
     @EventHandler
-    private void onCMDBlockMinecartPlace(PlayerInteractEntityEvent e) {
+    private void onCMDBlockMinecartUse(PlayerInteractEntityEvent e) {
         if (!Sentinel.preventCmdBlocks) return;
         if (e.getRightClicked().getType() == EntityType.MINECART_COMMAND) {
             Player p = e.getPlayer();

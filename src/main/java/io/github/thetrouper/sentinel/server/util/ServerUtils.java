@@ -5,6 +5,7 @@
 package io.github.thetrouper.sentinel.server.util;
 
 import io.github.thetrouper.sentinel.Sentinel;
+import io.github.thetrouper.sentinel.commands.InfoCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -17,9 +18,16 @@ import java.util.Set;
  * Server utils
  */
 public abstract class ServerUtils {
-
-
-
+    public static void sendDebugMessage(String message) {
+        if (InfoCommand.debugmode) {
+            Sentinel.log.info(message);
+            for (Player trustedPlayer : Bukkit.getOnlinePlayers()) {
+                if (Sentinel.isTrusted(trustedPlayer)) {
+                    trustedPlayer.sendMessage(message);
+                }
+            }
+        }
+    }
     /**
      * List of names of online players
      * @return list of names

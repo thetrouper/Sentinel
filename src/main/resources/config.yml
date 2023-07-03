@@ -1,18 +1,27 @@
-#
-#
-# Configure the plugin here, the default config may not be adequate to your needs.
-#
-#
-config:
+# Sentinel 0.0.2
+# ____                   __                        ___
+#/\  _`\                /\ \__  __                /\_ \
+#\ \,\L\_\     __    ___\ \ ,_\/\_\    ___      __\//\ \
+# \/_\__ \   /'__`\/' _ `\ \ \/\/\ \ /' _ `\  /'__`\\ \ \
+#   /\ \L\ \/\  __//\ \/\ \ \ \_\ \ \/\ \/\ \/\  __/ \_\ \_
+#   \ `\____\ \____\ \_\ \_\ \__\\ \_\ \_\ \_\ \____\/\____\
+#    \/_____/\/____/\/_/\/_/\/__/ \/_/\/_/\/_/\/____/\/____/
+#     ]======------ Configuration & Setup Guide ------=====[
+#            Sentinel is inspired by WickBot.com
+#        Be sure to check out their amazing discord bot!
+config :
   plugin:
+    # -------------------------------
+    # Important Setup (Do this first)
+    # -------------------------------
     prefix: "§d§lSentinel §8» §7" # Prefix of the plugin. Line below is the discord webhook for logs to be sent to
-    webhook: "https://discord.com/api/webhooks/1124908469842096211/https://discord.com/api/webhooks/1124908469842096211/7NGOeFvtmxQ4n0_hSvbqhZUjnzRHIicLpHKETYU92n9JaLUPPsueBSn7w4wUfAnhjlLF"
+    webhook: "https://discord.com/api/webhooks/1124908469842096211/7NGOeFvtmxQ4n0_hSvbqhZUjnzRHIicLpHKETYU92n9JaLUPPsueBSn7w4wUfAnhjlLF"
     trusted: # List the UUIDs of players who are trusted, will bypass the plugin and be immune to logs and are able to re-op themeselves
       - "049460f7-21cb-42f5-8059-d42752bf406f" # obvWolf
     block-specific: true # Defaulted true | Weather or not to block ALL plugin specific commands from non-trusted members (EX: minecraft:ban) these will not be logged.
     prevent-nbt: true # Defaulted true | Should NBT items be blocked from the creative hotbar
     log-nbt: true # Defaulted true | Should items and their NBT's be logged
-    prevent-cmdblocks: true # Defaulted true | Should all command block actions be blocked
+    prevent-cmdblocks: true # Defaulted true | Should all command  block actions be blocked
     log-cmdblocks: true # Defaulted true | Log attempts of command-block place-ery
     dangerous: # These commands can only be run by "trusted" users
       - "op"
@@ -28,3 +37,13 @@ config:
     deop: true # Defaulted true | This will remove an untrusted player's operator permissions whenever they attempt dangerous actions
     ban: false # Defaulted false | This will ban a player when they attempt dangerous actions
     reop-command: false # Defaulted false | This enables the command allowing trusted players to op themselves if they get deoped.
+    # -------------------------------
+    # Chat Filter Setup & AntiSpam
+    # -------------------------------
+  chat:
+    # AntiSpam Heat system
+    anti-spam: true # Default true | Enables the anti-spam
+    default-gain: 1 # Heat gained as base for every message
+    medium-gain: 3 # Heat gained when your message is 50% similar
+    high-gain: 6 # Heat gained for
+    max-heat: 15 # Highest value of heat a player can reach

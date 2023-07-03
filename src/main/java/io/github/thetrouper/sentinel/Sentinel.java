@@ -7,9 +7,11 @@ package io.github.thetrouper.sentinel;
 import io.github.thetrouper.sentinel.commands.InfoCommand;
 import io.github.thetrouper.sentinel.commands.ReopCommand;
 import io.github.thetrouper.sentinel.data.Config;
+import io.github.thetrouper.sentinel.events.ChatEvent;
 import io.github.thetrouper.sentinel.events.CmdBlockEvents;
 import io.github.thetrouper.sentinel.events.CommandEvent;
 import io.github.thetrouper.sentinel.events.NBTEvents;
+import io.github.thetrouper.sentinel.server.functions.AntiSpam;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -56,6 +58,24 @@ public final class Sentinel extends JavaPlugin {
         // Plugin startup logic
         loadConfiguration();
         log.info("Sentinel has loaded! (" + getDescription().getVersion() + ")");
+        // Enable Functions
+        AntiSpam.enableAntiSpam();
+
+        prefix = Config.Plugin.getPrefix();
+
+        // Commands -> BE SURE TO REGISTER ANY NEW COMMANDS IN PLUGIN.YML (src/main/java/resources/plugin.yml)!
+        getCommand("sentinel").setExecutor(new InfoCommand());
+        getCommand("sentinel").setTabCompleter(new InfoCommand());
+        getCommand("reop").setExecutor(new ReopCommand());
+
+        // Events
+        manager.registerEvents(new CommandEvent(),this);
+        manager.registerEvents(new CmdBlockEvents(), this);
+        manager.registerEvents(new NBTEvents(), this);
+        manager.registerEvents(new ChatEvent(),this);
+
+        // Scheduled timers
+        Bukkit.getScheduler().runTaskTimer(this, AntiSpam::decayHeat,0, 20);
         log.info("\n" +
                 " ____                   __                        ___      \n" +
                 "/\\  _`\\                /\\ \\__  __                /\\_ \\     \n" +
@@ -64,18 +84,7 @@ public final class Sentinel extends JavaPlugin {
                 "   /\\ \\L\\ \\/\\  __//\\ \\/\\ \\ \\ \\_\\ \\ \\/\\ \\/\\ \\/\\  __/ \\_\\ \\_ \n" +
                 "   \\ `\\____\\ \\____\\ \\_\\ \\_\\ \\__\\\\ \\_\\ \\_\\ \\_\\ \\____\\/\\____\\\n" +
                 "    \\/_____/\\/____/\\/_/\\/_/\\/__/ \\/_/\\/_/\\/_/\\/____/\\/____/\n" +
-                "     ]======------ Advanced Anti-Grief ------======[");
-        prefix = Config.Plugin.getPrefix();
-
-        // Commands -> BE SURE TO REGISTER ANY NEW COMMANDS IN PLUGIN.YML (src/main/java/resources/plugin.yml)!
-        getCommand("sentinel").setExecutor(new InfoCommand());
-        getCommand("sentinel").setTabCompleter(new InfoCommand.Tabs());
-        getCommand("reop").setExecutor(new ReopCommand());
-
-        // Events
-        manager.registerEvents(new CommandEvent(),this);
-        manager.registerEvents(new CmdBlockEvents(), this);
-        manager.registerEvents(new NBTEvents(), this);
+                "     ]====---- Advanced Anti-Grief & Chat Filter ----====[");
     }
 
     /**
@@ -118,7 +127,7 @@ public final class Sentinel extends JavaPlugin {
         dangerousCommands = config.getStringList("config.plugin.dangerous");
 
         // Load log protected commands
-        logDangerousCommands = config.getBoolean("config.plugin.log-protected");
+        logDangerousCommands = config.getBoolean("config.plugin.log-dangerous");
 
         // Load logged commands
         loggedCommands = config.getStringList("config.plugin.logged");
