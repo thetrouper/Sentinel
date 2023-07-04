@@ -7,7 +7,9 @@ package io.github.thetrouper.sentinel.commands;
 import io.github.thetrouper.sentinel.discord.WebhookSender;
 import io.github.thetrouper.sentinel.exceptions.CmdExHandler;
 import io.github.thetrouper.sentinel.server.functions.AntiSpam;
+import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.TextUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 
 import java.util.ArrayList;
@@ -38,6 +40,10 @@ public class InfoCommand implements TabExecutor {
                 case "checkheat" -> {
                     sender.sendMessage(TextUtils.prefix("Your heat is §e" + AntiSpam.heatMap.get(sender).toString()));
                 }
+                case "dispatchtest" -> {
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "say " + " ]=- Sentinel Anti-Grief -=[ You have been banned for attempting a dangerous command. Contact an administrator if you believe this to be a mistake.");
+                    ServerUtils.sendCommand("say test complete!");
+                }
             }
             return true;
         } catch (Exception ex) {
@@ -54,7 +60,8 @@ public class InfoCommand implements TabExecutor {
                 .add(1,new String[]{
                         "debugmode",
                         "webhooktest",
-                        "checkheat"
+                        "checkheat",
+                        "dispatchtest"
                 }).build();
     }
 }

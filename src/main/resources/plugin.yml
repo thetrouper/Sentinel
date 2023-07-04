@@ -9,6 +9,29 @@ permissions:
   sentinel.info:
     description: Permission to view sentinel info
     default: op
+  sentinel.staff:
+    description: Receive anti-swear and anti-spam warnings
+    default: op
+  sentinel.chat.antiswear.flags:
+    description: See antiSwear flags
+    default: op
+  sentinel.chat.antiswear.bypass:
+    description: Bypass the antiSwear
+    default: op
+  sentinel.chat.antispam.flags:
+    description: See antispam flags
+    default: op
+  sentinel.chat.antispam.bypass:
+    description: Bypass the antispam
+    default: op
+  sentinel.chat.*:
+    description: bypass all chat rules and see all flags
+    default: op
+    children:
+      sentinel.chat.antiswear.flags: true
+      sentinel.chat.antiswear.bypass: true
+      sentinel.chat.antispam.flags: true
+      sentinel.chat.antispam.bypass: true
 commands:
   sentinel:
     description: An info command.

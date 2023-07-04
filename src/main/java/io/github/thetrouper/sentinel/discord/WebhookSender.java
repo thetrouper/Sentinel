@@ -2,11 +2,13 @@ package io.github.thetrouper.sentinel.discord;
 
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.commands.InfoCommand;
+import io.github.thetrouper.sentinel.data.Config;
 import io.github.thetrouper.sentinel.data.Emojis;
 import io.github.thetrouper.sentinel.discord.DiscordWebhook;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.TextUtils;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.awt.Color;
@@ -15,7 +17,7 @@ import java.io.IOException;
 public class WebhookSender {
 
     public static void sendHelloWorldEmbed() {
-        String webhookUrl = Sentinel.webhook;
+        String webhookUrl = Config.webhook;
 
         // Create a new DiscordWebhook instance
         DiscordWebhook webhook = new DiscordWebhook(webhookUrl);
@@ -36,6 +38,7 @@ public class WebhookSender {
         }
     }
 
+
     public static String successOrFail(boolean bool) {
         if (bool) {
             return Emojis.success;
@@ -46,13 +49,13 @@ public class WebhookSender {
     public static void sendEmbedWarning(String player, String command, boolean denied, boolean removedOp, boolean banned) {
         ServerUtils.sendDebugMessage("Creating Command Webhook...");
         final String description =
-                Emojis.rightArrow + " **Player:** " + player + " " + Emojis.member + "\\n" +
-                Emojis.rightArrow + " **Command:** " + command + " " + Emojis.nuke + "\\n" +
-                Emojis.rightArrow + " **Denied:** " + successOrFail(denied) + "\\n" +
-                Emojis.rightArrow + " **Removed OP:** " + successOrFail(removedOp) + "\\n" +
-                Emojis.rightArrow + " **Banned:** " + successOrFail(banned) + "\\n";
+                Emojis.arrowRight + " **Player:** " + player + " " + Emojis.member + "\\n" +
+                Emojis.arrowRight + " **Command:** " + command + " " + Emojis.nuke + "\\n" +
+                Emojis.arrowRight + " **Denied:** " + successOrFail(denied) + "\\n" +
+                Emojis.arrowRight + " **Removed OP:** " + successOrFail(removedOp) + "\\n" +
+                Emojis.arrowRight + " **Banned:** " + successOrFail(banned) + "\\n";
 
-        DiscordWebhook webhook = new DiscordWebhook(Sentinel.webhook);
+        DiscordWebhook webhook = new DiscordWebhook(Config.webhook);
         webhook.setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png");
         webhook.setUsername("Sentinel Anti-Nuke | Logs");
         DiscordWebhook.EmbedObject embed = new DiscordWebhook.EmbedObject()
@@ -72,13 +75,13 @@ public class WebhookSender {
     public static void sendEmbedWarning(String player, Block b, boolean denied, boolean removedOp, boolean banned) {
         ServerUtils.sendDebugMessage("Creating Block Webhook...");
         final String description =
-                        Emojis.rightArrow + " **Player:** " + player + " " + Emojis.member + "\\n" +
-                        Emojis.rightArrow + " **Block:** " + b.getType() + " " + Emojis.nuke + "\\n" +
-                        Emojis.rightArrow + " **Denied:** " + successOrFail(denied) + "\\n" +
-                        Emojis.rightArrow + " **Removed OP:** " + successOrFail(removedOp) + "\\n" +
-                        Emojis.rightArrow + " **Banned:** " + successOrFail(banned) + "\\n";
+                        Emojis.arrowRight + " **Player:** " + player + " " + Emojis.member + "\\n" +
+                        Emojis.arrowRight + " **Block:** " + b.getType() + " " + Emojis.nuke + "\\n" +
+                        Emojis.arrowRight + " **Denied:** " + successOrFail(denied) + "\\n" +
+                        Emojis.arrowRight + " **Removed OP:** " + successOrFail(removedOp) + "\\n" +
+                        Emojis.arrowRight + " **Banned:** " + successOrFail(banned) + "\\n";
 
-        DiscordWebhook webhook = new DiscordWebhook(Sentinel.webhook);
+        DiscordWebhook webhook = new DiscordWebhook(Config.webhook);
         webhook.setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png");
         webhook.setUsername("Sentinel Anti-Nuke | Logs");
         DiscordWebhook.EmbedObject embed = new DiscordWebhook.EmbedObject()
@@ -99,13 +102,13 @@ public class WebhookSender {
     public static void sendEmbedWarning(String player, ItemStack item, boolean denied, boolean removedOp, boolean banned) {
         ServerUtils.sendDebugMessage("Creating Webhook...");
         final String description =
-                Emojis.rightArrow + " **Player:** " + player + " " + Emojis.member + "\\n" +
-                        Emojis.rightArrow + " **Item:** " + item.getType() + " " + Emojis.nuke + "\\n" +
-                        Emojis.rightArrow + " **Denied:** " + successOrFail(denied) + "\\n" +
-                        Emojis.rightArrow + " **Removed OP:** " + successOrFail(removedOp) + "\\n" +
-                        Emojis.rightArrow + " **Banned:** " + successOrFail(banned) + "\\n";
+                Emojis.arrowRight + " **Player:** " + player + " " + Emojis.member + "\\n" +
+                        Emojis.arrowRight + " **Item:** " + item.getType() + " " + Emojis.nuke + "\\n" +
+                        Emojis.arrowRight + " **Denied:** " + successOrFail(denied) + "\\n" +
+                        Emojis.arrowRight + " **Removed OP:** " + successOrFail(removedOp) + "\\n" +
+                        Emojis.arrowRight + " **Banned:** " + successOrFail(banned) + "\\n";
 
-        DiscordWebhook webhook = new DiscordWebhook(Sentinel.webhook);
+        DiscordWebhook webhook = new DiscordWebhook(Config.webhook);
         webhook.setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png");
         webhook.setUsername("Sentinel Anti-Nuke | Logs");
         DiscordWebhook.EmbedObject embed = new DiscordWebhook.EmbedObject()

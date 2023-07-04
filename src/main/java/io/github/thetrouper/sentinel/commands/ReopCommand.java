@@ -1,6 +1,7 @@
 package io.github.thetrouper.sentinel.commands;
 
 import io.github.thetrouper.sentinel.Sentinel;
+import io.github.thetrouper.sentinel.data.Config;
 import io.github.thetrouper.sentinel.exceptions.CmdExHandler;
 import io.github.thetrouper.sentinel.server.util.TextUtils;
 import org.bukkit.command.Command;
@@ -17,7 +18,7 @@ public class ReopCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try {
-            if (Sentinel.reopCommand) {
+            if (Config.reopCommand) {
             String name = sender.getName().toString();
             Player p = sender.getServer().getPlayer(name);
             if (Sentinel.isTrusted(p)) {

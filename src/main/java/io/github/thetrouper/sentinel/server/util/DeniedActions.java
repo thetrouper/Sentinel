@@ -1,6 +1,7 @@
 package io.github.thetrouper.sentinel.server.util;
 
 import io.github.thetrouper.sentinel.Sentinel;
+import io.github.thetrouper.sentinel.data.Config;
 import io.github.thetrouper.sentinel.discord.WebhookSender;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -18,15 +19,19 @@ public class DeniedActions {
     private static boolean opRemoved;
     private static boolean denied;
 
+    public static void logPunishment(Player p, String type, String reason) {
+
+    }
+
     public static void handleDeniedAction(Player p, String command) {
         ServerUtils.sendDebugMessage(TextUtils.prefix("Handling denied command..."));
-        if (!Sentinel.logDangerousCommands) return;
+        if (!Config.logDangerousCommands) return;
         ServerUtils.sendDebugMessage(TextUtils.prefix("LDC is enabled"));
         logMessage = "]==-- Sentinel --==[\n" +
                 "A Dangerous command has been attempted!\n" +
                 "Player: " + p.getName() + "\n" +
                 "Command: " + command + "\n";
-        if (Sentinel.deop) {
+        if (Config.deop) {
             ServerUtils.sendDebugMessage(TextUtils.prefix("Deoping player"));
             p.setOp(false);
             logMessage = logMessage + "Operator Removed: ✔\n";
@@ -35,7 +40,7 @@ public class DeniedActions {
             logMessage = logMessage + "Operator Removed: ✘\n";
             opRemoved = false;
         }
-        if (Sentinel.ban) {
+        if (Config.ban) {
             ServerUtils.sendDebugMessage(TextUtils.prefix("Banning player"));
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ban " + p.getName() + " ]=- Sentinel Anti-Grief -=[ You have been banned for attempting a dangerous command. Contact an administrator if you believe this to be a mistake.");
             logMessage = logMessage + "Banned: ✔\n";
@@ -52,12 +57,12 @@ public class DeniedActions {
         WebhookSender.sendEmbedWarning(p.getName(),command,denied,opRemoved,banned);
     }
     public static void handleDeniedAction(Player p, Block block) {
-        if (!Sentinel.logCmdBlocks) return;
+        if (!Config.logCmdBlocks) return;
         logMessage = "]==-- Sentinel --==[\n" +
                 "A Dangerous block usage has been detected!\n" +
                 "Player: " + p.getName() + "\n" +
                 "BlockType: " + block.getType() + "\n";
-        if (Sentinel.deop) {
+        if (Config.deop) {
             p.setOp(false);
             logMessage = logMessage + "Operator Removed: ✔\n";
             opRemoved = true;
@@ -65,7 +70,7 @@ public class DeniedActions {
             logMessage = logMessage + "Operator Removed: ✘\n";
             opRemoved = false;
         }
-        if (Sentinel.ban) {
+        if (Config.ban) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ban " + p.getName() + " ]=- Sentinel Anti-Grief -=[ You have been banned for attempting to use dangerous blocks. Contact an administrator if you believe this to be a mistake.");
             logMessage = logMessage + "Banned: ✔\n";
             banned = true;
@@ -80,12 +85,12 @@ public class DeniedActions {
         WebhookSender.sendEmbedWarning(p.getName(),block,denied,opRemoved,banned);
     }
     public static void handleDeniedAction(Player p, ItemStack i) {
-        if (!Sentinel.logNBT) return;
+        if (!Config.logNBT) return;
         logMessage = "]==-- Sentinel --==[\n" +
                 "A Dangerous item has been detected!\n" +
                 "Player: " + p.getName() + "\n" +
                 "ItemType: " + i.getType() + "\n";
-        if (Sentinel.deop) {
+        if (Config.deop) {
             p.setOp(false);
             logMessage = logMessage + "Operator Removed: ✔\n";
             opRemoved = true;
@@ -93,7 +98,7 @@ public class DeniedActions {
             logMessage = logMessage + "Operator Removed: ✘\n";
             opRemoved = false;
         }
-        if (Sentinel.ban) {
+        if (Config.ban) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ban " + p.getName() + " ]=- Sentinel Anti-Grief -=[ You have been banned for attempting to use an NBT item. Contact an administrator if you believe this to be a mistake.");
             logMessage = logMessage + "Banned: ✔\n";
             banned = true;

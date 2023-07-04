@@ -1,6 +1,7 @@
 package io.github.thetrouper.sentinel.events;
 
 import io.github.thetrouper.sentinel.Sentinel;
+import io.github.thetrouper.sentinel.data.Config;
 import io.github.thetrouper.sentinel.server.util.DeniedActions;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.TextUtils;
@@ -24,7 +25,7 @@ public class CommandEvent implements Listener {
                 DeniedActions.handleDeniedAction(p,e.getMessage());
             }
         }
-        if (Sentinel.blockSpecificCommands) {
+        if (Config.blockSpecificCommands) {
             ServerUtils.sendDebugMessage(TextUtils.prefix("Checking command for specific"));
             if (command.contains(":")) {
                 ServerUtils.sendDebugMessage(TextUtils.prefix("Checking is specific"));
