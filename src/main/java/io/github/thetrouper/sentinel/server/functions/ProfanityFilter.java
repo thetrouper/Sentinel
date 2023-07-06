@@ -1,6 +1,7 @@
 package io.github.thetrouper.sentinel.server.functions;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Config;
+import io.github.thetrouper.sentinel.discord.WebhookSender;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.TextUtils;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -27,36 +28,44 @@ public class ProfanityFilter {
         String message = e.getMessage();
         if (!scoreMap.containsKey(p)) scoreMap.put(p, 0);
         if (scoreMap.get(p) > Config.punishScore) punishSwear(p,highlightProfanity(message),message);
-        switch (ProfanityFilter.checkSeverity(message)) {
+        String severity = ProfanityFilter.checkSeverity(message);
+        switch (severity) {
             case "low" -> {
-                e.setCancelled(true);
+                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.lowScore);
                 scoreMap.put(p, scoreMap.get(p) + Config.lowScore);
+                e.setCancelled(true);
                 p.sendMessage(TextUtils.prefix("§cPlease do not swear in chat! Attempting to bypass this filter will result in a mute!"));
+                blockSwear(p,highlightProfanity(message),message,severity);
             }
             case "medium-low" -> {
-                e.setCancelled(true);
+                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.mediumLowScore);
                 scoreMap.put(p, scoreMap.get(p) + Config.mediumLowScore);
-                blockSwear(p,highlightProfanity(message),message);
+                e.setCancelled(true);
+                blockSwear(p,highlightProfanity(message),message,severity);
             }
             case "medium" -> {
-                e.setCancelled(true);
+                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.mediumScore);
                 scoreMap.put(p, scoreMap.get(p) + Config.mediumScore);
-                blockSwear(p,highlightProfanity(message),message);
+                e.setCancelled(true);
+                blockSwear(p,highlightProfanity(message),message,severity);
             }
             case "medium-high" -> {
-                e.setCancelled(true);
+                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.mediumHighScore);
                 scoreMap.put(p, scoreMap.get(p) + Config.mediumHighScore);
-                blockSwear(p,highlightProfanity(message),message);
+                e.setCancelled(true);
+                blockSwear(p,highlightProfanity(message),message,severity);
             }
             case "high" -> {
-                e.setCancelled(true);
+                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.highScore);
                 scoreMap.put(p, scoreMap.get(p) + Config.highScore);
-                blockSwear(p,highlightProfanity(message),message);
+                e.setCancelled(true);
+                blockSwear(p,highlightProfanity(message),message,severity);
             }
             case "slur" -> {
                 // Insta-Punish
-                e.setCancelled(true);
+                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.highScore);
                 scoreMap.put(p, scoreMap.get(p) + Config.highScore);
+                e.setCancelled(true);
                 punishSlur(p,highlightProfanity(message),message);
             }
         }
@@ -74,6 +83,7 @@ public class ProfanityFilter {
         ServerUtils.forEachStaff(staff -> {
             staff.spigot().sendMessage(text);
         });
+        if (Config.logSwear) WebhookSender.sendSwearLog(player,origMessage,scoreMap.get(player));
     }
     public static void punishSlur(Player player, String highlightedMSG, String origMessage) {
         if (!Config.slurInstaPunish) return;
@@ -89,10 +99,11 @@ public class ProfanityFilter {
         ServerUtils.forEachStaff(staff -> {
             staff.spigot().sendMessage(text);
         });
+        if (Config.logSwear) WebhookSender.sendSlurLog(player,origMessage,scoreMap.get(player));
     }
-    public static void blockSwear(Player player, String highlightedMSG, String origMessage) {
+    public static void blockSwear(Player player, String highlightedMSG, String origMessage, String severity) {
         player.sendMessage(TextUtils.prefix(TextUtils.color("&cPlease do not swear in chat! Attempting to bypass this filter will result in a mute!")));
-        String hover = TextUtils.color("&bOriginal: &f" + origMessage + "\n&bSanitized: &f" + highlightedMSG + "\n&7&o(click to copy)");
+        String hover = TextUtils.color("&bOriginal: &f" + origMessage + "\n&bSanitized: &f" + highlightedMSG + "\n&bSeverity" + severity + "\n&7&o(click to copy)");
         TextComponent text = new TextComponent();
         text.setText(TextUtils.prefix(TextUtils.color
                 ("&b&n" + player.getName() + "&7 has triggered the anti-swear! &8(&c" + scoreMap.get(player) + "&7/&4" + Config.punishScore + "&8)")));
@@ -105,9 +116,13 @@ public class ProfanityFilter {
     }
 
     public static String highlightProfanity(String text) {
-        String lowercasedText = text.toLowerCase();
-        String highlightedSwears = highlightSwears(lowercasedText, "§c", "§f");
-        String highlightedText = highlightSlurs(highlightedSwears, "§e", "§f");
+        String highlightedSwears = highlightSwears(fullSimplify(text), "§e", "§f");
+        String highlightedText = highlightSlurs(highlightedSwears, "§c", "§f");
+        return highlightedText;
+    }
+    public static String highlightProfanity(String text, String start, String end) {
+        String highlightedSwears = highlightSwears(fullSimplify(text), start, end);
+        String highlightedText = highlightSlurs(highlightedSwears, start, end);
         return highlightedText;
     }
 
@@ -140,6 +155,15 @@ public class ProfanityFilter {
      * 10: remove periods and spaces
      * 11: Check for swears and return "high" if true
      */
+    public static String fullSimplify(String text) {
+        String lowercasedText = text.toLowerCase();
+        String cleanedText = removeFalsePositives(lowercasedText);
+        String convertedText = convertLeetSpeakCharacters(cleanedText);
+        String strippedText = stripSpecialCharacters(convertedText);
+        String simplifiedText = simplifyRepeatingLetters(strippedText);
+        String finalText = removePeriodsAndSpaces(simplifiedText);
+        return finalText;
+    }
     public static String checkSeverity(String text) {
         // 1:
         String lowercasedText = text.toLowerCase();
@@ -219,5 +243,14 @@ public class ProfanityFilter {
 
     private static String removePeriodsAndSpaces(String text) {
         return text.replace(".", "").replace(" ", "");
+    }
+    public static void decayScore() {
+        for (Player p : scoreMap.keySet()) {
+            int score = scoreMap.get(p);
+            if (score > 0) {
+                score = score - Config.scoreDecay;
+                scoreMap.put(p, Math.max(0, score));
+            }
+        }
     }
 }

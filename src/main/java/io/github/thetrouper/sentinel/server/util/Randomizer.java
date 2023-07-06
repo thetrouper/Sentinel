@@ -3,12 +3,22 @@ package io.github.thetrouper.sentinel.server.util;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Randomize items from a list
  * @param <T> list of?
  */
 public class Randomizer<T> {
+    public static long generateID() {
+        Date now = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+        String formattedDate = dateFormat.format(now);
+        long id = Long.parseLong(formattedDate);
+
+        return id;
+    }
 
     private final List<T> array;
 

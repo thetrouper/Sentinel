@@ -27,6 +27,7 @@ public abstract class Config {
         }
     }
     public static String webhook;
+    public static String pbapikey;
     public static List<String> trustedPlayers;
     public static boolean blockSpecificCommands;
     public static boolean preventNBT;
@@ -49,6 +50,8 @@ public abstract class Config {
     public static int blockHeat;
     public static int punishHeat;
     public static String punishSpamCommand;
+    public static String clearChatCommand;
+    public static boolean clearChat;
     public static boolean logSpam;
     public static boolean antiSwearEnabled;
     public static int lowScore;
@@ -60,6 +63,7 @@ public abstract class Config {
     public static String swearPunishCommand;
     public static boolean slurInstaPunish;
     public static String slurPunishCommand;
+    public static Integer scoreDecay;
     public static List<String> swearWhitelist;
     public static List<String> swearBlacklist;
     public static List<String> slurs;
@@ -71,6 +75,7 @@ public abstract class Config {
         Sentinel.prefix = config.getString("config.plugin.prefix");
         // antiNuke
         webhook = config.getString("config.plugin.webhook");
+        pbapikey = config.getString("config.plugin.pbapikey");
         trustedPlayers = config.getStringList("config.plugin.trusted");
         blockSpecificCommands = config.getBoolean("config.plugin.block-specific");
         preventNBT = config.getBoolean("config.plugin.prevent-nbt");
@@ -93,23 +98,27 @@ public abstract class Config {
         blockHeat = config.getInt("config.chat.anti-spam.block-heat");
         punishHeat = config.getInt("config.chat.anti-spam.punish-heat");
         punishSpamCommand = config.getString("config.chat.anti-spam.punish-command");
+        clearChat = config.getBoolean("config.chat.anti-spam.clear-chat");
+        clearChatCommand = config.getString("config.chat.anti-spam.clear-chat-command");
         logSpam = config.getBoolean("config.chat.anti-swear.log-swear");
         // antiSwear
         antiSwearEnabled = config.getBoolean("config.chat.anti-swear.enabled");
-        lowScore = config.getInt("config.chat.anti-swear.low-gain");
-        mediumLowScore = config.getInt("config.chat.anti-swear.medium-low-gain");
-        mediumScore = config.getInt("config.chat.anti-swear.medium-gain");
-        mediumHighScore = config.getInt("config.chat.anti-swear.medium-high-gain");
-        highScore = config.getInt("config.chat.anti-swear.high-gain");
+        lowScore = config.getInt("config.chat.anti-swear.low-score");
+        mediumLowScore = config.getInt("config.chat.anti-swear.medium-low-score");
+        mediumScore = config.getInt("config.chat.anti-swear.medium-score");
+        mediumHighScore = config.getInt("config.chat.anti-swear.medium-high-score");
+        highScore = config.getInt("config.chat.anti-swear.high-score");
         punishScore = config.getInt("config.chat.anti-swear.punish-score");
         swearPunishCommand = config.getString("config.chat.anti-swear.punish-command");
         slurInstaPunish = config.getBoolean("config.chat.anti-swear.slur-insta-punish");
         slurPunishCommand = config.getString("config.chat.anti-swear.slur-command");
+        scoreDecay = config.getInt("config.chat.anti-swear.score-decay");
         swearWhitelist = config.getStringList("config.chat.anti-swear.whitelisted");
         swearBlacklist = config.getStringList("config.chat.anti-swear.blacklisted");
         slurs = config.getStringList("config.chat.anti-swear.slurs");
         leetPatterns = loadLeetPatterns();
         logSwear = config.getBoolean("config.chat.anti-swear.log-swear");
+
     }
     private static Map<String, String> loadLeetPatterns() {
         Map<String, String> dictionary = new HashMap<>();

@@ -2,10 +2,10 @@ package io.github.thetrouper.sentinel.discord;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.awt.Color;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.lang.reflect.Array;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +23,7 @@ public class DiscordWebhook {
     private String avatarUrl;
     private boolean tts;
     private List<EmbedObject> embeds = new ArrayList<>();
+    private List<Attachment> attachments = new ArrayList<>();
 
     /**
      * Constructs a new DiscordWebhook instance
@@ -53,9 +54,13 @@ public class DiscordWebhook {
         this.embeds.add(embed);
     }
 
+    public void addAttachment(String filename, String content) {
+        attachments.add(new Attachment(filename, content));
+    }
+
     public void execute() throws IOException {
-        if (this.content == null && this.embeds.isEmpty()) {
-            throw new IllegalArgumentException("Set content or add at least one EmbedObject");
+        if (this.content == null && this.embeds.isEmpty() && this.attachments.isEmpty()) {
+            throw new IllegalArgumentException("Set content, add at least one EmbedObject, or add an attachment");
         }
 
         JSONObject json = new JSONObject();
@@ -137,6 +142,19 @@ public class DiscordWebhook {
             }
 
             json.put("embeds", embedObjects.toArray());
+        }
+
+        if (!this.attachments.isEmpty()) {
+            List<JSONObject> attachmentObjects = new ArrayList<>();
+
+            for (Attachment attachment : this.attachments) {
+                JSONObject attachmentObject = new JSONObject();
+                attachmentObject.put("name", attachment.getFilename());
+                attachmentObject.put("content", attachment.getContent());
+                attachmentObjects.add(attachmentObject);
+            }
+
+            json.put("attachments", attachmentObjects.toArray());
         }
 
         URL url = new URL(this.url);
@@ -336,6 +354,24 @@ public class DiscordWebhook {
             private boolean isInline() {
                 return inline;
             }
+        }
+    }
+
+    private class Attachment {
+        private String filename;
+        private String content;
+
+        private Attachment(String filename, String content) {
+            this.filename = filename;
+            this.content = content;
+        }
+
+        private String getFilename() {
+            return filename;
+        }
+
+        private String getContent() {
+            return content;
         }
     }
 

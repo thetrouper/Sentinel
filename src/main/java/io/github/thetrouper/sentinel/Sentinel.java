@@ -20,6 +20,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -42,7 +43,7 @@ public final class Sentinel extends JavaPlugin {
 
         // Files
         getConfig().options().copyDefaults();
-        saveDefaultConfig(); 
+        saveDefaultConfig();
 
         // Plugin startup logic
         Config.loadConfiguration();
@@ -67,6 +68,7 @@ public final class Sentinel extends JavaPlugin {
 
         // Scheduled timers
         Bukkit.getScheduler().runTaskTimer(this, AntiSpam::decayHeat,0, 20);
+        Bukkit.getScheduler().runTaskTimer(this, ProfanityFilter::decayScore,0,1200);
         log.info("\n" +
                 " ____                   __                        ___      \n" +
                 "/\\  _`\\                /\\ \\__  __                /\\_ \\     \n" +
@@ -86,7 +88,9 @@ public final class Sentinel extends JavaPlugin {
         // Plugin shutdown logic
         log.info("Sentinel has disabled! (" + getDescription().getVersion() + ") Your server is now no longer protected!");
     }
-
+    public static File getDF() {
+        return getInstance().getDataFolder();
+    }
 
     /**
      * Checks if a player is trusted.

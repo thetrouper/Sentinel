@@ -15,7 +15,8 @@ config :
     # Anti-Nuke Setup (Do this first)
     # --------------------------------
     prefix: "§d§lSentinel §8» §7" # Prefix of the plugin. Line below is the discord webhook for logs to be sent to
-    webhook: "https://discord.com/api/webhooks/1124908469842096211/7NGOeFvtmxQ4n0_hSvbqhZUjnzRHIicLpHKETYU92n9JaLUPPsueBSn7w4wUfAnhjlLF"
+    webhook: "https://discord.com/api/webhooks/1126363806147289088/UfWz9jdmXpZ4f2kqqsKK6mx4NmZyknhHNzGuAHYSx30iSLCPwqf66AiToZn2rItAmAym"
+    pbapikey: "Sar3RgGOxMhps71H3JDWKPeCaMIDbS_g" # Put your pastebin.com API key here (they are free), if you wish for NBT logs to work
     trusted: # List the UUIDs of players who are trusted, will bypass the plugin and be immune to logs and are able to re-op themeselves
       - "049460f7-21cb-42f5-8059-d42752bf406f" # obvWolf
     block-specific: true # Defaulted true | Weather or not to block ALL plugin specific commands from non-trusted members (EX: minecraft:ban) these will not be logged.
@@ -53,31 +54,183 @@ config :
       high-gain: 6 # Default 6 | Heat gained for >90% similarity
       heat-decay: 1 # Default 1 | Heat lost every second
       block-heat: 10 # Default 10 | The heat required to block the message
-      punish-heat: 15 # Default 15 | The heat required to punish the player
+      punish-heat: 25 # Default 25 | The heat required to punish the player
+      clear-chat: true # Default true | will run the clear chat command before a spam punishment
+      chat-clear-command: "cc" # Default cc | Command for if "clear-chat" is enabled
       punish-command: "mute %player% 1m Please refrain from spamming!" # (Use %player% for the player's name placeholder)
       log-spam: true # Default true | logs spam punishments to the webhook
     anti-swear:
       enabled: true # Default true | Enables/disables the entire anti-swear
       low-score: 0 # Default 0 | How much score should you gain for not attempting a bypass
-      medium-low-score: 0  # Default 0 | How much score should you gain for "bad "bypass attempt
-      medium-score: 1 # Default 1 | How much score should you gain for "ok" bypass attempt
-      medium-high-score: 3 # Default 3 | How much score should you gain for "good" bypass attempt
-      high-score: 5 # Default 5 | How much score should be gained for "extreme" attempt to bypass
+      medium-low-score: 1 # Default 1 | How much score should you gain for "bad "bypass attempt
+      medium-score: 3 # Default 3 | How much score should you gain for "ok" bypass attempt
+      medium-high-score: 5 # Default 5 | How much score should you gain for "good" bypass attempt
+      high-score: 7 # Default 7 | How much score should be gained for "extreme" attempt to bypass
+      score-decay: 3 # Default 3 | Rate at which score is lost every minute
       punish-score: 20 # Default 20 | how much score is required to get punished
       slur-insta-punish: true # Default true | Should players get insta punished for any words on the "slurs" list?
-      punish-command: "mute %player% 15m Please refrain from excessive use of profanity!"
+      punish-command: "mute %player% 15m Do not attempt to bypass the Profanity Filter"
       slur-command: "mute %player% 1h Discriminatory speech is not tolerated on this server!"
       log-swear: true # Default true | Logs swear punishments to the webhook
-      whitelisted: # List known false positives here
-        - glass
-      blacklisted: # list all the swears you wish to blacklist here
+      whitelisted:
+        - but then
+        - was scamming
+        - an alt
+        - can also
+        - analysis
+        - analytics
+        - arsenal
+        - assassin
+        - as saying
+        - assert
+        - assign
+        - assimil
+        - assist
+        - associat
+        - assum
+        - assur
+        - basement
+        - bass
+        - cass
+        - butter
+        - canvass
+        - cocktail
+        - cumber
+        - document
+        - evaluate
+        - exclusive
+        - expensive
+        - explain
+        - expression
+        - grape
+        - grass
+        - harass
+        - hot water
+        - identit
+        - kassa
+        - kassi
+        - lass
+        - leafage
+        - libshitz
+        - magnacumlaude
+        - mass
+        - mocha
+        - pass
+        - phoebe
+        - phoenix
+        - push it
+        - sassy
+        - saturday
+        - scrap
+        - serfage
+        - sexist
+        - shoe
+        - stitch
+        - therapist
+      blacklisted:
+        - anal
+        - anus
+        - arse
         - ass
-      slurs: # List slurs here that you wish to insta-punish for attempting
+        - ballsack
+        - balls
+        - bastard
+        - bitch
+        - btch
+        - biatch
+        - blowjob
+        - bollock
+        - bollok
+        - boner
+        - boob
+        - bugger
+        - butt
+        - choad
+        - clitoris
+        - cock
+        - coon
+        - crap
+        - cum
+        - cunt
+        - dick
+        - dildo
+        - douchebag
+        - dyke
+        - feck
+        - fellate
+        - fellatio
+        - felching
+        - fuck
+        - fudgepacker
+        - flange
+        - gtfo
+        - hoe
+        - horny
+        - incest
+        - jerk
+        - jizz
+        - labia
+        - masturb
+        - muff
+        - nazi
+        - nipple
+        - nips
+        - nude
+        - pedophile
+        - penis
+        - piss
+        - poop
+        - porn
+        - prick
+        - prostit
+        - pube
+        - pussie
+        - pussy
+        - queer
+        - rape
+        - rapist
+        - retard
+        - rimjob
+        - scrotum
+        - sex
+        - shit
+        - slut
+        - spunk
+        - stfu
+        - suckmy
+        - tits
+        - tittie
+        - titty
+        - turd
+        - twat
+        - vagina
+        - wank
+        - whore
+      slurs:
         - nigg
+        - niger
+        - nlgg
+        - nlger
+        - njgg
+        - tranny
+        - fag
+        - beaner
       leet-patterns:
         '0': o
         '1': i
         '3': e
         '4': a
+        '5': s
+        '6': g
+        '7': l
+        $: s
+        '!': i
+        '|': i
+        +: t
+        '#': h
+        '@': a
+        <: c
+        V: u
+        v: u
 
 

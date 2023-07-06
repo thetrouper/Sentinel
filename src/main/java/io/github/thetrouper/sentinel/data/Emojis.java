@@ -1,6 +1,7 @@
 package io.github.thetrouper.sentinel.data;
 
 public class Emojis {
+    public static String space = "<:space:1125871914334818446>";
     public static String rightSort = "<:rightSort:1125785837255270520>";
     public static String arrowRight = "<:arrowRight:1125785471520354304>";
     public static String rightDoubleArrow = "<:rightDoubleArrow:1125785800353783868>";
