@@ -1,22 +1,26 @@
-# ExamplePluginTemplate
-An example plugin template for beginners!
+# Sentinel
+Advanced Anti-Grief & Chat Filter
 -----------------------------------------------------
 
-Trying to create your first plugin? Use this template to get started easily!
-
-- Comments to guide you
-- Made some example classes
-- Added some useful utils
+- Control access to dangerous commands
+- Deny command blocks & minecart commands
+- Prevent Malicious NBT
+- Most Advanced Profanity Filter
+- Advanced Anti-Spam
+- Auto-punish system
+- Webhook logging
+- Quality Customer Supourt
 
 -----------------------------------------------------
 
 ## How to use
 
-Download this template -\> Load it into your IDE or development environment. [Check out IntelliJ](https://www.jetbrains.com/idea/download/?fromIDE=#section=windows) -\> Get Creative!
-
-- To build your jar file simply go into the terminal and run `./gradlew build`
-- Your finished jar should appear in `build/libs`!
+1. Download the plugin on spigot
+2. Upload it to your /plugins/ folder
+3. Use plugman to `/plugman load sentinel` or restart your server
+4. Open a ticket and send your server ID
+5. Wait for a response from staff saying your license is verified
+6. Use plugman to `/plugman load sentinel` or restart your server
+7. Configure sentinel in /plugins/Sentinel/config.yml
 
 -----------------------------------------------------
-
-Have a nice day, happy coding!
