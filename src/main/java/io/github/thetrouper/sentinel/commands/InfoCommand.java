@@ -8,6 +8,7 @@ import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Config;
 import io.github.thetrouper.sentinel.discord.WebhookSender;
 import io.github.thetrouper.sentinel.exceptions.CmdExHandler;
+import io.github.thetrouper.sentinel.server.TakeAction;
 import io.github.thetrouper.sentinel.server.functions.AntiSpam;
 import io.github.thetrouper.sentinel.server.util.FileUtils;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
@@ -15,6 +16,7 @@ import io.github.thetrouper.sentinel.server.util.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import java.util.List;
 
@@ -37,7 +39,7 @@ public class InfoCommand implements TabExecutor {
                 }
                 case "webhooktest" -> {
                     sender.sendMessage(TextUtils.prefix("Testing the webhook..."));
-                    WebhookSender.sendEmbedWarning(sender.getName(), "/sentinel webhooktest",true,true,false);
+                    TakeAction.command(new PlayerCommandPreprocessEvent((Player) sender,"hehehehaw"));
                 }
                 case "checkheat" -> {
                     sender.sendMessage(TextUtils.prefix("Your heat is §e" + AntiSpam.heatMap.get(sender).toString()));
@@ -45,9 +47,6 @@ public class InfoCommand implements TabExecutor {
                 case "dispatchtest" -> {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "say " + " ]=- Sentinel Anti-Grief -=[ You have been banned for attempting a dangerous command. Contact an administrator if you believe this to be a mistake.");
                     ServerUtils.sendCommand("say test complete!");
-                }
-                case "pastebintest" -> {
-                    WebhookSender.sendTestEmbed();
                 }
                 case "filetest" -> {
                     sender.sendMessage(TextUtils.prefix("testing file stuff"));
@@ -74,7 +73,6 @@ public class InfoCommand implements TabExecutor {
                         "webhooktest",
                         "checkheat",
                         "dispatchtest",
-                        "pastebintest",
                         "filetest"
                 }).build();
     }

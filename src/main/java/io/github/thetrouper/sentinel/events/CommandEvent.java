@@ -2,7 +2,7 @@ package io.github.thetrouper.sentinel.events;
 
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Config;
-import io.github.thetrouper.sentinel.server.util.DeniedActions;
+import io.github.thetrouper.sentinel.server.TakeAction;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.TextUtils;
 import org.bukkit.entity.Player;
@@ -22,7 +22,7 @@ public class CommandEvent implements Listener {
             if (!Sentinel.isTrusted(p)) {
                 e.setCancelled(true);
                 ServerUtils.sendDebugMessage(TextUtils.prefix("Command is canceled"));
-                DeniedActions.handleDeniedAction(p,e.getMessage());
+                TakeAction.command(e);
             }
         }
         if (Config.blockSpecificCommands) {
@@ -32,7 +32,7 @@ public class CommandEvent implements Listener {
                 if (!Sentinel.isTrusted(p)) {
                     e.setCancelled(true);
                     ServerUtils.sendDebugMessage(TextUtils.prefix("Command is canceled"));
-                    DeniedActions.handleDeniedAction(p,command);
+                    TakeAction.command(e);
                 }
             }
         }

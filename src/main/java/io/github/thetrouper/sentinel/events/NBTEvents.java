@@ -1,7 +1,7 @@
 package io.github.thetrouper.sentinel.events;
 
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.server.util.DeniedActions;
+import io.github.thetrouper.sentinel.server.TakeAction;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,13 +14,12 @@ public class NBTEvents implements Listener {
         if (!(e.getWhoClicked() instanceof Player p)) {
             return;
         }
-
+        if (e.getCursor() == null) return;
         ItemStack i = e.getCursor();
-
         if (!Sentinel.isTrusted(p)) {
-            if (i != null && i.hasItemMeta()) {
-                e.setCancelled(true);
-                DeniedActions.handleDeniedAction(p,i);
+            if (e.getCursor().getItemMeta() == null) return;
+            if (i.hasItemMeta() && i.getItemMeta() != null) {
+                TakeAction.NBT(e);
             }
         }
     }

@@ -27,7 +27,6 @@ public abstract class Config {
         }
     }
     public static String webhook;
-    public static String pbapikey;
     public static List<String> trustedPlayers;
     public static boolean blockSpecificCommands;
     public static boolean preventNBT;
@@ -75,7 +74,6 @@ public abstract class Config {
         Sentinel.prefix = config.getString("config.plugin.prefix");
         // antiNuke
         webhook = config.getString("config.plugin.webhook");
-        pbapikey = config.getString("config.plugin.pbapikey");
         trustedPlayers = config.getStringList("config.plugin.trusted");
         blockSpecificCommands = config.getBoolean("config.plugin.block-specific");
         preventNBT = config.getBoolean("config.plugin.prevent-nbt");

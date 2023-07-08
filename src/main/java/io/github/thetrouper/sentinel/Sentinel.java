@@ -12,6 +12,7 @@ import io.github.thetrouper.sentinel.events.CmdBlockEvents;
 import io.github.thetrouper.sentinel.events.CommandEvent;
 import io.github.thetrouper.sentinel.events.NBTEvents;
 import io.github.thetrouper.sentinel.server.functions.AntiSpam;
+import io.github.thetrouper.sentinel.server.functions.Authenticator;
 import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -21,6 +22,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -40,7 +42,15 @@ public final class Sentinel extends JavaPlugin {
      */
     @Override
     public void onEnable() {
-
+        log.info("Your server ID is: " + Authenticator.getServerID());
+        try {
+            if (!Authenticator.hasPaid()) {
+                log.info("Open a ticket with this message if the plugin doesnt work. " + Authenticator.getServerID());
+            }
+        } catch (IOException e) {
+            log.info("Open a ticket with this message if the plugin doesnt work. " + Authenticator.getServerID());
+            throw new RuntimeException(e);
+        }
         // Files
         getConfig().options().copyDefaults();
         saveDefaultConfig();
