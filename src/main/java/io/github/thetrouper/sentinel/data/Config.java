@@ -26,6 +26,7 @@ public abstract class Config {
             return config.getString("config.plugin.prefix");
         }
     }
+    public static String license;
     public static String webhook;
     public static List<String> trustedPlayers;
     public static boolean blockSpecificCommands;
@@ -72,6 +73,7 @@ public abstract class Config {
     public static void loadConfiguration() {
 
         Sentinel.prefix = config.getString("config.plugin.prefix");
+        license = config.getString("config.plugin.license");
         // antiNuke
         webhook = config.getString("config.plugin.webhook");
         trustedPlayers = config.getStringList("config.plugin.trusted");

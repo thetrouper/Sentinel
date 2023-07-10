@@ -30,38 +30,33 @@ public class Authenticator {
             throw new RuntimeException(e);
         }
     }
-    public static List<String> readLines(BufferedReader reader) {
+
+    public static String authorize(String license, String serverID) {
         try {
-            List<String> lines = new ArrayList<>();
-            String line = reader.readLine();
-            while (line != null) {
-                lines.add(line);
-                line = reader.readLine();
+            URL url = new URL("https://sentinelauth.000webhostapp.com");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.contains(license)) {
+                    String[] parts = line.split(":");
+                    if (parts.length > 1) {
+                        String[] allowedIDs = parts[1].split("\\s+");
+                        for (String id : allowedIDs) {
+                            if (id.equals(serverID)) {
+                                reader.close();
+                                return "AUTHORIZED";
+                            }
+                        }
+                    }
+                    reader.close();
+                    return "INVALID-ID";
+                }
             }
             reader.close();
-            return lines;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return new ArrayList<>();
-    }
-    public static List<String> serverIDS(List<String> strings) {
-        return strings.stream().filter(string -> string.contains("<p>")).toList();
-    }
-    public static boolean hasPaid() throws IOException {
-        try {
-            URL url = new URL("https://thetrouper.github.io/CUSTOMERS.html");
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(url.openStream()));
-            List<String> ids = serverIDS(readLines(bufferedReader));
-            ids = ArrayUtils.toNewList(ids, string -> string.replaceAll("</p>", "").replaceAll("<p>", "").trim());
-            if (!ids.contains(getServerID())) {
-                throw new RuntimeException();
-            }
-            return false;
-        } catch (Exception e) {
-            throw new IllegalStateException("YOU SHALL NOT PASS! " + getServerID());
-        }
+        return "UNREGISTERED";
     }
     public static String getServerID() {
         return encrypt(IP.getHostAddress());

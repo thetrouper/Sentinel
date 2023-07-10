@@ -43,13 +43,17 @@ public final class Sentinel extends JavaPlugin {
     @Override
     public void onEnable() {
         log.info("Your server ID is: " + Authenticator.getServerID());
-        try {
-            if (!Authenticator.hasPaid()) {
-                log.info("Open a ticket with this message if the plugin doesnt work. " + Authenticator.getServerID());
+        switch (Authenticator.authorize(Config.license, Authenticator.getServerID())) {
+            case "AUTHORIZED" -> {
+                log.info("Authentication Success!");
             }
-        } catch (IOException e) {
-            log.info("Open a ticket with this message if the plugin doesnt work. " + Authenticator.getServerID());
-            throw new RuntimeException(e);
+            case "INVALID-ID" -> {
+                log.info("Authentication Failure, You have not whitelisted this server ID yet.");
+            }
+            case "UNREGISTERED" -> {
+                log.info("YOU SHALL NOT PASS! License: " + Config.license + " Server ID: " + Authenticator.getServerID());
+                throw new IllegalStateException("YOU SHALL NOT PASS! License: " + Config.license + " Server ID: " + Authenticator.getServerID());
+            }
         }
         // Files
         getConfig().options().copyDefaults();
