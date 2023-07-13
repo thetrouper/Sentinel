@@ -17,6 +17,7 @@ public class CmdBlockEvents implements Listener {
     @EventHandler
     private void onCMDBlockUse(PlayerInteractEvent e) {
         if (!Config.preventCmdBlocks) return;
+        if (Config.cmdBlockOpCheck && !e.getPlayer().isOp()) return;
         if (e.getClickedBlock() == null) return;
         Block b = e.getClickedBlock();
         if (b.getType() == Material.COMMAND_BLOCK || b.getType() == Material.REPEATING_COMMAND_BLOCK || b.getType() == Material.CHAIN_COMMAND_BLOCK) {
@@ -30,6 +31,7 @@ public class CmdBlockEvents implements Listener {
     @EventHandler
     private void onCMDBlockPlace(BlockPlaceEvent e) {
         if (!Config.preventCmdBlocks) return;
+        if (Config.cmdBlockOpCheck && !e.getPlayer().isOp()) return;
         Block b = e.getBlockPlaced();
         if (b.getType() == Material.COMMAND_BLOCK || b.getType() == Material.CHAIN_COMMAND_BLOCK || b.getType() == Material.REPEATING_COMMAND_BLOCK ) {
             Player p = e.getPlayer();
@@ -42,6 +44,7 @@ public class CmdBlockEvents implements Listener {
     @EventHandler
     private void onCMDBlockMinecartUse(PlayerInteractEntityEvent e) {
         if (!Config.preventCmdBlocks) return;
+        if (Config.cmdBlockOpCheck && !e.getPlayer().isOp()) return;
         if (e.getRightClicked().getType() == EntityType.MINECART_COMMAND) {
             Player p = e.getPlayer();
             if (!Sentinel.isTrusted(p)) {
@@ -53,6 +56,7 @@ public class CmdBlockEvents implements Listener {
     @EventHandler
     private void onCMDBlockMinecartPlace(PlayerInteractEvent e) {
         if (!Config.preventCmdBlocks) {
+            if (Config.cmdBlockOpCheck && !e.getPlayer().isOp()) return;
             if (e.getItem() == null) return;
             if (e.getClickedBlock() == null) return;
             if (!e.getItem().getType().equals(Material.COMMAND_BLOCK_MINECART)) return;

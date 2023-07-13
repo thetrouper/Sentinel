@@ -64,12 +64,12 @@ public class AntiSpam {
     public static void alertSpam(Player p, String message1, String message2) {
         TextComponent text = new TextComponent();
         p.sendMessage(TextUtils.prefix("Do not spam in chat! Please wait before sending another message."));
-        String hover = TextUtils.color("§8]==-- §d§lSentinel §8--==[" +
-                "\n&bPrevious: &f" + message2 +
-                "\n&bCurrent: &f" + message1 +
-                "\n&bSimilarity &f" + GPTUtils.calculateSimilarity(message1,message2 + "%"));
-        text.setText(TextUtils.prefix(TextUtils.color
-                ("&b&n" + p.getName() + "&7 might be spamming! &8(&c" + heatMap.get(p) + "&7/&4" + Config.punishHeat + "&8)")));
+        String hover ="§8]==-- §d§lSentinel §8--==[" +
+                "\n§bPrevious: §f" + message2 +
+                "\n§bCurrent: §f" + message1 +
+                "\n§bSimilarity §f" + GPTUtils.calculateSimilarity(message1,message2 + "%");
+        text.setText(TextUtils.prefix(
+                "§b§n" + p.getName() + "§7 might be spamming! §8(§c" + heatMap.get(p) + "§7/§4" + Config.punishHeat + "§8)"));
         text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hover)));
         ServerUtils.forEachStaff(staff -> {
             staff.spigot().sendMessage(text);
@@ -82,10 +82,10 @@ public class AntiSpam {
             chatCleared = true;
         }
         ServerUtils.sendCommand(Config.punishSpamCommand.replace("%player%", player.getName()));
-        player.sendMessage(TextUtils.prefix(TextUtils.color("&cYou have been auto-punished for violating the anti-spam repetitively!")));
+        player.sendMessage(TextUtils.prefix("§cYou have been auto-punished for violating the anti-spam repetitively!"));
         TextComponent text = new TextComponent();
-        text.setText(TextUtils.prefix(TextUtils.color
-                ("&b&n" + player.getName() + "&7 has been auto-muted by the anti-spam! &8(&c" + heatMap.get(player) + "&7/&4" + Config.punishHeat + "&8)")));
+        text.setText(TextUtils.prefix(
+                "§b§n" + player.getName() + "§7 has been auto-muted by the anti-spam! §8(§c" + heatMap.get(player) + "§7/§4" + Config.punishHeat + "§8)"));
         ServerUtils.forEachStaff(staff -> {
             staff.spigot().sendMessage(text);
         });

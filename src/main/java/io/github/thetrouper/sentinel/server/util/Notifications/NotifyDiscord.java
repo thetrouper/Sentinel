@@ -16,7 +16,36 @@ import java.awt.*;
 import java.io.IOException;
 
 public class NotifyDiscord {
-    public static void command(Player player, String command, boolean denied, boolean deoped, boolean banned, boolean logged) {
+    public static void specific(Player player, String command, boolean denied, boolean deoped, boolean punished, boolean logged) {
+        ServerUtils.sendDebugMessage("Creating Specific Webhook...");
+        DiscordWebhook webhook = new DiscordWebhook(Config.webhook);
+        webhook.setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png");
+        webhook.setUsername("Sentinel Anti-Nuke | Logs");
+        DiscordWebhook.EmbedObject embed = new DiscordWebhook.EmbedObject()
+                .setAuthor("Anti-Nuke has been triggered","","")
+                .setTitle("The use of a specific command has been detected!")
+                .setDescription(
+                        Emojis.rightSort + " **Player:** " + player.getName() + " " + Emojis.member + "\\n" +
+                                Emojis.rightSort + " **Command:** " + command + " " + Emojis.nuke + "\\n"
+                )
+                .addField("Actions:",
+                        Emojis.rightSort + " **Denied:** " + TextUtils.boolString(denied,Emojis.success, Emojis.failure) + "\\n" +
+                                Emojis.rightSort + " **De-oped:** " + TextUtils.boolString(deoped,Emojis.success, Emojis.failure) + "\\n" +
+                                Emojis.rightSort + " **Punished:** " + TextUtils.boolString(punished,Emojis.success, Emojis.failure) + "\\n" +
+                                Emojis.rightSort + "**Logged:** "  + TextUtils.boolString(logged,Emojis.success, Emojis.failure), false
+                )
+                .setThumbnail("https://crafatar.com/avatars/" + player.getUniqueId() + "?size=64&&overlay")
+                .setColor(Color.RED);
+        webhook.addEmbed(embed);
+        try {
+            ServerUtils.sendDebugMessage("Executing webhook...");
+            webhook.execute();
+        } catch (IOException e) {
+            ServerUtils.sendDebugMessage(TextUtils.prefix("Epic webhook failure!!!"));
+            Sentinel.log.info(e.toString());
+        }
+    }
+    public static void command(Player player, String command, boolean denied, boolean deoped, boolean punished, boolean logged) {
         ServerUtils.sendDebugMessage("Creating Command Webhook...");
         DiscordWebhook webhook = new DiscordWebhook(Config.webhook);
         webhook.setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png");
@@ -31,7 +60,7 @@ public class NotifyDiscord {
                 .addField("Actions:",
                         Emojis.rightSort + " **Denied:** " + TextUtils.boolString(denied,Emojis.success, Emojis.failure) + "\\n" +
                                 Emojis.rightSort + " **De-oped:** " + TextUtils.boolString(deoped,Emojis.success, Emojis.failure) + "\\n" +
-                                Emojis.rightSort + " **Banned:** " + TextUtils.boolString(banned,Emojis.success, Emojis.failure) + "\\n" +
+                                Emojis.rightSort + " **Punished:** " + TextUtils.boolString(punished,Emojis.success, Emojis.failure) + "\\n" +
                                 Emojis.rightSort + "**Logged:** "  + TextUtils.boolString(logged,Emojis.success, Emojis.failure), false
                 )
                 .setThumbnail("https://crafatar.com/avatars/" + player.getUniqueId() + "?size=64&&overlay")
@@ -45,7 +74,7 @@ public class NotifyDiscord {
             Sentinel.log.info(e.toString());
         }
     }
-    public static void NBT(Player player, ItemStack item, boolean removed, boolean deoped, boolean gms, boolean banned, boolean logged, String logFileName) {
+    public static void NBT(Player player, ItemStack item, boolean removed, boolean deoped, boolean gms, boolean punished, boolean logged, String logFileName) {
         ServerUtils.sendDebugMessage("Creating NBT Webhook...");
 
         DiscordWebhook webhook = new DiscordWebhook(Config.webhook);
@@ -63,7 +92,7 @@ public class NotifyDiscord {
                         Emojis.rightSort + " **Removed:** " + TextUtils.boolString(removed,Emojis.success, Emojis.failure)  + "\\n" +
                                 Emojis.rightSort + " **De-oped:** " + TextUtils.boolString(deoped,Emojis.success, Emojis.failure)  + "\\n" +
                                 Emojis.rightSort + " **GM Reverted:** " + TextUtils.boolString(gms,Emojis.success, Emojis.failure)  + "\\n" +
-                                Emojis.rightSort + " **Banned:** " + TextUtils.boolString(banned,Emojis.success, Emojis.failure)  + "\\n"+
+                                Emojis.rightSort + " **Punished:** " + TextUtils.boolString(punished,Emojis.success, Emojis.failure)  + "\\n"+
                                 Emojis.rightSort + " **Logged:** " + TextUtils.boolString(logged,Emojis.success, Emojis.failure), false
                 )
                 .setColor(Color.BLUE);
@@ -76,7 +105,7 @@ public class NotifyDiscord {
             Sentinel.log.info(e.toString());
         }
     }
-    public static void placeBlock(Player player, Block b, boolean deleted, boolean deoped, boolean banned, boolean logged) {
+    public static void placeBlock(Player player, Block b, boolean deleted, boolean deoped, boolean punished, boolean logged) {
         ServerUtils.sendDebugMessage("Creating placeBlock Webhook...");
         DiscordWebhook webhook = new DiscordWebhook(Config.webhook);
         webhook.setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png");
@@ -86,12 +115,13 @@ public class NotifyDiscord {
                 .setTitle("The placing of a dangerous block has been detected!")
                 .setDescription(
                         Emojis.rightSort + " **Player:** " + player.getName() + " " + Emojis.member + "\\n" +
-                                Emojis.rightSort + " **Block:** " + b.getType().toString().toLowerCase() + " " + Emojis.nuke + "\\n"
+                        Emojis.rightSort + " **Block:** " + b.getType().toString().toLowerCase() + " " + Emojis.nuke + "\\n" +
+                        Emojis.space + Emojis.rightDoubleArrow + " **Location:** X: " + b.getX() + " Y: " + b.getY() + " Z: " + b.getZ() + "\\n"
                 )
                 .addField("Actions:",
                         Emojis.rightSort + " **Deleted:** " + TextUtils.boolString(deleted,Emojis.success, Emojis.failure)  + "\\n" +
                                 Emojis.rightSort + " **De-oped:** " + TextUtils.boolString(deoped,Emojis.success, Emojis.failure)  + "\\n" +
-                                Emojis.rightSort + " **Banned:** " + TextUtils.boolString(banned,Emojis.success, Emojis.failure)  + "\\n"+
+                                Emojis.rightSort + " **Punished:** " + TextUtils.boolString(punished,Emojis.success, Emojis.failure)  + "\\n"+
                                 Emojis.rightSort + " **Logged:** " + TextUtils.boolString(logged,Emojis.success, Emojis.failure),  false
                 )
                 .setColor(Color.RED);
@@ -104,7 +134,7 @@ public class NotifyDiscord {
             Sentinel.log.info(e.toString());
         }
     }
-    public static void usedBlock(Player player, Block b, boolean denied, boolean deoped, boolean banned, boolean logged) {
+    public static void usedBlock(Player player, Block b, boolean denied, boolean deoped, boolean punished, boolean logged) {
         ServerUtils.sendDebugMessage("Creating useBlock Webhook...");
         DiscordWebhook webhook = new DiscordWebhook(Config.webhook);
         webhook.setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png");
@@ -114,12 +144,13 @@ public class NotifyDiscord {
                 .setTitle("The use of a dangerous block has been detected!")
                 .setDescription(
                         Emojis.rightSort + " **Player:** " + player.getName() + " " + Emojis.member + "\\n" +
-                        Emojis.rightSort + " **Block:** " + b.getType() + " " + Emojis.nuke + "\\n"
+                        Emojis.rightSort + " **Block:** " + b.getType() + " " + Emojis.nuke + "\\n" +
+                        Emojis.space + Emojis.rightDoubleArrow + " **Location:** X: " + b.getX() + " Y: " + b.getY() + " Z: " + b.getZ() + "\\n"
                 )
                 .addField("Actions:",
                         Emojis.rightSort + " **Denied:** " + TextUtils.boolString(denied,Emojis.success, Emojis.failure)  + "\\n" +
                                 Emojis.rightSort + " **De-oped:** " + TextUtils.boolString(deoped,Emojis.success, Emojis.failure)  + "\\n" +
-                                Emojis.rightSort + " **Banned:** " + TextUtils.boolString(banned,Emojis.success, Emojis.failure)  + "\\n"+
+                                Emojis.rightSort + " **Punished:** " + TextUtils.boolString(punished,Emojis.success, Emojis.failure)  + "\\n"+
                                 Emojis.rightSort + " **Logged:** " + TextUtils.boolString(logged,Emojis.success, Emojis.failure),  false
                 )
                 .setColor(Color.RED);
@@ -132,7 +163,7 @@ public class NotifyDiscord {
             Sentinel.log.info(e.toString());
         }
     }
-    public static void usedEntity(Player player, Entity e, boolean denied, boolean deoped, boolean banned, boolean logged) {
+    public static void usedEntity(Player player, Entity e, boolean denied, boolean deoped, boolean punished, boolean logged) {
         ServerUtils.sendDebugMessage("Creating useEntity Webhook...");
         DiscordWebhook webhook = new DiscordWebhook(Config.webhook);
         webhook.setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png");
@@ -142,12 +173,13 @@ public class NotifyDiscord {
                 .setTitle("The use of a dangerous entity has been detected!")
                 .setDescription(
                         Emojis.rightSort + " **Player:** " + player.getName() + " " + Emojis.member + "\\n" +
-                        Emojis.rightSort + " **Entity:** " + e.getType() + " " + Emojis.nuke + "\\n"
+                        Emojis.rightSort + " **Entity:** " + e.getType() + " " + Emojis.nuke + "\\n" +
+                        Emojis.space + Emojis.rightDoubleArrow + " **Location:** X: " + e.getLocation().getX() + " Y: " + e.getLocation().getY() + " Z: " + e.getLocation().getZ() + "\\n"
                 )
                 .addField("Actions:",
                         Emojis.rightSort + " **Denied:** " + TextUtils.boolString(denied,Emojis.success, Emojis.failure)  + "\\n" +
                                 Emojis.rightSort + " **De-oped:** " + TextUtils.boolString(deoped,Emojis.success, Emojis.failure)  + "\\n" +
-                                Emojis.rightSort + " **Banned:** " + TextUtils.boolString(banned,Emojis.success, Emojis.failure)  + "\\n"+
+                                Emojis.rightSort + " **Punished:** " + TextUtils.boolString(punished,Emojis.success, Emojis.failure)  + "\\n"+
                                 Emojis.rightSort + " **Logged:** " + TextUtils.boolString(logged,Emojis.success, Emojis.failure),  false
                 )
                 .setColor(Color.RED);

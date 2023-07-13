@@ -3,6 +3,9 @@ package io.github.thetrouper.sentinel.events;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Config;
 import io.github.thetrouper.sentinel.server.TakeAction;
+import io.github.thetrouper.sentinel.server.util.Notifications.NotifyConsole;
+import io.github.thetrouper.sentinel.server.util.Notifications.NotifyDiscord;
+import io.github.thetrouper.sentinel.server.util.Notifications.NotifyTrusted;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.TextUtils;
 import org.bukkit.entity.Player;
@@ -32,9 +35,14 @@ public class CommandEvent implements Listener {
                 if (!Sentinel.isTrusted(p)) {
                     e.setCancelled(true);
                     ServerUtils.sendDebugMessage(TextUtils.prefix("Command is canceled"));
-                    TakeAction.command(e);
+                    TakeAction.specific(e);
                 }
             }
+        }
+        if (Sentinel.isLoggedCommand(command)) {
+            NotifyConsole.command(p,command,false,false,false,true);
+            NotifyDiscord.command(p,command,false,false,false,true);
+            NotifyTrusted.command(p,command,false,false,false,true);
         }
     }
 }

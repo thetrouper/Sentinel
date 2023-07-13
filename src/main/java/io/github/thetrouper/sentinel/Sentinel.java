@@ -21,6 +21,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -35,6 +36,7 @@ public final class Sentinel extends JavaPlugin {
 
     public static final PluginManager manager = Bukkit.getPluginManager();
     public static String prefix = "";
+    public static String key = "";
     public static final Logger log = Bukkit.getLogger();
 
     /**
@@ -42,25 +44,27 @@ public final class Sentinel extends JavaPlugin {
      */
     @Override
     public void onEnable() {
-        log.info("Your server ID is: " + Authenticator.getServerID());
-        switch (Authenticator.authorize(Config.license, Authenticator.getServerID())) {
-            case "AUTHORIZED" -> {
+        Config.loadConfiguration();
+        String serverID = Authenticator.getServerID();
+        log.info("Your license key is: " + key + " Your server ID is: " + serverID);
+        switch (Authenticator.authorize(key, serverID)) {
+            case "AUTHORIZED":
                 log.info("Authentication Success!");
-            }
-            case "INVALID-ID" -> {
+                break;
+            case "INVALID-ID":
                 log.info("Authentication Failure, You have not whitelisted this server ID yet.");
-            }
-            case "UNREGISTERED" -> {
-                log.info("YOU SHALL NOT PASS! License: " + Config.license + " Server ID: " + Authenticator.getServerID());
-                throw new IllegalStateException("YOU SHALL NOT PASS! License: " + Config.license + " Server ID: " + Authenticator.getServerID());
-            }
+                getServer().getPluginManager().disablePlugin(this);
+                break;
+            case "UNREGISTERED":
+                log.warning("Authentication Failure, YOU SHALL NOT PASS! License: " + key + " Server ID: " + serverID);
+                getServer().getPluginManager().disablePlugin(this);
+                return;
         }
         // Files
         getConfig().options().copyDefaults();
         saveDefaultConfig();
 
         // Plugin startup logic
-        Config.loadConfiguration();
         log.info("Sentinel has loaded! (" + getDescription().getVersion() + ")");
 
         // Enable Functions

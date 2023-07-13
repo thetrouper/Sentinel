@@ -72,11 +72,11 @@ public class ProfanityFilter {
     }
     public static void punishSwear(Player player, String highlightedMSG, String origMessage) {
         ServerUtils.sendCommand(Config.swearPunishCommand.replace("%player%", player.getName()));
-        player.sendMessage(TextUtils.prefix(TextUtils.color("&cYou have been auto-muted for violating the anti-swear repetitively!")));
-        String hover = TextUtils.color("&bOriginal: &f" + origMessage + "\n&bSanitized: &f" + highlightedMSG + "\n&7&o(click to copy)");
+        player.sendMessage(TextUtils.prefix(("§cYou have been auto-muted for violating the anti-swear repetitively!")));
+        String hover = ("§bOriginal: §f" + origMessage + "\n§bSanitized: §f" + highlightedMSG + "\n§7§o(click to copy)");
         TextComponent text = new TextComponent();
-        text.setText(TextUtils.prefix(TextUtils.color
-                ("&b&n" + player.getName() + "&7 has been auto-muted by the anti-swear! &8(&c" + scoreMap.get(player) + "&7/&4" + Config.punishScore + "&8)")));
+        text.setText(TextUtils.prefix(
+                ("§b§n" + player.getName() + "§7 has been auto-muted by the anti-swear! §8(§c" + scoreMap.get(player) + "§7/§4" + Config.punishScore + "§8)")));
         text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hover)));
         text.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, origMessage));
 
@@ -88,11 +88,11 @@ public class ProfanityFilter {
     public static void punishSlur(Player player, String highlightedMSG, String origMessage) {
         if (!Config.slurInstaPunish) return;
         ServerUtils.sendCommand(Config.slurPunishCommand.replace("%player%", player.getName()));
-        player.sendMessage(TextUtils.prefix(TextUtils.color("&cYou have been insta-muted for saying a slur!")));
-        String hover = TextUtils.color("&bOriginal: &f" + origMessage + "\n&bSanitized: &f" + highlightedMSG + "\n&7&o(click to copy)");
+        player.sendMessage(TextUtils.prefix(("§cYou have been insta-muted for saying a slur!")));
+        String hover = ("§bOriginal: §f" + origMessage + "\n§bSanitized: §f" + highlightedMSG + "\n§7§o(click to copy)");
         TextComponent text = new TextComponent();
-        text.setText(TextUtils.prefix(TextUtils.color
-                ("&b&n" + player.getName() + "&7 has been insta-muted by the anti-swear! &8(&e" + scoreMap.get(player) + "&7/&4" + Config.punishScore + "&8)")));
+        text.setText(TextUtils.prefix(
+                ("§b§n" + player.getName() + "§7 has been insta-muted by the anti-swear! §8(§e" + scoreMap.get(player) + "§7/§4" + Config.punishScore + "§8)")));
         text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hover)));
         text.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, origMessage));
 
@@ -102,11 +102,11 @@ public class ProfanityFilter {
         if (Config.logSwear) WebhookSender.sendSlurLog(player,origMessage,scoreMap.get(player));
     }
     public static void blockSwear(Player player, String highlightedMSG, String origMessage, String severity) {
-        player.sendMessage(TextUtils.prefix(TextUtils.color("&cPlease do not swear in chat! Attempting to bypass this filter will result in a mute!")));
-        String hover = TextUtils.color("&bOriginal: &f" + origMessage + "\n&bSanitized: &f" + highlightedMSG + "\n&bSeverity" + severity + "\n&7&o(click to copy)");
+        player.sendMessage(TextUtils.prefix(("§cPlease do not swear in chat! Attempting to bypass this filter will result in a mute!")));
+        String hover = ("§bOriginal: §f" + origMessage + "\n§bSanitized: §f" + highlightedMSG + "\n§bSeverity" + severity + "\n§7§o(click to copy)");
         TextComponent text = new TextComponent();
-        text.setText(TextUtils.prefix(TextUtils.color
-                ("&b&n" + player.getName() + "&7 has triggered the anti-swear! &8(&c" + scoreMap.get(player) + "&7/&4" + Config.punishScore + "&8)")));
+        text.setText(TextUtils.prefix(
+                ("§b§n" + player.getName() + "§7 has triggered the anti-swear! §8(§c" + scoreMap.get(player) + "§7/§4" + Config.punishScore + "§8)")));
         text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hover)));
         text.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, origMessage));
 

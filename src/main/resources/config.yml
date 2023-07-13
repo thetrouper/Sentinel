@@ -1,4 +1,4 @@
-# Sentinel 0.0.2
+# Sentinel 0.1.5
 # ____                   __                        ___
 #/\  _`\                /\ \__  __                /\_ \
 #\ \,\L\_\     __    ___\ \ ,_\/\_\    ___      __\//\ \
@@ -11,7 +11,7 @@
 #        Be sure to check out their amazing discord bot!
 config :
   plugin:
-    license: "beta" # if you are a beta tester, leave this value as "beta"
+    key: "beta" # if you are a beta tester, leave this value as "beta"
     # --------------------------------
     # Anti-Nuke Setup (Do this first)
     # --------------------------------
@@ -22,26 +22,34 @@ config :
     block-specific: true # Defaulted true | Weather or not to block ALL plugin specific commands from non-trusted members (EX: minecraft:execute) these will not be logged.
     prevent-nbt: true # Defaulted true | Should NBT items be blocked from the creative hotbar
     prevent-cmdblocks: true # Defaulted true | Should all command  block actions be blocked
+    cmdblock-op-check: true # Defaulted true | Will check if a player is op'd before preforming actions against command blocks (To prevent spam from non oped users attempting command blocks, which they cant by default)
     dangerous: # These commands can only be run by "trusted" users
       - "op"
       - "deop"
       - "stop"
+      - "restart"
       - "execute" # Could run commands as a trusted player
       - "sudo" # same as above
+      - "esudo" # WATCH OUT FOR ESSENTIALS ALIASES !!!
       - "fill" # Most client side nukers use it
       - "setblock" # could setblock a command block with anything
       - "data" # Could modify a command block to whatever they wanted
+      - "whitelist" # Could add other players to the whitelist
     log-dangerous: true # Default true | Weather or not to log to discord when a dangerous command is executed
     log-cmdblocks: true # Defaulted true | Log attempts of command-block place-ery in discord
     log-nbt: true # Defaulted true | Should items and their NBT's be logged to discord
+    log-specific: false # Default false | Weather or not to log to discord when a plugin specific command is executed
     logged: # Commands that will always be logged to discord when executed.
-      - "gamemode"
       - "give"
+      - "item"
     deop: true # Defaulted true | This will remove an untrusted player's operator permissions whenever they attempt dangerous actions
-    ban: false # Default false | Weather or not to ban a player if they attempt something dangerous.
-    nbt-punish: false # Defaulted false | This will ban a player when they attempt to use an NBT item
-    cmdblock-punish: false # Defaulted false | This will ban a player when they attempt to use a command block
-    command-punish: true # Defaulted true | This will ban a player when they attempt to use a dangerous command
+    nbt-punish: false # Defaulted false | This will punish a player when they attempt to use an NBT item
+    cmdblock-punish: false # Defaulted false | This will punish a player when they attempt to use a command block
+    command-punish: false # Defaulted false | This will ban punish player when they attempt to use a dangerous command
+    specific-punish: false # Defaulted false | This will punish a player when they run a specific command (Not recomended)
+    punish-commands: # Commands to run when a dangerous action is to be punished. Use %player% for the punished player's name
+      - "smite %player%"
+      - "ban %player% ]=- Sentinel -=[ You have been banned for attempting a dangerous action. If you believe this to be a mistake, please contact the server owner."
     reop-command: false # Defaulted false | This enables the command allowing trusted players to op themselves if they get deoped.
     # -------------------------------
     # Chat Filter Setup & AntiSpam
@@ -108,7 +116,7 @@ config :
         - grape
         - grass
         - harass
-        - hot water
+        - hotwater
         - identit
         - kassa
         - kassi

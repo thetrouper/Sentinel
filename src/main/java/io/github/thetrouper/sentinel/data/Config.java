@@ -18,6 +18,10 @@ import java.util.Map;
 public abstract class Config {
     private static final FileConfiguration config = Sentinel.getInstance().getConfig();
 
+    public static List<String> getPunishCommands() {
+        return punishCommands;
+    }
+
     /**
      * Config plugin section
      */
@@ -26,7 +30,6 @@ public abstract class Config {
             return config.getString("config.plugin.prefix");
         }
     }
-    public static String license;
     public static String webhook;
     public static List<String> trustedPlayers;
     public static boolean blockSpecificCommands;
@@ -34,11 +37,16 @@ public abstract class Config {
     public static boolean logNBT;
     public static boolean preventCmdBlocks;
     public static boolean logCmdBlocks;
+    public static boolean cmdBlockOpCheck;
     public static List<String> dangerousCommands;
     public static boolean logDangerousCommands;
     public static List<String> loggedCommands;
     public static boolean deop;
-    public static boolean ban;
+    public static boolean nbtPunish;
+    public static boolean commandPunish;
+    public static boolean cmdblockPunish;
+    public static boolean specificPunish;
+    public static List<String> punishCommands;
     public static boolean reopCommand;
 
     public static boolean antiSpamEnabled;
@@ -73,7 +81,7 @@ public abstract class Config {
     public static void loadConfiguration() {
 
         Sentinel.prefix = config.getString("config.plugin.prefix");
-        license = config.getString("config.plugin.license");
+        Sentinel.key = config.getString("config.plugin.key");
         // antiNuke
         webhook = config.getString("config.plugin.webhook");
         trustedPlayers = config.getStringList("config.plugin.trusted");
@@ -82,11 +90,16 @@ public abstract class Config {
         logNBT = config.getBoolean("config.plugin.log-nbt");
         preventCmdBlocks = config.getBoolean("config.plugin.prevent-cmdblocks");
         logCmdBlocks = config.getBoolean("config.plugin.log-cmdblocks");
+        cmdBlockOpCheck = config.getBoolean("config.plugin.cmdblock-op-check");
         dangerousCommands = config.getStringList("config.plugin.dangerous");
         logDangerousCommands = config.getBoolean("config.plugin.log-dangerous");
         loggedCommands = config.getStringList("config.plugin.logged");
         deop = config.getBoolean("config.plugin.deop");
-        ban = config.getBoolean("config.plugin.ban");
+        nbtPunish = config.getBoolean("config.plugin.nbt-punish");
+        commandPunish = config.getBoolean("config.plugin.command-punish");
+        cmdblockPunish = config.getBoolean("config.plugin.cmdblock-punish");
+        specificPunish = config.getBoolean("config.plugin.punish-specific");
+        punishCommands = config.getStringList("config.plugin.punish-commands");
         reopCommand = config.getBoolean("config.plugin.reop-command");
         // antiSpam
         antiSpamEnabled = config.getBoolean("config.chat.anti-spam.enabled");
@@ -132,4 +145,5 @@ public abstract class Config {
 
         return dictionary;
     }
+
 }

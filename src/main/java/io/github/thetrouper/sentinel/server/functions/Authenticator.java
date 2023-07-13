@@ -12,7 +12,17 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 public class Authenticator {
 
@@ -31,33 +41,65 @@ public class Authenticator {
         }
     }
 
-    public static String authorize(String license, String serverID) {
+    public static String authorize(String licenseKey, String serverID) {
+        String authStatus = "";
+
         try {
-            URL url = new URL("https://sentinelauth.000webhostapp.com");
+            URL url = new URL("https://sentinelauth.000webhostapp.com/index.html");
             BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.contains(license)) {
-                    String[] parts = line.split(":");
-                    if (parts.length > 1) {
-                        String[] allowedIDs = parts[1].split("\\s+");
-                        for (String id : allowedIDs) {
-                            if (id.equals(serverID)) {
-                                reader.close();
-                                return "AUTHORIZED";
-                            }
+            List<String> lines = readLines(reader);
+
+            for (String line : lines) {
+                if (line.contains("data-key")) {
+                    String key = extractValue(line, "data-key");
+                    String allowedIDs = extractValue(line, "data-allowed");
+                    String[] allowedArr = allowedIDs.split(":");
+
+                    if (key.equals(licenseKey)) {
+                        if (Arrays.asList(allowedArr).contains(serverID)) {
+                            authStatus = "AUTHORIZED";
+                        } else {
+                            authStatus = "INVALID-ID";
                         }
+                        break;
                     }
-                    reader.close();
-                    return "INVALID-ID";
                 }
             }
-            reader.close();
+
+            if (authStatus.isEmpty()) {
+                authStatus = "UNREGISTERED";
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "UNREGISTERED";
+
+        return authStatus;
     }
+
+    public static List<String> readLines(BufferedReader reader) {
+        try {
+            List<String> lines = new ArrayList<>();
+            String line = reader.readLine();
+            while (line != null) {
+                lines.add(line);
+                line = reader.readLine();
+            }
+            reader.close();
+            return lines;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
+
+    public static String extractValue(String line, String attribute) {
+        int start = line.indexOf(attribute + "=\"") + attribute.length() + 2;
+        int end = line.indexOf("\"", start);
+        return line.substring(start, end);
+    }
+
+
+
     public static String getServerID() {
         return encrypt(IP.getHostAddress());
     }

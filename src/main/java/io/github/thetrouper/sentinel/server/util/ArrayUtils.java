@@ -25,7 +25,7 @@ public final class ArrayUtils {
     }
 
     public static <T> String list2string(List<T> list) {
-        return TextUtils.color("&7[&e" + String.join("&7, &e", ArrayUtils.toNewList(list, Object::toString)) + "&7]");
+        return ("§7[§e" + String.join("§7, §e", ArrayUtils.toNewList(list, Object::toString)) + "§7]");
     }
 
     public static <T> List<T> bind(Iterable<T> tList, T... ts) {

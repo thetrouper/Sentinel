@@ -29,7 +29,7 @@ public class InfoCommand implements TabExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         try {
             if (args.length == 0) {
-                sender.sendMessage(TextUtils.prefix("&cYou must specify an item to give."));
+                sender.sendMessage(TextUtils.prefix("§cYou must specify an option!"));
                 return true;
             }
             switch (args[0]) {
