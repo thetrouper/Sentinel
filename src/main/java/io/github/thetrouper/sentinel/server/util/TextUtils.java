@@ -15,6 +15,17 @@ public class TextUtils {
         String prefix = Sentinel.prefix;
         return prefix + text;
     }
+    public static String removeFirstColor(String input) {
+        if (input.startsWith("§")) {
+            if (input.length() > 2) {
+                return input.substring(2);
+            } else {
+                return "";
+            }
+        } else {
+            return input;
+        }
+    }
     public static String replaceRepeatingLetters(String message) {
         StringBuilder result = new StringBuilder();
         char prevChar = '\0';
@@ -32,7 +43,6 @@ public class TextUtils {
                 result.append(c);
             }
         }
-
         return result.toString();
     }
     public static String fromLeetString(String s) {

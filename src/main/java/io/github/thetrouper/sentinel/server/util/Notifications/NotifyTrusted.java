@@ -52,6 +52,25 @@ public class NotifyTrusted {
             }
         }
     }
+    public static void logged(Player p, String command, boolean    denied, boolean deoped, boolean punished, boolean logged) {
+        TextComponent notification = new TextComponent(TextUtils.prefix("§b§n" + p.getName() + "§7 Has just executed a logged command!"));
+        notification.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(
+                "§8]==-- §d§lSentinel §8--==[" +
+                        "\n§bPlayer: §f" + p.getName() +
+                        "\n§bCommand: §f" + command +
+                        "\n§bDenied: " + TextUtils.boolString(denied,"§a\u2714","§c\u2718") +
+                        "\n§bDeoped: " + TextUtils.boolString(deoped,"§a\u2714","§c\u2718") +
+                        "\n§bPunished: " + TextUtils.boolString(punished,"§a\u2714","§c\u2718") +
+                        "\n§bLogged: " + TextUtils.boolString(logged,"§a\u2714","§c\u2718")
+
+        )));
+
+        for (Player trustedPlayer : Bukkit.getOnlinePlayers()) {
+            if (Sentinel.isTrusted(trustedPlayer)) {
+                trustedPlayer.spigot().sendMessage(notification);
+            }
+        }
+    }
     public static void NBT(Player p, ItemStack item, boolean removed, boolean deoped, boolean gms, boolean punished, boolean logged) {
         TextComponent notification = new TextComponent(TextUtils.prefix("§b§n" + p.getName() + "§7 Has just attempted to use a dangerous NBT item!"));
         notification.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(

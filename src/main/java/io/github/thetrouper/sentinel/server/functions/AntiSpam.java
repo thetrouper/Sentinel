@@ -28,7 +28,7 @@ public class AntiSpam {
     }
     public static void handleAntiSpam(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
-        String message = e.getMessage();
+        String message = TextUtils.removeFirstColor(e.getMessage());
         if (!heatMap.containsKey(p)) heatMap.put(p, 0);
         if (heatMap.get(p) > Config.punishHeat) {
             e.setCancelled(true);

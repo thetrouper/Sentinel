@@ -37,6 +37,18 @@ public class NotifyConsole {
                 );
         Sentinel.log.info(log);
     }
+    public static void logged(Player p, String command, boolean denied, boolean deoped, boolean punished, boolean logged) {
+        final String log = (
+                "A logged command has been executed. \n]==-- Sentinel --==[" +
+                        "\nPlayer: " + p.getName() +
+                        "\nCommand: " + command +
+                        "\nDenied: " + TextUtils.boolString(denied,"\u2714","\u2718") +
+                        "\nDeoped: " + TextUtils.boolString(deoped,"\u2714","\u2718") +
+                        "\nPunished: " + TextUtils.boolString(punished,"\u2714","\u2718") +
+                        "\nLogged: " + TextUtils.boolString(logged,"\u2714","\u2718")
+        );
+        Sentinel.log.info(log);
+    }
     public static void NBT(Player p, ItemStack item, boolean removed, boolean deoped, boolean gms, boolean punished, boolean logged) {
         String log = (
                         "Sentinel caught a dangerous NBT! \n]==-- Sentinel --==[" +

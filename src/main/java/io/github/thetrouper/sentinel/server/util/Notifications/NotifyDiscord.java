@@ -74,6 +74,35 @@ public class NotifyDiscord {
             Sentinel.log.info(e.toString());
         }
     }
+    public static void logged(Player player, String command, boolean denied, boolean deoped, boolean punished, boolean logged) {
+        ServerUtils.sendDebugMessage("Creating logged Webhook...");
+        DiscordWebhook webhook = new DiscordWebhook(Config.webhook);
+        webhook.setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png");
+        webhook.setUsername("Sentinel Anti-Nuke | Logs");
+        DiscordWebhook.EmbedObject embed = new DiscordWebhook.EmbedObject()
+                .setAuthor("Sentinel Logged Commands","","")
+                .setTitle("General Command Log")
+                .setDescription(
+                        Emojis.rightSort + " **Player:** " + player.getName() + " " + Emojis.member + "\\n" +
+                                Emojis.rightSort + " **Command:** " + command + " " + Emojis.nuke + "\\n"
+                )
+                .addField("Actions:",
+                        Emojis.rightSort + " **Denied:** " + TextUtils.boolString(denied,Emojis.success, Emojis.failure) + "\\n" +
+                                Emojis.rightSort + " **De-oped:** " + TextUtils.boolString(deoped,Emojis.success, Emojis.failure) + "\\n" +
+                                Emojis.rightSort + " **Punished:** " + TextUtils.boolString(punished,Emojis.success, Emojis.failure) + "\\n" +
+                                Emojis.rightSort + "**Logged:** "  + TextUtils.boolString(logged,Emojis.success, Emojis.failure), false
+                )
+                .setThumbnail("https://crafatar.com/avatars/" + player.getUniqueId() + "?size=64&&overlay")
+                .setColor(Color.RED);
+        webhook.addEmbed(embed);
+        try {
+            ServerUtils.sendDebugMessage("Executing webhook...");
+            webhook.execute();
+        } catch (IOException e) {
+            ServerUtils.sendDebugMessage(TextUtils.prefix("Epic webhook failure!!!"));
+            Sentinel.log.info(e.toString());
+        }
+    }
     public static void NBT(Player player, ItemStack item, boolean removed, boolean deoped, boolean gms, boolean punished, boolean logged, String logFileName) {
         ServerUtils.sendDebugMessage("Creating NBT Webhook...");
 

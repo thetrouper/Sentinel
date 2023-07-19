@@ -25,7 +25,7 @@ public class ProfanityFilter {
     }
     public static void handleProfanityFilter(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
-        String message = e.getMessage();
+        String message = TextUtils.removeFirstColor(e.getMessage());
         if (!scoreMap.containsKey(p)) scoreMap.put(p, 0);
         if (scoreMap.get(p) > Config.punishScore) punishSwear(p,highlightProfanity(message),message);
         String severity = ProfanityFilter.checkSeverity(message);
@@ -103,7 +103,7 @@ public class ProfanityFilter {
     }
     public static void blockSwear(Player player, String highlightedMSG, String origMessage, String severity) {
         player.sendMessage(TextUtils.prefix(("§cPlease do not swear in chat! Attempting to bypass this filter will result in a mute!")));
-        String hover = ("§bOriginal: §f" + origMessage + "\n§bSanitized: §f" + highlightedMSG + "\n§bSeverity" + severity + "\n§7§o(click to copy)");
+        String hover = ("§bOriginal: §f" + origMessage + "\n§bSanitized: §f" + highlightedMSG + "\n§bSeverity: §c" + severity + "\n§7§o(click to copy)");
         TextComponent text = new TextComponent();
         text.setText(TextUtils.prefix(
                 ("§b§n" + player.getName() + "§7 has triggered the anti-swear! §8(§c" + scoreMap.get(player) + "§7/§4" + Config.punishScore + "§8)")));

@@ -49,6 +49,7 @@ public abstract class Config {
     public static List<String> punishCommands;
     public static boolean reopCommand;
 
+    public static boolean blockUnicode;
     public static boolean antiSpamEnabled;
     public static int defaultGain;
     public static int lowGain;
@@ -101,6 +102,8 @@ public abstract class Config {
         specificPunish = config.getBoolean("config.plugin.punish-specific");
         punishCommands = config.getStringList("config.plugin.punish-commands");
         reopCommand = config.getBoolean("config.plugin.reop-command");
+        // Chat
+        blockUnicode = config.getBoolean("config.chat.anti-unicode");
         // antiSpam
         antiSpamEnabled = config.getBoolean("config.chat.anti-spam.enabled");
         defaultGain = config.getInt("config.chat.anti-spam.default-gain");

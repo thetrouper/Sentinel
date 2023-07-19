@@ -106,6 +106,20 @@ public class TakeAction {
         NotifyConsole.command(e.getPlayer(),message,denied,deoped,punished,logged);
         NotifyTrusted.command(e.getPlayer(),message,denied,deoped,punished,logged);
     }
+    public static void logged(PlayerCommandPreprocessEvent e) {
+        boolean deoped = false;
+        boolean punished = false;
+        boolean denied = false;
+        boolean logged = false;
+        Player p = e.getPlayer();
+        String message = e.getMessage();
+        String command = e.getMessage().substring(1).split(" ")[0];
+        if (Sentinel.isLoggedCommand(command)) {
+            NotifyDiscord.command(e.getPlayer(),message,denied,deoped,punished,true);
+            NotifyConsole.command(e.getPlayer(),message,denied,deoped,punished,logged);
+            NotifyTrusted.command(e.getPlayer(),message,denied,deoped,punished,logged);
+        }
+    }
     public static void NBT(InventoryCreativeEvent e) {
         Player p = (Player) e.getWhoClicked();
         final ItemStack item = e.getCursor();
