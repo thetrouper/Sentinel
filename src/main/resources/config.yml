@@ -9,7 +9,7 @@
 #     ]======------ Configuration & Setup Guide ------=====[
 #            Sentinel is inspired by WickBot.com
 #        Be sure to check out their amazing discord bot!
-config :
+config:
   plugin:
     key: "beta" # if you are a beta tester, leave this value as "beta"
     # --------------------------------
@@ -79,11 +79,11 @@ config :
       high-score: 7 # Default 7 | How much score should be gained for "extreme" attempt to bypass
       score-decay: 3 # Default 3 | Rate at which score is lost every minute
       punish-score: 20 # Default 20 | how much score is required to get punished
-      slur-insta-punish: true # Default true | Should players get insta punished for any words on the "slurs" list?
+      strict-insta-punish: true # Default true | Should players get insta punished for any words on the "strict" list?
       punish-command: "mute %player% 15m Do not attempt to bypass the Profanity Filter"
-      slur-command: "mute %player% 1h Discriminatory speech is not tolerated on this server!"
+      strict-command: "mute %player% 1h Discriminatory speech is not tolerated on this server!"
       log-swear: true # Default true | Logs swear punishments to the webhook
-      whitelisted:
+      false-positives: # Words that will falsly flag the anti-swear
         - but then
         - was scamming
         - an alt
@@ -138,7 +138,7 @@ config :
         - shoe
         - stitch
         - therapist
-      blacklisted:
+      blacklisted: # Swears to check for
         - anal
         - anus
         - arse
@@ -217,7 +217,7 @@ config :
         - vagina
         - wank
         - whore
-      slurs:
+      strict: # Very bad words to insta-punish for
         - nigg
         - niger
         - nlgg
@@ -226,7 +226,7 @@ config :
         - tranny
         - fag
         - beaner
-      leet-patterns:
+      leet-patterns: # Replacement patterns for "l33t" strings
         '0': o
         '1': i
         '3': e

@@ -40,9 +40,7 @@ public class CommandEvent implements Listener {
             }
         }
         if (Sentinel.isLoggedCommand(command)) {
-            NotifyConsole.command(p,command,false,false,false,true);
-            NotifyDiscord.command(p,command,false,false,false,true);
-            NotifyTrusted.command(p,command,false,false,false,true);
+            TakeAction.logged(e);
         }
     }
 }

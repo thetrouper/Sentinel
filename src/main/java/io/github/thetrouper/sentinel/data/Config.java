@@ -41,6 +41,7 @@ public abstract class Config {
     public static List<String> dangerousCommands;
     public static boolean logDangerousCommands;
     public static List<String> loggedCommands;
+    public static boolean logSpecific;
     public static boolean deop;
     public static boolean nbtPunish;
     public static boolean commandPunish;
@@ -82,6 +83,7 @@ public abstract class Config {
     public static void loadConfiguration() {
 
         Sentinel.prefix = config.getString("config.plugin.prefix");
+
         Sentinel.key = config.getString("config.plugin.key");
         // antiNuke
         webhook = config.getString("config.plugin.webhook");
@@ -92,6 +94,7 @@ public abstract class Config {
         preventCmdBlocks = config.getBoolean("config.plugin.prevent-cmdblocks");
         logCmdBlocks = config.getBoolean("config.plugin.log-cmdblocks");
         cmdBlockOpCheck = config.getBoolean("config.plugin.cmdblock-op-check");
+        logSpecific = config.getBoolean("config.plugin.log-specific");
         dangerousCommands = config.getStringList("config.plugin.dangerous");
         logDangerousCommands = config.getBoolean("config.plugin.log-dangerous");
         loggedCommands = config.getStringList("config.plugin.logged");
@@ -126,12 +129,12 @@ public abstract class Config {
         highScore = config.getInt("config.chat.anti-swear.high-score");
         punishScore = config.getInt("config.chat.anti-swear.punish-score");
         swearPunishCommand = config.getString("config.chat.anti-swear.punish-command");
-        slurInstaPunish = config.getBoolean("config.chat.anti-swear.slur-insta-punish");
-        slurPunishCommand = config.getString("config.chat.anti-swear.slur-command");
+        slurInstaPunish = config.getBoolean("config.chat.anti-swear.strict-insta-punish");
+        slurPunishCommand = config.getString("config.chat.anti-swear.strict-command");
         scoreDecay = config.getInt("config.chat.anti-swear.score-decay");
-        swearWhitelist = config.getStringList("config.chat.anti-swear.whitelisted");
+        swearWhitelist = config.getStringList("config.chat.anti-swear.false-positives");
         swearBlacklist = config.getStringList("config.chat.anti-swear.blacklisted");
-        slurs = config.getStringList("config.chat.anti-swear.slurs");
+        slurs = config.getStringList("config.chat.anti-swear.strict");
         leetPatterns = loadLeetPatterns();
         logSwear = config.getBoolean("config.chat.anti-swear.log-swear");
 

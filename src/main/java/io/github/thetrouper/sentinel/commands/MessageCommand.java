@@ -1,0 +1,57 @@
+package io.github.thetrouper.sentinel.commands;
+
+import io.github.thetrouper.sentinel.server.functions.Message;
+import io.github.thetrouper.sentinel.server.util.ArrayUtils;
+import io.github.thetrouper.sentinel.server.util.TextUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+public class MessageCommand extends CustomCommand {
+    public static Map<UUID, UUID> replyMap = new HashMap<>();
+
+    public MessageCommand() {
+        super("msg");
+        this.setPrintStacktrace(true);
+    }
+
+    @Override
+    public void dispatchCommand(CommandSender sender, Command command, String label, String[] args) {
+        Player p = (Player) sender;
+        Player r = null;
+        if (args.length == 0) {
+            p.sendMessage(TextUtils.prefix("§cYou must provide an online player to send a message to!"));
+        }
+        if (args.length == 1) {
+            p.sendMessage(TextUtils.prefix("§cYou must provide a message to send!"));
+        }
+        r = Bukkit.getPlayer(args[0]);
+        String msg = "";
+        for (int i = 1; i < args.length; i++) {
+            msg = msg.concat(" " + args[i]);
+        }
+        msg = msg.trim();
+        if (p.hasPermission("sentinel.message") && r != null) {
+            Message.messagePlayer(p,r,msg);
+        } else if (r == null) {
+            p.sendMessage(TextUtils.prefix("§cYou must provide an §c§l§nonline §cplayer to send a message to!"));
+        }
+        else {
+            sender.sendMessage(TextUtils.prefix("Invalid Permissions!"));
+        }
+    }
+
+    @Override
+    public void registerCompletions(CompletionBuilder builder) {
+                builder.addCompletion(1, ArrayUtils.toNewList(Bukkit.getOnlinePlayers(), Player::getName));
+                builder.addCompletion(2,builder.args.length >= 2,new String[]{
+                        "[<message>]"
+                });
+    }
+}

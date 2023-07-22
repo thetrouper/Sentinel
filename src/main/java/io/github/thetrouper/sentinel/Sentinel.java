@@ -4,27 +4,19 @@
 
 package io.github.thetrouper.sentinel;
 
-import io.github.thetrouper.sentinel.commands.InfoCommand;
-import io.github.thetrouper.sentinel.commands.ReopCommand;
+import io.github.thetrouper.sentinel.commands.*;
 import io.github.thetrouper.sentinel.data.Config;
-import io.github.thetrouper.sentinel.events.ChatEvent;
-import io.github.thetrouper.sentinel.events.CmdBlockEvents;
-import io.github.thetrouper.sentinel.events.CommandEvent;
-import io.github.thetrouper.sentinel.events.NBTEvents;
+import io.github.thetrouper.sentinel.events.*;
 import io.github.thetrouper.sentinel.server.functions.AntiSpam;
 import io.github.thetrouper.sentinel.server.functions.Authenticator;
 import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
+import io.github.thetrouper.sentinel.server.util.FileUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import javax.swing.*;
 import java.io.File;
-import java.io.IOException;
-import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -33,6 +25,7 @@ import java.util.logging.Logger;
  * To build the jar, go to terminal and run "./gradlew build"
  */
 public final class Sentinel extends JavaPlugin {
+    private static Sentinel instance;
 
     public static final PluginManager manager = Bukkit.getPluginManager();
     public static String prefix = "";
@@ -44,6 +37,7 @@ public final class Sentinel extends JavaPlugin {
      */
     @Override
     public void onEnable() {
+        instance = this;
         Config.loadConfiguration();
         String serverID = Authenticator.getServerID();
         log.info("Your license key is: " + key + " Your server ID is: " + serverID);
@@ -64,6 +58,7 @@ public final class Sentinel extends JavaPlugin {
         getConfig().options().copyDefaults();
         saveDefaultConfig();
 
+
         // Plugin startup logic
         log.info("Sentinel has loaded! (" + getDescription().getVersion() + ")");
 
@@ -74,13 +69,19 @@ public final class Sentinel extends JavaPlugin {
         prefix = Config.Plugin.getPrefix();
 
         // Commands -> BE SURE TO REGISTER ANY NEW COMMANDS IN PLUGIN.YML (src/main/java/resources/plugin.yml)!
-        getCommand("sentinel").setExecutor(new InfoCommand());
-        getCommand("sentinel").setTabCompleter(new InfoCommand());
-        getCommand("reop").setExecutor(new ReopCommand());
+        new SentinelCommand().register();
+        new MessageCommand().register();
+        new ReplyCommand().register();
+        new ReopCommand().register();
+        new SocialSpyCommand().register();
 
         // Events
         manager.registerEvents(new CommandEvent(),this);
-        manager.registerEvents(new CmdBlockEvents(), this);
+        manager.registerEvents(new CMDBlockExecute(), this);
+        manager.registerEvents(new CMDBlockPlace(), this);
+        manager.registerEvents(new CMDBlockUse(), this);
+        manager.registerEvents(new CMDMinecartPlace(), this);
+        manager.registerEvents(new CMDMinecartUse(), this);
         manager.registerEvents(new NBTEvents(), this);
         manager.registerEvents(new ChatEvent(),this);
 
@@ -140,8 +141,8 @@ public final class Sentinel extends JavaPlugin {
      * Returns an instance of this plugin
      * @return an instance of this plugin
      */
-    public static Plugin getInstance() {
-        return manager.getPlugin("Sentinel");
+    public static Sentinel getInstance() {
+        return instance;
     }
 
 }

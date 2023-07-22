@@ -6,6 +6,11 @@ authors: [ TheTrouper ]
 description: Detect Block and Ban players who attempt to grief your server.
 website: https://thetrouper.github.io/
 permissions:
+  sentinel.message:
+    description: Access to the direct messages
+    default: op
+  sentinel.reply:
+    description: Reply commands
   sentinel.debug:
     description: Permission to use debug commands
     default: op
@@ -34,10 +39,53 @@ permissions:
       sentinel.chat.antispam.bypass: true
 commands:
   sentinel:
-    description: An info command.
+    description: A command for testing.
     usage: /sentinel
     permission: sentinel.info
     permission-message: You do not have permission!
   reop:
     description: Allows trusted players to elevate their permissions
     usage: /reop
+  socialspy:
+    permission: sentinel.spy
+    usage: /socialspy
+    permission-message: You do not have permission to use this command!
+    description: View direct messages sent between players
+    aliases:
+      - spy
+      - sspy
+  msg:
+    permission: sentinel.message
+    usage: /msg <player> [<message>]
+    permission-message: You do not have permission to message through sentinel!
+    description: Send messages directly to players
+    aliases:
+      - message
+      - etell
+      - tell
+      - t
+      - ewhisper
+      - whisper
+      - w
+      - privatemessage
+      - pm
+      - m
+      - directmessage
+      - dm
+      - sentinelmessage
+      - sm
+      - stell
+      - smsg
+  reply:
+    description: Reply to the last person messaging you
+    usage: /r [<message>]
+    permission: sentinel.reply
+    permission-message: You do not have permission to reply through sentinel!
+    aliases:
+      - r
+      - er
+      - rply
+      - ereply
+      - sr
+      - sreply
+      - sentinelreply

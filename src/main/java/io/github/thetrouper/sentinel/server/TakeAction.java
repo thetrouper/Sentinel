@@ -59,7 +59,7 @@ public class TakeAction {
             }
             punished = true;
         }
-        if (Config.logDangerousCommands) {
+        if (Config.logSpecific) {
             logged = true;
             NotifyDiscord.specific(e.getPlayer(),message,denied,deoped,punished,true);
         }
@@ -115,9 +115,9 @@ public class TakeAction {
         String message = e.getMessage();
         String command = e.getMessage().substring(1).split(" ")[0];
         if (Sentinel.isLoggedCommand(command)) {
-            NotifyDiscord.command(e.getPlayer(),message,denied,deoped,punished,true);
-            NotifyConsole.command(e.getPlayer(),message,denied,deoped,punished,logged);
-            NotifyTrusted.command(e.getPlayer(),message,denied,deoped,punished,logged);
+            NotifyDiscord.logged(e.getPlayer(),message,denied,deoped,punished,true);
+            NotifyConsole.logged(e.getPlayer(),message,denied,deoped,punished,logged);
+            NotifyTrusted.logged(e.getPlayer(),message,denied,deoped,punished,logged);
         }
     }
     public static void NBT(InventoryCreativeEvent e) {

@@ -1,18 +1,16 @@
 package io.github.thetrouper.sentinel.server.util;
 
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.commands.InfoCommand;
+import io.github.thetrouper.sentinel.commands.SentinelCommand;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.Server;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -29,7 +27,7 @@ public class ServerUtils {
         },1);
     }
     public static void sendDebugMessage(String message) {
-        if (InfoCommand.debugmode) {
+        if (SentinelCommand.debugmode) {
             Sentinel.log.info(message);
             for (Player trustedPlayer : Bukkit.getOnlinePlayers()) {
                 if (Sentinel.isTrusted(trustedPlayer)) {
