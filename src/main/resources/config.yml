@@ -17,11 +17,15 @@ config:
     # --------------------------------
     prefix: "§d§lSentinel §8» §7" # Prefix of the plugin. Line below is the discord webhook for logs to be sent to
     webhook: "https://discord.com/api/webhooks/id/token"
-    trusted: # List the UUIDs of players who are trusted, will bypass the plugin and be immune to logs and are able to re-op themeselves
+    trusted: # List the UUIDs of players who are trusted, will bypass the plugin and be immune to logs and are able to re-op themeselves, as well as whitelist command blocks
       - "049460f7-21cb-42f5-8059-d42752bf406f" # obvWolf
     block-specific: true # Defaulted true | Weather or not to block ALL plugin specific commands from non-trusted members (EX: minecraft:execute) these will not be logged.
     prevent-nbt: true # Defaulted true | Should NBT items be blocked from the creative hotbar
-    prevent-cmdblocks: true # Defaulted true | Should all command  block actions be blocked
+    prevent-cmdblock-place: true # Defaulted true | Should Placing a command block get blocked
+    prevent-cmdblock-use: true # Defaulted true | Should using a command block get blocked
+    prevent-cmdblock-change: true # Defaulted true | Should changing a command block get blocked
+    prevent-cmdcart-place: true # Defaulted true | Should placing a command cart get blocked
+    prevent-cmdcart-use: true # Defaulted true | Should using a command cart get blocked
     cmdblock-op-check: true # Defaulted true | Will check if a player is op'd before preforming actions against command blocks (To prevent spam from non oped users attempting command blocks, which they cant by default)
     dangerous: # These commands can only be run by "trusted" users
       - "op"

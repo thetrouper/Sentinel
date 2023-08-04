@@ -28,8 +28,7 @@ public class SocialSpyCommand extends CustomCommand {
         if (!spyMap.containsKey(senderID) || !spyMap.get(senderID)) {
             sender.sendMessage(TextUtils.prefix("SocialSpy is now enabled."));
             spyMap.put(senderID,true);
-        }
-        if (spyMap.get(senderID)) {
+        } else if (spyMap.get(senderID)) {
             sender.sendMessage(TextUtils.prefix("SocialSpy is now disabled."));
             spyMap.put(senderID,false);
         }

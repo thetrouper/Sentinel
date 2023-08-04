@@ -52,7 +52,7 @@ public class WebhookSender {
                         Emojis.rightSort + "Player: " + player.getName() + " " + Emojis.target + "\\n" +
                         Emojis.space + Emojis.arrowRight + "Heat: `" + finalHeat + "/" + Config.punishHeat + "`\\n" +
                         Emojis.space + Emojis.arrowRight + "UUID: `" + player.getUniqueId() + "`\\n" +
-                        Emojis.rightSort + "Executed: " + Config.punishSpamCommand + " " + Emojis.mute + "\\n" +
+                        Emojis.rightSort + "Executed: " + Config.spamPunishCommand + " " + Emojis.mute + "\\n" +
                         Emojis.space + Emojis.arrowRight + "Chat Cleared: " + successOrFail(chatCleared) + "\\n"
                 )
                 .addField("Previous Message", "||" + message1 + "|| " + Emojis.activity, false)
@@ -107,7 +107,7 @@ public class WebhookSender {
                         Emojis.rightSort + "Player: " + player.getName() + " " + Emojis.target + "\\n" +
                                 Emojis.space + Emojis.arrowRight + "Score: `" + finalScore + "/" + Config.punishScore + "`\\n" +
                                 Emojis.space + Emojis.arrowRight + "UUID: `" + player.getUniqueId() + "`\\n" +
-                                Emojis.rightSort + "Executed: " + Config.slurPunishCommand + " " + Emojis.mute + "\\n"
+                                Emojis.rightSort + "Executed: " + Config.strictPunishCommand + " " + Emojis.mute + "\\n"
                 )
                 .addField("Original Message", "||" + message + "|| " + Emojis.alarm, false)
                 .addField("Sanitized Message", ProfanityFilter.highlightProfanity(message,"||", "||") + " " + Emojis.noDM, false)

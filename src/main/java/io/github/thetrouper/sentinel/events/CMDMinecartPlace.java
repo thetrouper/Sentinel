@@ -2,20 +2,19 @@ package io.github.thetrouper.sentinel.events;
 
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Config;
-import io.github.thetrouper.sentinel.server.TakeAction;
+import io.github.thetrouper.sentinel.server.Action;
+import io.github.thetrouper.sentinel.server.ActionType;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public class CMDMinecartPlace implements Listener {
 
     @EventHandler
     private void onCMDMinecartPlace(PlayerInteractEvent e) {
-        if (!Config.preventCmdBlocks) {
+        if (!Config.preventCmdCartPlace) {
             if (Config.cmdBlockOpCheck && !e.getPlayer().isOp()) return;
             if (e.getItem() == null) return;
             if (e.getClickedBlock() == null) return;
@@ -25,7 +24,18 @@ public class CMDMinecartPlace implements Listener {
                 if (!Sentinel.isTrusted(p)) {
                     e.setCancelled(true);
                     p.getInventory().remove(Material.COMMAND_BLOCK_MINECART);
-                    TakeAction.useBlock(e);
+                    Action a = new Action.Builder()
+                            .setAction(ActionType.PLACE_MINECART_COMMAND)
+                            .setEvent(e)
+                            .setPlayer(p)
+                            .setBlock(e.getClickedBlock())
+                            .setDenied(Config.preventCmdCartPlace)
+                            .setPunished(Config.cmdBlockPunish)
+                            .setDeoped(Config.deop)
+                            .setNotifyConsole(true)
+                            .setNotifyTrusted(true)
+                            .setnotifyDiscord(Config.logCmdBlocks)
+                            .execute();
                 }
             }
         }

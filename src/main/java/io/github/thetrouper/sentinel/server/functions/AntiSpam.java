@@ -78,10 +78,10 @@ public class AntiSpam {
     public static void punishSpam(Player player, String message1, String message2) {
         boolean chatCleared = false;
         if (Config.clearChat) {
-            ServerUtils.sendCommand(Config.clearChatCommand);
+            ServerUtils.sendCommand(Config.chatClearCommand);
             chatCleared = true;
         }
-        ServerUtils.sendCommand(Config.punishSpamCommand.replace("%player%", player.getName()));
+        ServerUtils.sendCommand(Config.spamPunishCommand.replace("%player%", player.getName()));
         player.sendMessage(TextUtils.prefix("§cYou have been auto-punished for violating the anti-spam repetitively!"));
         TextComponent text = new TextComponent();
         text.setText(TextUtils.prefix(

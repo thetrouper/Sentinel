@@ -126,7 +126,7 @@ public final class Sentinel extends JavaPlugin {
      * @return true if the command is logged, false otherwise
      */
     public static boolean isLoggedCommand(String command) {
-        return Config.loggedCommands.contains(command);
+        return Config.logged.contains(command);
     }
 
     /**
@@ -135,7 +135,7 @@ public final class Sentinel extends JavaPlugin {
      * @return true if the command is dangerous, false otherwise
      */
     public static boolean isDangerousCommand(String command) {
-        return Config.dangerousCommands.contains(command);
+        return Config.dangerous.contains(command);
     }
     /**
      * Returns an instance of this plugin

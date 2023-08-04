@@ -86,8 +86,8 @@ public class ProfanityFilter {
         if (Config.logSwear) WebhookSender.sendSwearLog(player,origMessage,scoreMap.get(player));
     }
     public static void punishSlur(Player player, String highlightedMSG, String origMessage) {
-        if (!Config.slurInstaPunish) return;
-        ServerUtils.sendCommand(Config.slurPunishCommand.replace("%player%", player.getName()));
+        if (!Config.strictInstaPunish) return;
+        ServerUtils.sendCommand(Config.strictPunishCommand.replace("%player%", player.getName()));
         player.sendMessage(TextUtils.prefix(("§cYou have been insta-muted for saying a slur!")));
         String hover = ("§bOriginal: §f" + origMessage + "\n§bSanitized: §f" + highlightedMSG + "\n§7§o(click to copy)");
         TextComponent text = new TextComponent();
@@ -167,7 +167,8 @@ public class ProfanityFilter {
     public static String checkSeverity(String text) {
         // 1:
         String lowercasedText = text.toLowerCase();
-
+        // 1.5:
+        String nonEnglish =
         // 2:
         String cleanedText = removeFalsePositives(lowercasedText);
 

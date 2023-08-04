@@ -2,10 +2,8 @@ package io.github.thetrouper.sentinel.events;
 
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Config;
-import io.github.thetrouper.sentinel.server.TakeAction;
-import io.github.thetrouper.sentinel.server.util.Notifications.NotifyConsole;
-import io.github.thetrouper.sentinel.server.util.Notifications.NotifyDiscord;
-import io.github.thetrouper.sentinel.server.util.Notifications.NotifyTrusted;
+import io.github.thetrouper.sentinel.server.Action;
+import io.github.thetrouper.sentinel.server.ActionType;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.TextUtils;
 import org.bukkit.entity.Player;
@@ -25,22 +23,55 @@ public class CommandEvent implements Listener {
             if (!Sentinel.isTrusted(p)) {
                 e.setCancelled(true);
                 ServerUtils.sendDebugMessage(TextUtils.prefix("Command is canceled"));
-                TakeAction.command(e);
+                Action a = new Action.Builder()
+                        .setAction(ActionType.DANGEROUS_COMMAND)
+                        .setEvent(e)
+                        .setPlayer(p)
+                        .setCommand(command)
+                        .setDenied(true)
+                        .setDeoped(Config.deop)
+                        .setPunished(Config.commandPunish)
+                        .setnotifyDiscord(Config.logDangerous)
+                        .setNotifyConsole(true)
+                        .setNotifyTrusted(true)
+                        .execute();
             }
         }
-        if (Config.blockSpecificCommands) {
+        if (Config.blockSpecific) {
             ServerUtils.sendDebugMessage(TextUtils.prefix("Checking command for specific"));
             if (command.contains(":")) {
                 ServerUtils.sendDebugMessage(TextUtils.prefix("Checking is specific"));
                 if (!Sentinel.isTrusted(p)) {
                     e.setCancelled(true);
                     ServerUtils.sendDebugMessage(TextUtils.prefix("Command is canceled"));
-                    TakeAction.specific(e);
+                    Action a = new Action.Builder()
+                            .setAction(ActionType.SPECIFIC_COMMAND)
+                            .setEvent(e)
+                            .setPlayer(p)
+                            .setCommand(command)
+                            .setDenied(true)
+                            .setDeoped(Config.deop)
+                            .setPunished(Config.specificPunish)
+                            .setnotifyDiscord(Config.logSpecific)
+                            .setNotifyConsole(true)
+                            .setNotifyTrusted(true)
+                            .execute();
                 }
             }
         }
         if (Sentinel.isLoggedCommand(command)) {
-            TakeAction.logged(e);
+            Action a = new Action.Builder()
+                    .setAction(ActionType.LOGGED_COMMAND)
+                    .setEvent(e)
+                    .setPlayer(p)
+                    .setCommand(command)
+                    .setDenied(false)
+                    .setDeoped(false)
+                    .setPunished(false)
+                    .setnotifyDiscord(true)
+                    .setNotifyConsole(true)
+                    .setNotifyTrusted(true)
+                    .execute();
         }
     }
 }
