@@ -68,10 +68,6 @@ public class CMDBlockUse implements Listener {
                         .setNotifyConsole(true)
                         .execute();
             }
-            if (Sentinel.isTrusted(p)) {
-                Sentinel.log.info(p.getName() + "Updated command block: " + cb.getCommand());
-                SentinelCommand.updateWhitelistedCommandBlock(p,b, cb.getCommand());
-            }
         }
     }
 }

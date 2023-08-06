@@ -4,25 +4,14 @@
 
 package io.github.thetrouper.sentinel.commands;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.server.util.FileUtils;
+import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
 import io.github.thetrouper.sentinel.server.util.TextUtils;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
-import org.bukkit.block.CommandBlock;
-import org.bukkit.block.data.BlockData;
-import org.bukkit.command.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.*;
+import java.util.HashSet;
 
 /**
  * Example command
@@ -43,12 +32,23 @@ public class SentinelCommand extends CustomCommand {
                 debugmode = !debugmode;
                 p.sendMessage(TextUtils.prefix(TextUtils.boolString(debugmode,"§aEnabled","§cDisabled") + "§7 debug mode."));
             }
+            case "testantiswear" -> {
+                HashSet<Player> players = new HashSet<>();
+                players.add((Player) sender);
+                String msg = "";
+                for (int i = 1; i < args.length; i++) {
+                    msg = msg.concat(" " + args[i]);
+                }
+                msg = msg.trim();
+                AsyncPlayerChatEvent e = new AsyncPlayerChatEvent(true, (Player) sender, msg, players);
+                ProfanityFilter.handleProfanityFilter(e);
+            }
         }
     }
 
     @Override
     public void registerCompletions(CompletionBuilder builder) {
         builder.addCompletion(1,"debugmode");
-        builder.addCompletion(1,"whitelistcommandblock");
+            builder.addCompletion(1,"testantiswear");
     }
 }

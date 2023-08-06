@@ -54,6 +54,52 @@ public abstract class Config {
     public static List<String> punishCommands;
     public static boolean reopCommand;
 
+    // NBT
+
+    public static boolean allowName;
+    public static boolean allowLore;
+    public static boolean allowAttributes;
+    public static int globalMaxEnchant;
+    public static int maxMending;
+    public static int maxUnbreaking;
+    public static int maxVanishing;
+    public static int maxAquaAffinity;
+    public static int maxBlastProtection;
+    public static int maxCurseOfBinding;
+    public static int maxDepthStrider;
+    public static int maxFeatherFalling;
+    public static int maxFireProtection;
+    public static int maxFrostWalker;
+    public static int maxProjectileProtection;
+    public static int maxProtection;
+    public static int maxRespiration;
+    public static int maxSoulSpeed;
+    public static int maxThorns;
+    public static int maxSwiftSneak;
+    public static int maxBaneOfArthropods;
+    public static int maxEfficiency;
+    public static int maxFireAspect;
+    public static int maxLooting;
+    public static int maxImpaling;
+    public static int maxKnockback;
+    public static int maxSharpness;
+    public static int maxSmite;
+    public static int maxSweepingEdge;
+    public static int maxChanneling;
+    public static int maxFlame;
+    public static int maxInfinity;
+    public static int maxLoyalty;
+    public static int maxRiptide;
+    public static int maxMultishot;
+    public static int maxPiercing;
+    public static int maxPower;
+    public static int maxPunch;
+    public static int maxQuickCharge;
+    public static int maxFortune;
+    public static int maxLuckOfTheSea;
+    public static int maxLure;
+    public static int maxSilkTouch;
+
     // Chat Filter Setup & AntiSpam
     public static boolean antiUnicode;
     public static boolean antiSpamEnabled;
@@ -112,6 +158,62 @@ public abstract class Config {
         specificPunish = config.getBoolean("config.plugin.specific-punish");
         punishCommands = config.getStringList("config.plugin.punish-commands");
         reopCommand = config.getBoolean("config.plugin.reop-command");
+
+        // NBT
+        allowName = config.getBoolean("config.nbt.allow-name");
+        allowLore = config.getBoolean("config.nbt.allow-lore");
+        allowAttributes = config.getBoolean("config.nbt.allow-attributes");
+        globalMaxEnchant = config.getInt("config.nbt.global-max-enchant");
+
+        // ALL
+        maxMending = config.getInt("config.nbt.max-mending");
+        maxUnbreaking = config.getInt("config.nbt.max-unbreaking");
+        maxVanishing = config.getInt("config.nbt.max-vanishing");
+
+        // ARMOR
+        maxAquaAffinity = config.getInt("config.nbt.max-aqua-affinity");
+        maxBlastProtection = config.getInt("config.nbt.max-blast-protection");
+        maxCurseOfBinding = config.getInt("config.nbt.max-curse-of-binding");
+        maxDepthStrider = config.getInt("config.nbt.max-depth-strider");
+        maxFeatherFalling = config.getInt("config.nbt.max-feather-falling");
+        maxFireProtection = config.getInt("config.nbt.max-fire-protection");
+        maxFrostWalker = config.getInt("config.nbt.max-frost-walker");
+        maxProjectileProtection = config.getInt("config.nbt.max-projectile-protection");
+        maxProtection = config.getInt("config.nbt.max-protection");
+        maxRespiration = config.getInt("config.nbt.max-respiration");
+        maxSoulSpeed = config.getInt("config.nbt.max-soul-speed");
+        maxThorns = config.getInt("config.nbt.max-thorns");
+        maxSwiftSneak = config.getInt("config.nbt.max-swift-sneak");
+
+        // MELEE WEAPONS
+        maxBaneOfArthropods = config.getInt("config.nbt.max-bane-of-arthropods");
+        maxEfficiency = config.getInt("config.nbt.max-efficiency");
+        maxFireAspect = config.getInt("config.nbt.max-fire-aspect");
+        maxLooting = config.getInt("config.nbt.max-looting");
+        maxImpaling = config.getInt("config.nbt.max-impaling");
+        maxKnockback = config.getInt("config.nbt.max-knockback");
+        maxSharpness = config.getInt("config.nbt.max-sharpness");
+        maxSmite = config.getInt("config.nbt.max-smite");
+        maxSweepingEdge = config.getInt("config.nbt.max-sweeping-edge");
+
+        // RANGED WEAPONS
+        maxChanneling = config.getInt("config.nbt.max-channeling");
+        maxFlame = config.getInt("config.nbt.max-flame");
+        maxInfinity = config.getInt("config.nbt.max-infinity");
+        maxLoyalty = config.getInt("config.nbt.max-loyalty");
+        maxRiptide = config.getInt("config.nbt.max-riptide");
+        maxMultishot = config.getInt("config.nbt.max-multishot");
+        maxPiercing = config.getInt("config.nbt.max-piercing");
+        maxPower = config.getInt("config.nbt.max-power");
+        maxPunch = config.getInt("config.nbt.max-punch");
+        maxQuickCharge = config.getInt("config.nbt.max-quick-charge");
+
+        // TOOLS
+        maxEfficiency = config.getInt("config.nbt.max-efficiency");
+        maxFortune = config.getInt("config.nbt.max-fortune");
+        maxLuckOfTheSea = config.getInt("config.nbt.max-luck-of-the-sea");
+        maxLure = config.getInt("config.nbt.max-lure");
+        maxSilkTouch = config.getInt("config.nbt.max-silk-touch");
 
         // Chat Filter Setup & AntiSpam
         antiUnicode = config.getBoolean("config.chat.anti-unicode");

@@ -9,7 +9,14 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.lang.reflect.Type;
+import java.util.List;
+import java.io.BufferedReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -144,6 +151,9 @@ public class ProfanityFilter {
 
     /**
      * 1: lowercase the text
+     * 1.4: Separate the string into words
+     * 1.5: Remove all verified clean english words
+     * 1.6: Put it back into one string
      * 2: remove the known false positives
      * 3: Check for swears and return "low" if true
      * 4: Convert LeetSpeak Characters
@@ -167,10 +177,11 @@ public class ProfanityFilter {
     public static String checkSeverity(String text) {
         // 1:
         String lowercasedText = text.toLowerCase();
-        // 1.5:
-        String nonEnglish =
+        ServerUtils.sendDebugMessage(TextUtils.prefix("Debug: [AntiSwear] Lowercased: " + lowercasedText));
+
         // 2:
         String cleanedText = removeFalsePositives(lowercasedText);
+        ServerUtils.sendDebugMessage(TextUtils.prefix("Debug: [AntiSwear] Removed False positives: " + cleanedText));
 
         // 3:
         if (containsSwears(cleanedText)) return "low";
@@ -178,6 +189,7 @@ public class ProfanityFilter {
 
         // 4:
         String convertedText = convertLeetSpeakCharacters(cleanedText);
+        ServerUtils.sendDebugMessage(TextUtils.prefix("Debug: [AntiSwear] Leet Converted: " + convertedText));
 
         // 5:
         if (containsSwears(convertedText)) return "medium-low";
@@ -185,6 +197,7 @@ public class ProfanityFilter {
 
         // 6:
         String strippedText = stripSpecialCharacters(convertedText);
+        ServerUtils.sendDebugMessage(TextUtils.prefix("Debug: [AntiSwear] Specials Removed: " + strippedText));
 
         // 7:
         if (containsSwears(strippedText)) return "medium";
@@ -192,6 +205,7 @@ public class ProfanityFilter {
 
         // 8:
         String simplifiedText = simplifyRepeatingLetters(strippedText);
+        ServerUtils.sendDebugMessage(TextUtils.prefix("Debug: [AntiSwear] Removed Repeating: " + simplifiedText));
 
         // 9:
         if (containsSwears(simplifiedText)) return "medium-high";
@@ -199,6 +213,7 @@ public class ProfanityFilter {
 
         // 10:
         String finalText = removePeriodsAndSpaces(simplifiedText);
+        ServerUtils.sendDebugMessage(TextUtils.prefix("Debug: [AntiSwear] Remove Punctuation: " + finalText));
 
         // 11:
         if (containsSwears(finalText)) return "high";
@@ -233,7 +248,7 @@ public class ProfanityFilter {
     }
 
     private static String stripSpecialCharacters(String text) {
-        text = text.replaceAll("[^A-Za-z0-9]", "").trim();
+        text = text.replaceAll("[^A-Za-z0-9.,!?;:'\"()\\[\\]{}]", "").trim();
         return text;
     }
 
@@ -243,7 +258,7 @@ public class ProfanityFilter {
     }
 
     private static String removePeriodsAndSpaces(String text) {
-        return text.replace(".", "").replace(" ", "");
+        return text.replaceAll("[^A-Za-z0-9]", "").replace(" ", "");
     }
     public static void decayScore() {
         for (Player p : scoreMap.keySet()) {

@@ -17,9 +17,15 @@ public class ReopCommand extends CustomCommand {
     public void dispatchCommand(CommandSender sender, Command command, String label, String[] args) {
         Player p = (Player) sender;
         if (Sentinel.isTrusted(p)) {
-            p.sendMessage(TextUtils.prefix("Elevating your permissions..."));
-            Sentinel.log.info("Elevating the permissions of " + p.getName());
-            p.setOp(true);
+            if (!p.isOp()) {
+                p.sendMessage(TextUtils.prefix("Elevating your permissions..."));
+                Sentinel.log.info("Elevating the permissions of " + p.getName());
+                p.setOp(true);
+            } else {
+                p.sendMessage(TextUtils.prefix("You are already are an operator!"));
+                Sentinel.log.info("The permissions of " + p.getName() + " are already elevated! Retrying...");
+                p.setOp(true);
+            }
         } else {
             p.sendMessage(TextUtils.prefix("§cYou are not trusted!"));
         }
