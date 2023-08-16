@@ -88,6 +88,10 @@ public class NBTEvents implements Listener {
             }
 
             // ARMOR
+            if (meta.hasEnchant(Enchantment.BINDING_CURSE)) {
+                final int level = meta.getEnchantLevel(Enchantment.BINDING_CURSE);
+                return level > Config.maxCurseOfBinding || level > Config.globalMaxEnchant;
+            }
             if (meta.hasEnchant(Enchantment.WATER_WORKER)) {
                 final int level = meta.getEnchantLevel(Enchantment.WATER_WORKER);
                 return level > Config.maxAquaAffinity || level > Config.globalMaxEnchant;
@@ -99,10 +103,6 @@ public class NBTEvents implements Listener {
             if (meta.hasEnchant(Enchantment.PROTECTION_EXPLOSIONS)) {
                 final int level = meta.getEnchantLevel(Enchantment.PROTECTION_EXPLOSIONS);
                 return level > Config.maxBlastProtection || level > Config.globalMaxEnchant;
-            }
-            if (meta.hasEnchant(Enchantment.BINDING_CURSE)) {
-                final int level = meta.getEnchantLevel(Enchantment.BINDING_CURSE);
-                return level > Config.maxCurseOfBinding || level > Config.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.DEPTH_STRIDER)) {
                 final int level = meta.getEnchantLevel(Enchantment.DEPTH_STRIDER);
@@ -149,10 +149,6 @@ public class NBTEvents implements Listener {
             if (meta.hasEnchant(Enchantment.DAMAGE_ARTHROPODS)) {
                 final int level = meta.getEnchantLevel(Enchantment.DAMAGE_ARTHROPODS);
                 return level > Config.maxBaneOfArthropods || level > Config.globalMaxEnchant;
-            }
-            if (meta.hasEnchant(Enchantment.DIG_SPEED)) {
-                final int level = meta.getEnchantLevel(Enchantment.DIG_SPEED);
-                return level > Config.maxEfficiency || level > Config.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.FIRE_ASPECT)) {
                 final int level = meta.getEnchantLevel(Enchantment.FIRE_ASPECT);
@@ -242,7 +238,6 @@ public class NBTEvents implements Listener {
                 final int level = meta.getEnchantLevel(Enchantment.SILK_TOUCH);
                 return level > Config.maxSilkTouch || level > Config.globalMaxEnchant;
             }
-
         }
         return false;
     }

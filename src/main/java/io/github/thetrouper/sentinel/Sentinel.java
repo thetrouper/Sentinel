@@ -11,6 +11,7 @@ import io.github.thetrouper.sentinel.server.functions.AntiSpam;
 import io.github.thetrouper.sentinel.server.functions.Authenticator;
 import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
 import io.github.thetrouper.sentinel.server.util.FileUtils;
+import io.github.thetrouper.sentinel.server.util.Randomizer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -37,66 +38,77 @@ public final class Sentinel extends JavaPlugin {
      */
     @Override
     public void onEnable() {
+        log.info("\n]======------ Pre-load started! ------======[");
         instance = this;
         Config.loadConfiguration();
         String serverID = Authenticator.getServerID();
-        log.info("Your license key is: " + key + " Your server ID is: " + serverID);
-        switch (Authenticator.authorize(key, serverID)) {
-            case "AUTHORIZED":
-                log.info("Authentication Success!");
-                break;
-            case "INVALID-ID":
+        log.info("\n]====---- Requesting Authentication ----====[ \n- license Key: " + key + " \n- Server ID: " + serverID);
+        String authStatus = "ERROR";
+        try {
+            authStatus = Authenticator.authorize(key, serverID);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        switch (authStatus) {
+            case "AUTHORIZED" -> {
+                log.info("]======----- Auth Success! -----======[");
+                // Init
+                getConfig().options().copyDefaults();
+                saveDefaultConfig();
+
+
+                // Plugin startup logic
+                log.info("Sentinel has loaded! (" + getDescription().getVersion() + ")");
+
+                // Enable Functions
+                AntiSpam.enableAntiSpam();
+                ProfanityFilter.enableAntiSwear();
+
+                prefix = Config.Plugin.getPrefix();
+
+                // Commands -> BE SURE TO REGISTER ANY NEW COMMANDS IN PLUGIN.YML (src/main/java/resources/plugin.yml)!
+                new SentinelCommand().register();
+                new MessageCommand().register();
+                new ReplyCommand().register();
+                new ReopCommand().register();
+                new SocialSpyCommand().register();
+
+                // Events
+                manager.registerEvents(new CommandEvent(),this);
+                manager.registerEvents(new CMDBlockExecute(), this);
+                manager.registerEvents(new CMDBlockPlace(), this);
+                manager.registerEvents(new CMDBlockUse(), this);
+                manager.registerEvents(new CMDMinecartPlace(), this);
+                manager.registerEvents(new CMDMinecartUse(), this);
+                manager.registerEvents(new NBTEvents(), this);
+                manager.registerEvents(new ChatEvent(),this);
+
+                // Scheduled timers
+                Bukkit.getScheduler().runTaskTimer(this, AntiSpam::decayHeat,0, 20);
+                Bukkit.getScheduler().runTaskTimer(this, ProfanityFilter::decayScore,0,1200);
+                log.info("\n" +
+                        " ____                   __                        ___      \n" +
+                        "/\\  _`\\                /\\ \\__  __                /\\_ \\     \n" +
+                        "\\ \\,\\L\\_\\     __    ___\\ \\ ,_\\/\\_\\    ___      __\\//\\ \\    \n" +
+                        " \\/_\\__ \\   /'__`\\/' _ `\\ \\ \\/\\/\\ \\ /' _ `\\  /'__`\\\\ \\ \\   \n" +
+                        "   /\\ \\L\\ \\/\\  __//\\ \\/\\ \\ \\ \\_\\ \\ \\/\\ \\/\\ \\/\\  __/ \\_\\ \\_ \n" +
+                        "   \\ `\\____\\ \\____\\ \\_\\ \\_\\ \\__\\\\ \\_\\ \\_\\ \\_\\ \\____\\/\\____\\\n" +
+                        "    \\/_____/\\/____/\\/_/\\/_/\\/__/ \\/_/\\/_/\\/_/\\/____/\\/____/\n" +
+                        "     ]====---- Advanced Anti-Grief & Chat Filter ----====[");
+            }
+            case "INVALID-ID" -> {
                 log.info("Authentication Failure, You have not whitelisted this server ID yet.");
                 getServer().getPluginManager().disablePlugin(this);
-                break;
-            case "UNREGISTERED":
+            }
+            case "UNREGISTERED" -> {
                 log.warning("Authentication Failure, YOU SHALL NOT PASS! License: " + key + " Server ID: " + serverID);
                 getServer().getPluginManager().disablePlugin(this);
-                return;
+            }
+            case "ERROR" -> {
+                log.warning("Hmmmmmm thats not right... License: " + key + " Server ID: " + serverID + "\nPlease report the above stacktrace.");
+                getServer().getPluginManager().disablePlugin(this);
+            }
         }
-        // Files
-        getConfig().options().copyDefaults();
-        saveDefaultConfig();
-
-
-        // Plugin startup logic
-        log.info("Sentinel has loaded! (" + getDescription().getVersion() + ")");
-
-        // Enable Functions
-        AntiSpam.enableAntiSpam();
-        ProfanityFilter.enableAntiSwear();
-
-        prefix = Config.Plugin.getPrefix();
-
-        // Commands -> BE SURE TO REGISTER ANY NEW COMMANDS IN PLUGIN.YML (src/main/java/resources/plugin.yml)!
-        new SentinelCommand().register();
-        new MessageCommand().register();
-        new ReplyCommand().register();
-        new ReopCommand().register();
-        new SocialSpyCommand().register();
-
-        // Events
-        manager.registerEvents(new CommandEvent(),this);
-        manager.registerEvents(new CMDBlockExecute(), this);
-        manager.registerEvents(new CMDBlockPlace(), this);
-        manager.registerEvents(new CMDBlockUse(), this);
-        manager.registerEvents(new CMDMinecartPlace(), this);
-        manager.registerEvents(new CMDMinecartUse(), this);
-        manager.registerEvents(new NBTEvents(), this);
-        manager.registerEvents(new ChatEvent(),this);
-
-        // Scheduled timers
-        Bukkit.getScheduler().runTaskTimer(this, AntiSpam::decayHeat,0, 20);
-        Bukkit.getScheduler().runTaskTimer(this, ProfanityFilter::decayScore,0,1200);
-        log.info("\n" +
-                " ____                   __                        ___      \n" +
-                "/\\  _`\\                /\\ \\__  __                /\\_ \\     \n" +
-                "\\ \\,\\L\\_\\     __    ___\\ \\ ,_\\/\\_\\    ___      __\\//\\ \\    \n" +
-                " \\/_\\__ \\   /'__`\\/' _ `\\ \\ \\/\\/\\ \\ /' _ `\\  /'__`\\\\ \\ \\   \n" +
-                "   /\\ \\L\\ \\/\\  __//\\ \\/\\ \\ \\ \\_\\ \\ \\/\\ \\/\\ \\/\\  __/ \\_\\ \\_ \n" +
-                "   \\ `\\____\\ \\____\\ \\_\\ \\_\\ \\__\\\\ \\_\\ \\_\\ \\_\\ \\____\\/\\____\\\n" +
-                "    \\/_____/\\/____/\\/_/\\/_/\\/__/ \\/_/\\/_/\\/_/\\/____/\\/____/\n" +
-                "     ]====---- Advanced Anti-Grief & Chat Filter ----====[");
     }
 
     /**
