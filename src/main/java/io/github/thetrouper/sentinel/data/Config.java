@@ -7,7 +7,9 @@ package io.github.thetrouper.sentinel.data;
 import io.github.thetrouper.sentinel.Sentinel;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +18,12 @@ import java.util.Map;
  * Config loader
  */
 public abstract class Config {
-    private static final FileConfiguration config = Sentinel.getInstance().getConfig();
+    private static final FileConfiguration mainConfig = Sentinel.getInstance().getConfig();
+    private static final FileConfiguration nbtConfig = YamlConfiguration.loadConfiguration(new File(Sentinel.getDF() + "nbt-config.yml"));
+    private static final FileConfiguration falsePositives  = YamlConfiguration.loadConfiguration(new File(Sentinel.getDF() + "false-positives.yml"));
+    private static final FileConfiguration strictWords  = YamlConfiguration.loadConfiguration(new File(Sentinel.getDF() + "strict.yml"));
+    private static final FileConfiguration swearWords = YamlConfiguration.loadConfiguration(new File(Sentinel.getDF() + "swears"));
+
 
     public static List<String> getPunishCommands() {
         return punishCommands;
@@ -27,7 +34,7 @@ public abstract class Config {
      */
     public class Plugin {
         public static String getPrefix() {
-            return config.getString("config.plugin.prefix");
+            return mainConfig.getString("config.plugin.prefix");
         }
     }
     public static String webhook;
@@ -133,124 +140,124 @@ public abstract class Config {
 
     public static void loadConfiguration() {
 
-        Sentinel.prefix = config.getString("config.plugin.prefix");
-        Sentinel.key = config.getString("config.plugin.key");
-        webhook = config.getString("config.plugin.webhook");
-        trustedPlayers = config.getStringList("config.plugin.trusted");
-        blockSpecific = config.getBoolean("config.plugin.block-specific");
-        preventNBT = config.getBoolean("config.plugin.prevent-nbt");
-        preventCmdBlockPlace = config.getBoolean("config.plugin.prevent-cmdblock-place");
-        preventCmdBlockUse = config.getBoolean("config.plugin.prevent-cmdblock-use");
-        preventCmdBlockChange = config.getBoolean("config.plugin.prevent-cmdblock-change");
-        preventCmdCartPlace = config.getBoolean("config.plugin.prevent-cmdcart-place");
-        preventCmdCartUse = config.getBoolean("config.plugin.prevent-cmdcart-use");
-        cmdBlockOpCheck = config.getBoolean("config.plugin.cmdblock-op-check");
-        dangerous = config.getStringList("config.plugin.dangerous");
-        logDangerous = config.getBoolean("config.plugin.log-dangerous");
-        logCmdBlocks = config.getBoolean("config.plugin.log-cmdblocks");
-        logNBT = config.getBoolean("config.plugin.log-nbt");
-        logSpecific = config.getBoolean("config.plugin.log-specific");
-        logged = config.getStringList("config.plugin.logged");
-        deop = config.getBoolean("config.plugin.deop");
-        nbtPunish = config.getBoolean("config.plugin.nbt-punish");
-        cmdBlockPunish = config.getBoolean("config.plugin.cmdblock-punish");
-        commandPunish = config.getBoolean("config.plugin.command-punish");
-        specificPunish = config.getBoolean("config.plugin.specific-punish");
-        punishCommands = config.getStringList("config.plugin.punish-commands");
-        reopCommand = config.getBoolean("config.plugin.reop-command");
+        Sentinel.prefix = mainConfig.getString("config.plugin.prefix");
+        Sentinel.key = mainConfig.getString("config.plugin.key");
+        webhook = mainConfig.getString("config.plugin.webhook");
+        trustedPlayers = mainConfig.getStringList("config.plugin.trusted");
+        blockSpecific = mainConfig.getBoolean("config.plugin.block-specific");
+        preventNBT = mainConfig.getBoolean("config.plugin.prevent-nbt");
+        preventCmdBlockPlace = mainConfig.getBoolean("config.plugin.prevent-cmdblock-place");
+        preventCmdBlockUse = mainConfig.getBoolean("config.plugin.prevent-cmdblock-use");
+        preventCmdBlockChange = mainConfig.getBoolean("config.plugin.prevent-cmdblock-change");
+        preventCmdCartPlace = mainConfig.getBoolean("config.plugin.prevent-cmdcart-place");
+        preventCmdCartUse = mainConfig.getBoolean("config.plugin.prevent-cmdcart-use");
+        cmdBlockOpCheck = mainConfig.getBoolean("config.plugin.cmdblock-op-check");
+        dangerous = mainConfig.getStringList("config.plugin.dangerous");
+        logDangerous = mainConfig.getBoolean("config.plugin.log-dangerous");
+        logCmdBlocks = mainConfig.getBoolean("config.plugin.log-cmdblocks");
+        logNBT = mainConfig.getBoolean("config.plugin.log-nbt");
+        logSpecific = mainConfig.getBoolean("config.plugin.log-specific");
+        logged = mainConfig.getStringList("config.plugin.logged");
+        deop = mainConfig.getBoolean("config.plugin.deop");
+        nbtPunish = mainConfig.getBoolean("config.plugin.nbt-punish");
+        cmdBlockPunish = mainConfig.getBoolean("config.plugin.cmdblock-punish");
+        commandPunish = mainConfig.getBoolean("config.plugin.command-punish");
+        specificPunish = mainConfig.getBoolean("config.plugin.specific-punish");
+        punishCommands = mainConfig.getStringList("config.plugin.punish-commands");
+        reopCommand = mainConfig.getBoolean("config.plugin.reop-command");
 
         // NBT
-        allowName = config.getBoolean("config.nbt.allow-name");
-        allowLore = config.getBoolean("config.nbt.allow-lore");
-        allowAttributes = config.getBoolean("config.nbt.allow-attributes");
-        globalMaxEnchant = config.getInt("config.nbt.global-max-enchant");
+        allowName = nbtConfig.getBoolean("nbt.allow-name");
+        allowLore = nbtConfig.getBoolean("nbt.allow-lore");
+        allowAttributes = nbtConfig.getBoolean("nbt.allow-attributes");
+        globalMaxEnchant = nbtConfig.getInt("nbt.global-max-enchant");
 
         // ALL
-        maxMending = config.getInt("config.nbt.max-mending");
-        maxUnbreaking = config.getInt("config.nbt.max-unbreaking");
-        maxVanishing = config.getInt("config.nbt.max-vanishing");
+        maxMending = nbtConfig.getInt("nbt.max-mending");
+        maxUnbreaking = nbtConfig.getInt("nbt.max-unbreaking");
+        maxVanishing = nbtConfig.getInt("nbt.max-vanishing");
 
         // ARMOR
-        maxAquaAffinity = config.getInt("config.nbt.max-aqua-affinity");
-        maxBlastProtection = config.getInt("config.nbt.max-blast-protection");
-        maxCurseOfBinding = config.getInt("config.nbt.max-curse-of-binding");
-        maxDepthStrider = config.getInt("config.nbt.max-depth-strider");
-        maxFeatherFalling = config.getInt("config.nbt.max-feather-falling");
-        maxFireProtection = config.getInt("config.nbt.max-fire-protection");
-        maxFrostWalker = config.getInt("config.nbt.max-frost-walker");
-        maxProjectileProtection = config.getInt("config.nbt.max-projectile-protection");
-        maxProtection = config.getInt("config.nbt.max-protection");
-        maxRespiration = config.getInt("config.nbt.max-respiration");
-        maxSoulSpeed = config.getInt("config.nbt.max-soul-speed");
-        maxThorns = config.getInt("config.nbt.max-thorns");
-        maxSwiftSneak = config.getInt("config.nbt.max-swift-sneak");
+        maxAquaAffinity = nbtConfig.getInt("nbt.max-aqua-affinity");
+        maxBlastProtection = nbtConfig.getInt("nbt.max-blast-protection");
+        maxCurseOfBinding = nbtConfig.getInt("nbt.max-curse-of-binding");
+        maxDepthStrider = nbtConfig.getInt("nbt.max-depth-strider");
+        maxFeatherFalling = nbtConfig.getInt("nbt.max-feather-falling");
+        maxFireProtection = nbtConfig.getInt("nbt.max-fire-protection");
+        maxFrostWalker = nbtConfig.getInt("nbt.max-frost-walker");
+        maxProjectileProtection = nbtConfig.getInt("nbt.max-projectile-protection");
+        maxProtection = nbtConfig.getInt("nbt.max-protection");
+        maxRespiration = nbtConfig.getInt("nbt.max-respiration");
+        maxSoulSpeed = nbtConfig.getInt("nbt.max-soul-speed");
+        maxThorns = nbtConfig.getInt("nbt.max-thorns");
+        maxSwiftSneak = nbtConfig.getInt("nbt.max-swift-sneak");
 
         // MELEE WEAPONS
-        maxBaneOfArthropods = config.getInt("config.nbt.max-bane-of-arthropods");
-        maxEfficiency = config.getInt("config.nbt.max-efficiency");
-        maxFireAspect = config.getInt("config.nbt.max-fire-aspect");
-        maxLooting = config.getInt("config.nbt.max-looting");
-        maxImpaling = config.getInt("config.nbt.max-impaling");
-        maxKnockback = config.getInt("config.nbt.max-knockback");
-        maxSharpness = config.getInt("config.nbt.max-sharpness");
-        maxSmite = config.getInt("config.nbt.max-smite");
-        maxSweepingEdge = config.getInt("config.nbt.max-sweeping-edge");
+        maxBaneOfArthropods = nbtConfig.getInt("nbt.max-bane-of-arthropods");
+        maxEfficiency = nbtConfig.getInt("nbt.max-efficiency");
+        maxFireAspect = nbtConfig.getInt("nbt.max-fire-aspect");
+        maxLooting = nbtConfig.getInt("nbt.max-looting");
+        maxImpaling = nbtConfig.getInt("nbt.max-impaling");
+        maxKnockback = nbtConfig.getInt("nbt.max-knockback");
+        maxSharpness = nbtConfig.getInt("nbt.max-sharpness");
+        maxSmite = nbtConfig.getInt("nbt.max-smite");
+        maxSweepingEdge = nbtConfig.getInt("nbt.max-sweeping-edge");
 
         // RANGED WEAPONS
-        maxChanneling = config.getInt("config.nbt.max-channeling");
-        maxFlame = config.getInt("config.nbt.max-flame");
-        maxInfinity = config.getInt("config.nbt.max-infinity");
-        maxLoyalty = config.getInt("config.nbt.max-loyalty");
-        maxRiptide = config.getInt("config.nbt.max-riptide");
-        maxMultishot = config.getInt("config.nbt.max-multishot");
-        maxPiercing = config.getInt("config.nbt.max-piercing");
-        maxPower = config.getInt("config.nbt.max-power");
-        maxPunch = config.getInt("config.nbt.max-punch");
-        maxQuickCharge = config.getInt("config.nbt.max-quick-charge");
+        maxChanneling = nbtConfig.getInt("nbt.max-channeling");
+        maxFlame = nbtConfig.getInt("nbt.max-flame");
+        maxInfinity = nbtConfig.getInt("nbt.max-infinity");
+        maxLoyalty = nbtConfig.getInt("nbt.max-loyalty");
+        maxRiptide = nbtConfig.getInt("nbt.max-riptide");
+        maxMultishot = nbtConfig.getInt("nbt.max-multishot");
+        maxPiercing = nbtConfig.getInt("nbt.max-piercing");
+        maxPower = nbtConfig.getInt("nbt.max-power");
+        maxPunch = nbtConfig.getInt("nbt.max-punch");
+        maxQuickCharge = nbtConfig.getInt("nbt.max-quick-charge");
 
         // TOOLS
-        maxEfficiency = config.getInt("config.nbt.max-efficiency");
-        maxFortune = config.getInt("config.nbt.max-fortune");
-        maxLuckOfTheSea = config.getInt("config.nbt.max-luck-of-the-sea");
-        maxLure = config.getInt("config.nbt.max-lure");
-        maxSilkTouch = config.getInt("config.nbt.max-silk-touch");
+        maxEfficiency = nbtConfig.getInt("nbt.max-efficiency");
+        maxFortune = nbtConfig.getInt("nbt.max-fortune");
+        maxLuckOfTheSea = nbtConfig.getInt("nbt.max-luck-of-the-sea");
+        maxLure = nbtConfig.getInt("nbt.max-lure");
+        maxSilkTouch = nbtConfig.getInt("nbt.max-silk-touch");
 
         // Chat Filter Setup & AntiSpam
-        antiUnicode = config.getBoolean("config.chat.anti-unicode");
-        antiSpamEnabled = config.getBoolean("config.chat.anti-spam.enabled");
-        defaultGain = config.getInt("config.chat.anti-spam.default-gain");
-        lowGain = config.getInt("config.chat.anti-spam.low-gain");
-        mediumGain = config.getInt("config.chat.anti-spam.medium-gain");
-        highGain = config.getInt("config.chat.anti-spam.high-gain");
-        heatDecay = config.getInt("config.chat.anti-spam.heat-decay");
-        blockHeat = config.getInt("config.chat.anti-spam.block-heat");
-        punishHeat = config.getInt("config.chat.anti-spam.punish-heat");
-        clearChat = config.getBoolean("config.chat.anti-spam.clear-chat");
-        chatClearCommand = config.getString("config.chat.anti-spam.chat-clear-command");
-        spamPunishCommand = config.getString("config.chat.anti-spam.punish-command");
-        logSpam = config.getBoolean("config.chat.anti-spam.log-spam");
-        antiSwearEnabled = config.getBoolean("config.chat.anti-swear.enabled");
-        lowScore = config.getInt("config.chat.anti-swear.low-score");
-        mediumLowScore = config.getInt("config.chat.anti-swear.medium-low-score");
-        mediumScore = config.getInt("config.chat.anti-swear.medium-score");
-        mediumHighScore = config.getInt("config.chat.anti-swear.medium-high-score");
-        highScore = config.getInt("config.chat.anti-swear.high-score");
-        scoreDecay = config.getInt("config.chat.anti-swear.score-decay");
-        punishScore = config.getInt("config.chat.anti-swear.punish-score");
-        strictInstaPunish = config.getBoolean("config.chat.anti-swear.strict-insta-punish");
-        swearPunishCommand = config.getString("config.chat.anti-swear.punish-command");
-        strictPunishCommand = config.getString("config.chat.anti-swear.strict-command");
-        logSwear = config.getBoolean("config.chat.anti-swear.log-swear");
-        swearWhitelist = config.getStringList("config.chat.anti-swear.false-positives");
-        swearBlacklist = config.getStringList("config.chat.anti-swear.blacklisted");
-        slurs = config.getStringList("config.chat.anti-swear.strict");
+        antiUnicode = mainConfig.getBoolean("config.chat.anti-unicode");
+        antiSpamEnabled = mainConfig.getBoolean("config.chat.anti-spam.enabled");
+        defaultGain = mainConfig.getInt("config.chat.anti-spam.default-gain");
+        lowGain = mainConfig.getInt("config.chat.anti-spam.low-gain");
+        mediumGain = mainConfig.getInt("config.chat.anti-spam.medium-gain");
+        highGain = mainConfig.getInt("config.chat.anti-spam.high-gain");
+        heatDecay = mainConfig.getInt("config.chat.anti-spam.heat-decay");
+        blockHeat = mainConfig.getInt("config.chat.anti-spam.block-heat");
+        punishHeat = mainConfig.getInt("config.chat.anti-spam.punish-heat");
+        clearChat = mainConfig.getBoolean("config.chat.anti-spam.clear-chat");
+        chatClearCommand = mainConfig.getString("config.chat.anti-spam.chat-clear-command");
+        spamPunishCommand = mainConfig.getString("config.chat.anti-spam.punish-command");
+        logSpam = mainConfig.getBoolean("config.chat.anti-spam.log-spam");
+        antiSwearEnabled = mainConfig.getBoolean("config.chat.anti-swear.enabled");
+        lowScore = mainConfig.getInt("config.chat.anti-swear.low-score");
+        mediumLowScore = mainConfig.getInt("config.chat.anti-swear.medium-low-score");
+        mediumScore = mainConfig.getInt("config.chat.anti-swear.medium-score");
+        mediumHighScore = mainConfig.getInt("config.chat.anti-swear.medium-high-score");
+        highScore = mainConfig.getInt("config.chat.anti-swear.high-score");
+        scoreDecay = mainConfig.getInt("config.chat.anti-swear.score-decay");
+        punishScore = mainConfig.getInt("config.chat.anti-swear.punish-score");
+        strictInstaPunish = mainConfig.getBoolean("config.chat.anti-swear.strict-insta-punish");
+        swearPunishCommand = mainConfig.getString("config.chat.anti-swear.punish-command");
+        strictPunishCommand = mainConfig.getString("config.chat.anti-swear.strict-command");
+        logSwear = mainConfig.getBoolean("config.chat.anti-swear.log-swear");
+        swearWhitelist = falsePositives.getStringList("false-positives");
+        swearBlacklist = swearWords.getStringList("blacklisted");
+        slurs = strictWords.getStringList("strict");
         leetPatterns = loadLeetPatterns();
-        logSwear = config.getBoolean("config.chat.anti-swear.log-swear");
+        logSwear = mainConfig.getBoolean("config.chat.anti-swear.log-swear");
 
     }
     private static Map<String, String> loadLeetPatterns() {
         Map<String, String> dictionary = new HashMap<>();
-        ConfigurationSection section = config.getConfigurationSection("config.chat.anti-swear.leet-patterns");
+        ConfigurationSection section = mainConfig.getConfigurationSection("config.chat.anti-swear.leet-patterns");
 
         if (section != null) {
             for (String key : section.getKeys(false)) {

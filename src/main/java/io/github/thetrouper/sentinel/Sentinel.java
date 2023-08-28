@@ -54,6 +54,10 @@ public final class Sentinel extends JavaPlugin {
                 log.info("]======----- Auth Success! -----======[");
                 // Init
                 getConfig().options().copyDefaults();
+                saveResource("nbt-config.yml", false);
+                saveResource("false-positives.yml", false);
+                saveResource("strict.yml", false);
+                saveResource("swears.yml", false);
                 saveDefaultConfig();
 
 

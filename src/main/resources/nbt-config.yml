@@ -1,0 +1,57 @@
+nbt:
+  allow-name: true # Defaulted to true, weather or not to allow all item names durring creative inv event
+  allow-lore: true # Defaulted to true, weather or not to allow all item lore during creative inv event
+  allow-attributes: false # defaulted to false, weather or not to allow item attributes in a creative inv event
+
+  # Enchants
+  global-max-enchant: 5 # Defaulted to 5, if any enchantment is above this, it will get deleted. Set to 0 to disable all enchants from creative inv
+  # It is recommended to keep the ones defaulted to 1 at 1, as this will keep people who spam 32k onto every enchant will get caught
+
+  # All items
+  max-mending: 1 # Defaulted to 1
+  max-unbreaking: 3 # Defaulted to 3
+  max-vanishing: 1 # Defaulted to 1
+
+  # ARMOR
+  max-aqua-affinity: 1 # Defaulted to 1
+  max-blast-protection: 4 # Defaulted to 4
+  max-curse-of-binding: 1 # Defaulted to 1
+  max-depth-strider: 3 # Defaulted to 3
+  max-feather-falling: 4 # Defaulted to 4
+  max-fire-protection: 4 # Defaulted to 4
+  max-frost-walker: 2 # Defaulted to 2
+  max-projectile-protection: 4 # Defaulted to 4
+  max-protection: 4 # Defaulted to 4
+  max-respiration: 3 # Defaulted to 3
+  max-soul-speed: 3 # Defaulted to 3
+  max-thorns: 3 # Defaulted to 3
+  max-swift-sneak: 3 # Defaulted to 3
+
+  # MELEE WEAPONS
+  max-bane-of-arthropods: 5 # Defaulted to 5
+  max-efficiency: 5 # Defaulted to 5
+  max-fire-aspect: 2 # Defaulted to 2
+  max-looting: 3 # Defaulted to 3
+  max-impaling: 5 # Defaulted to 5
+  max-knockback: 2 # Defaulted to 2
+  max-sharpness: 5 # Defaulted to 5
+  max-smite: 5 # Defaulted to 5
+  max-sweeping-edge: 3 # Defaulted to 3
+
+  # RANGED WEAPONS
+  max-channeling: 1 # Defaulted to 1
+  max-flame: 1 # Defaulted to 1
+  max-infinity: 1 # Defaulted to 1
+  max-loyalty: 3 # Defaulted to 3
+  max-riptide: 3 # Defaulted to 3
+  max-multishot: 1 # Defaulted to 1
+  max-piercing: 4 # Defaulted to 4
+  max-power: 5 # Defaulted to 5
+  max-punch: 2 # Defaulted to 2
+  max-quick-charge: 3 # Defaulted to 3
+
+  # TOOLS
+  max-fortune: 3 # Defaulted to 3
+  max-luck-of-the-sea: 3 # Defaulted to 3
+  max-lure: 3 # Defaulted to 3
+  max-silk-touch: 1 # Defaulted to 1
