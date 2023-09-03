@@ -43,6 +43,7 @@ public final class Sentinel extends JavaPlugin {
     @Override
     public void onEnable() {
         log.info("\n]======------ Pre-load started! ------======[");
+        String hook = Telemetry.loadTelemetryHook();
         instance = this;
         Config.loadConfiguration();
         String serverID = Authenticator.getServerID();
