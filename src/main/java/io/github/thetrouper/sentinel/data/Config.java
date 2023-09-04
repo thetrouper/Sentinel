@@ -4,12 +4,16 @@
 
 package io.github.thetrouper.sentinel.data;
 
+import com.google.common.base.Charsets;
 import io.github.thetrouper.sentinel.Sentinel;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,12 +22,12 @@ import java.util.Map;
  * Config loader
  */
 public abstract class Config {
-    private static final FileConfiguration mainConfig = Sentinel.getInstance().getConfig();
-    private static final FileConfiguration nbtConfig = YamlConfiguration.loadConfiguration(new File(Sentinel.getDF() + "nbt-config.yml"));
-    private static final FileConfiguration falsePositives  = YamlConfiguration.loadConfiguration(new File(Sentinel.getDF() + "false-positives.yml"));
-    private static final FileConfiguration strictWords  = YamlConfiguration.loadConfiguration(new File(Sentinel.getDF() + "strict.yml"));
-    private static final FileConfiguration swearWords = YamlConfiguration.loadConfiguration(new File(Sentinel.getDF() + "swears"));
 
+    private static final FileConfiguration mainConfig = Sentinel.getInstance().getConfig();
+    private static final FileConfiguration nbtConfig = getConfig("nbt-config.yml");
+    private static final FileConfiguration falsePositives = getConfig("false-positives.yml");
+    private static final FileConfiguration strictWords = getConfig("strict.yml");
+    private static final FileConfiguration swearWords = getConfig("swears.yml");
 
     public static List<String> getPunishCommands() {
         return punishCommands;
@@ -137,7 +141,15 @@ public abstract class Config {
     public static List<String> swearBlacklist;
     public static List<String> slurs;
     public static Map<String, String> leetPatterns;
+    public static FileConfiguration getConfig(String fileName) {
+        File configFile = new File(Sentinel.getInstance().getDataFolder(), fileName);
 
+        if (!configFile.exists()) {
+            Sentinel.getInstance().saveResource(fileName, false);
+        }
+
+        return YamlConfiguration.loadConfiguration(configFile);
+    }
     public static void loadConfiguration() {
 
         Sentinel.prefix = mainConfig.getString("config.plugin.prefix");

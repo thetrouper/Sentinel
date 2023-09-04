@@ -14,8 +14,23 @@ public class ChatEvent implements Listener {
     @EventHandler
     public static void onChat(AsyncPlayerChatEvent e) {
         if (e.isCancelled()) return;
-        if (!Sentinel.isTrusted(e.getPlayer()) || !e.getPlayer().hasPermission("sentinel.chat.antiswear.bypass")) if (Config.antiSwearEnabled) ProfanityFilter.handleProfanityFilter(e);
-        if (!Sentinel.isTrusted(e.getPlayer()) || !e.getPlayer().hasPermission("sentinel.chat.antispam.bypass")) if (Config.antiSpamEnabled) AntiSpam.handleAntiSpam(e);
-        if (!Sentinel.isTrusted(e.getPlayer()) || !e.getPlayer().hasPermission("sentinel.chat.antiunicode.bypass")) if (Config.antiUnicode) AntiUnicode.handleAntiUnicode(e);
+        if (!Sentinel.isTrusted(e.getPlayer()) || !e.getPlayer().hasPermission("sentinel.chat.antiunicode.bypass")) {
+            if (Config.antiUnicode) {
+                AntiUnicode.handleAntiUnicode(e);
+                return;
+            }
+        }
+        if (!Sentinel.isTrusted(e.getPlayer()) || !e.getPlayer().hasPermission("sentinel.chat.antiswear.bypass")) {
+            if (Config.antiSwearEnabled) {
+                ProfanityFilter.handleProfanityFilter(e);
+                return;
+            }
+        }
+        if (!Sentinel.isTrusted(e.getPlayer()) || !e.getPlayer().hasPermission("sentinel.chat.antispam.bypass")) {
+            if (Config.antiSpamEnabled) {
+                AntiSpam.handleAntiSpam(e);
+                return;
+            }
+        }
     }
 }

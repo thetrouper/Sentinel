@@ -30,18 +30,18 @@ import java.util.UUID;
 import org.bukkit.Location;
 public class FileUtils {
     public static boolean folderExists(String folderName) {
-        File folder = new File(Sentinel.getDF(), folderName);
+        File folder = new File(Sentinel.getInstance().getDataFolder(), folderName);
         return folder.exists() && folder.isDirectory();
     }
     public static void createFolder(String folderName) {
-        File folder = new File(Sentinel.getDF(), folderName);
+        File folder = new File(Sentinel.getInstance().getDataFolder(), folderName);
         if (!folder.exists()) {
             folder.mkdirs();
         }
     }
     public static String createNBTLog(String contents)  {
         String fileName = "nbt_log-" + Randomizer.generateID();
-        File file = new File(Sentinel.getDF() + "/LoggedNBT/" + fileName + ".txt");
+        File file = new File(Sentinel.getInstance().getDataFolder() + "/LoggedNBT/" + fileName + ".txt");
         try {
             if (!file.exists()) {
                 file.createNewFile();
@@ -59,7 +59,7 @@ public class FileUtils {
 
     public static String createCommandLog(String command)  {
         String fileName = "command_log-" + Randomizer.generateID();
-        File file = new File(Sentinel.getDF() + "/LoggedCommands/" + fileName + ".txt");
+        File file = new File(Sentinel.getInstance().getDataFolder() + "/LoggedCommands/" + fileName + ".txt");
         try {
             if (!file.exists()) {
                 file.createNewFile();

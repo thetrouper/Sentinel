@@ -58,16 +58,22 @@ public class Authenticator {
                     if (key.equals(licenseKey)) {
                         if (Arrays.asList(allowedArr).contains(serverID)) {
                             authStatus = "AUTHORIZED";
+                            return authStatus;
                         } else {
+                            if (Arrays.asList(allowedArr).contains("minehut")) {
+                                authStatus = "MINEHUT";
+                                return authStatus;
+                            }
                             authStatus = "INVALID-ID";
+                            return authStatus;
                         }
-                        break;
                     }
                 }
             }
 
             if (authStatus.isEmpty()) {
                 authStatus = "UNREGISTERED";
+                return authStatus;
             }
         } catch (IOException e) {
             e.printStackTrace();

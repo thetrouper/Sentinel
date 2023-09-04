@@ -41,7 +41,6 @@ public class ProfanityFilter {
                 ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.lowScore);
                 scoreMap.put(p, scoreMap.get(p) + Config.lowScore);
                 e.setCancelled(true);
-                p.sendMessage(TextUtils.prefix("§cPlease do not swear in chat! Attempting to bypass this filter will result in a mute!"));
                 blockSwear(p,highlightProfanity(message),message,severity);
             }
             case "medium-low" -> {
@@ -230,12 +229,14 @@ public class ProfanityFilter {
     }
 
     private static boolean containsSwears(String text) {
+        ServerUtils.sendDebugMessage("Debug: [AntiSwear] Checking for swears: " + swearBlacklist.toString());
         for (String swear : swearBlacklist) {
             if (text.contains(swear)) return true;
         }
         return false;
     }
     private static boolean containsSlurs(String text) {
+        ServerUtils.sendDebugMessage("Debug: [AntiSwear] Checking for slurs: " + slurs.toString());
         for (String slur : slurs) {
             if (text.contains(slur)) return true;
         }
