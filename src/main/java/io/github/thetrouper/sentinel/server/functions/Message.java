@@ -20,7 +20,9 @@ public class Message {
     public static void messagePlayer(Player sender, Player receiver, String message) {
         HashSet<Player> receivers = new HashSet<>();
         receivers.add(receiver);
+        receivers.add(sender);
         AsyncPlayerChatEvent checkEvent = new AsyncPlayerChatEvent(true,sender,message,receivers);
+        if (checkEvent.isCancelled()) return;
         if (!Sentinel.isTrusted(sender) || !sender.hasPermission("sentinel.chat.antiswear.bypass")) if (Config.antiSwearEnabled) ProfanityFilter.handleProfanityFilter(checkEvent);
         if (!Sentinel.isTrusted(sender) || !sender.hasPermission("sentinel.chat.antispam.bypass")) if (Config.antiSpamEnabled) AntiSpam.handleAntiSpam(checkEvent);
         if (!Sentinel.isTrusted(sender) || !sender.hasPermission("sentinel.chat.antiunicode.bypass")) if (Config.antiUnicode) AntiUnicode.handleAntiUnicode(checkEvent);

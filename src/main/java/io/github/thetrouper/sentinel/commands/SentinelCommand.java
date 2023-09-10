@@ -49,6 +49,7 @@ public class SentinelCommand extends CustomCommand {
     @Override
     public void registerCompletions(CompletionBuilder builder) {
         builder.addCompletion(1,"debugmode");
-            builder.addCompletion(1,"testantiswear");
+        builder.addCompletion(1,"testantiswear");
+
     }
 }
