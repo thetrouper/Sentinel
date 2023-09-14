@@ -110,6 +110,7 @@ public final class Sentinel extends JavaPlugin {
         new ReplyCommand().register();
         new ReopCommand().register();
         new SocialSpyCommand().register();
+        new ChatClickCallback().register();
 
         // Events
         manager.registerEvents(new CommandEvent(),this);

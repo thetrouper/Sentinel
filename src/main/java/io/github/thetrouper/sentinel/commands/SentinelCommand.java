@@ -5,6 +5,7 @@
 package io.github.thetrouper.sentinel.commands;
 
 import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
+import io.github.thetrouper.sentinel.server.functions.ReportFalsePositives;
 import io.github.thetrouper.sentinel.server.util.TextUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -12,6 +13,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.HashSet;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Example command

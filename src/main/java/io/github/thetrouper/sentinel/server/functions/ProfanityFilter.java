@@ -41,31 +41,31 @@ public class ProfanityFilter {
                 ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.lowScore);
                 scoreMap.put(p, scoreMap.get(p) + Config.lowScore);
                 e.setCancelled(true);
-                blockSwear(p,highlightProfanity(message),message,severity);
+                blockSwear(p,highlightProfanity(message),message,severity,e);
             }
             case "medium-low" -> {
                 ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.mediumLowScore);
                 scoreMap.put(p, scoreMap.get(p) + Config.mediumLowScore);
                 e.setCancelled(true);
-                blockSwear(p,highlightProfanity(message),message,severity);
+                blockSwear(p,highlightProfanity(message),message,severity,e);
             }
             case "medium" -> {
                 ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.mediumScore);
                 scoreMap.put(p, scoreMap.get(p) + Config.mediumScore);
                 e.setCancelled(true);
-                blockSwear(p,highlightProfanity(message),message,severity);
+                blockSwear(p,highlightProfanity(message),message,severity,e);
             }
             case "medium-high" -> {
                 ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.mediumHighScore);
                 scoreMap.put(p, scoreMap.get(p) + Config.mediumHighScore);
                 e.setCancelled(true);
-                blockSwear(p,highlightProfanity(message),message,severity);
+                blockSwear(p,highlightProfanity(message),message,severity,e);
             }
             case "high" -> {
                 ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.highScore);
                 scoreMap.put(p, scoreMap.get(p) + Config.highScore);
                 e.setCancelled(true);
-                blockSwear(p,highlightProfanity(message),message,severity);
+                blockSwear(p,highlightProfanity(message),message,severity,e);
             }
             case "slur" -> {
                 // Insta-Punish
@@ -107,14 +107,14 @@ public class ProfanityFilter {
         });
         if (Config.logSwear) WebhookSender.sendSlurLog(player,origMessage,scoreMap.get(player));
     }
-    public static void blockSwear(Player player, String highlightedMSG, String origMessage, String severity) {
+    public static void blockSwear(Player player, String highlightedMSG, String origMessage, String severity, AsyncPlayerChatEvent e) {
         player.sendMessage(TextUtils.prefix(("§cPlease do not swear in chat! Attempting to bypass this filter will result in a mute!")));
-        String hover = ("§bOriginal: §f" + origMessage + "\n§bSanitized: §f" + highlightedMSG + "\n§bSeverity: §c" + severity + "\n§7§o(click to copy)");
+        String hover = ("§bOriginal: §f" + origMessage + "\n§bSanitized: §f" + highlightedMSG + "\n§bSeverity: §c" + severity + "\n§7§o(click to report false positive)");
         TextComponent text = new TextComponent();
         text.setText(TextUtils.prefix(
                 ("§b§n" + player.getName() + "§7 has triggered the anti-swear! §8(§c" + scoreMap.get(player) + "§7/§4" + Config.punishScore + "§8)")));
         text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hover)));
-        text.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, origMessage));
+        text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "sentinelcallback fpreport " + ReportFalsePositives.generateReport(e)));
 
         ServerUtils.forEachStaff(staff -> {
             staff.spigot().sendMessage(text);
@@ -221,13 +221,10 @@ public class ProfanityFilter {
         return "safe";
     }
 
-    private static String removeFalsePositives(String text) {
-        for (String falsePositive : swearWhitelist) {
-            text = text.replace(falsePositive, "");
-        }
-        return text;
-    }
 
+    public static boolean ContainsProfanity(String text) {
+        return containsSwears(text) || containsSlurs(text);
+    }
     private static boolean containsSwears(String text) {
         ServerUtils.sendDebugMessage("Debug: [AntiSwear] Checking for swears: " + swearBlacklist.toString());
         for (String swear : swearBlacklist) {
@@ -242,23 +239,28 @@ public class ProfanityFilter {
         }
         return false;
     }
-
-    private static String convertLeetSpeakCharacters(String text) {
+    public static String removeFalsePositives(String text) {
+        for (String falsePositive : swearWhitelist) {
+            text = text.replace(falsePositive, "");
+        }
+        return text;
+    }
+    public static String convertLeetSpeakCharacters(String text) {
         text = TextUtils.fromLeetString(text);
         return text;
     }
 
-    private static String stripSpecialCharacters(String text) {
+    public static String stripSpecialCharacters(String text) {
         text = text.replaceAll("[^A-Za-z0-9.,!?;:'\"()\\[\\]{}]", "").trim();
         return text;
     }
 
-    private static String simplifyRepeatingLetters(String text) {
+    public static String simplifyRepeatingLetters(String text) {
         text = TextUtils.replaceRepeatingLetters(text);
         return text;
     }
 
-    private static String removePeriodsAndSpaces(String text) {
+    public static String removePeriodsAndSpaces(String text) {
         return text.replaceAll("[^A-Za-z0-9]", "").replace(" ", "");
     }
     public static void decayScore() {
