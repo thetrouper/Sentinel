@@ -34,7 +34,7 @@ public class ProfanityFilter {
         Player p = e.getPlayer();
         String message = TextUtils.removeFirstColor(e.getMessage());
         if (!scoreMap.containsKey(p)) scoreMap.put(p, 0);
-        if (scoreMap.get(p) > Config.punishScore) punishSwear(p,highlightProfanity(message),message);
+        if (scoreMap.get(p) > Config.punishScore) punishSwear(p,highlightProfanity(message),message,e);
         String severity = ProfanityFilter.checkSeverity(message);
         switch (severity) {
             case "low" -> {
@@ -72,35 +72,51 @@ public class ProfanityFilter {
                 ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.highScore);
                 scoreMap.put(p, scoreMap.get(p) + Config.highScore);
                 e.setCancelled(true);
-                punishSlur(p,highlightProfanity(message),message);
+                punishSlur(p,highlightProfanity(message),message,e);
             }
         }
     }
-    public static void punishSwear(Player player, String highlightedMSG, String origMessage) {
+    public static void punishSwear(Player player, String highlightedMSG, String origMessage, AsyncPlayerChatEvent e) {
         ServerUtils.sendCommand(Config.swearPunishCommand.replace("%player%", player.getName()));
-        player.sendMessage(TextUtils.prefix(("§cYou have been auto-muted for violating the anti-swear repetitively!")));
-        String hover = ("§bOriginal: §f" + origMessage + "\n§bSanitized: §f" + highlightedMSG + "\n§7§o(click to copy)");
+        ServerUtils.sendCommand(Config.strictPunishCommand.replace("%player%", player.getName()));
+        String fpreport = ReportFalsePositives.generateReport(e);
+        TextComponent offender = new TextComponent();
+        String hoverPlayer = ("§7This action was preformed automatically \n§7by the §bSentinel Profanity Filter§7 algorithm!\n§8§o(Click to report false positive)");
+        offender.setText(TextUtils.prefix(("§cYou have been auto muted for repeated violation of the profanity filter! §7§o(Hover for more info)")));
+        offender.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hoverPlayer)));
+        offender.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + fpreport));
+        player.spigot().sendMessage(offender);
+
+        String hover = ("§bOriginal: §f" + origMessage + "\n§bSanitized: §f" + highlightedMSG + "\n\n§8§o(Click to report false positive)");
         TextComponent text = new TextComponent();
         text.setText(TextUtils.prefix(
                 ("§b§n" + player.getName() + "§7 has been auto-muted by the anti-swear! §8(§c" + scoreMap.get(player) + "§7/§4" + Config.punishScore + "§8)")));
         text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hover)));
-        text.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, origMessage));
+        text.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + fpreport));
 
         ServerUtils.forEachStaff(staff -> {
             staff.spigot().sendMessage(text);
         });
         if (Config.logSwear) WebhookSender.sendSwearLog(player,origMessage,scoreMap.get(player));
     }
-    public static void punishSlur(Player player, String highlightedMSG, String origMessage) {
+    public static void punishSlur(Player player, String highlightedMSG, String origMessage, AsyncPlayerChatEvent e) {
         if (!Config.strictInstaPunish) return;
+
         ServerUtils.sendCommand(Config.strictPunishCommand.replace("%player%", player.getName()));
-        player.sendMessage(TextUtils.prefix(("§cYou have been insta-muted for saying a slur!")));
-        String hover = ("§bOriginal: §f" + origMessage + "\n§bSanitized: §f" + highlightedMSG + "\n§7§o(click to copy)");
+        String fpreport = ReportFalsePositives.generateReport(e);
+        TextComponent offender = new TextComponent();
+        String hoverPlayer = ("§7This action was preformed automatically \n§7by the §bSentinel Profanity Filter§7 algorithm!\n§8§o(Click to report false positive)");
+        offender.setText(TextUtils.prefix(("§cYou have been insta-punished by the anti-slur! §7§o(Hover for more info)")));
+        offender.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hoverPlayer)));
+        offender.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + fpreport));
+        player.spigot().sendMessage(offender);
+
+        String hover = ("§bOriginal: §f" + origMessage + "\n§bSanitized: §f" + highlightedMSG + "\n§8§o(Click to report false positive)");
         TextComponent text = new TextComponent();
         text.setText(TextUtils.prefix(
                 ("§b§n" + player.getName() + "§7 has been insta-muted by the anti-swear! §8(§e" + scoreMap.get(player) + "§7/§4" + Config.punishScore + "§8)")));
         text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hover)));
-        text.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, origMessage));
+        text.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + fpreport));
 
         ServerUtils.forEachStaff(staff -> {
             staff.spigot().sendMessage(text);
@@ -108,16 +124,23 @@ public class ProfanityFilter {
         if (Config.logSwear) WebhookSender.sendSlurLog(player,origMessage,scoreMap.get(player));
     }
     public static void blockSwear(Player player, String highlightedMSG, String origMessage, String severity, AsyncPlayerChatEvent e) {
-        player.sendMessage(TextUtils.prefix(("§cPlease do not swear in chat! Attempting to bypass this filter will result in a mute!")));
-        String hover = ("§bOriginal: §f" + origMessage + "\n§bSanitized: §f" + highlightedMSG + "\n§bSeverity: §c" + severity + "\n§7§o(click to report false positive)");
-        TextComponent text = new TextComponent();
-        text.setText(TextUtils.prefix(
-                ("§b§n" + player.getName() + "§7 has triggered the anti-swear! §8(§c" + scoreMap.get(player) + "§7/§4" + Config.punishScore + "§8)")));
-        text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hover)));
-        text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "sentinelcallback fpreport " + ReportFalsePositives.generateReport(e)));
+        String FPReport = ReportFalsePositives.generateReport(e);
+        TextComponent offender = new TextComponent();
+        String hover = ("§7This action was preformed automatically \n§7by the §bSentinel Profanity Filter§7 algorithm!\n§8§o(Click to report false positive)");
+        offender.setText(TextUtils.prefix(("§cPlease do not swear in chat! Attempting to bypass this filter will result in a mute! §7§o(Hover for more info)")));
+        offender.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hover)));
+        offender.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + FPReport));
+        player.spigot().sendMessage(offender);
 
-        ServerUtils.forEachStaff(staff -> {
-            staff.spigot().sendMessage(text);
+        String hoverStaff = ("§bOriginal: §f" + origMessage + "\n§bSanitized: §f" + highlightedMSG + "\n§bSeverity: §c" + severity + "\n§7§o(click to report false positive)");
+        TextComponent staff = new TextComponent();
+        staff.setText(TextUtils.prefix(
+                ("§b§n" + player.getName() + "§7 has triggered the anti-swear! §8(§c" + scoreMap.get(player) + "§7/§4" + Config.punishScore + "§8)")));
+        staff.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hoverStaff)));
+        staff.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + FPReport));
+
+        ServerUtils.forEachStaff(staffmember -> {
+            staffmember.spigot().sendMessage(staff);
         });
     }
 

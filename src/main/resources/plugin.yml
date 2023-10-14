@@ -89,3 +89,8 @@ commands:
       - sr
       - sreply
       - sentinelreply
+  sentinelcallback:
+    description: Callback for chat click events
+    usage: /sentinelcallback
+    permission: sentinel.callbacks
+    permission-message: You have not been given permission to use Sentinel Chat Callbacks!

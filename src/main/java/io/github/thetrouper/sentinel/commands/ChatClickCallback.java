@@ -21,7 +21,7 @@ import java.util.UUID;
  * Example command
  */
 public class ChatClickCallback extends CustomCommand {
-    public static Cooldown<UUID> fpReportCooldown;
+    public static Cooldown<UUID> fpReportCooldown = new Cooldown<>();
     public ChatClickCallback() {
         super("sentinelcallback");
         this.setPrintStacktrace(true);
@@ -44,13 +44,6 @@ public class ChatClickCallback extends CustomCommand {
 
     @Override
     public void registerCompletions(CompletionBuilder builder) {
-        builder.addCompletion(1,"you");
-        builder.addCompletion(1,"must");
-        builder.addCompletion(1,"be");
-        builder.addCompletion(1,"called");
-        builder.addCompletion(1,"before");
-        builder.addCompletion(1,"running");
-        builder.addCompletion(1,"a");
-        builder.addCompletion(1,"callback");
+        builder.addCompletion(1,"a_you","b_must","c_be","d_called","e_before","f_running","g_a","h_callback");
     }
 }

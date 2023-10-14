@@ -13,19 +13,20 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ReportFalsePositives {
-    public static Map<String,AsyncPlayerChatEvent> reportMap;
+    public static Map<String,AsyncPlayerChatEvent> reportMap = new HashMap<>();
     public static String generateReport(AsyncPlayerChatEvent e) {
         final long reportLong = Randomizer.generateID();
         final String reportID = Long.toString(reportLong);
         ServerUtils.sendDebugMessage(TextUtils.prefix("DEBUG: Generating chat filter report"));
         reportMap.put(reportID,e);
-        ServerUtils.sendDebugMessage(TextUtils.prefix("DEBUG: Generated report. ID:" + reportID + " Message: \"" + reportMap.get(reportID).getMessage() + "\" Expires in 60 seconds"));
+        ServerUtils.sendDebugMessage(TextUtils.prefix("DEBUG: Generated chat filter report. ID:" + reportID + " Message: \"" + reportMap.get(reportID).getMessage() + "\" Expires in 60 seconds"));
         Bukkit.getScheduler().runTaskLater(Sentinel.getInstance(),()->{
             reportMap.remove(reportID);
-            ServerUtils.sendDebugMessage(TextUtils.prefix("DEBUG: A report expired. ID: " + reportID));
+            ServerUtils.sendDebugMessage(TextUtils.prefix("DEBUG: Chat filter Report expired. ID: " + reportID));
         },60000);
         return reportID;
     }
