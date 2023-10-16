@@ -3,22 +3,15 @@ import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Config;
 import io.github.thetrouper.sentinel.discord.WebhookSender;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
-import io.github.thetrouper.sentinel.server.util.TextUtils;
+import io.github.thetrouper.sentinel.server.util.Text;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.lang.reflect.Type;
 import java.util.List;
-import java.io.BufferedReader;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ProfanityFilter {
@@ -32,7 +25,7 @@ public class ProfanityFilter {
     }
     public static void handleProfanityFilter(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
-        String message = TextUtils.removeFirstColor(e.getMessage());
+        String message = Text.removeFirstColor(e.getMessage());
         if (!scoreMap.containsKey(p)) scoreMap.put(p, 0);
         if (scoreMap.get(p) > Config.punishScore) punishSwear(p,highlightProfanity(message),message,e);
         String severity = ProfanityFilter.checkSeverity(message);
@@ -81,16 +74,15 @@ public class ProfanityFilter {
         ServerUtils.sendCommand(Config.strictPunishCommand.replace("%player%", player.getName()));
         String fpreport = ReportFalsePositives.generateReport(e);
         TextComponent offender = new TextComponent();
-        String hoverPlayer = ("§7This action was preformed automatically \n§7by the §bSentinel Profanity Filter§7 algorithm!\n§8§o(Click to report false positive)");
-        offender.setText(TextUtils.prefix(("§cYou have been auto muted for repeated violation of the profanity filter! §7§o(Hover for more info)")));
+        String hoverPlayer = Sentinel.dict.get("action-automatic-reportable");
+        offender.setText(Text.prefix(Sentinel.dict.get("profanity-mute-warn")));
         offender.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hoverPlayer)));
         offender.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + fpreport));
         player.spigot().sendMessage(offender);
 
         String hover = ("§bOriginal: §f" + origMessage + "\n§bSanitized: §f" + highlightedMSG + "\n\n§8§o(Click to report false positive)");
         TextComponent text = new TextComponent();
-        text.setText(TextUtils.prefix(
-                ("§b§n" + player.getName() + "§7 has been auto-muted by the anti-swear! §8(§c" + scoreMap.get(player) + "§7/§4" + Config.punishScore + "§8)")));
+        text.setText(Text.prefix(Sentinel.dict.get("profanity-mute-notification").formatted(player,scoreMap.get(player),Config.punishScore)));
         text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hover)));
         text.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + fpreport));
 
@@ -105,16 +97,15 @@ public class ProfanityFilter {
         ServerUtils.sendCommand(Config.strictPunishCommand.replace("%player%", player.getName()));
         String fpreport = ReportFalsePositives.generateReport(e);
         TextComponent offender = new TextComponent();
-        String hoverPlayer = ("§7This action was preformed automatically \n§7by the §bSentinel Profanity Filter§7 algorithm!\n§8§o(Click to report false positive)");
-        offender.setText(TextUtils.prefix(("§cYou have been insta-punished by the anti-slur! §7§o(Hover for more info)")));
+        String hoverPlayer = Sentinel.dict.get("action-automatic-reportable");
+        offender.setText(Text.prefix((Sentinel.dict.get("slur-mute-warn"))));
         offender.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hoverPlayer)));
         offender.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + fpreport));
         player.spigot().sendMessage(offender);
 
         String hover = ("§bOriginal: §f" + origMessage + "\n§bSanitized: §f" + highlightedMSG + "\n§8§o(Click to report false positive)");
         TextComponent text = new TextComponent();
-        text.setText(TextUtils.prefix(
-                ("§b§n" + player.getName() + "§7 has been insta-muted by the anti-swear! §8(§e" + scoreMap.get(player) + "§7/§4" + Config.punishScore + "§8)")));
+        text.setText(Text.prefix(Sentinel.dict.get("slur-mute-notification").formatted(player,scoreMap.get(player),Config.punishScore)));
         text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hover)));
         text.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + fpreport));
 
@@ -126,16 +117,15 @@ public class ProfanityFilter {
     public static void blockSwear(Player player, String highlightedMSG, String origMessage, String severity, AsyncPlayerChatEvent e) {
         String FPReport = ReportFalsePositives.generateReport(e);
         TextComponent offender = new TextComponent();
-        String hover = ("§7This action was preformed automatically \n§7by the §bSentinel Profanity Filter§7 algorithm!\n§8§o(Click to report false positive)");
-        offender.setText(TextUtils.prefix(("§cPlease do not swear in chat! Attempting to bypass this filter will result in a mute! §7§o(Hover for more info)")));
+        String hover = Sentinel.dict.get("action-automatic-reportable");
+        offender.setText(Text.prefix((Sentinel.dict.get("swear-block-warn"))));
         offender.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hover)));
         offender.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + FPReport));
         player.spigot().sendMessage(offender);
 
         String hoverStaff = ("§bOriginal: §f" + origMessage + "\n§bSanitized: §f" + highlightedMSG + "\n§bSeverity: §c" + severity + "\n§7§o(click to report false positive)");
         TextComponent staff = new TextComponent();
-        staff.setText(TextUtils.prefix(
-                ("§b§n" + player.getName() + "§7 has triggered the anti-swear! §8(§c" + scoreMap.get(player) + "§7/§4" + Config.punishScore + "§8)")));
+        staff.setText(Text.prefix(Sentinel.dict.get("swear-block-notification").formatted(player,scoreMap.get(player),Config.punishScore)));
         staff.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hoverStaff)));
         staff.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + FPReport));
 
@@ -199,11 +189,11 @@ public class ProfanityFilter {
     public static String checkSeverity(String text) {
         // 1:
         String lowercasedText = text.toLowerCase();
-        ServerUtils.sendDebugMessage(TextUtils.prefix("Debug: [AntiSwear] Lowercased: " + lowercasedText));
+        ServerUtils.sendDebugMessage(Text.prefix("Debug: [AntiSwear] Lowercased: " + lowercasedText));
 
         // 2:
         String cleanedText = removeFalsePositives(lowercasedText);
-        ServerUtils.sendDebugMessage(TextUtils.prefix("Debug: [AntiSwear] Removed False positives: " + cleanedText));
+        ServerUtils.sendDebugMessage(Text.prefix("Debug: [AntiSwear] Removed False positives: " + cleanedText));
 
         // 3:
         if (containsSwears(cleanedText)) return "low";
@@ -211,7 +201,7 @@ public class ProfanityFilter {
 
         // 4:
         String convertedText = convertLeetSpeakCharacters(cleanedText);
-        ServerUtils.sendDebugMessage(TextUtils.prefix("Debug: [AntiSwear] Leet Converted: " + convertedText));
+        ServerUtils.sendDebugMessage(Text.prefix("Debug: [AntiSwear] Leet Converted: " + convertedText));
 
         // 5:
         if (containsSwears(convertedText)) return "medium-low";
@@ -219,7 +209,7 @@ public class ProfanityFilter {
 
         // 6:
         String strippedText = stripSpecialCharacters(convertedText);
-        ServerUtils.sendDebugMessage(TextUtils.prefix("Debug: [AntiSwear] Specials Removed: " + strippedText));
+        ServerUtils.sendDebugMessage(Text.prefix("Debug: [AntiSwear] Specials Removed: " + strippedText));
 
         // 7:
         if (containsSwears(strippedText)) return "medium";
@@ -227,7 +217,7 @@ public class ProfanityFilter {
 
         // 8:
         String simplifiedText = simplifyRepeatingLetters(strippedText);
-        ServerUtils.sendDebugMessage(TextUtils.prefix("Debug: [AntiSwear] Removed Repeating: " + simplifiedText));
+        ServerUtils.sendDebugMessage(Text.prefix("Debug: [AntiSwear] Removed Repeating: " + simplifiedText));
 
         // 9:
         if (containsSwears(simplifiedText)) return "medium-high";
@@ -235,7 +225,7 @@ public class ProfanityFilter {
 
         // 10:
         String finalText = removePeriodsAndSpaces(simplifiedText);
-        ServerUtils.sendDebugMessage(TextUtils.prefix("Debug: [AntiSwear] Remove Punctuation: " + finalText));
+        ServerUtils.sendDebugMessage(Text.prefix("Debug: [AntiSwear] Remove Punctuation: " + finalText));
 
         // 11:
         if (containsSwears(finalText)) return "high";
@@ -269,7 +259,7 @@ public class ProfanityFilter {
         return text;
     }
     public static String convertLeetSpeakCharacters(String text) {
-        text = TextUtils.fromLeetString(text);
+        text = Text.fromLeetString(text);
         return text;
     }
 
@@ -279,7 +269,7 @@ public class ProfanityFilter {
     }
 
     public static String simplifyRepeatingLetters(String text) {
-        text = TextUtils.replaceRepeatingLetters(text);
+        text = Text.replaceRepeatingLetters(text);
         return text;
     }
 

@@ -4,20 +4,12 @@ import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Config;
 import io.github.thetrouper.sentinel.data.Emojis;
 import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
-import io.github.thetrouper.sentinel.server.util.FileUtils;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
-import io.github.thetrouper.sentinel.server.util.TextUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.block.Block;
+import io.github.thetrouper.sentinel.server.util.Text;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class WebhookSender {
 
@@ -64,7 +56,7 @@ public class WebhookSender {
             ServerUtils.sendDebugMessage("Executing webhook...");
             webhook.execute();
         } catch (IOException e) {
-            ServerUtils.sendDebugMessage(TextUtils.prefix("Epic webhook failure!!!"));
+            ServerUtils.sendDebugMessage(Text.prefix("Epic webhook failure!!!"));
             Sentinel.log.info(e.toString());
         }
     }
@@ -91,7 +83,7 @@ public class WebhookSender {
             ServerUtils.sendDebugMessage("Executing webhook...");
             webhook.execute();
         } catch (IOException e) {
-            ServerUtils.sendDebugMessage(TextUtils.prefix("Epic webhook failure!!!"));
+            ServerUtils.sendDebugMessage(Text.prefix("Epic webhook failure!!!"));
             Sentinel.log.info(e.toString());
         }
     }
@@ -118,7 +110,7 @@ public class WebhookSender {
             ServerUtils.sendDebugMessage("Executing webhook...");
             webhook.execute();
         } catch (IOException e) {
-            ServerUtils.sendDebugMessage(TextUtils.prefix("Epic webhook failure!!!"));
+            ServerUtils.sendDebugMessage(Text.prefix("Epic webhook failure!!!"));
             Sentinel.log.info(e.toString());
         }
     }

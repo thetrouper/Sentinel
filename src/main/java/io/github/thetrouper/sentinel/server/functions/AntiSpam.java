@@ -1,18 +1,17 @@
 package io.github.thetrouper.sentinel.server.functions;
 
+import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Config;
 import io.github.thetrouper.sentinel.discord.WebhookSender;
 import io.github.thetrouper.sentinel.server.util.GPTUtils;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
-import io.github.thetrouper.sentinel.server.util.TextUtils;
-import net.md_5.bungee.api.chat.ClickEvent;
+import io.github.thetrouper.sentinel.server.util.Text;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +28,7 @@ public class AntiSpam {
     }
     public static void handleAntiSpam(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
-        String message = TextUtils.removeFirstColor(e.getMessage());
+        String message = Text.removeFirstColor(e.getMessage());
         if (!heatMap.containsKey(p)) heatMap.put(p, 0);
         if (heatMap.get(p) > Config.punishHeat) {
             e.setCancelled(true);
@@ -65,33 +64,38 @@ public class AntiSpam {
     public static void alertSpam(Player p, String message1, String message2) {
         TextComponent text = new TextComponent();
         double similarity = GPTUtils.calculateSimilarity(message1,message2 + "%");
-        DecimalFormat fs = new DecimalFormat("###.#");
-        p.sendMessage(TextUtils.prefix("Do not spam in chat! Please wait before sending another message."));
+        DecimalFormat fs = new DecimalFormat("##.#");
+        fs.setRoundingMode(RoundingMode.DOWN);
+        TextComponent warning = new TextComponent();
+        warning.setText(Text.prefix(Sentinel.dict.get("spam-warning")));
+        warning.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("action-automatic")));
+        p.spigot().sendMessage(warning);
         String hover ="§8]==-- §d§lSentinel §8--==[" +
                 "\n§bPrevious: §f" + message2 +
                 "\n§bCurrent: §f" + message1 +
                 "\n§bSimilarity §f" + fs.format(similarity);
-        text.setText(TextUtils.prefix(
-                "§b§n" + p.getName() + "§7 might be spamming! §8(§c" + heatMap.get(p) + "§7/§4" + Config.punishHeat + "§8)"));
+        text.setText(Text.prefix(Sentinel.dict.get("spam-notification").formatted(p.getName(),heatMap.get(p),Config.punishHeat)));
         text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hover)));
         ServerUtils.forEachStaff(staff -> {
             staff.spigot().sendMessage(text);
         });
     }
-    public static void punishSpam(Player player, String message1, String message2) {
+    public static void punishSpam(Player p, String message1, String message2) {
         boolean chatCleared = false;
         if (Config.clearChat) {
             ServerUtils.sendCommand(Config.chatClearCommand);
             chatCleared = true;
         }
-        ServerUtils.sendCommand(Config.spamPunishCommand.replace("%player%", player.getName()));
-        player.sendMessage(TextUtils.prefix("§cYou have been auto-punished for violating the anti-spam repetitively!"));
+        ServerUtils.sendCommand(Config.spamPunishCommand.replace("%player%", p.getName()));
+        TextComponent warning = new TextComponent();
+        warning.setText(Text.prefix(Sentinel.dict.get("spam-punished")));
+        warning.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.dict.get("action-automatic"))));
+        p.spigot().sendMessage(warning);
         TextComponent text = new TextComponent();
-        text.setText(TextUtils.prefix(
-                "§b§n" + player.getName() + "§7 has been auto-muted by the anti-spam! §8(§c" + heatMap.get(player) + "§7/§4" + Config.punishHeat + "§8)"));
+        text.setText(Text.prefix(Sentinel.dict.get("spam-punish-notification").formatted(p,heatMap.get(p),Config.punishHeat)));
         ServerUtils.forEachStaff(staff -> {
             staff.spigot().sendMessage(text);
         });
-        if (Config.logSpam) WebhookSender.sendSpamLog(player,message1,message2,heatMap.get(player),chatCleared);
+        if (Config.logSpam) WebhookSender.sendSpamLog(p,message1,message2,heatMap.get(p),chatCleared);
     }
 }

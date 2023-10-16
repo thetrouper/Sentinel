@@ -42,6 +42,7 @@ public abstract class Config {
         }
     }
     public static String webhook;
+    public static String lang;
     public static List<String> trustedPlayers;
     public static boolean blockSpecific;
     public static boolean preventNBT;
@@ -154,6 +155,7 @@ public abstract class Config {
 
         Sentinel.prefix = mainConfig.getString("config.plugin.prefix");
         Sentinel.key = mainConfig.getString("config.plugin.key");
+        lang = mainConfig.getString("config.plugin.lang");
         webhook = mainConfig.getString("config.plugin.webhook");
         trustedPlayers = mainConfig.getStringList("config.plugin.trusted");
         blockSpecific = mainConfig.getBoolean("config.plugin.block-specific");

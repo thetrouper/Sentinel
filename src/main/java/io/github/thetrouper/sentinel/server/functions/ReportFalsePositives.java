@@ -6,7 +6,7 @@ import io.github.thetrouper.sentinel.data.Emojis;
 import io.github.thetrouper.sentinel.discord.DiscordWebhook;
 import io.github.thetrouper.sentinel.server.util.Randomizer;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
-import io.github.thetrouper.sentinel.server.util.TextUtils;
+import io.github.thetrouper.sentinel.server.util.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -21,12 +21,12 @@ public class ReportFalsePositives {
     public static String generateReport(AsyncPlayerChatEvent e) {
         final long reportLong = Randomizer.generateID();
         final String reportID = Long.toString(reportLong);
-        ServerUtils.sendDebugMessage(TextUtils.prefix("DEBUG: Generating chat filter report"));
+        ServerUtils.sendDebugMessage(Text.prefix("DEBUG: Generating chat filter report"));
         reportMap.put(reportID,e);
-        ServerUtils.sendDebugMessage(TextUtils.prefix("DEBUG: Generated chat filter report. ID:" + reportID + " Message: \"" + reportMap.get(reportID).getMessage() + "\" Expires in 60 seconds"));
+        ServerUtils.sendDebugMessage(Text.prefix("DEBUG: Generated chat filter report. ID:" + reportID + " Message: \"" + reportMap.get(reportID).getMessage() + "\" Expires in 60 seconds"));
         Bukkit.getScheduler().runTaskLater(Sentinel.getInstance(),()->{
             reportMap.remove(reportID);
-            ServerUtils.sendDebugMessage(TextUtils.prefix("DEBUG: Chat filter Report expired. ID: " + reportID));
+            ServerUtils.sendDebugMessage(Text.prefix("DEBUG: Chat filter Report expired. ID: " + reportID));
         },60000);
         return reportID;
     }
@@ -78,7 +78,7 @@ public class ReportFalsePositives {
             ServerUtils.sendDebugMessage("Executing webhook...");
             webhook.execute();
         } catch (IOException e) {
-            ServerUtils.sendDebugMessage(TextUtils.prefix("Epic webhook failure!!!"));
+            ServerUtils.sendDebugMessage(Text.prefix("Epic webhook failure!!!"));
             Sentinel.log.info(e.toString());
         }
     }

@@ -1,14 +1,14 @@
 package io.github.thetrouper.sentinel.commands;
 
+import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.server.functions.Message;
 import io.github.thetrouper.sentinel.server.util.ArrayUtils;
-import io.github.thetrouper.sentinel.server.util.TextUtils;
+import io.github.thetrouper.sentinel.server.util.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -26,10 +26,10 @@ public class MessageCommand extends CustomCommand {
         Player p = (Player) sender;
         Player r = null;
         if (args.length == 0) {
-            p.sendMessage(TextUtils.prefix("§cYou must provide an online player to send a message to!"));
+            p.sendMessage(Text.prefix(Sentinel.dict.get("no-online-player")));
         }
         if (args.length == 1) {
-            p.sendMessage(TextUtils.prefix("§cYou must provide a message to send!"));
+            p.sendMessage(Text.prefix(Sentinel.dict.get("no-message-provided")));
         }
         r = Bukkit.getPlayer(args[0]);
         String msg = "";
@@ -40,10 +40,10 @@ public class MessageCommand extends CustomCommand {
         if (p.hasPermission("sentinel.message") && r != null) {
             Message.messagePlayer(p,r,msg);
         } else if (r == null) {
-            p.sendMessage(TextUtils.prefix("§cYou must provide an §c§l§nonline §cplayer to send a message to!"));
+            p.sendMessage(Text.prefix((Sentinel.dict.get("no-online-player"))));
         }
         else {
-            sender.sendMessage(TextUtils.prefix("Invalid Permissions!"));
+            sender.sendMessage(Text.prefix(Sentinel.dict.get("no-permission")));
         }
     }
 

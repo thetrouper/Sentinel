@@ -5,7 +5,7 @@ import io.github.thetrouper.sentinel.data.Config;
 import io.github.thetrouper.sentinel.server.Action;
 import io.github.thetrouper.sentinel.server.ActionType;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
-import io.github.thetrouper.sentinel.server.util.TextUtils;
+import io.github.thetrouper.sentinel.server.util.Text;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,12 +17,12 @@ public class CommandEvent implements Listener {
     private void onCommand(PlayerCommandPreprocessEvent e) {
         Player p = e.getPlayer();
         String command = e.getMessage().substring(1).split(" ")[0];
-        ServerUtils.sendDebugMessage(TextUtils.prefix("Checking command"));
+        ServerUtils.sendDebugMessage(Text.prefix("Checking command"));
         if (Sentinel.isDangerousCommand(command)) {
-            ServerUtils.sendDebugMessage(TextUtils.prefix( "Command is dangerous"));
+            ServerUtils.sendDebugMessage(Text.prefix( "Command is dangerous"));
             if (!Sentinel.isTrusted(p)) {
                 e.setCancelled(true);
-                ServerUtils.sendDebugMessage(TextUtils.prefix("Command is canceled"));
+                ServerUtils.sendDebugMessage(Text.prefix("Command is canceled"));
                 Action a = new Action.Builder()
                         .setAction(ActionType.DANGEROUS_COMMAND)
                         .setEvent(e)
@@ -38,12 +38,12 @@ public class CommandEvent implements Listener {
             }
         }
         if (Config.blockSpecific) {
-            ServerUtils.sendDebugMessage(TextUtils.prefix("Checking command for specific"));
+            ServerUtils.sendDebugMessage(Text.prefix("Checking command for specific"));
             if (command.contains(":")) {
-                ServerUtils.sendDebugMessage(TextUtils.prefix("Checking is specific"));
+                ServerUtils.sendDebugMessage(Text.prefix("Checking is specific"));
                 if (!Sentinel.isTrusted(p)) {
                     e.setCancelled(true);
-                    ServerUtils.sendDebugMessage(TextUtils.prefix("Command is canceled"));
+                    ServerUtils.sendDebugMessage(Text.prefix("Command is canceled"));
                     Action a = new Action.Builder()
                             .setAction(ActionType.SPECIFIC_COMMAND)
                             .setEvent(e)

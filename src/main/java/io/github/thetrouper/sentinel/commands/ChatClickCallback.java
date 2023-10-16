@@ -4,17 +4,14 @@
 
 package io.github.thetrouper.sentinel.commands;
 
-import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
+import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.server.functions.ReportFalsePositives;
 import io.github.thetrouper.sentinel.server.util.Cooldown;
-import io.github.thetrouper.sentinel.server.util.TextUtils;
+import io.github.thetrouper.sentinel.server.util.Text;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import java.util.HashSet;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -33,10 +30,10 @@ public class ChatClickCallback extends CustomCommand {
         switch (args[0]) {
             case "fpreport" -> {
                 if (fpReportCooldown.isOnCooldown(p.getUniqueId()) && !p.isOp()) {
-                    p.sendMessage(TextUtils.prefix("This action is on cooldown! " + fpReportCooldown.getCooldown(p.getUniqueId())));
+                    p.sendMessage(Text.prefix(Sentinel.dict.get("cooldown") + fpReportCooldown.getCooldown(p.getUniqueId())));
                 } else {
                     ReportFalsePositives.sendFalsePositiveReport(args[1]);
-                    p.sendMessage(TextUtils.prefix("Successfully reported a false positive!"));
+                    p.sendMessage(Text.prefix(Sentinel.dict.get("false positive report success")));
                 }
             }
         }

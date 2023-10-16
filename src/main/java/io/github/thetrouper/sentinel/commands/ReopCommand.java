@@ -1,11 +1,10 @@
 package io.github.thetrouper.sentinel.commands;
 
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.server.util.TextUtils;
+import io.github.thetrouper.sentinel.server.util.Text;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.w3c.dom.Text;
 
 public class ReopCommand extends CustomCommand {
     public ReopCommand() {
@@ -18,16 +17,16 @@ public class ReopCommand extends CustomCommand {
         Player p = (Player) sender;
         if (Sentinel.isTrusted(p)) {
             if (!p.isOp()) {
-                p.sendMessage(TextUtils.prefix("Elevating your permissions..."));
-                Sentinel.log.info("Elevating the permissions of " + p.getName());
+                p.sendMessage(Text.prefix(Sentinel.dict.get("elevating-perms")));
+                Sentinel.log.info(Sentinel.dict.get("log-elevating-perms").formatted(p.getName()));
                 p.setOp(true);
             } else {
-                p.sendMessage(TextUtils.prefix("You are already are an operator!"));
-                Sentinel.log.info("The permissions of " + p.getName() + " are already elevated! Retrying...");
+                p.sendMessage(Text.prefix(Sentinel.dict.get("already-op")));
+                Sentinel.log.info(Sentinel.dict.get("log-already-op").formatted(p.getName()));
                 p.setOp(true);
             }
         } else {
-            p.sendMessage(TextUtils.prefix("§cYou are not trusted!"));
+            p.sendMessage(Text.prefix(Sentinel.dict.get("no-trust")));
         }
     }
 

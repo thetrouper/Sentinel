@@ -7,10 +7,9 @@ import io.github.thetrouper.sentinel.data.Emojis;
 import io.github.thetrouper.sentinel.discord.DiscordWebhook;
 import io.github.thetrouper.sentinel.server.util.FileUtils;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
-import io.github.thetrouper.sentinel.server.util.TextUtils;
+import io.github.thetrouper.sentinel.server.util.Text;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -182,7 +181,7 @@ public class Action {
             }
             if (notifyTrusted) {
                 TextComponent notification = new TextComponent();
-                notification.setText(TextUtils.prefix(" " + actionTop));
+                notification.setText(Text.prefix(" " + actionTop));
                 String body = "]=- Sentinel -=[ ";
                 body += "\n" + actionTitle + "\n";
                 if (player != null) {
@@ -217,7 +216,7 @@ public class Action {
                 body += "Punished: " + (punished ? "§a\u2714" : "§c\u2718") + "\n";
                 if (revertGM) body += "RevertGM: " + "§a\u2714" + "\n";
                 body += "Logged: " + (notifyDiscord ? "§a\u2714" : "§c\u2718");
-                notification.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(body)));
+                notification.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new net.md_5.bungee.api.chat.hover.content.Text(body)));
                 ServerUtils.forEachPlayer(trusted -> {
                     if (Sentinel.isTrusted(trusted)) {
                         trusted.spigot().sendMessage(notification);
@@ -250,9 +249,9 @@ public class Action {
                                    Emojis.space + Emojis.rightDoubleArrow + " **Location:** X: " + block.getX() + " Y: " + block.getY() + " Z: " + block.getZ() + "\\n";
                 }
                 String actions = "";
-                actions += Emojis.rightSort + " **Denied:** " + TextUtils.boolString(denied,Emojis.success, Emojis.failure) + "\\n";
-                actions += Emojis.rightSort + " **De-oped:** " + TextUtils.boolString(deoped,Emojis.success, Emojis.failure) + "\\n";
-                actions += Emojis.rightSort + " **Punished:** " + TextUtils.boolString(punished,Emojis.success, Emojis.failure) + "\\n";
+                actions += Emojis.rightSort + " **Denied:** " + Text.boolString(denied,Emojis.success, Emojis.failure) + "\\n";
+                actions += Emojis.rightSort + " **De-oped:** " + Text.boolString(deoped,Emojis.success, Emojis.failure) + "\\n";
+                actions += Emojis.rightSort + " **Punished:** " + Text.boolString(punished,Emojis.success, Emojis.failure) + "\\n";
                 if (revertGM) actions += Emojis.rightSort + " **GM Reverted:** " + Emojis.success + "\\n";
                 actions += Emojis.rightSort + " **Logged:** "  + Emojis.success;
                 DiscordWebhook.EmbedObject embed = new DiscordWebhook.EmbedObject()
@@ -267,7 +266,7 @@ public class Action {
                     ServerUtils.sendDebugMessage("Executing webhook...");
                     webhook.execute();
                 } catch (IOException e) {
-                    ServerUtils.sendDebugMessage(TextUtils.prefix("Epic webhook failure!!!"));
+                    ServerUtils.sendDebugMessage(Text.prefix("Epic webhook failure!!!"));
                     Sentinel.log.info(e.toString());
                 }
             }

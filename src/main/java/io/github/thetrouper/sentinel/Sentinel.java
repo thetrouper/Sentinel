@@ -6,20 +6,18 @@ package io.github.thetrouper.sentinel;
 
 import io.github.thetrouper.sentinel.commands.*;
 import io.github.thetrouper.sentinel.data.Config;
+import io.github.thetrouper.sentinel.data.LanguageFile;
 import io.github.thetrouper.sentinel.events.*;
 import io.github.thetrouper.sentinel.server.functions.AntiSpam;
 import io.github.thetrouper.sentinel.server.functions.Authenticator;
 import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
 import io.github.thetrouper.sentinel.server.functions.Telemetry;
-import io.github.thetrouper.sentinel.server.util.FileUtils;
-import io.github.thetrouper.sentinel.server.util.Randomizer;
-import net.md_5.bungee.api.chat.ClickEvent;
+import io.github.thetrouper.sentinel.server.util.JsonSerializable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
 import java.util.logging.Logger;
 
 /**
@@ -29,7 +27,7 @@ import java.util.logging.Logger;
  */
 public final class Sentinel extends JavaPlugin {
     private static Sentinel instance;
-
+    public static LanguageFile dict;
     public static final PluginManager manager = Bukkit.getPluginManager();
     public static String prefix = "";
     public static String key = "";
@@ -42,12 +40,14 @@ public final class Sentinel extends JavaPlugin {
      */
     @Override
     public void onEnable() {
+
         log.info("\n]======------ Pre-load started! ------======[");
         instance = this;
         Config.loadConfiguration();
+        dict = JsonSerializable.load(LanguageFile.PATH,LanguageFile.class,new LanguageFile());
         String serverID = Authenticator.getServerID();
         identifier = serverID;
-        log.info("\n]====---- Requesting Authentication ----====[ \n- license Key: " + key + " \n- Server ID: " + serverID);
+        log.info("\n]====---- Requesting Authentication (" + dict.get("example-message") + ") ----====[ \n- license Key: " + key + " \n- Server ID: " + serverID);
         String authStatus = "ERROR";
         try {
             authStatus = Authenticator.authorize(key, serverID);

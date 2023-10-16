@@ -1,9 +1,7 @@
 package io.github.thetrouper.sentinel.commands;
 
-import io.github.thetrouper.sentinel.server.functions.Message;
-import io.github.thetrouper.sentinel.server.util.ArrayUtils;
-import io.github.thetrouper.sentinel.server.util.TextUtils;
-import org.bukkit.Bukkit;
+import io.github.thetrouper.sentinel.Sentinel;
+import io.github.thetrouper.sentinel.server.util.Text;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,10 +24,10 @@ public class SocialSpyCommand extends CustomCommand {
         Player p = sender.getServer().getPlayer(name);
         UUID senderID = p.getUniqueId();
         if (!spyMap.containsKey(senderID) || !spyMap.get(senderID)) {
-            sender.sendMessage(TextUtils.prefix("SocialSpy is now enabled."));
+            sender.sendMessage(Text.prefix(Sentinel.dict.get("spy-enabled")));
             spyMap.put(senderID,true);
         } else if (spyMap.get(senderID)) {
-            sender.sendMessage(TextUtils.prefix("SocialSpy is now disabled."));
+            sender.sendMessage(Text.prefix(Sentinel.dict.get("spy-disabled")));
             spyMap.put(senderID,false);
         }
     }

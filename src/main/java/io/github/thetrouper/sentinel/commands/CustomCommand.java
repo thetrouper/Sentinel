@@ -1,7 +1,7 @@
 package io.github.thetrouper.sentinel.commands;
 
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.server.util.TextUtils;
+import io.github.thetrouper.sentinel.server.util.Text;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -48,9 +48,9 @@ public abstract class CustomCommand implements TabExecutor {
             else if (ex instanceof NullPointerException)
                 msg = "command contains a null value";
 
-            sender.sendMessage(TextUtils.prefix("§4Command Error: §cUnknown or incomplete command!"));
-            sender.sendMessage(TextUtils.prefix("§cCaused by: §8§o(" + ex.getClass().getSimpleName() + ") §7" + msg));
-            sender.sendMessage(TextUtils.prefix("§cCorrect Usage: §7" + command.getUsage()));
+            sender.sendMessage(Text.prefix("§4Command Error: §cUnknown or incomplete command!"));
+            sender.sendMessage(Text.prefix("§cCaused by: §8§o(" + ex.getClass().getSimpleName() + ") §7" + msg));
+            sender.sendMessage(Text.prefix("§cCorrect Usage: §7" + command.getUsage()));
 
             if (printStacktrace) {
                 ex.printStackTrace();

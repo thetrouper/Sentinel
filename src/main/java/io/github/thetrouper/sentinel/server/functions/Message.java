@@ -30,8 +30,8 @@ public class Message {
             return;
         }
 
-        sender.sendMessage("§d§lMessage §8» §b[§fYou §e>§f " + receiver.getName() + "§b] §7" + message);
-        receiver.sendMessage("§d§lMessage §8» §b[§f" + sender.getName() + " §e>§f You§b] §7" + message);
+        sender.sendMessage(Sentinel.dict.get("message-sent").replace("{1}",receiver.getName()).replace("{m}", message));
+        receiver.sendMessage(Sentinel.dict.get("message-sent").replace("{1}",sender.getName()).replace("{m}", message));
         replyMap.put(receiver.getUniqueId(),sender.getUniqueId());
         sendSpy(sender,receiver,message);
     }
@@ -39,7 +39,7 @@ public class Message {
     public static void sendSpy(Player sender, Player receiver, String message) {
         ServerUtils.forEachPlayer(player -> {
             if (SocialSpyCommand.spyMap.getOrDefault(player.getUniqueId(),false)) {
-                TextComponent notification = new TextComponent("§d§lSpy §8» §b§n" + sender.getName() + "§7 has messaged §b§n " + receiver.getName() + "§7.");
+                TextComponent notification = new TextComponent(Sentinel.dict.get("spy-message").replace("{1}",sender.getName()).replace("{2}", receiver.getName()));
                 notification.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(
                         "§8]==-- §d§lSocialSpy §8--==[" +
                                 "\n§bSender: §f" + sender.getName() +

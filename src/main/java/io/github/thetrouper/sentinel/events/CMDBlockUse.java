@@ -1,12 +1,9 @@
 package io.github.thetrouper.sentinel.events;
 
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.commands.SentinelCommand;
 import io.github.thetrouper.sentinel.data.Config;
 import io.github.thetrouper.sentinel.server.Action;
 import io.github.thetrouper.sentinel.server.ActionType;
-import io.github.thetrouper.sentinel.server.util.TextUtils;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -16,8 +13,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-
-import java.util.*;
 
 public class CMDBlockUse implements Listener {
     @EventHandler

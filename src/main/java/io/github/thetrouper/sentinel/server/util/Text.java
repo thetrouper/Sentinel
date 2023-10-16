@@ -7,13 +7,13 @@ import io.github.thetrouper.sentinel.data.Config;
 import java.util.Map;
 import java.util.regex.PatternSyntaxException;
 
-public class TextUtils {
+public class Text {
     public static String color(String s) {
-        return s.replaceAll("&","§");
+        return s.replaceAll("&","\u00A7");
     }
     public static String prefix(String text) {
         String prefix = Sentinel.prefix;
-        return prefix + text;
+        return color(prefix + text);
     }
     public static String removeFirstColor(String input) {
         if (input.startsWith("§")) {
