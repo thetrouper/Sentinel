@@ -23,7 +23,6 @@ public class LanguageFile implements JsonSerializable<LanguageFile> {
         return dictionary;
     }
     public String format(String input) {
-
         return input;
     }
 }

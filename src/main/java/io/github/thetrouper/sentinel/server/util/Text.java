@@ -16,7 +16,7 @@ public class Text {
         return color(prefix + text);
     }
     public static String removeFirstColor(String input) {
-        if (input.startsWith("§")) {
+        if (input.startsWith("\u00a7")) {
             if (input.length() > 2) {
                 return input.substring(2);
             } else {

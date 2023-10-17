@@ -25,7 +25,7 @@ public final class ArrayUtils {
     }
 
     public static <T> String list2string(List<T> list) {
-        return ("§7[§e" + String.join("§7, §e", ArrayUtils.toNewList(list, Object::toString)) + "§7]");
+        return ("\u00a77[\u00a7e" + String.join("\u00a77, \u00a7e", ArrayUtils.toNewList(list, Object::toString)) + "\u00a77]");
     }
 
     public static <T> List<T> bind(Iterable<T> tList, T... ts) {

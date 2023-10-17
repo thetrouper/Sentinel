@@ -207,15 +207,15 @@ public class Action {
                     body += "Block: " + block.getType().toString().toLowerCase().replace("_", " ") + "\n";
                     body += "Location: " + loc.getX() + " " + loc.getY() + " " + loc.getZ() + "\n";
                 }
-                body += "Denied: " + (denied ? "§a\u2714" : "§c\u2718") + "\n";
+                body += "Denied: " + (denied ? "\u00a7a\u2714" : "\u00a7c\u2718") + "\n";
                 if (deoped) {
                     player.setOp(false);
                 }
-                body += "Deoped: " + (deoped ? "§a\u2714" : "§c\u2718") + "\n";
+                body += "Deoped: " + (deoped ? "\u00a7a\u2714" : "\u00a7c\u2718") + "\n";
 
-                body += "Punished: " + (punished ? "§a\u2714" : "§c\u2718") + "\n";
-                if (revertGM) body += "RevertGM: " + "§a\u2714" + "\n";
-                body += "Logged: " + (notifyDiscord ? "§a\u2714" : "§c\u2718");
+                body += "Punished: " + (punished ? "\u00a7a\u2714" : "\u00a7c\u2718") + "\n";
+                if (revertGM) body += "RevertGM: " + "\u00a7a\u2714" + "\n";
+                body += "Logged: " + (notifyDiscord ? "\u00a7a\u2714" : "\u00a7c\u2718");
                 notification.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new net.md_5.bungee.api.chat.hover.content.Text(body)));
                 ServerUtils.forEachPlayer(trusted -> {
                     if (Sentinel.isTrusted(trusted)) {

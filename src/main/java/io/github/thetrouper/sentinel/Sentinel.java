@@ -1,7 +1,3 @@
-/**
- * This file is for tutorial purposes made by ImproperIssues. Distribute if you want :)
- */
-
 package io.github.thetrouper.sentinel;
 
 import io.github.thetrouper.sentinel.commands.*;
@@ -20,11 +16,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Logger;
 
-/**
- * This is your main class, you register everything important here.
- *
- * To build the jar, go to terminal and run "./gradlew build"
- */
 public final class Sentinel extends JavaPlugin {
     private static Sentinel instance;
     public static LanguageFile dict;
@@ -43,16 +34,21 @@ public final class Sentinel extends JavaPlugin {
 
         log.info("\n]======------ Pre-load started! ------======[");
         instance = this;
+        log.info("Loading Config...");
         Config.loadConfiguration();
+        log.info("Loading Dictionary (" + Config.lang + ")...");
         dict = JsonSerializable.load(LanguageFile.PATH,LanguageFile.class,new LanguageFile());
+        log.info("Initializing Server ID...");
         String serverID = Authenticator.getServerID();
         identifier = serverID;
-        log.info("\n]====---- Requesting Authentication (" + dict.get("example-message") + ") ----====[ \n- license Key: " + key + " \n- Server ID: " + serverID);
+        log.info("Pre-load finished!\n]====---- Requesting Authentication (" + dict.get("example-message") + ") ----====[ \n- License Key: " + key + " \n- Server ID: " + serverID);
         String authStatus = "ERROR";
         try {
             authStatus = Authenticator.authorize(key, serverID);
         } catch (Exception e) {
             e.printStackTrace();
+            log.info("WTFFFF ARE YOU DOING MAN??????");
+            getServer().getPluginManager().disablePlugin(this);
         }
         switch (authStatus) {
             case "AUTHORIZED" -> {
@@ -90,12 +86,13 @@ public final class Sentinel extends JavaPlugin {
     private void startup() {
         log.info("\n]======----- Auth Success! -----======[");
         // Init
+        log.info("Verifying Config...");
         getConfig().options().copyDefaults();
         saveDefaultConfig();
 
 
         // Plugin startup logic
-        log.info("Sentinel has loaded! (" + getDescription().getVersion() + ")");
+        log.info("Starting Up! (" + getDescription().getVersion() + ")...");
 
         // Enable Functions
         AntiSpam.enableAntiSpam();
@@ -124,7 +121,7 @@ public final class Sentinel extends JavaPlugin {
         // Scheduled timers
         Bukkit.getScheduler().runTaskTimer(this, AntiSpam::decayHeat,0, 20);
         Bukkit.getScheduler().runTaskTimer(this, ProfanityFilter::decayScore,0,1200);
-        log.info("\n" +
+        log.info("Finished!\n" +
                 " ____                   __                        ___      \n" +
                 "/\\  _`\\                /\\ \\__  __                /\\_ \\     \n" +
                 "\\ \\,\\L\\_\\     __    ___\\ \\ ,_\\/\\_\\    ___      __\\//\\ \\    \n" +
@@ -142,7 +139,9 @@ public final class Sentinel extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         log.info("Sentinel has disabled! (" + getDescription().getVersion() + ") Your server is now no longer protected!");
-        Telemetry.sendShutdownLog(identifier,key);
+        if (usesDynamicIP) {
+            Telemetry.sendShutdownLog(identifier,key);
+        }
     }
 
     /**

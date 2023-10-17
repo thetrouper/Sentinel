@@ -131,8 +131,8 @@ public class ProfanityFilter {
     }
 
     public static String highlightProfanity(String text) {
-        String highlightedSwears = highlightSwears(fullSimplify(text), "§e", "§f");
-        String highlightedText = highlightSlurs(highlightedSwears, "§c", "§f");
+        String highlightedSwears = highlightSwears(fullSimplify(text), "\u00a7e", "\u00a7f");
+        String highlightedText = highlightSlurs(highlightedSwears, "\u00a7c", "\u00a7f");
         return highlightedText;
     }
     public static String highlightProfanity(String text, String start, String end) {

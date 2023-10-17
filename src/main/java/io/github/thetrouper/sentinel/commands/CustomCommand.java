@@ -48,9 +48,9 @@ public abstract class CustomCommand implements TabExecutor {
             else if (ex instanceof NullPointerException)
                 msg = "command contains a null value";
 
-            sender.sendMessage(Text.prefix("§4Command Error: §cUnknown or incomplete command!"));
-            sender.sendMessage(Text.prefix("§cCaused by: §8§o(" + ex.getClass().getSimpleName() + ") §7" + msg));
-            sender.sendMessage(Text.prefix("§cCorrect Usage: §7" + command.getUsage()));
+            sender.sendMessage(Text.prefix("\u00a74Command Error: \u00a7cUnknown or incomplete command!"));
+            sender.sendMessage(Text.prefix("\u00a7cCaused by: \u00a78\u00a7o(" + ex.getClass().getSimpleName() + ") \u00a77" + msg));
+            sender.sendMessage(Text.prefix("\u00a7cCorrect Usage: \u00a77" + command.getUsage()));
 
             if (printStacktrace) {
                 ex.printStackTrace();
