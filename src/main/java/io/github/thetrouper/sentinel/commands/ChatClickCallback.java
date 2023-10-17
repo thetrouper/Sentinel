@@ -33,7 +33,7 @@ public class ChatClickCallback extends CustomCommand {
                     p.sendMessage(Text.prefix(Sentinel.dict.get("cooldown") + fpReportCooldown.getCooldown(p.getUniqueId())));
                 } else {
                     ReportFalsePositives.sendFalsePositiveReport(args[1]);
-                    p.sendMessage(Text.prefix(Sentinel.dict.get("false positive report success")));
+                    p.sendMessage(Text.prefix(Sentinel.dict.get("false-positive-report-success")));
                 }
             }
         }

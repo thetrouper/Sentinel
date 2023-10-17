@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class Message {
-    private static Map<UUID,UUID> replyMap = MessageCommand.replyMap;
+    private static final Map<UUID,UUID> replyMap = MessageCommand.replyMap;
     public static void messagePlayer(Player sender, Player receiver, String message) {
         HashSet<Player> receivers = new HashSet<>();
         receivers.add(receiver);
@@ -30,8 +30,8 @@ public class Message {
             return;
         }
 
-        sender.sendMessage(Sentinel.dict.get("message-sent").replace("{1}",receiver.getName()).replace("{m}", message));
-        receiver.sendMessage(Sentinel.dict.get("message-sent").replace("{1}",sender.getName()).replace("{m}", message));
+        sender.sendMessage(Sentinel.dict.get("message-sent").formatted(receiver.getName(),message));
+        receiver.sendMessage(Sentinel.dict.get("message-received").formatted(sender.getName(),message));
         replyMap.put(receiver.getUniqueId(),sender.getUniqueId());
         sendSpy(sender,receiver,message);
     }
@@ -39,13 +39,8 @@ public class Message {
     public static void sendSpy(Player sender, Player receiver, String message) {
         ServerUtils.forEachPlayer(player -> {
             if (SocialSpyCommand.spyMap.getOrDefault(player.getUniqueId(),false)) {
-                TextComponent notification = new TextComponent(Sentinel.dict.get("spy-message").replace("{1}",sender.getName()).replace("{2}", receiver.getName()));
-                notification.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(
-                        "§8]==-- §d§lSocialSpy §8--==[" +
-                                "\n§bSender: §f" + sender.getName() +
-                                "\n§bReceiver: §f" + receiver.getName() +
-                                "\n§bMessage: §f" + message
-                )));
+                TextComponent notification = new TextComponent(Sentinel.dict.get("spy-message").formatted(sender.getName(),receiver.getName()));
+                notification.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(Sentinel.dict.get("spy-message-hover").formatted(sender.getName(),receiver.getName(),message))));
                 player.spigot().sendMessage(notification);
             }
         });

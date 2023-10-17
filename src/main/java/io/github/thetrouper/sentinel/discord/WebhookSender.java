@@ -13,25 +13,6 @@ import java.io.IOException;
 
 public class WebhookSender {
 
-    public static void sendTestEmbed() {
-        String webhookUrl = Config.webhook;
-        // Create a new DiscordWebhook instance
-        DiscordWebhook webhook = new DiscordWebhook(webhookUrl);
-
-        // Create an EmbedObject and set its properties
-        DiscordWebhook.EmbedObject embed = new DiscordWebhook.EmbedObject()
-                .setAuthor("Test Success!", "", "")
-                .setDescription("eeeee")
-                .setColor(Color.GREEN);
-        webhook.addEmbed(embed);
-        webhook.addAttachment("text.txt","Text Here hehehehaw!");
-        try {
-            webhook.execute();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static void sendSpamLog(Player player, String message1, String message2, int finalHeat, boolean chatCleared) {
         ServerUtils.sendDebugMessage("Creating spamLog Webhook...");
         DiscordWebhook webhook = new DiscordWebhook(Config.webhook);

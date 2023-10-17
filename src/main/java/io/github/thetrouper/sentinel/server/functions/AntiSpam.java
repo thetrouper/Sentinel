@@ -70,12 +70,8 @@ public class AntiSpam {
         warning.setText(Text.prefix(Sentinel.dict.get("spam-warning")));
         warning.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("action-automatic")));
         p.spigot().sendMessage(warning);
-        String hover ="§8]==-- §d§lSentinel §8--==[" +
-                "\n§bPrevious: §f" + message2 +
-                "\n§bCurrent: §f" + message1 +
-                "\n§bSimilarity §f" + fs.format(similarity);
         text.setText(Text.prefix(Sentinel.dict.get("spam-notification").formatted(p.getName(),heatMap.get(p),Config.punishHeat)));
-        text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hover)));
+        text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.dict.get("spam-notification-hover").formatted(message1,message2,fs.format(similarity)))));
         ServerUtils.forEachStaff(staff -> {
             staff.spigot().sendMessage(text);
         });
@@ -92,7 +88,7 @@ public class AntiSpam {
         warning.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.dict.get("action-automatic"))));
         p.spigot().sendMessage(warning);
         TextComponent text = new TextComponent();
-        text.setText(Text.prefix(Sentinel.dict.get("spam-punish-notification").formatted(p,heatMap.get(p),Config.punishHeat)));
+        text.setText(Text.prefix(Sentinel.dict.get("spam-punish-notification").formatted(p.getName(),heatMap.get(p),Config.punishHeat)));
         ServerUtils.forEachStaff(staff -> {
             staff.spigot().sendMessage(text);
         });

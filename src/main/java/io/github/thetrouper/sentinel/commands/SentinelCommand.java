@@ -30,7 +30,7 @@ public class SentinelCommand extends CustomCommand {
         switch (args[0]) {
             case "debugmode" -> {
                 debugmode = !debugmode;
-                p.sendMessage(Text.prefix(Text.boolString(debugmode,"§aEnabled","§cDisabled") + "§7 debug mode."));
+                p.sendMessage(Text.prefix((debugmode ? "enabled" : "disabled") + " debug mode."));
             }
             case "testantiswear" -> {
                 HashSet<Player> players = new HashSet<>();
