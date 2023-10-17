@@ -71,7 +71,6 @@ public class ProfanityFilter {
     }
     public static void punishSwear(Player player, String highlightedMSG, String origMessage, AsyncPlayerChatEvent e) {
         ServerUtils.sendCommand(Config.swearPunishCommand.replace("%player%", player.getName()));
-        ServerUtils.sendCommand(Config.strictPunishCommand.replace("%player%", player.getName()));
         String fpreport = ReportFalsePositives.generateReport(e);
         TextComponent offender = new TextComponent();
         String hoverPlayer = Sentinel.dict.get("action-automatic-reportable");

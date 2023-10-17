@@ -249,9 +249,9 @@ public class Action {
                                    Emojis.space + Emojis.rightDoubleArrow + " **Location:** X: " + block.getX() + " Y: " + block.getY() + " Z: " + block.getZ() + "\\n";
                 }
                 String actions = "";
-                actions += Emojis.rightSort + " **Denied:** " + Text.boolString(denied,Emojis.success, Emojis.failure) + "\\n";
-                actions += Emojis.rightSort + " **De-oped:** " + Text.boolString(deoped,Emojis.success, Emojis.failure) + "\\n";
-                actions += Emojis.rightSort + " **Punished:** " + Text.boolString(punished,Emojis.success, Emojis.failure) + "\\n";
+                actions += Emojis.rightSort + " **Denied:** " + (denied ? Emojis.success : Emojis.failure) + "\\n";
+                actions += Emojis.rightSort + " **De-oped:** " + (deoped ? Emojis.success : Emojis.failure) + "\\n";
+                actions += Emojis.rightSort + " **Punished:** " + (punished ? Emojis.success : Emojis.failure) + "\\n";
                 if (revertGM) actions += Emojis.rightSort + " **GM Reverted:** " + Emojis.success + "\\n";
                 actions += Emojis.rightSort + " **Logged:** "  + Emojis.success;
                 DiscordWebhook.EmbedObject embed = new DiscordWebhook.EmbedObject()

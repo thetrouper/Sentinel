@@ -26,7 +26,7 @@ public class WebhookSender {
                         Emojis.space + Emojis.arrowRight + "Heat: `" + finalHeat + "/" + Config.punishHeat + "`\\n" +
                         Emojis.space + Emojis.arrowRight + "UUID: `" + player.getUniqueId() + "`\\n" +
                         Emojis.rightSort + "Executed: " + Config.spamPunishCommand + " " + Emojis.mute + "\\n" +
-                        Emojis.space + Emojis.arrowRight + "Chat Cleared: " + successOrFail(chatCleared) + "\\n"
+                        Emojis.space + Emojis.arrowRight + "Chat Cleared: " + (chatCleared ? Emojis.success : Emojis.failure) + "\\n"
                 )
                 .addField("Previous Message", "||" + message1 + "|| " + Emojis.activity, false)
                 .addField("Current Message", "||" + message2 + "|| " + Emojis.alarm, false)
@@ -48,7 +48,7 @@ public class WebhookSender {
         webhook.setUsername("Sentinel Anti-Nuke | Logs");
         DiscordWebhook.EmbedObject embed = new DiscordWebhook.EmbedObject()
                 .setAuthor("Anti-Swear Punishment","","")
-                .setTitle("Punish Report:")
+                .setTitle(player.getName() + " has triggered the anti-slur!")
                 .setDescription(
                         Emojis.rightSort + "Player: " + player.getName() + " " + Emojis.target + "\\n" +
                                 Emojis.space + Emojis.arrowRight + "Score: `" + finalScore + "/" + Config.punishScore + "`\\n" +
@@ -93,15 +93,6 @@ public class WebhookSender {
         } catch (IOException e) {
             ServerUtils.sendDebugMessage(Text.prefix("Epic webhook failure!!!"));
             Sentinel.log.info(e.toString());
-        }
-    }
-
-
-    public static String successOrFail(boolean bool) {
-        if (bool) {
-            return Emojis.success;
-        } else {
-            return Emojis.failure;
         }
     }
 }

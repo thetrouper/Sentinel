@@ -66,7 +66,4 @@ public class Text {
         }
         return msg;
     }
-    public static String boolString(boolean bool, String caseTrue, String caseFalse) {
-        return bool ? caseTrue : caseFalse;
-    }
 }
