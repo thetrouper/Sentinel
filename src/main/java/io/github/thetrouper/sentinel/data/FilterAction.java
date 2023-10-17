@@ -35,13 +35,15 @@ public class FilterAction {
         fs.setRoundingMode(RoundingMode.DOWN);
 
         TextComponent notif = new TextComponent();
-        notif.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText((type != FAT.SPAM ? Sentinel.dict.get("severity-notification-hover").formatted(e.getMessage(), highlighted, severity) : Sentinel.dict.get("spam-notification-hover").formatted(e.getMessage(),lastMessageMap.get(offender),fs.format(similarity))))));
+        notif.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText((type != FAT.SPAM && type != FAT.BLOCK_SPAM ? Sentinel.dict.get("severity-notification-hover").formatted(e.getMessage(), highlighted, severity) : Sentinel.dict.get("spam-notification-hover").formatted(e.getMessage(),lastMessageMap.get(offender),fs.format(similarity))))));
         notif.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + report));
 
         warn.setText(Text.prefix(Sentinel.dict.get(type.getWarnTranslationKey())));
         offender.spigot().sendMessage(warn);
 
-        notif.setText(Text.prefix(Sentinel.dict.get(type.getNotifTranslationKey()).formatted(offender.getName(), scoreMap.get(offender), Config.punishScore)));
+        String notiftext = Sentinel.dict.get(type.getNotifTranslationKey());
+
+        notif.setText(Text.prefix((type != FAT.SPAM && type != FAT.BLOCK_SPAM ? notiftext.formatted(offender.getName(), scoreMap.get(offender), Config.punishScore) : notiftext.formatted(offender.getName(),heatMap.get(offender),Config.punishHeat))));
         ServerUtils.forEachStaff(staffmember -> {
             staffmember.spigot().sendMessage(notif);
         });
@@ -67,10 +69,10 @@ public class FilterAction {
     public static void sendConsoleLog(Player offender, AsyncPlayerChatEvent e, FAT type) {
         String log = "]=-" + type.getTitle() + "-=[\n" +
                 "Player: " + offender.getName() +
-                (type != FAT.BLOCK_SPAM ? "> Score: `" + scoreMap.get(offender) + "/" + Config.punishScore : "> Heat: `" + heatMap.get(offender) + "/" + Config.punishHeat) + "\n" +
+                (type != FAT.BLOCK_SPAM && type != FAT.SPAM ? "> Score: `" + scoreMap.get(offender) + "/" + Config.punishScore : "> Heat: `" + heatMap.get(offender) + "/" + Config.punishHeat) + "\n" +
                 "> UUID: " + offender.getUniqueId() + "\n" +
-                (type != FAT.BLOCK_SPAM ? "Message: " + e.getMessage() : "Previous: " + lastMessageMap.get(offender)) + "\n" +
-                (type != FAT.BLOCK_SPAM ? "Reduced: " + fullSimplify(e.getMessage()) : "Current: " + e.getMessage()) + "\n" +
+                (type != FAT.BLOCK_SPAM && type != FAT.SPAM ? "Message: " + e.getMessage() : "Previous: " + lastMessageMap.get(offender)) + "\n" +
+                (type != FAT.BLOCK_SPAM && type != FAT.SPAM ? "Reduced: " + fullSimplify(e.getMessage()) : "Current: " + e.getMessage()) + "\n" +
                 (type.getExecutedCommand() != null ? "Executed: " + type.getExecutedCommand() : "Executed: Nothing, its a standard flag. You shouldn't be seeing this, please report it.");
         Sentinel.log.info(log);
     }

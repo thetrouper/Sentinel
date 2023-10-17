@@ -1,24 +1,15 @@
 package io.github.thetrouper.sentinel.server.functions;
 
-import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Config;
 import io.github.thetrouper.sentinel.data.FAT;
 import io.github.thetrouper.sentinel.data.FilterAction;
-import io.github.thetrouper.sentinel.discord.WebhookSender;
 import io.github.thetrouper.sentinel.server.util.GPTUtils;
-import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
-
-import static io.github.thetrouper.sentinel.server.util.GPTUtils.calculateSimilarity;
 
 public class AntiSpam {
     public static Map<Player, Integer> heatMap;
@@ -31,26 +22,33 @@ public class AntiSpam {
     public static void handleAntiSpam(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
         String message = Text.removeFirstColor(e.getMessage());
-        Double sim = calculateSimilarity(e.getMessage(),lastMessageMap.get(p));
-        if (!heatMap.containsKey(p)) heatMap.put(p, 0);
+
+        if (!lastMessageMap.containsKey(p)) {
+            lastMessageMap.put(p,"/* Placeholder Message from Sentinel */");
+        }
+        if (!heatMap.containsKey(p)) {
+            heatMap.put(p,0);
+        }
+
+        if (lastMessageMap.containsKey(p)) {
+            String lastMessage = lastMessageMap.get(p);
+            double similarity = GPTUtils.calcSim(message, lastMessage);
+            if (similarity > 0.25) heatMap.put(p, heatMap.get(p) + Config.lowGain);
+            if (similarity > 0.5) heatMap.put(p, heatMap.get(p) + Config.mediumGain);
+            if (similarity > 0.9) heatMap.put(p, heatMap.get(p) + Config.highGain);
+        }
+
         if (heatMap.get(p) > Config.punishHeat) {
             e.setCancelled(true);
-            FilterAction.filterAction(p,e,null,null, sim, FAT.SPAM);
+            FilterAction.filterAction(p,e,null,null, GPTUtils.calcSim(e.getMessage(),lastMessageMap.get(p)), FAT.SPAM);
             return;
         }
 
         if (heatMap.get(p) > Config.blockHeat) {
             e.setCancelled(true);
-            FilterAction.filterAction(p,e,null,null, sim, FAT.BLOCK_SPAM);
+            FilterAction.filterAction(p,e,null,null, GPTUtils.calcSim(e.getMessage(),lastMessageMap.get(p)), FAT.BLOCK_SPAM);
             heatMap.put(p, heatMap.get(p) + Config.highGain);
             return;
-        }
-        if (lastMessageMap.containsKey(p)) {
-            String lastMessage = lastMessageMap.get(p);
-            double similarity = calculateSimilarity(message, lastMessage);
-            if (similarity > 0.25) heatMap.put(p, heatMap.get(p) + Config.lowGain);
-            if (similarity > 0.5) heatMap.put(p, heatMap.get(p) + Config.mediumGain);
-            if (similarity > 0.9) heatMap.put(p, heatMap.get(p) + Config.highGain);
         }
         lastMessageMap.put(p, message);
     }

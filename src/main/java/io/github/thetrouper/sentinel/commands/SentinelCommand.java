@@ -4,8 +4,12 @@
 
 package io.github.thetrouper.sentinel.commands;
 
+import io.github.thetrouper.sentinel.Sentinel;
+import io.github.thetrouper.sentinel.data.Config;
+import io.github.thetrouper.sentinel.server.functions.AntiSpam;
 import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
 import io.github.thetrouper.sentinel.server.util.Text;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -28,28 +32,53 @@ public class SentinelCommand extends CustomCommand {
     public void dispatchCommand(CommandSender sender, Command command, String label, String[] args) {
         Player p = (Player) sender;
         switch (args[0]) {
-            case "debugmode" -> {
-                debugmode = !debugmode;
-                p.sendMessage(Text.prefix((debugmode ? "enabled" : "disabled") + " debug mode."));
-            }
-            case "testantiswear" -> {
-                HashSet<Player> players = new HashSet<>();
-                players.add((Player) sender);
-                String msg = "";
-                for (int i = 1; i < args.length; i++) {
-                    msg = msg.concat(" " + args[i]);
+            case "debug" -> {
+                switch (args[1]) {
+                    case "testantiswear" -> {
+                        HashSet<Player> players = new HashSet<>();
+                        players.add((Player) sender);
+                        String msg = "";
+                        for (int i = 1; i < args.length; i++) {
+                            msg = msg.concat(" " + args[i]);
+                        }
+                        msg = msg.trim();
+                        AsyncPlayerChatEvent e = new AsyncPlayerChatEvent(true, (Player) sender, msg, players);
+                        ProfanityFilter.handleProfanityFilter(e);
+                    }
+                    case "testantispam" -> {
+                        HashSet<Player> players = new HashSet<>();
+                        players.add((Player) sender);
+                        String msg = "";
+                        for (int i = 1; i < args.length; i++) {
+                            msg = msg.concat(" " + args[i]);
+                        }
+                        msg = msg.trim();
+                        AsyncPlayerChatEvent e = new AsyncPlayerChatEvent(true, (Player) sender, msg, players);
+                        AntiSpam.handleAntiSpam(e);
+                    }
+                    case "testlang" -> {
+                        p.sendMessage(Sentinel.dict.get("exmaple-message"));
+                    }
+                    case "toggle" -> {
+                        debugmode = !debugmode;
+                        p.sendMessage(Text.prefix((debugmode ? "enabled" : "disabled") + " debug mode."));
+                    }
                 }
-                msg = msg.trim();
-                AsyncPlayerChatEvent e = new AsyncPlayerChatEvent(true, (Player) sender, msg, players);
-                ProfanityFilter.handleProfanityFilter(e);
+            }
+            case "getHeat" -> {
+                Player target = Bukkit.getPlayer(args[1]);
+                if (target == null) {
+                    p.sendMessage(Text.prefix("Invalid Player!"));
+                    return;
+                }
+                p.sendMessage(Text.prefix("Heat of " + target.getName() + ": &8(&c" + AntiSpam.heatMap.get(target) + "&7/&4" + Config.punishHeat + "&8)"));
             }
         }
     }
 
     @Override
     public void registerCompletions(CompletionBuilder builder) {
-        builder.addCompletion(1,"debugmode");
-        builder.addCompletion(1,"testantiswear");
-
+        builder.addCompletion(1,"debug");
+        builder.addCompletion(1,"getHeat");
     }
 }
