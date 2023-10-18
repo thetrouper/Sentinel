@@ -2,8 +2,8 @@ package io.github.thetrouper.sentinel.events;
 
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Config;
-import io.github.thetrouper.sentinel.server.Action;
-import io.github.thetrouper.sentinel.server.ActionType;
+import io.github.thetrouper.sentinel.data.Action;
+import io.github.thetrouper.sentinel.data.ActionType;
 import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -13,9 +13,6 @@ import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 
 public class NBTEvents implements Listener {

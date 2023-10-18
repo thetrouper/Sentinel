@@ -1,4 +1,4 @@
-package io.github.thetrouper.sentinel.server;
+package io.github.thetrouper.sentinel.data;
 
 import java.awt.*;
 

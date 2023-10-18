@@ -2,8 +2,8 @@ package io.github.thetrouper.sentinel.events;
 
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Config;
-import io.github.thetrouper.sentinel.server.Action;
-import io.github.thetrouper.sentinel.server.ActionType;
+import io.github.thetrouper.sentinel.data.Action;
+import io.github.thetrouper.sentinel.data.ActionType;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;

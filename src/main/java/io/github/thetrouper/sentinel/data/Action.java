@@ -1,9 +1,7 @@
-package io.github.thetrouper.sentinel.server;
+package io.github.thetrouper.sentinel.data;
 
 
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.data.Config;
-import io.github.thetrouper.sentinel.data.Emojis;
 import io.github.thetrouper.sentinel.discord.DiscordWebhook;
 import io.github.thetrouper.sentinel.server.util.FileUtils;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
