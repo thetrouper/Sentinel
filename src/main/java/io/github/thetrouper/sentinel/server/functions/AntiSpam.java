@@ -2,6 +2,8 @@ package io.github.thetrouper.sentinel.server.functions;
 
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Config;
+import io.github.thetrouper.sentinel.data.FAT;
+import io.github.thetrouper.sentinel.data.FilterAction;
 import io.github.thetrouper.sentinel.discord.WebhookSender;
 import io.github.thetrouper.sentinel.server.util.GPTUtils;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
@@ -29,16 +31,17 @@ public class AntiSpam {
     public static void handleAntiSpam(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
         String message = Text.removeFirstColor(e.getMessage());
+        Double sim = calculateSimilarity(e.getMessage(),lastMessageMap.get(p));
         if (!heatMap.containsKey(p)) heatMap.put(p, 0);
         if (heatMap.get(p) > Config.punishHeat) {
             e.setCancelled(true);
-            punishSpam(p,message, lastMessageMap.get(p));
+            FilterAction.filterAction(p,e,null,null, sim, FAT.SPAM);
             return;
         }
 
         if (heatMap.get(p) > Config.blockHeat) {
             e.setCancelled(true);
-            alertSpam(p, message, lastMessageMap.get(p));
+            FilterAction.filterAction(p,e,null,null, sim, FAT.BLOCK_SPAM);
             heatMap.put(p, heatMap.get(p) + Config.highGain);
             return;
         }
@@ -60,7 +63,7 @@ public class AntiSpam {
             }
         }
     }
-
+    /*
     public static void alertSpam(Player p, String message1, String message2) {
         TextComponent text = new TextComponent();
         double similarity = GPTUtils.calculateSimilarity(message1,message2 + "%");
@@ -94,4 +97,5 @@ public class AntiSpam {
         });
         if (Config.logSpam) WebhookSender.sendSpamLog(p,message1,message2,heatMap.get(p),chatCleared);
     }
+    */
 }

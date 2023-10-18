@@ -27,7 +27,7 @@ public class ProfanityFilter {
         String severity = ProfanityFilter.checkSeverity(message);
         if (!scoreMap.containsKey(p)) scoreMap.put(p, 0);
         // Old: if (scoreMap.get(p) > Config.punishScore) punishSwear(p,highlighted,message,e);
-        if (scoreMap.get(p) > Config.punishScore) FilterAction.filterAction(p,e,highlighted,severity, FAT.SWEAR);
+        if (scoreMap.get(p) > Config.punishScore) FilterAction.filterAction(p,e,highlighted,severity, null, FAT.SWEAR);
 
         switch (severity) {
             case "low" -> {
@@ -35,35 +35,35 @@ public class ProfanityFilter {
                 scoreMap.put(p, scoreMap.get(p) + Config.lowScore);
                 e.setCancelled(true);
                 // Old: blockSwear(p,highlighted,message,severity,e);
-                FilterAction.filterAction(p,e,highlighted,severity, FAT.BLOCK_SWEAR);
+                FilterAction.filterAction(p,e,highlighted,severity, null, FAT.BLOCK_SWEAR);
             }
             case "medium-low" -> {
                 ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.mediumLowScore);
                 scoreMap.put(p, scoreMap.get(p) + Config.mediumLowScore);
                 e.setCancelled(true);
                 // Old: blockSwear(p,highlighted,message,severity,e);
-                FilterAction.filterAction(p,e,highlighted,severity, FAT.BLOCK_SWEAR);
+                FilterAction.filterAction(p,e,highlighted,severity, null, FAT.BLOCK_SWEAR);
             }
             case "medium" -> {
                 ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.mediumScore);
                 scoreMap.put(p, scoreMap.get(p) + Config.mediumScore);
                 e.setCancelled(true);
                 // Old: blockSwear(p,highlighted,message,severity,e);
-                FilterAction.filterAction(p,e,highlighted,severity, FAT.BLOCK_SWEAR);
+                FilterAction.filterAction(p,e,highlighted,severity, null, FAT.BLOCK_SWEAR);
             }
             case "medium-high" -> {
                 ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.mediumHighScore);
                 scoreMap.put(p, scoreMap.get(p) + Config.mediumHighScore);
                 e.setCancelled(true);
                 // Old: blockSwear(p,highlighted,message,severity,e);
-                FilterAction.filterAction(p,e,highlighted,severity, FAT.BLOCK_SWEAR);
+                FilterAction.filterAction(p,e,highlighted,severity, null, FAT.BLOCK_SWEAR);
             }
             case "high" -> {
                 ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.highScore);
                 scoreMap.put(p, scoreMap.get(p) + Config.highScore);
                 e.setCancelled(true);
                 // Old: blockSwear(p,highlighted,message,severity,e);
-                FilterAction.filterAction(p,e,highlighted,severity, FAT.BLOCK_SWEAR);
+                FilterAction.filterAction(p,e,highlighted,severity, null, FAT.BLOCK_SWEAR);
             }
             case "slur" -> {
                 // Insta-Punish
@@ -71,7 +71,7 @@ public class ProfanityFilter {
                 scoreMap.put(p, scoreMap.get(p) + Config.highScore);
                 e.setCancelled(true);
                 // Old: punishSlur(p,highlighted,message,e);
-                FilterAction.filterAction(p,e,highlighted,severity, FAT.SLUR);
+                FilterAction.filterAction(p,e,highlighted,severity, null,FAT.SLUR);
             }
         }
     }
