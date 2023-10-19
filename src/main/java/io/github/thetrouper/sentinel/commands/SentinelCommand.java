@@ -8,6 +8,7 @@ import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Config;
 import io.github.thetrouper.sentinel.server.functions.AntiSpam;
 import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
+import io.github.thetrouper.sentinel.server.util.ArrayUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -15,7 +16,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * Example command
@@ -34,7 +37,7 @@ public class SentinelCommand extends CustomCommand {
         switch (args[0]) {
             case "debug" -> {
                 switch (args[1]) {
-                    case "testantiswear" -> {
+                    case "antiswear" -> {
                         HashSet<Player> players = new HashSet<>();
                         players.add((Player) sender);
                         String msg = "";
@@ -45,7 +48,7 @@ public class SentinelCommand extends CustomCommand {
                         AsyncPlayerChatEvent e = new AsyncPlayerChatEvent(true, (Player) sender, msg, players);
                         ProfanityFilter.handleProfanityFilter(e);
                     }
-                    case "testantispam" -> {
+                    case "antispam" -> {
                         HashSet<Player> players = new HashSet<>();
                         players.add((Player) sender);
                         String msg = "";
@@ -56,7 +59,7 @@ public class SentinelCommand extends CustomCommand {
                         AsyncPlayerChatEvent e = new AsyncPlayerChatEvent(true, (Player) sender, msg, players);
                         AntiSpam.handleAntiSpam(e);
                     }
-                    case "testlang" -> {
+                    case "lang" -> {
                         p.sendMessage(Sentinel.dict.get("exmaple-message"));
                     }
                     case "toggle" -> {
@@ -78,7 +81,14 @@ public class SentinelCommand extends CustomCommand {
 
     @Override
     public void registerCompletions(CompletionBuilder builder) {
+        List<String> debugCommands = new ArrayList<>();
+        debugCommands.add("antiswear");
+        debugCommands.add("antispam");
+        debugCommands.add("lang");
+        debugCommands.add("toggle");
         builder.addCompletion(1,"debug");
+        builder.addCompletion(2,builder.args[1].equals("debug"),debugCommands);
         builder.addCompletion(1,"getHeat");
+        builder.addCompletion(2,builder.args[1].equals("getHeat"), ArrayUtils.toNewList(Bukkit.getOnlinePlayers(), Player::getName));
     }
 }
