@@ -81,14 +81,15 @@ public class SentinelCommand extends CustomCommand {
 
     @Override
     public void registerCompletions(CompletionBuilder builder) {
-        List<String> debugCommands = new ArrayList<>();
-        debugCommands.add("antiswear");
-        debugCommands.add("antispam");
-        debugCommands.add("lang");
-        debugCommands.add("toggle");
-        builder.addCompletion(1,"debug");
-        builder.addCompletion(2,builder.args[1].equals("debug"),debugCommands);
-        builder.addCompletion(1,"getHeat");
-        builder.addCompletion(2,builder.args[1].equals("getHeat"), ArrayUtils.toNewList(Bukkit.getOnlinePlayers(), Player::getName));
+        builder.addCompletion(1,new String[]{
+                "debug",
+                "getHeat"
+        });
+        builder.addCompletion(2, (builder.args.length >= 1 && builder.args[1].equals("debug")),new String[]{"antiswear",
+                "antispam",
+                "lang",
+                "toggle"
+        });
+        //builder.addCompletion(2, (builder.args.length >= 1 && builder.args[1].equals("getHeat")), ArrayUtils.toNewList(Bukkit.getOnlinePlayers(), Player::getName));
     }
 }
