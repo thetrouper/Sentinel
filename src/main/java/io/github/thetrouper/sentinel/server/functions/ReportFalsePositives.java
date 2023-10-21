@@ -21,12 +21,12 @@ public class ReportFalsePositives {
     public static String generateReport(AsyncPlayerChatEvent e) {
         final long reportLong = Randomizer.generateID();
         final String reportID = Long.toString(reportLong);
-        ServerUtils.sendDebugMessage(Text.prefix("DEBUG: Generating chat filter report"));
+        ServerUtils.sendDebugMessage("FP Report: Generating chat filter report");
         reportMap.put(reportID,e);
-        ServerUtils.sendDebugMessage(Text.prefix("DEBUG: Generated chat filter report. ID:" + reportID + " Message: \"" + reportMap.get(reportID).getMessage() + "\" Expires in 60 seconds"));
+        ServerUtils.sendDebugMessage(("FP Report: Generated chat filter report. ID:" + reportID + " Message: \"" + reportMap.get(reportID).getMessage() + "\" Expires in 60 seconds"));
         Bukkit.getScheduler().runTaskLater(Sentinel.getInstance(),()->{
             reportMap.remove(reportID);
-            ServerUtils.sendDebugMessage(Text.prefix("DEBUG: Chat filter Report expired. ID: " + reportID));
+            ServerUtils.sendDebugMessage("FP Report:  Chat filter Report expired. ID: " + reportID);
         },60000);
         return reportID;
     }
@@ -75,10 +75,10 @@ public class ReportFalsePositives {
                 .setThumbnail("https://crafatar.com/avatars/" + player.getUniqueId() + "?size=64&&overlay");
         webhook.addEmbed(embed);
         try {
-            ServerUtils.sendDebugMessage("Executing webhook...");
+            ServerUtils.sendDebugMessage("FP Report: Executing webhook...");
             webhook.execute();
         } catch (IOException e) {
-            ServerUtils.sendDebugMessage(Text.prefix("Epic webhook failure!!!"));
+            ServerUtils.sendDebugMessage("FP Report: Epic webhook failure!!!");
             Sentinel.log.info(e.toString());
         }
     }

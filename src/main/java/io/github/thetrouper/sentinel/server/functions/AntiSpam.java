@@ -4,6 +4,7 @@ import io.github.thetrouper.sentinel.data.Config;
 import io.github.thetrouper.sentinel.data.FAT;
 import io.github.thetrouper.sentinel.data.FilterAction;
 import io.github.thetrouper.sentinel.server.util.GPTUtils;
+import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -19,23 +20,34 @@ public class AntiSpam {
         heatMap = new HashMap<>();
         lastMessageMap = new HashMap<>();
     }
+
     public static void handleAntiSpam(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
         String message = Text.removeFirstColor(e.getMessage());
 
         if (!lastMessageMap.containsKey(p)) {
             lastMessageMap.put(p,"/* Placeholder Message from Sentinel */");
+            ServerUtils.sendDebugMessage("AntiSpam: " + p.getName() + " did not have a previous message, setting to placeholder!");
         }
         if (!heatMap.containsKey(p)) {
             heatMap.put(p,0);
+            ServerUtils.sendDebugMessage("AntiSpam: " + p.getName() + " did not have a heat, setting it to 0!");
         }
 
         if (lastMessageMap.containsKey(p)) {
             String lastMessage = lastMessageMap.get(p);
             double similarity = GPTUtils.calcSim(message, lastMessage);
-            if (similarity > 0.25) heatMap.put(p, heatMap.get(p) + Config.lowGain);
-            if (similarity > 0.5) heatMap.put(p, heatMap.get(p) + Config.mediumGain);
-            if (similarity > 0.9) heatMap.put(p, heatMap.get(p) + Config.highGain);
+            ServerUtils.sendDebugMessage("AntiSpam: " + p.getName() + " has a heat of " + heatMap.get(p) + "/" + Config.punishHeat + ". Current Message: \"" + message + "\" Last message: \"" + lastMessage + "\"");
+            if (similarity > 90) {
+                heatMap.put(p, heatMap.get(p) + Config.highGain);
+                ServerUtils.sendDebugMessage("AntiSpam: Similarity: " + similarity + ", is greater than 90% for " + p.getName() + ". Adding " + Config.highGain);
+            } else if (similarity > 50) {
+                heatMap.put(p, heatMap.get(p) + Config.mediumGain);
+                ServerUtils.sendDebugMessage("AntiSpam: Similarity: " + similarity + ", is greater than 50% for " + p.getName() + ". Adding " + Config.mediumGain);
+            } else if (similarity > 25) {
+                heatMap.put(p, heatMap.get(p) + Config.lowGain);
+                ServerUtils.sendDebugMessage("AntiSpam: Similarity: " + similarity + ", is greater than 25% for " + p.getName() + ". Adding " + Config.lowGain);
+            }
         }
 
         if (heatMap.get(p) > Config.punishHeat) {
@@ -59,6 +71,7 @@ public class AntiSpam {
                 heat = heat - Config.heatDecay;
                 heatMap.put(p, Math.max(0, heat));
             }
+            //ServerUtils.sendDebugMessage("AntiSpam: Decaying heat for " + p.getName() + ": " + heatMap.get(p));
         }
     }
     /*

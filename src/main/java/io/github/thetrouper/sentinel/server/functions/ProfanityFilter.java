@@ -194,11 +194,11 @@ public class ProfanityFilter {
     public static String checkSeverity(String text) {
         // 1:
         String lowercasedText = text.toLowerCase();
-        ServerUtils.sendDebugMessage(Text.prefix("Debug: [AntiSwear] Lowercased: " + lowercasedText));
+        ServerUtils.sendDebugMessage("ProfanityFilter:  Lowercased: " + lowercasedText);
 
         // 2:
         String cleanedText = removeFalsePositives(lowercasedText);
-        ServerUtils.sendDebugMessage(Text.prefix("Debug: [AntiSwear] Removed False positives: " + cleanedText));
+        ServerUtils.sendDebugMessage(("ProfanityFilter: Removed False positives: " + cleanedText));
 
         // 3:
         if (containsSwears(cleanedText)) return "low";
@@ -206,7 +206,7 @@ public class ProfanityFilter {
 
         // 4:
         String convertedText = convertLeetSpeakCharacters(cleanedText);
-        ServerUtils.sendDebugMessage(Text.prefix("Debug: [AntiSwear] Leet Converted: " + convertedText));
+        ServerUtils.sendDebugMessage(("ProfanityFilter: Leet Converted: " + convertedText));
 
         // 5:
         if (containsSwears(convertedText)) return "medium-low";
@@ -214,7 +214,7 @@ public class ProfanityFilter {
 
         // 6:
         String strippedText = stripSpecialCharacters(convertedText);
-        ServerUtils.sendDebugMessage(Text.prefix("Debug: [AntiSwear] Specials Removed: " + strippedText));
+        ServerUtils.sendDebugMessage(("ProfanityFilter: Specials Removed: " + strippedText));
 
         // 7:
         if (containsSwears(strippedText)) return "medium";
@@ -222,7 +222,7 @@ public class ProfanityFilter {
 
         // 8:
         String simplifiedText = simplifyRepeatingLetters(strippedText);
-        ServerUtils.sendDebugMessage(Text.prefix("Debug: [AntiSwear] Removed Repeating: " + simplifiedText));
+        ServerUtils.sendDebugMessage(("ProfanityFilter: Removed Repeating: " + simplifiedText));
 
         // 9:
         if (containsSwears(simplifiedText)) return "medium-high";
@@ -230,7 +230,7 @@ public class ProfanityFilter {
 
         // 10:
         String finalText = removePeriodsAndSpaces(simplifiedText);
-        ServerUtils.sendDebugMessage(Text.prefix("Debug: [AntiSwear] Remove Punctuation: " + finalText));
+        ServerUtils.sendDebugMessage(("ProfanityFilter: Remove Punctuation: " + finalText));
 
         // 11:
         if (containsSwears(finalText)) return "high";
@@ -244,14 +244,14 @@ public class ProfanityFilter {
         return containsSwears(text) || containsSlurs(text);
     }
     private static boolean containsSwears(String text) {
-        ServerUtils.sendDebugMessage("Debug: [AntiSwear] Checking for swears");
+        ServerUtils.sendDebugMessage("ProfanityFilter: Checking for swears");
         for (String swear : swearBlacklist) {
             if (text.contains(swear)) return true;
         }
         return false;
     }
     private static boolean containsSlurs(String text) {
-        ServerUtils.sendDebugMessage("Debug: [AntiSwear] Checking for slurs");
+        ServerUtils.sendDebugMessage("ProfanityFilter: Checking for slurs");
         for (String slur : slurs) {
             if (text.contains(slur)) return true;
         }

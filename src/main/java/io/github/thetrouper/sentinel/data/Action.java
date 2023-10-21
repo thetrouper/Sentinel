@@ -261,10 +261,10 @@ public class Action {
                         .setColor(action.getEmbedColor());
                 webhook.addEmbed(embed);
                 try {
-                    ServerUtils.sendDebugMessage("Executing webhook...");
+                    ServerUtils.sendDebugMessage("ActionBuilder: Executing webhook...");
                     webhook.execute();
                 } catch (IOException e) {
-                    ServerUtils.sendDebugMessage(Text.prefix("Epic webhook failure!!!"));
+                    ServerUtils.sendDebugMessage("ActionBuilder: Epic webhook failure!!!");
                     Sentinel.log.info(e.toString());
                 }
             }

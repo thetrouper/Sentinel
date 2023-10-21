@@ -17,12 +17,12 @@ public class CommandEvent implements Listener {
     private void onCommand(PlayerCommandPreprocessEvent e) {
         Player p = e.getPlayer();
         String command = e.getMessage().substring(1).split(" ")[0];
-        ServerUtils.sendDebugMessage(Text.prefix("Checking command"));
+        ServerUtils.sendDebugMessage("CommandEvent: Checking command");
         if (Sentinel.isDangerousCommand(command)) {
-            ServerUtils.sendDebugMessage(Text.prefix( "Command is dangerous"));
+            ServerUtils.sendDebugMessage("CommandEvent: Command is dangerous");
             if (!Sentinel.isTrusted(p)) {
                 e.setCancelled(true);
-                ServerUtils.sendDebugMessage(Text.prefix("Command is canceled"));
+                ServerUtils.sendDebugMessage("CommandEvent: Command is canceled");
                 Action a = new Action.Builder()
                         .setAction(ActionType.DANGEROUS_COMMAND)
                         .setEvent(e)
@@ -38,12 +38,12 @@ public class CommandEvent implements Listener {
             }
         }
         if (Config.blockSpecific) {
-            ServerUtils.sendDebugMessage(Text.prefix("Checking command for specific"));
+            ServerUtils.sendDebugMessage("CommandEvent: Checking command for specific");
             if (command.contains(":")) {
-                ServerUtils.sendDebugMessage(Text.prefix("Checking is specific"));
+                ServerUtils.sendDebugMessage("CommandEvent: Checking is specific");
                 if (!Sentinel.isTrusted(p)) {
                     e.setCancelled(true);
-                    ServerUtils.sendDebugMessage(Text.prefix("Command is canceled"));
+                    ServerUtils.sendDebugMessage(("CommandEvent: Command is canceled"));
                     Action a = new Action.Builder()
                             .setAction(ActionType.SPECIFIC_COMMAND)
                             .setEvent(e)

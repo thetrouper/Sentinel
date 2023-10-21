@@ -37,7 +37,7 @@ public class WebhookSender {
             ServerUtils.sendDebugMessage("Executing webhook...");
             webhook.execute();
         } catch (IOException e) {
-            ServerUtils.sendDebugMessage(Text.prefix("Epic webhook failure!!!"));
+            ServerUtils.sendDebugMessage("Epic webhook failure!!!");
             Sentinel.log.info(e.toString());
         }
     }

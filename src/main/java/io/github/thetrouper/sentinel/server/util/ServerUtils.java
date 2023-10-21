@@ -28,10 +28,11 @@ public class ServerUtils {
     }
     public static void sendDebugMessage(String message) {
         if (SentinelCommand.debugmode) {
-            Sentinel.log.info(message);
+            String log = "[Sentinel] [DEBUG]: " + message;
+            Sentinel.log.info(log);
             for (Player trustedPlayer : Bukkit.getOnlinePlayers()) {
                 if (Sentinel.isTrusted(trustedPlayer)) {
-                    trustedPlayer.sendMessage(message);
+                    trustedPlayer.sendMessage("§d§lSentinel §7[§bDEBUG§7] §8» §7" + message);
                 }
             }
         }

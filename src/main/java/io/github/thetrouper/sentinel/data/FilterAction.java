@@ -107,7 +107,7 @@ public class FilterAction {
             ServerUtils.sendDebugMessage("Executing webhook...");
             webhook.execute();
         } catch (IOException ex) {
-            ServerUtils.sendDebugMessage(Text.prefix("Epic webhook failure!!!"));
+            ServerUtils.sendDebugMessage("Filter Actions: Epic webhook failure!!!");
             Sentinel.log.info(ex.toString());
         }
     }
