@@ -4,6 +4,7 @@ import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Config;
 import io.github.thetrouper.sentinel.data.Action;
 import io.github.thetrouper.sentinel.data.ActionType;
+import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -14,12 +15,17 @@ import org.bukkit.event.block.BlockPlaceEvent;
 public class CMDBlockPlace implements Listener {
     @EventHandler
     private void onCMDBlockPlace(BlockPlaceEvent e) {
+        ServerUtils.sendDebugMessage("CommandBlockPlace: Detected block place");
         if (!Config.preventCmdBlockPlace) return;
+        ServerUtils.sendDebugMessage("CommandBlockPlace: Enabled");
         if (Config.cmdBlockOpCheck && !e.getPlayer().isOp()) return;
+        ServerUtils.sendDebugMessage("CommandBlockPlace: Player is operator");
         Block b = e.getBlockPlaced();
         if (b.getType() == Material.COMMAND_BLOCK || b.getType() == Material.CHAIN_COMMAND_BLOCK || b.getType() == Material.REPEATING_COMMAND_BLOCK ) {
+            ServerUtils.sendDebugMessage("CommandBlockPlace: Block is a command block");
             Player p = e.getPlayer();
             if (!Sentinel.isTrusted(p)) {
+                ServerUtils.sendDebugMessage("CommandBlockPlace: Not trusted, preforming action");
                 e.setCancelled(true);
                 Action a = new Action.Builder()
                         .setAction(ActionType.PLACE_COMMAND_BLOCK)

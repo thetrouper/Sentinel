@@ -44,6 +44,7 @@ public class FilterAction {
         String notiftext = Sentinel.dict.get(type.getNotifTranslationKey());
 
         notif.setText(Text.prefix((type != FAT.SPAM && type != FAT.BLOCK_SPAM ? notiftext.formatted(offender.getName(), scoreMap.get(offender), Config.punishScore) : notiftext.formatted(offender.getName(),heatMap.get(offender),Config.punishHeat))));
+
         ServerUtils.forEachStaff(staffmember -> {
             staffmember.spigot().sendMessage(notif);
         });
@@ -80,7 +81,6 @@ public class FilterAction {
     private static void sendDiscordLog(Player offender, AsyncPlayerChatEvent e, FAT type) {
         String supertitle = type.getTitle();
         String title = offender.getName() + " has triggered the " + type.getName() + "!";
-        Color color = Color.white;
         String executed = type.getExecutedCommand() != null ? type.getExecutedCommand() : "Nothing, its a standard flag. You shouldn't be seeing this, please report it.";
 
         DiscordWebhook webhook = new DiscordWebhook(Config.webhook);
@@ -91,14 +91,14 @@ public class FilterAction {
                 .setAuthor(supertitle, "", "")
                 .setTitle(title)
                 .setDescription(
-                        Emojis.rightSort + "Player: " + offender.getName() + " " + Emojis.target + "\n" +
-                                Emojis.space + Emojis.arrowRight + (type != FAT.BLOCK_SPAM ? "Score: `" + scoreMap.get(offender) + "/" + Config.punishScore : "Heat: `" + heatMap.get(offender) + "/" + Config.punishHeat) + "`\n" +
-                                Emojis.space + Emojis.arrowRight + "UUID: `" + offender.getUniqueId() + "`\n" +
-                                Emojis.rightSort + "Executed: " + executed + " " + Emojis.mute + "\n"
+                        Emojis.rightSort + "Player: " + offender.getName() + " " + Emojis.target + "\\n" +
+                                Emojis.space + Emojis.arrowRight + (type != FAT.BLOCK_SPAM ? "Score: `" + scoreMap.get(offender) + "/" + Config.punishScore : "Heat: `" + heatMap.get(offender) + "/" + Config.punishHeat) + "`\\n" +
+                                Emojis.space + Emojis.arrowRight + "UUID: `" + offender.getUniqueId() + "`\\n" +
+                                Emojis.rightSort + "Executed: " + executed + " " + Emojis.mute + "\\n"
                 )
-                .addField((type != FAT.BLOCK_SPAM ? "Message: " : "Previous: "), (type != FAT.BLOCK_SPAM ? e.getMessage() : lastMessageMap.get(offender)) + Emojis.alarm, false)
-                .addField((type != FAT.BLOCK_SPAM ? "Reduced: " : "Current: "), (type != FAT.BLOCK_SPAM ? highlightProfanity(e.getMessage(), "||", "||") : e.getMessage()) + " " + Emojis.noDM, false)
-                .setColor(color)
+                .addField((type != FAT.BLOCK_SPAM && type != FAT.SPAM ? "Message: " : "Previous: "), (type != FAT.BLOCK_SPAM && type != FAT.SPAM ? e.getMessage() : lastMessageMap.get(offender)) + Emojis.alarm, false)
+                .addField((type != FAT.BLOCK_SPAM && type != FAT.SPAM ? "Reduced: " : "Current: "), (type != FAT.BLOCK_SPAM && type != FAT.SPAM ? highlightProfanity(e.getMessage(), "||", "||") : e.getMessage()) + " " + Emojis.noDM, false)
+                .setColor(type.getColor())
                 .setThumbnail("https://crafatar.com/avatars/" + offender.getUniqueId() + "?size=64&&overlay");
 
         webhook.addEmbed(embed);

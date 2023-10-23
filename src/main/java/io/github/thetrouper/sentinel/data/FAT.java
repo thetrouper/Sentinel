@@ -3,8 +3,6 @@ package io.github.thetrouper.sentinel.data;
 import java.awt.*;
 
 public enum FAT {
-    // I couldn't miss the opportunity to call the "Filter Action Type" FAT
-    // Its rly just to make the tab completion of FilterAction easier
     BLOCK_SWEAR("Sentinel Profanity Filter",null,"swear-block-warn", "swear-block-notification", null,null),
     BLOCK_SPAM("Sentinel Anti-Spam", null, "spam-block-warn", "spam-notification",null,null),
     SWEAR("Sentinel Anti-Swear Log","Anti-Swear", "profanity-mute-warn", "profanity-mute-notification", Config.swearPunishCommand, Color.orange),

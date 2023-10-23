@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.github.thetrouper.sentinel.server.util.Text.SECTION_SYMBOL;
+
 public class ProfanityFilter {
     public static Map<Player, Integer> scoreMap;
     private static final List<String> swearBlacklist = Config.swearBlacklist;
@@ -140,14 +142,14 @@ public class ProfanityFilter {
     }
 */
     public static String highlightProfanity(String text) {
-        String highlightedSwears = highlightSwears(fullSimplify(text), "\u00a7e", "\u00a7f");
-        String highlightedText = highlightSlurs(highlightedSwears, "\u00a7c", "\u00a7f");
-        return highlightedText;
+        String highlightedSwears = highlightSwears(fullSimplify(text),  "&e",  "&f");
+        String highlightedText = highlightSlurs(highlightedSwears,  "&c",  "&f");
+        return Text.color(highlightedText);
     }
     public static String highlightProfanity(String text, String start, String end) {
         String highlightedSwears = highlightSwears(fullSimplify(text), start, end);
         String highlightedText = highlightSlurs(highlightedSwears, start, end);
-        return highlightedText;
+        return Text.color(highlightedText);
     }
 
     private static String highlightSwears(String text, String start, String end) {

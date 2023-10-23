@@ -4,6 +4,7 @@ import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Config;
 import io.github.thetrouper.sentinel.data.Action;
 import io.github.thetrouper.sentinel.data.ActionType;
+import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -18,16 +19,22 @@ import java.util.Map;
 public class NBTEvents implements Listener {
     @EventHandler
     private void onNBTPull(InventoryCreativeEvent e) {
+        ServerUtils.sendDebugMessage("NBT: Detected creative mode action");
         if (Config.preventNBT) {
-            if (!(e.getWhoClicked() instanceof Player p)) {
-                return;
-            }
+            ServerUtils.sendDebugMessage("NBT: Enabled");
+            if (!(e.getWhoClicked() instanceof Player p)) return;
+            ServerUtils.sendDebugMessage("NBT: Clicker is a player");
             if (e.getCursor() == null) return;
+            ServerUtils.sendDebugMessage("NBT: Cursor isn't null");
             ItemStack i = e.getCursor();
             if (!Sentinel.isTrusted(p)) {
+                ServerUtils.sendDebugMessage("NBT: Not trusted");
                 if (e.getCursor().getItemMeta() == null) return;
+                ServerUtils.sendDebugMessage("NBT: Cursor has meta");
                 if (i.hasItemMeta() && i.getItemMeta() != null) {
+                    ServerUtils.sendDebugMessage("NBT: Item has meta");
                     if (!itemPasses(i)) {
+                        ServerUtils.sendDebugMessage("NBT: Item doesn't pass, preforming action");
                         Action a = new Action.Builder()
                                 .setEvent(e)
                                 .setAction(ActionType.NBT)
@@ -48,28 +55,52 @@ public class NBTEvents implements Listener {
     }
 
     private boolean itemPasses(ItemStack i) {
-        if (i.hasItemMeta()) {
+        ServerUtils.sendDebugMessage("NBT: Checking if item passes: " + i.getItemMeta());
+        if (i.getItemMeta() != null) {
+            ServerUtils.sendDebugMessage("NBT: Item meta isn't null");
             ItemMeta meta = i.getItemMeta();
-            if (!Config.allowName && meta.hasDisplayName()) return false;
-            if (!Config.allowLore && meta.hasLore()) return false;
-            if (!Config.allowAttributes && meta.hasAttributeModifiers()) return false;
-            if (Config.globalMaxEnchant == 0 && hasIllegalEnchants(i)) return false;
+            if (!Config.allowName && meta.hasDisplayName()) {
+                ServerUtils.sendDebugMessage("NBT: No pass N");
+                return false;
+            } else if (!Config.allowLore && meta.hasLore()) {
+                ServerUtils.sendDebugMessage("NBT: No Pass L ");
+                return false;
+            } else if (!Config.allowAttributes && meta.hasAttributeModifiers()) {
+                ServerUtils.sendDebugMessage("NBT: No pass A");
+                return false;
+            } else if (Config.globalMaxEnchant != 0 && hasIllegalEnchants(i)) {
+                ServerUtils.sendDebugMessage("NBT: No pass E");
+                return false;
+            }
+            ServerUtils.sendDebugMessage("NBT: All checks passed");
+            return true;
+        } else {
+            ServerUtils.sendDebugMessage("NBT: Item passes because of no meta");
+            return true;
         }
-        return true;
     }
+    /*
+    [01:23:03 INFO]: [Sentinel] [DEBUG]: NBT: Detected creative mode action
+    [01:23:03 INFO]: [Sentinel] [DEBUG]: NBT: Enabled
+    [01:23:03 INFO]: [Sentinel] [DEBUG]: NBT: Clicker is a player
+    [01:23:03 INFO]: [Sentinel] [DEBUG]: NBT: Cursor isn't null
+    [01:23:03 INFO]: [Sentinel] [DEBUG]: NBT: Not trusted
+    [01:23:03 INFO]: [Sentinel] [DEBUG]: NBT: Cursor has meta
+    [01:23:03 INFO]: [Sentinel] [DEBUG]: NBT: Item has meta
+    [01:23:03 INFO]: [Sentinel] [DEBUG]: NBT: Checking if item passes: UNSPECIFIC_META:{meta-type=UNSPECIFIC, display-name={"italic":false,"color":"red","text":"Penguin's Flaming Fish!"}, lore=[{"extra":[{"bold":false,"italic":false,"underlined":false,"strikethrough":false,"obfuscated":false,"color":"gray","text":"Penguin Almighty XXXMMDCCLXVII"}],"text":""}], enchants={FIRE_ASPECT=32767, KNOCKBACK=32767}, ItemFlags=[HIDE_ENCHANTS]}
+    [01:23:03 INFO]: [Sentinel] [DEBUG]: NBT: Item meta isn't null
+    [01:23:03 INFO]: [Sentinel] [DEBUG]: NBT: All checks passed
+     */
     private boolean hasIllegalEnchants(ItemStack i) {
+        ServerUtils.sendDebugMessage("NBT: Checking for illegal enchants");
         if (i.hasItemMeta() && i.getItemMeta().hasEnchants()) {
             final ItemMeta meta = i.getItemMeta();
             final Map<Enchantment, Integer> enchantments = meta.getEnchants();
-            for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-                Enchantment enchantment = entry.getKey();
-                int level = entry.getValue();
-
-                if (level > Config.globalMaxEnchant) {
+            for (Integer value : enchantments.values()) {
+                if (value > Config.globalMaxEnchant) {
                     return true;
                 }
             }
-
             // ALL
             if (meta.hasEnchant(Enchantment.MENDING)) {
                 final int level = meta.getEnchantLevel(Enchantment.MENDING);

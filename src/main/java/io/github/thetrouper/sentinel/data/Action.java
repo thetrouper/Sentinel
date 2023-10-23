@@ -180,40 +180,40 @@ public class Action {
             if (notifyTrusted) {
                 TextComponent notification = new TextComponent();
                 notification.setText(Text.prefix(" " + actionTop));
-                String body = "]=- Sentinel -=[ ";
+                String body = "\u00a78]==-- \u00a7d\u00a7lSentinel\u00a78--==[ ";
                 body += "\n" + actionTitle + "\n";
                 if (player != null) {
-                    body += "Player: " + player.getName() + "\n";
+                    body += "\u00a7bPlayer: \u00a77" + player.getName() + "\n";
                 }
                 if (command != null) {
                     if (loggedCommand != null) {
                         if (loggedCommand.length() > 64) {
-                            body += "Command: Too long to show here!" + "\n";
-                            body += " | Saved to file: " + commandLog + "\n";
+                            body += "\u00a7bCommand: \u00a7cToo long to show here!" + "\n";
+                            body += " \u00a78| \u00a7bSaved to file: \u00a7f" + commandLog + "\n";
                         } else {
-                            body += "Command: " + command + "\n";
+                            body += "\u00a7bCommand: \u00a7f" + command + "\n";
                         }
                     } else {
-                        body += "Command: " + command + "\n";
+                        body += "\u00a7bCommand: \u00a7f" + command + "\n";
                     }
                 }
                 if (item != null) {
-                    body += "Item: /Sentinel/LoggedNBT/" + itemLog + "\n";
+                    body += "\u00a7bItem: \u00a7f/Sentinel/LoggedNBT/" + itemLog + "\n";
                 }
                 if (block != null) {
                     Location loc = block.getLocation();
-                    body += "Block: " + block.getType().toString().toLowerCase().replace("_", " ") + "\n";
-                    body += "Location: " + loc.getX() + " " + loc.getY() + " " + loc.getZ() + "\n";
+                    body += "\u00a7bBlock: \u00a7f" + block.getType().toString().toLowerCase().replace("_", " ") + "\n";
+                    body += "\u00a7bLocation: \u00a7f" + loc.getX() + " " + loc.getY() + " " + loc.getZ() + "\n";
                 }
-                body += "Denied: " + (denied ? "\u00a7a\u2714" : "\u00a7c\u2718") + "\n";
+                body += "\u00a7bDenied: \u00a7f" + (denied ? "\u00a7a\u2714" : "\u00a7c\u2718") + "\n";
                 if (deoped) {
                     player.setOp(false);
                 }
-                body += "Deoped: " + (deoped ? "\u00a7a\u2714" : "\u00a7c\u2718") + "\n";
+                body += "\u00a7bDeoped: \u00a7f" + (deoped ? "\u00a7a\u2714" : "\u00a7c\u2718") + "\n";
 
-                body += "Punished: " + (punished ? "\u00a7a\u2714" : "\u00a7c\u2718") + "\n";
-                if (revertGM) body += "RevertGM: " + "\u00a7a\u2714" + "\n";
-                body += "Logged: " + (notifyDiscord ? "\u00a7a\u2714" : "\u00a7c\u2718");
+                body += "\u00a7bPunished: \u00a7f" + (punished ? "\u00a7a\u2714" : "\u00a7c\u2718") + "\n";
+                if (revertGM) body += "\u00a7bRevertGM: \u00a7f" + "\u00a7a\u2714" + "\n";
+                body += "\u00a7bLogged: \u00a7f" + (notifyDiscord ? "\u00a7a\u2714" : "\u00a7c\u2718");
                 notification.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new net.md_5.bungee.api.chat.hover.content.Text(body)));
                 ServerUtils.forEachPlayer(trusted -> {
                     if (Sentinel.isTrusted(trusted)) {

@@ -8,8 +8,10 @@ import java.util.Map;
 import java.util.regex.PatternSyntaxException;
 
 public class Text {
-    public static String color(String s) {
-        return s.replaceAll("&","\u00A7");
+    public static final char SECTION_SYMBOL = (char)167;
+
+    public static String color(String msg) {
+        return msg.replace('&', SECTION_SYMBOL);
     }
     public static String prefix(String text) {
         String prefix = Sentinel.prefix;

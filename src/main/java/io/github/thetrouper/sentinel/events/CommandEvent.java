@@ -17,6 +17,7 @@ public class CommandEvent implements Listener {
     private void onCommand(PlayerCommandPreprocessEvent e) {
         Player p = e.getPlayer();
         String command = e.getMessage().substring(1).split(" ")[0];
+        String fullcommand = e.getMessage();
         ServerUtils.sendDebugMessage("CommandEvent: Checking command");
         if (Sentinel.isDangerousCommand(command)) {
             ServerUtils.sendDebugMessage("CommandEvent: Command is dangerous");
@@ -27,7 +28,7 @@ public class CommandEvent implements Listener {
                         .setAction(ActionType.DANGEROUS_COMMAND)
                         .setEvent(e)
                         .setPlayer(p)
-                        .setCommand(command)
+                        .setCommand(fullcommand)
                         .setDenied(true)
                         .setDeoped(Config.deop)
                         .setPunished(Config.commandPunish)
@@ -40,10 +41,10 @@ public class CommandEvent implements Listener {
         if (Config.blockSpecific) {
             ServerUtils.sendDebugMessage("CommandEvent: Checking command for specific");
             if (command.contains(":")) {
-                ServerUtils.sendDebugMessage("CommandEvent: Checking is specific");
+                ServerUtils.sendDebugMessage("CommandEvent: Failed check");
                 if (!Sentinel.isTrusted(p)) {
                     e.setCancelled(true);
-                    ServerUtils.sendDebugMessage(("CommandEvent: Command is canceled"));
+                    ServerUtils.sendDebugMessage(("CommandEvent: Not trusted, preforming action"));
                     Action a = new Action.Builder()
                             .setAction(ActionType.SPECIFIC_COMMAND)
                             .setEvent(e)
@@ -60,6 +61,7 @@ public class CommandEvent implements Listener {
             }
         }
         if (Sentinel.isLoggedCommand(command)) {
+            ServerUtils.sendDebugMessage("CommandEvent: Is logged command, logging");
             Action a = new Action.Builder()
                     .setAction(ActionType.LOGGED_COMMAND)
                     .setEvent(e)

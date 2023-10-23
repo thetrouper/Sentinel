@@ -40,6 +40,7 @@ public class FileUtils {
         }
     }
     public static String createNBTLog(String contents)  {
+        ServerUtils.sendDebugMessage("FileUtils: Creating NBT log");
         String fileName = "nbt_log-" + Randomizer.generateID();
         File file = new File(Sentinel.getInstance().getDataFolder() + "/LoggedNBT/" + fileName + ".txt");
         try {

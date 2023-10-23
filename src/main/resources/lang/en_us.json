@@ -32,7 +32,7 @@
     "spam-block-warn" : "Do not spam in chat! Please wait before sending another message.",
     "spam-mute-warn" : "§cYou have been auto-punished for violating the anti-spam repetitively!",
     "spam-mute-notification" : "§b§n%1$s§7 has been auto-muted by the anti spam! §8(§c%2$s§7/§4%3$s§8)",
-    "filter-notification-hover" : "§bOriginal: §f%1$s\n§bSanitized: §f%2$s\n§8§o(Click to report false positive)",
-    "severity-notification-hover" : "§bOriginal: §f%1$s\n§bSanitized: §f%2$s\n§bSeverity: §c%3$s\n§7§o(click to report false positive)"
+    "filter-notification-hover" : "§8]==-- §d§lSentinel §8--==[\n§bOriginal: §f%1$s\n§bSanitized: §f%2$s\n§8§o(Click to report false positive)",
+    "severity-notification-hover" : "§8]==-- §d§lSentinel §8--==[\n§bOriginal: §f%1$s\n§bSanitized: §f%2$s\n§bSeverity: §c%3$s\n§7§o(click to report false positive)"
   }
 }
