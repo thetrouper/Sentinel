@@ -20,7 +20,7 @@ public class SocialSpyCommand extends CustomCommand {
 
     @Override
     public void dispatchCommand(CommandSender sender, Command command, String label, String[] args) {
-        String name = sender.getName().toString();
+        String name = sender.getName();
         Player p = sender.getServer().getPlayer(name);
         UUID senderID = p.getUniqueId();
         if (!spyMap.containsKey(senderID) || !spyMap.get(senderID)) {

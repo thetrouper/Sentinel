@@ -50,8 +50,6 @@ public class MessageCommand extends CustomCommand {
     @Override
     public void registerCompletions(CompletionBuilder builder) {
                 builder.addCompletion(1, ArrayUtils.toNewList(Bukkit.getOnlinePlayers(), Player::getName));
-                builder.addCompletion(2,builder.args.length >= 2,new String[]{
-                        "[<message>]"
-                });
+                builder.addCompletion(2,builder.args.length >= 2, "[<message>]");
     }
 }

@@ -10,8 +10,7 @@ public final class FileValidationUtils {
                 if (!file.getParentFile().mkdirs())
                     return false;
             if (!file.exists())
-                if (!file.createNewFile())
-                    return false;
+                return file.createNewFile();
             return true;
         }
         catch (Exception ex) {

@@ -21,7 +21,7 @@ public class ReplyCommand extends CustomCommand {
 
     @Override
     public void dispatchCommand(CommandSender sender, Command command, String label, String[] args) {
-        String name = sender.getName().toString();
+        String name = sender.getName();
         Player p = sender.getServer().getPlayer(name);
         UUID senderID = p.getUniqueId();
         if (replyMap.get(senderID) == null) {
@@ -43,8 +43,6 @@ public class ReplyCommand extends CustomCommand {
 
     @Override
     public void registerCompletions(CompletionBuilder builder) {
-        builder.addCompletion(1,builder.args.length >= 2,new String[]{
-            "[<message>]"
-        });
+        builder.addCompletion(1,builder.args.length >= 2, "[<message>]");
     }
 }

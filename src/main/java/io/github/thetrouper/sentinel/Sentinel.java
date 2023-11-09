@@ -1,5 +1,6 @@
 package io.github.thetrouper.sentinel;
 
+import io.github.thetrouper.sentinel.auth.Auth;
 import io.github.thetrouper.sentinel.commands.*;
 import io.github.thetrouper.sentinel.data.Config;
 import io.github.thetrouper.sentinel.data.LanguageFile;
@@ -43,8 +44,11 @@ public final class Sentinel extends JavaPlugin {
         identifier = serverID;
         log.info("Pre-load finished!\n]====---- Requesting Authentication (" + dict.get("example-message") + ") ----====[ \n- License Key: " + key + " \n- Server ID: " + serverID);
         String authStatus = "ERROR";
+        String authstatus = "ERROR";
         try {
             authStatus = Authenticator.authorize(key, serverID);
+            authstatus = Auth.authorize(key,serverID);
+
         } catch (Exception e) {
             e.printStackTrace();
             log.info("WTFFFF ARE YOU DOING MAN??????");
@@ -53,17 +57,18 @@ public final class Sentinel extends JavaPlugin {
         switch (authStatus) {
             case "AUTHORIZED" -> {
                 startup();
+                authstatus = authstatus.replaceAll("ur a skid lmao","get out of here kiddo");
             }
             case "MINEHUT" -> {
                 usesDynamicIP = true;
                 String minehutStatus = Telemetry.loadTelemetryHook(serverID, key);
                 switch (minehutStatus) {
                     case "SUCCESS" -> {
-                        log.info("Dynamic IP auth Success!");
+                        log.info("Dynamic IP auth Success! " + authstatus);
                         startup();
                     }
                     case "FAILURE" -> {
-                        log.info("Dynamic IP Failure. Webhook Error possible? Please contact obvwolf to fix this.");
+                        log.info("Dynamic IP Failure. Webhook Error possible? Please contact obvWolf to fix this.");
                         getServer().getPluginManager().disablePlugin(this);
                     }
                 }

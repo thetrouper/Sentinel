@@ -19,20 +19,20 @@ import java.io.IOException;
 import java.util.List;
 
 public class Action {
-    private Cancellable event;
-    private ActionType action;
-    private Player player;
-    private String command;
-    private String loggedCommand;
-    private ItemStack item;
-    private Block block;
-    private boolean denied;
-    private boolean deoped;
-    private boolean punished;
-    private boolean revertGM;
-    private boolean notifyDiscord;
-    private boolean notifyTrusted;
-    private boolean notifyConsole;
+    private final Cancellable event;
+    private final ActionType action;
+    private final Player player;
+    private final String command;
+    private final String loggedCommand;
+    private final ItemStack item;
+    private final Block block;
+    private final boolean denied;
+    private final boolean deoped;
+    private final boolean punished;
+    private final boolean revertGM;
+    private final boolean notifyDiscord;
+    private final boolean notifyTrusted;
+    private final boolean notifyConsole;
 
     private Action(Cancellable event, ActionType action, Player player, String command, String loggedCommand, ItemStack item, Block block,boolean denied, boolean deoped, boolean punished, boolean revertedGM, boolean notifyDiscord, boolean notifyTrusted, boolean notifyConsole) {
         this.event = event;

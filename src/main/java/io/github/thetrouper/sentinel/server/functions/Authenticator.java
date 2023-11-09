@@ -1,8 +1,5 @@
 package io.github.thetrouper.sentinel.server.functions;
 
-import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.server.util.ArrayUtils;
-
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.BufferedReader;
@@ -14,15 +11,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 public class Authenticator {
 
@@ -118,7 +106,7 @@ public class Authenticator {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
 
             byte[] encryptedBytes = cipher.doFinal(text.getBytes());
-            String encryptedText = bytesToHex(encryptedBytes);;
+            String encryptedText = bytesToHex(encryptedBytes);
             return encryptedText;
         } catch (Exception e) {
             e.printStackTrace();

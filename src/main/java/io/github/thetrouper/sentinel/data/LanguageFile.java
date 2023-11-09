@@ -10,7 +10,7 @@ import java.util.Map;
 public class LanguageFile implements JsonSerializable<LanguageFile> {
     public static final File PATH = new File(Sentinel.getInstance().getDataFolder(), "/lang/" + Config.lang);
     private final Map<String,String> dictionary = new HashMap<>();
-    public LanguageFile() {};
+    public LanguageFile() {}
 
     @Override
     public File getFile() {
