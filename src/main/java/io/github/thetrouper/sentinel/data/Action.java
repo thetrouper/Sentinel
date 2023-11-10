@@ -123,97 +123,59 @@ public class Action {
             return this;
         }
         public Action execute() {
-            String actionTop = "Generic Anti-Action has been triggered";
-            String actionTitle = "A generic action has been detected!";
-            String itemLog = "";
-            String commandLog = "";
-            actionTop = action.getMessageTop();
-            actionTitle = action.getMessageTitle();
+            String actionTop = action.getMessageTop();
+            String actionTitle = action.getMessageTitle();
+            String itemLog = (item != null) ? FileUtils.createNBTLog(item.getItemMeta().getAsString()) : "";
+            String commandLog = (loggedCommand != null) ? FileUtils.createCommandLog(loggedCommand) : "";
+
             final List<String> punishCommands = Config.getPunishCommands();
-            if (denied) event.setCancelled(true);
-            if (deoped) player.setOp(false);
-            if (punished) for (String command : punishCommands) {
-                ServerUtils.sendCommand(command);
+
+            if (denied) {
+                event.setCancelled(true);
             }
-            if (revertGM) player.setGameMode(GameMode.SURVIVAL);
-            if (item != null) itemLog = FileUtils.createNBTLog(item.getItemMeta().getAsString());
-            if (loggedCommand != null) commandLog = FileUtils.createCommandLog(loggedCommand);
+
+            if (deoped) {
+                player.setOp(false);
+            }
+
+            if (punished) {
+                for (String command : punishCommands) {
+                    ServerUtils.sendCommand(command);
+                }
+            }
+
+            if (revertGM) {
+                player.setGameMode(GameMode.SURVIVAL);
+            }
+
             if (notifyConsole) {
-                String conNotif = "]=- Sentinel -=[";
-                conNotif += " " + actionTop;
-                conNotif += "\n" + actionTitle + "\n";
-                if (player != null) {
-                    conNotif += "Player: " + player.getName() + "\n";
-                }
-                if (command != null) {
-                    if (loggedCommand != null) {
-                        if (loggedCommand.length() > 128) {
-                            conNotif += "Command: Too long to show here!" + "\n";
-                            conNotif += " | Saved to file: " + commandLog + "\n";
-                        } else {
-                            conNotif += "Command: " + command + "\n";
-                        }
-                    } else {
-                        conNotif += "Command: " + command + "\n";
-                    }
-                }
-
-                if (item != null) {
-                    conNotif += "Item: /Sentinel/LoggedNBT/" + itemLog + "\n";
-                }
-                if (block != null) {
-                    Location loc = block.getLocation();
-                    conNotif += "Block: " + block.getType().toString().toLowerCase().replace("_", " ") + "\n";
-                    conNotif += "Location: " + loc.getX() + " " + loc.getY() + " " + loc.getZ() + "\n";
-                }
+                String conNotif = "]=- Sentinel -=[\n";
+                conNotif += actionTop + "\n";
+                conNotif += (player != null) ? "Player: " + player.getName() + "\n" : "";
+                conNotif += (command != null) ? ((loggedCommand != null && loggedCommand.length() > 128) ? "Command: Too long to show here!\n | Saved to file: " + commandLog + "\n" : "Command: " + command + "\n") : "";
+                conNotif += (item != null) ? "Item: /Sentinel/LoggedNBT/" + itemLog + "\n" : "";
+                conNotif += (block != null) ? "Block: " + block.getType().toString().toLowerCase().replace("_", " ") + "\nLocation: " + block.getLocation().getX() + " " + block.getLocation().getY() + " " + block.getLocation().getZ() + "\n" : "";
                 conNotif += "Denied: " + (denied ? "\u2714" : "\u2718") + "\n";
-                if (deoped) {
-                    player.setOp(false);
-                }
                 conNotif += "Deoped: " + (deoped ? "\u2714" : "\u2718") + "\n";
-
                 conNotif += "Punished: " + (punished ? "\u2714" : "\u2718") + "\n";
-                if (revertGM) conNotif += "RevertGM: " + "\u2714" + "\n";
+                conNotif += (revertGM) ? "RevertGM: \u2714\n" : "";
                 conNotif += "Logged: " + (notifyDiscord ? "\u2714" : "\u2718");
                 Sentinel.log.info(conNotif);
             }
+
             if (notifyTrusted) {
                 TextComponent notification = new TextComponent();
                 notification.setText(Text.prefix(" " + actionTop));
-                String body = "\u00a78]==-- \u00a7d\u00a7lSentinel\u00a78--==[ ";
-                body += "\n" + actionTitle + "\n";
-                if (player != null) {
-                    body += "\u00a7bPlayer: \u00a77" + player.getName() + "\n";
-                }
-                if (command != null) {
-                    if (loggedCommand != null) {
-                        if (loggedCommand.length() > 64) {
-                            body += "\u00a7bCommand: \u00a7cToo long to show here!" + "\n";
-                            body += " \u00a78| \u00a7bSaved to file: \u00a7f" + commandLog + "\n";
-                        } else {
-                            body += "\u00a7bCommand: \u00a7f" + command + "\n";
-                        }
-                    } else {
-                        body += "\u00a7bCommand: \u00a7f" + command + "\n";
-                    }
-                }
-                if (item != null) {
-                    body += "\u00a7bItem: \u00a7f/Sentinel/LoggedNBT/" + itemLog + "\n";
-                }
-                if (block != null) {
-                    Location loc = block.getLocation();
-                    body += "\u00a7bBlock: \u00a7f" + block.getType().toString().toLowerCase().replace("_", " ") + "\n";
-                    body += "\u00a7bLocation: \u00a7f" + loc.getX() + " " + loc.getY() + " " + loc.getZ() + "\n";
-                }
-                body += "\u00a7bDenied: \u00a7f" + (denied ? "\u00a7a\u2714" : "\u00a7c\u2718") + "\n";
-                if (deoped) {
-                    player.setOp(false);
-                }
-                body += "\u00a7bDeoped: \u00a7f" + (deoped ? "\u00a7a\u2714" : "\u00a7c\u2718") + "\n";
-
-                body += "\u00a7bPunished: \u00a7f" + (punished ? "\u00a7a\u2714" : "\u00a7c\u2718") + "\n";
-                if (revertGM) body += "\u00a7bRevertGM: \u00a7f" + "\u00a7a\u2714" + "\n";
-                body += "\u00a7bLogged: \u00a7f" + (notifyDiscord ? "\u00a7a\u2714" : "\u00a7c\u2718");
+                String body = "]=- Sentinel -=[\n" + actionTitle + "\n";
+                body += (player != null) ? "Player: " + player.getName() + "\n" : "";
+                body += (command != null) ? ((loggedCommand != null && loggedCommand.length() > 64) ? "Command: Too long to show here!\n | Saved to file: " + commandLog + "\n" : "Command: " + command + "\n") : "";
+                body += (item != null) ? "Item: /Sentinel/LoggedNBT/" + itemLog + "\n" : "";
+                body += (block != null) ? "Block: " + block.getType().toString().toLowerCase().replace("_", " ") + "\nLocation: " + block.getLocation().getX() + " " + block.getLocation().getY() + " " + block.getLocation().getZ() + "\n" : "";
+                body += "Denied: " + (denied ? "\u00a7a\u2714" : "\u00a7c\u2718") + "\n";
+                body += "Deoped: " + (deoped ? "\u00a7a\u2714" : "\u00a7c\u2718") + "\n";
+                body += "Punished: " + (punished ? "\u00a7a\u2714" : "\u00a7c\u2718") + "\n";
+                body += (revertGM) ? "RevertGM: \u00a7a\u2714\n" : "";
+                body += "Logged: " + (notifyDiscord ? "\u00a7a\u2714" : "\u00a7c\u2718");
                 notification.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new net.md_5.bungee.api.chat.hover.content.Text(body)));
                 ServerUtils.forEachPlayer(trusted -> {
                     if (Sentinel.isTrusted(trusted)) {
@@ -221,53 +183,37 @@ public class Action {
                     }
                 });
             }
+
             if (notifyDiscord) {
                 DiscordWebhook webhook = new DiscordWebhook(Config.webhook);
                 webhook.setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png");
                 webhook.setUsername("Sentinel Anti-Nuke | Logs");
-                String description = "";
-                if (player != null) description += Emojis.rightSort + " **Player:** " + player.getName() + " " + Emojis.member + "\\n";
-                if (command != null) {
-                    if (loggedCommand != null) {
-                        if (loggedCommand.length() > 128) {
-                            description += Emojis.rightSort + " **Command:** Too long to show here!" + " " + Emojis.nuke + "\\n";
-                            description += Emojis.space + Emojis.rightDoubleArrow + " | Saved to file: " + commandLog + "\n";
-                        } else {
-                            description += Emojis.rightSort + " **Command:** " + command + " " + Emojis.nuke + "\\n";
-                        }
-                    } else {
-                        description += Emojis.rightSort + " **Command:** " + command + " " + Emojis.nuke + "\\n";
-                    }
-
-                }
-                if (item != null) description += Emojis.rightSort + " **Item:** " + item.getType().toString().toLowerCase() + " " + Emojis.nuke + "\\n" +
-                                                 Emojis.space + Emojis.rightDoubleArrow + "**NBT:** Uploaded to /Sentinel/LoggedNBT/" + itemLog;
-                if (block != null) {
-                    description += Emojis.rightSort + " **Block:** " + block.getType().toString().toLowerCase() + " " + Emojis.nuke + "\\n" +
-                                   Emojis.space + Emojis.rightDoubleArrow + " **Location:** X: " + block.getX() + " Y: " + block.getY() + " Z: " + block.getZ() + "\\n";
-                }
-                String actions = "";
-                actions += Emojis.rightSort + " **Denied:** " + (denied ? Emojis.success : Emojis.failure) + "\\n";
-                actions += Emojis.rightSort + " **De-oped:** " + (deoped ? Emojis.success : Emojis.failure) + "\\n";
-                actions += Emojis.rightSort + " **Punished:** " + (punished ? Emojis.success : Emojis.failure) + "\\n";
-                if (revertGM) actions += Emojis.rightSort + " **GM Reverted:** " + Emojis.success + "\\n";
-                actions += Emojis.rightSort + " **Logged:** "  + Emojis.success;
+                String description = (player != null) ? Emojis.rightSort + " **Player:** " + player.getName() + " " + Emojis.member + "\n" : "";
+                description += (command != null) ? ((loggedCommand != null && loggedCommand.length() > 128) ? Emojis.rightSort + " **Command:** Too long to show here! " + Emojis.nuke + "\n | Saved to file: " + commandLog + "\n" : Emojis.rightSort + " **Command:** " + command + " " + Emojis.nuke + "\n") : "";
+                description += (item != null) ? Emojis.rightSort + " **Item:** " + item.getType().toString().toLowerCase() + " " + Emojis.nuke + "\n" + Emojis.space + Emojis.rightDoubleArrow + "**NBT:** Uploaded to /Sentinel/LoggedNBT/" + itemLog : "";
+                description += (block != null) ? Emojis.rightSort + " **Block:** " + block.getType().toString().toLowerCase() + " " + Emojis.nuke + "\n" + Emojis.space + Emojis.rightDoubleArrow + " **Location:** X: " + block.getX() + " Y: " + block.getY() + " Z: " + block.getZ() + "\n" : "";
+                String actions = Emojis.rightSort + " **Denied:** " + (denied ? Emojis.success : Emojis.failure) + "\n";
+                actions += Emojis.rightSort + " **De-oped:** " + (deoped ? Emojis.success : Emojis.failure) + "\n";
+                actions += Emojis.rightSort + " **Punished:** " + (punished ? Emojis.success : Emojis.failure) + "\n";
+                actions += (revertGM) ? Emojis.rightSort + " **GM Reverted:** " + Emojis.success + "\n" : "";
+                actions += Emojis.rightSort + " **Logged:** " + Emojis.success;
                 DiscordWebhook.EmbedObject embed = new DiscordWebhook.EmbedObject()
-                        .setAuthor(actionTop,"","")
+                        .setAuthor(actionTop, "", "")
                         .setTitle(actionTitle)
                         .setDescription(description)
-                        .addField("Actions:",actions, false)
+                        .addField("Actions:", actions, false)
                         .setThumbnail("https://crafatar.com/avatars/" + player.getUniqueId() + "?size=64&&overlay")
                         .setColor(action.getEmbedColor());
                 webhook.addEmbed(embed);
                 try {
-                    ServerUtils.sendDebugMessage("ActionBuilder: Executing webhook...");
+                    ServerUtils.sendDebugMessage("Executing webhook...");
                     webhook.execute();
                 } catch (IOException e) {
-                    ServerUtils.sendDebugMessage("ActionBuilder: Epic webhook failure!!!");
+                    ServerUtils.sendDebugMessage(Text.prefix("Epic webhook failure!!!"));
                     Sentinel.log.info(e.toString());
                 }
             }
+
             return new Action(event, action, player, command, loggedCommand, item, block, denied, deoped, punished, revertGM, notifyDiscord, notifyTrusted, notifyConsole);
         }
     }
