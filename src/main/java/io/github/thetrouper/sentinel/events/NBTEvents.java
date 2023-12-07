@@ -20,36 +20,34 @@ public class NBTEvents implements Listener {
     @EventHandler
     private void onNBTPull(InventoryCreativeEvent e) {
         ServerUtils.sendDebugMessage("NBT: Detected creative mode action");
-        if (Config.preventNBT) {
-            ServerUtils.sendDebugMessage("NBT: Enabled");
-            if (!(e.getWhoClicked() instanceof Player p)) return;
-            ServerUtils.sendDebugMessage("NBT: Clicker is a player");
-            if (e.getCursor() == null) return;
-            ServerUtils.sendDebugMessage("NBT: Cursor isn't null");
-            ItemStack i = e.getCursor();
-            if (!Sentinel.isTrusted(p)) {
-                ServerUtils.sendDebugMessage("NBT: Not trusted");
-                if (e.getCursor().getItemMeta() == null) return;
-                ServerUtils.sendDebugMessage("NBT: Cursor has meta");
-                if (i.hasItemMeta() && i.getItemMeta() != null) {
-                    ServerUtils.sendDebugMessage("NBT: Item has meta");
-                    if (!itemPasses(i)) {
-                        ServerUtils.sendDebugMessage("NBT: Item doesn't pass, preforming action");
-                        Action a = new Action.Builder()
-                                .setEvent(e)
-                                .setAction(ActionType.NBT)
-                                .setPlayer(Bukkit.getPlayer(e.getWhoClicked().getName()))
-                                .setItem(e.getCursor())
-                                .setDenied(Config.preventNBT)
-                                .setDeoped(Config.deop)
-                                .setPunished(Config.nbtPunish)
-                                .setRevertGM(Config.preventNBT)
-                                .setNotifyConsole(true)
-                                .setNotifyTrusted(true)
-                                .setnotifyDiscord(Config.logNBT)
-                                .execute();
-                    }
-                }
+        if (!Config.preventNBT) return;
+        ServerUtils.sendDebugMessage("NBT: Enabled");
+        if (!(e.getWhoClicked() instanceof Player p)) return;
+        ServerUtils.sendDebugMessage("NBT: Clicker is a player");
+        if (e.getCursor() == null) return;
+        ServerUtils.sendDebugMessage("NBT: Cursor isn't null");
+        ItemStack i = e.getCursor();
+        if (Sentinel.isTrusted(p)) return;
+        ServerUtils.sendDebugMessage("NBT: Not trusted");
+        if (e.getCursor().getItemMeta() == null) return;
+        ServerUtils.sendDebugMessage("NBT: Cursor has meta");
+        if (i.hasItemMeta() && i.getItemMeta() != null) {
+            ServerUtils.sendDebugMessage("NBT: Item has meta");
+            if (!itemPasses(i)) {
+                ServerUtils.sendDebugMessage("NBT: Item doesn't pass, preforming action");
+                Action a = new Action.Builder()
+                        .setEvent(e)
+                        .setAction(ActionType.NBT)
+                        .setPlayer(Bukkit.getPlayer(e.getWhoClicked().getName()))
+                        .setItem(e.getCursor())
+                        .setDenied(Config.preventNBT)
+                        .setDeoped(Config.deop)
+                        .setPunished(Config.nbtPunish)
+                        .setRevertGM(Config.preventNBT)
+                        .setNotifyConsole(true)
+                        .setNotifyTrusted(true)
+                        .setnotifyDiscord(Config.logNBT)
+                        .execute();
             }
         }
     }

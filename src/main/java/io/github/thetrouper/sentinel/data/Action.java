@@ -166,17 +166,17 @@ public class Action {
             if (notifyTrusted) {
                 TextComponent notification = new TextComponent();
                 notification.setText(Text.prefix(" " + actionTop));
-                String body = "]=- Sentinel -=[\n" + actionTitle + "\n";
-                body += (player != null) ? "Player: " + player.getName() + "\n" : "";
-                body += (command != null) ? ((loggedCommand != null && loggedCommand.length() > 64) ? "Command: Too long to show here!\n | Saved to file: " + commandLog + "\n" : "Command: " + command + "\n") : "";
-                body += (item != null) ? "Item: /Sentinel/LoggedNBT/" + itemLog + "\n" : "";
-                body += (block != null) ? "Block: " + block.getType().toString().toLowerCase().replace("_", " ") + "\nLocation: " + block.getLocation().getX() + " " + block.getLocation().getY() + " " + block.getLocation().getZ() + "\n" : "";
-                body += "Denied: " + (denied ? "\u00a7a\u2714" : "\u00a7c\u2718") + "\n";
-                body += "Deoped: " + (deoped ? "\u00a7a\u2714" : "\u00a7c\u2718") + "\n";
-                body += "Punished: " + (punished ? "\u00a7a\u2714" : "\u00a7c\u2718") + "\n";
-                body += (revertGM) ? "RevertGM: \u00a7a\u2714\n" : "";
-                body += "Logged: " + (notifyDiscord ? "\u00a7a\u2714" : "\u00a7c\u2718");
-                notification.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new net.md_5.bungee.api.chat.hover.content.Text(body)));
+                String body = "&b]=- Sentinel -=[&f\n" + actionTitle + "&r\n";
+                body += (player != null) ? "&fPlayer: &b" + player.getName() + "&r\n" : "";
+                body += (command != null) ? ((loggedCommand != null && loggedCommand.length() > 64) ? "&fCommand: &cToo long to show here!&r\n &7&l| &fSaved to file: &b" + commandLog + "&r\n" : "&fCommand: &b" + command + "&r\n") : "";
+                body += (item != null) ? "&fItem: &b/Sentinel/LoggedNBT/&b" + itemLog + "\n" : "";
+                body += (block != null) ? "&fBlock: &b" + block.getType().toString().toLowerCase().replace("_", " ") + "\n&fLocation: &b" + block.getLocation().getX() + " " + block.getLocation().getY() + " " + block.getLocation().getZ() + "&r\n" : "";
+                body += "&fDenied: &b" + (denied ? "&a\u2714" : "&c\u2718") + "&r\n";
+                body += "&fDeoped: " + (deoped ? "&a\u2714" : "&c\u2718") + "&r\n";
+                body += "&fPunished: " + (punished ? "&a\u2714" : "&c\u2718") + "&r\n";
+                body += (revertGM) ? "&fRevertGM: &a\u2714\n" : "";
+                body += "&fLogged: " + (notifyDiscord ? "&a\u2714" : "&c\u2718");
+                notification.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new net.md_5.bungee.api.chat.hover.content.Text(Text.color(body))));
                 ServerUtils.forEachPlayer(trusted -> {
                     if (Sentinel.isTrusted(trusted)) {
                         trusted.spigot().sendMessage(notification);
