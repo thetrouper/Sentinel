@@ -7,7 +7,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 public class AntiUnicode {
     public static void handleAntiUnicode(AsyncPlayerChatEvent e) {
         String message = Text.removeFirstColor(e.getMessage());
-        String nonAllowed = message.replaceAll("[A-Za-z0-9\\[,./?><|\\]\u00A7()*&^%$#@!~`{}:;'\"-_]", "").trim();
+        String nonAllowed = message.replaceAll("[A-Za-z0-9\\[,./?><|\\]§()*&^%$#@!~`{}:;'\"-_]", "").trim();
         if (nonAllowed.length() != 0) {
             e.getPlayer().sendMessage(Text.prefix(Sentinel.dict.get("unicode-warn")));
             e.setCancelled(true);
