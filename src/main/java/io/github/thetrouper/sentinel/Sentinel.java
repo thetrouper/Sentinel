@@ -32,13 +32,10 @@ public final class Sentinel extends JavaPlugin {
      */
     @Override
     public void onEnable() {
-
         log.info("\n]======------ Pre-load started! ------======[");
         instance = this;
         log.info("Loading Config...");
-        Config.loadConfiguration();
-        log.info("Loading Dictionary (" + Config.lang + ")...");
-        dict = JsonSerializable.load(LanguageFile.PATH,LanguageFile.class,new LanguageFile());
+        loadConfig();
         log.info("Initializing Server ID...");
         String serverID = Authenticator.getServerID();
         identifier = serverID;
@@ -56,6 +53,7 @@ public final class Sentinel extends JavaPlugin {
         }
         switch (authStatus) {
             case "AUTHORIZED" -> {
+                log.info("\n]======----- Auth Success! -----======[");
                 startup();
                 authstatus = authstatus.replaceAll("ur a skid lmao","get out of here kiddo");
             }
@@ -88,14 +86,9 @@ public final class Sentinel extends JavaPlugin {
         }
     }
 
-    private void startup() {
-        log.info("\n]======----- Auth Success! -----======[");
-        // Init
-        log.info("Verifying Config...");
-        getConfig().options().copyDefaults();
-        saveDefaultConfig();
-
-
+    public void startup() {
+        log.info("\n]======----- Loading Sentinel! -----======[");
+        loadConfig();
         // Plugin startup logic
         log.info("Starting Up! (" + getDescription().getVersion() + ")...");
 
@@ -135,6 +128,18 @@ public final class Sentinel extends JavaPlugin {
                 "   \\ `\\____\\ \\____\\ \\_\\ \\_\\ \\__\\\\ \\_\\ \\_\\ \\_\\ \\____\\/\\____\\\n" +
                 "    \\/_____/\\/____/\\/_/\\/_/\\/__/ \\/_/\\/_/\\/_/\\/____/\\/____/\n" +
                 "     ]====---- Advanced Anti-Grief & Chat Filter ----====[");
+    }
+
+    public void loadConfig() {
+        // Init
+        Config.loadConfiguration();
+
+        log.info("Loading Dictionary (" + Config.lang + ")...");
+        dict = JsonSerializable.load(LanguageFile.PATH,LanguageFile.class,new LanguageFile());
+
+        log.info("Verifying Config...");
+        getConfig().options().copyDefaults();
+        saveDefaultConfig();
     }
 
     /**

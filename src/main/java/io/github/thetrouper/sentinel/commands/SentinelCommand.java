@@ -34,7 +34,14 @@ public class SentinelCommand extends CustomCommand {
     @Override
     public void dispatchCommand(CommandSender sender, Command command, String label, String[] args) {
         Player p = (Player) sender;
+        Sentinel instance = Sentinel.getInstance();
         switch (args[0]) {
+            case "reload" -> {
+                if (!Sentinel.isTrusted(p)) return;
+                p.sendMessage(Text.prefix("Reloading Sentinel!"));
+                Sentinel.log.info("[Sentinel] Re-Initializing Sentinel!");
+                instance.loadConfig();
+            }
             case "debug" -> {
                 switch (args[1]) {
                     case "antiswear" -> {
@@ -82,7 +89,8 @@ public class SentinelCommand extends CustomCommand {
     @Override
     public void registerCompletions(CompletionBuilder builder) {
         builder.addCompletion(1, "debug",
-                "getHeat");
+                "getHeat",
+                "reload");
         if (builder.args.length >= 2 && builder.args[1].equals("debug")) {
             builder.addCompletion(2, "antiswear",
                     "antispam",

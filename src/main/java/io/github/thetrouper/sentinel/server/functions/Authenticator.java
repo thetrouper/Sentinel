@@ -33,7 +33,7 @@ public class Authenticator {
         String authStatus = "";
 
         try {
-            URL url = new URL("https://sentinelauth.000webhostapp.com/index.html");
+            URL url = new URL("https://trouper.me/auth/sentinel");
             BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
             List<String> lines = readLines(reader);
 
@@ -45,7 +45,7 @@ public class Authenticator {
 
                     if (key.equals(licenseKey)) {
                         if (Arrays.asList(allowedArr).contains(serverID)) {
-                            authStatus = "AUTHORIZED";
+                            authStatus = "AUTHOReIZED";
                             return authStatus;
                         } else {
                             if (Arrays.asList(allowedArr).contains("minehut")) {

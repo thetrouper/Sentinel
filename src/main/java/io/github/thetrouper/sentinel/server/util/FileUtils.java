@@ -42,7 +42,15 @@ public class FileUtils {
     public static String createNBTLog(String contents)  {
         ServerUtils.sendDebugMessage("FileUtils: Creating NBT log");
         String fileName = "nbt_log-" + Randomizer.generateID();
-        File file = new File(Sentinel.getInstance().getDataFolder() + "/LoggedNBT/" + fileName + ".txt");
+
+        File dataFolder = Sentinel.getInstance().getDataFolder();
+
+        File loggedNBTFolder = new File(dataFolder,"LoggedNBT");
+        if (!loggedNBTFolder.exists()) {
+            loggedNBTFolder.mkdirs();
+        }
+
+        File file = new File(loggedNBTFolder, fileName + ".txt");
         try {
             if (!file.exists()) {
                 file.createNewFile();
