@@ -102,7 +102,7 @@ public class Action {
             String itemLog = (item != null) ? FileUtils.createNBTLog(item.getItemMeta().getAsString()) : "";
             String commandLog = (loggedCommand != null) ? FileUtils.createCommandLog(loggedCommand) : "";
 
-            final List<String> punishCommands = MainConfig.Plugin.punishCommands;
+            final List<String> punishCommands = Sentinel.mainConfig.plugin.punishCommands;
 
             if (denied) {
                 event.setCancelled(true);
@@ -159,7 +159,7 @@ public class Action {
             }
 
             if (notifyDiscord) {
-                DiscordWebhook webhook = new DiscordWebhook(MainConfig.Plugin.webhook);
+                DiscordWebhook webhook = new DiscordWebhook(Sentinel.mainConfig.plugin.webhook);
                 webhook.setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png");
                 webhook.setUsername("Sentinel Anti-Nuke | Logs");
                 String description = (player != null) ? Emojis.rightSort + " **Player:** " + player.getName() + " " + Emojis.member + "\n" : "";

@@ -45,7 +45,7 @@ public class Authenticator {
 
                     if (key.equals(licenseKey)) {
                         if (Arrays.asList(allowedArr).contains(serverID)) {
-                            authStatus = "AUTHOReIZED";
+                            authStatus = "AUTHORIZED";
                             return authStatus;
                         } else {
                             if (Arrays.asList(allowedArr).contains("minehut")) {

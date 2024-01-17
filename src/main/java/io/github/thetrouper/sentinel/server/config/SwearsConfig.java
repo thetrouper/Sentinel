@@ -14,7 +14,7 @@ public class SwearsConfig implements JsonSerializable<SwearsConfig> {
         return file;
     }
 
-    public static List<String> swears = new ArrayList<>() {{
+    public List<String> swears = new ArrayList<>() {{
         add("anal");
         add("anus");
         add("arse");

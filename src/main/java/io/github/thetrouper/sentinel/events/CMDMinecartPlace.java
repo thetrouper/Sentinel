@@ -16,9 +16,9 @@ public class CMDMinecartPlace implements CustomListener {
     @EventHandler
     private void onCMDMinecartPlace(PlayerInteractEvent e) {
         ServerUtils.sendDebugMessage("MinecartCommandPlace: Detected interaction");
-        if (MainConfig.Plugin.preventCmdCartPlace) {
+        if (Sentinel.mainConfig.plugin.preventCmdCartPlace) {
             ServerUtils.sendDebugMessage("MinecartCommandPlace: Enabled");
-            if (MainConfig.Plugin.cmdBlockOpCheck && !e.getPlayer().isOp()) return;
+            if (Sentinel.mainConfig.plugin.cmdBlockOpCheck && !e.getPlayer().isOp()) return;
             ServerUtils.sendDebugMessage("MinecartCommandPlace: Player is op");
             if (e.getItem() == null) return;
             ServerUtils.sendDebugMessage("MinecartCommandPlace: Item isn't null");
@@ -38,12 +38,12 @@ public class CMDMinecartPlace implements CustomListener {
                             .setEvent(e)
                             .setPlayer(p)
                             .setBlock(e.getClickedBlock())
-                            .setDenied(MainConfig.Plugin.preventCmdCartPlace)
-                            .setPunished(MainConfig.Plugin.cmdBlockPunish)
-                            .setDeoped(MainConfig.Plugin.deop)
+                            .setDenied(Sentinel.mainConfig.plugin.preventCmdCartPlace)
+                            .setPunished(Sentinel.mainConfig.plugin.cmdBlockPunish)
+                            .setDeoped(Sentinel.mainConfig.plugin.deop)
                             .setNotifyConsole(true)
                             .setNotifyTrusted(true)
-                            .setnotifyDiscord(MainConfig.Plugin.logCmdBlocks)
+                            .setnotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
                             .execute();
                 }
             }

@@ -18,21 +18,21 @@ public class ChatEvent implements CustomListener {
         ServerUtils.sendDebugMessage("ChatEvent: Chat event detected!");
         if (!Sentinel.isTrusted(e.getPlayer()) || !e.getPlayer().hasPermission("sentinel.chat.antiunicode.bypass")) {
             ServerUtils.sendDebugMessage("ChatEvent: Permission bypass failed, checking for unicode");
-            if (MainConfig.Chat.antiUnicode) {
+            if (Sentinel.mainConfig.chat.antiUnicode) {
                 ServerUtils.sendDebugMessage(("ChatEvent: Enabled, Continuing unicode check!"));
                 AntiUnicode.handleAntiUnicode(e);
             }
         }
         if (!Sentinel.isTrusted(e.getPlayer()) || !e.getPlayer().hasPermission("sentinel.chat.antiswear.bypass")) {
             ServerUtils.sendDebugMessage("ChatEvent: Permission bypass failed, checking for swears");
-            if (MainConfig.Chat.AntiSwear.antiSwearEnabled) {
+            if (Sentinel.mainConfig.chat.antiSwear.antiSwearEnabled) {
                 ServerUtils.sendDebugMessage(("ChatEvent: Enabled, Continuing swear check!"));
                 ProfanityFilter.handleProfanityFilter(e);
             }
         }
         if (!Sentinel.isTrusted(e.getPlayer()) || !e.getPlayer().hasPermission("sentinel.chat.antispam.bypass")) {
             ServerUtils.sendDebugMessage(("ChatEvent: Permission bypass failed, checking for spam"));
-            if (MainConfig.Chat.AntiSpam.antiSpamEnabled) {
+            if (Sentinel.mainConfig.chat.antiSpam.antiSpamEnabled) {
                 ServerUtils.sendDebugMessage(("ChatEvent: Enabled, Continuing spam check!"));
                 AntiSpam.handleAntiSpam(e);
             }

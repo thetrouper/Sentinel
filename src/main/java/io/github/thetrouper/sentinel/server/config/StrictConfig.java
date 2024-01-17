@@ -14,7 +14,7 @@ public class StrictConfig implements JsonSerializable<StrictConfig> {
         return file;
     }
 
-    public static List<String> strict = new ArrayList<>() {{
+    public List<String> strict = new ArrayList<>() {{
         add("nigg");
         add("niger");
         add("nlgg");

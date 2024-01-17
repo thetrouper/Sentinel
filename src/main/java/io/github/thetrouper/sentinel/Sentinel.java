@@ -1,5 +1,6 @@
 package io.github.thetrouper.sentinel;
 
+import com.google.gson.JsonObject;
 import io.github.itzispyder.pdk.PDK;
 import io.github.thetrouper.sentinel.auth.Auth;
 import io.github.thetrouper.sentinel.cmds.*;
@@ -15,7 +16,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
+import java.io.*;
+import java.net.URL;
 import java.util.logging.Logger;
 
 public final class Sentinel extends JavaPlugin {
@@ -45,16 +47,23 @@ public final class Sentinel extends JavaPlugin {
      */
     @Override
     public void onEnable() {
+
         log.info("\n]======------ Pre-load started! ------======[");
         PDK.init(this);
         instance = this;
+
         log.info("Loading Config...");
         loadConfig();
         log.info("Language Status: (" + dict.get("if-you-see-this-lang-is-broken") + ")");
+
         log.info("Initializing Server ID...");
         String serverID = Authenticator.getServerID();
+
+        key = mainConfig.plugin.license;
         identifier = serverID;
+
         log.info("Pre-load finished!\n]====---- Requesting Authentication ----====[ \n- License Key: " + key + " \n- Server ID: " + serverID);
+        log.info("Auth Requested...");
         String authStatus = "ERROR";
         String authstatus = "ERROR";
         try {
@@ -98,6 +107,10 @@ public final class Sentinel extends JavaPlugin {
                 log.warning("Hmmmmmm thats not right... License: " + key + " Server ID: " + serverID + "\nPlease report the above stacktrace.");
                 manager.disablePlugin(this);
             }
+            default -> {
+                log.warning("Achievment unlocked:\n How did we get here? \nLicense: " + key + " Server ID: " + serverID + "\nPlease report the above stacktrace.");
+                manager.disablePlugin(this);
+            }
         }
     }
 
@@ -111,7 +124,7 @@ public final class Sentinel extends JavaPlugin {
         AntiSpam.enableAntiSpam();
         ProfanityFilter.enableAntiSwear();
 
-        prefix = MainConfig.Plugin.prefix;
+        prefix = mainConfig.plugin.prefix;
 
         // Commands -> BE SURE TO REGISTER ANY NEW COMMANDS IN PLUGIN.YML (src/main/java/resources/plugin.yml)!
         new SentinelCommand().register();
@@ -166,11 +179,31 @@ public final class Sentinel extends JavaPlugin {
         nbtConfig.save();
         dict.save();
 
-        log.info("Loading Dictionary (" + MainConfig.Plugin.lang + ")...");
+        try {
+            InputStream langIn = Sentinel.class.getClassLoader().getResourceAsStream("lang/en_us.json");
+            InputStreamReader langReader = new InputStreamReader(langIn);
+            BufferedReader langBR = new BufferedReader(langReader);
+            File langFile = LanguageFile.PATH;
+            FileWriter langFW = new FileWriter(langFile,true);
+            String line;
+            while ((line = langBR.readLine()) != null) {
+                langFW.write(line);
+            }
+            langFW.close();
+            langIn.close();
+            langReader.close();
+            langBR.close();
+        } catch (Exception ex) {
+            log.warning("Error during config initialization: " + ex.getMessage());
+        }
+
+
+
+        log.info("Loading Dictionary (" + Sentinel.mainConfig.plugin.lang + ")...");
 
         log.info("Verifying Config...");
-        //getConfig().options().copyDefaults();
-        //saveDefaultConfig();
+        getConfig().options().copyDefaults();
+        saveDefaultConfig();
     }
 
     /**
@@ -191,7 +224,7 @@ public final class Sentinel extends JavaPlugin {
      * @return true if the player is trusted, false otherwise
      */
     public static boolean isTrusted(Player player) {
-        return MainConfig.Plugin.trustedPlayers.contains(player.getUniqueId().toString());
+        return Sentinel.mainConfig.plugin.trustedPlayers.contains(player.getUniqueId().toString());
     }
 
     /**
@@ -200,7 +233,7 @@ public final class Sentinel extends JavaPlugin {
      * @return true if the command is logged, false otherwise
      */
     public static boolean isLoggedCommand(String command) {
-        return MainConfig.Plugin.logged.contains(command);
+        return Sentinel.mainConfig.plugin.logged.contains(command);
     }
 
     /**
@@ -209,7 +242,7 @@ public final class Sentinel extends JavaPlugin {
      * @return true if the command is dangerous, false otherwise
      */
     public static boolean isDangerousCommand(String command) {
-        return MainConfig.Plugin.dangerous.contains(command);
+        return Sentinel.mainConfig.plugin.dangerous.contains(command);
     }
     /**
      * Returns an instance of this plugin

@@ -15,9 +15,9 @@ public class CMDMinecartUse implements CustomListener {
     @EventHandler
     private void onCMDBlockMinecartUse(PlayerInteractEntityEvent e) {
         ServerUtils.sendDebugMessage("MinecartCommandUse: Detected Interaction with entity");
-        if (!MainConfig.Plugin.preventCmdCartUse) return;
+        if (!Sentinel.mainConfig.plugin.preventCmdCartUse) return;
         ServerUtils.sendDebugMessage("MinecartCommandUse: Enabled");
-        if (MainConfig.Plugin.cmdBlockOpCheck && !e.getPlayer().isOp()) return;
+        if (Sentinel.mainConfig.plugin.cmdBlockOpCheck && !e.getPlayer().isOp()) return;
         ServerUtils.sendDebugMessage("MinecartCommandUse: Player op");
         if (e.getRightClicked().getType() == EntityType.MINECART_COMMAND) {
             ServerUtils.sendDebugMessage("MinecartCommandUse: Entity is minecart command");
@@ -30,8 +30,8 @@ public class CMDMinecartUse implements CustomListener {
                         .setEvent(e)
                         .setPlayer(p)
                         .setDenied(true)
-                        .setPunished(MainConfig.Plugin.cmdBlockPunish)
-                        .setnotifyDiscord(MainConfig.Plugin.logCmdBlocks)
+                        .setPunished(Sentinel.mainConfig.plugin.cmdBlockPunish)
+                        .setnotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
                         .setNotifyTrusted(true)
                         .setNotifyConsole(true)
                         .execute();

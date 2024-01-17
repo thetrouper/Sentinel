@@ -1,8 +1,8 @@
 package io.github.thetrouper.sentinel.server.functions;
 
+import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.FAT;
 import io.github.thetrouper.sentinel.server.FilterAction;
-import io.github.thetrouper.sentinel.server.config.MainConfig;
 import io.github.thetrouper.sentinel.server.util.GPTUtils;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
@@ -38,29 +38,29 @@ public class AntiSpam {
         if (lastMessageMap.containsKey(p)) {
             String lastMessage = lastMessageMap.get(p);
             double similarity = GPTUtils.calcSim(message, lastMessage);
-            ServerUtils.sendDebugMessage("AntiSpam: " + p.getName() + " has a heat of " + heatMap.get(p) + "/" + MainConfig.Chat.AntiSpam.punishHeat + ". Current Message: \"" + message + "\" Last message: \"" + lastMessage + "\"");
+            ServerUtils.sendDebugMessage("AntiSpam: " + p.getName() + " has a heat of " + heatMap.get(p) + "/" + Sentinel.mainConfig.chat.antiSpam.punishHeat + ". Current Message: \"" + message + "\" Last message: \"" + lastMessage + "\"");
             if (similarity > 90) {
-                heatMap.put(p, heatMap.get(p) + MainConfig.Chat.AntiSpam.highGain);
-                ServerUtils.sendDebugMessage("AntiSpam: Similarity: " + similarity + ", is greater than 90% for " + p.getName() + ". Adding " + MainConfig.Chat.AntiSpam.highGain);
+                heatMap.put(p, heatMap.get(p) + Sentinel.mainConfig.chat.antiSpam.highGain);
+                ServerUtils.sendDebugMessage("AntiSpam: Similarity: " + similarity + ", is greater than 90% for " + p.getName() + ". Adding " + Sentinel.mainConfig.chat.antiSpam.highGain);
             } else if (similarity > 50) {
-                heatMap.put(p, heatMap.get(p) + MainConfig.Chat.AntiSpam.mediumGain);
-                ServerUtils.sendDebugMessage("AntiSpam: Similarity: " + similarity + ", is greater than 50% for " + p.getName() + ". Adding " + MainConfig.Chat.AntiSpam.mediumGain);
+                heatMap.put(p, heatMap.get(p) + Sentinel.mainConfig.chat.antiSpam.mediumGain);
+                ServerUtils.sendDebugMessage("AntiSpam: Similarity: " + similarity + ", is greater than 50% for " + p.getName() + ". Adding " + Sentinel.mainConfig.chat.antiSpam.mediumGain);
             } else if (similarity > 25) {
-                heatMap.put(p, heatMap.get(p) + MainConfig.Chat.AntiSpam.lowGain);
-                ServerUtils.sendDebugMessage("AntiSpam: Similarity: " + similarity + ", is greater than 25% for " + p.getName() + ". Adding " + MainConfig.Chat.AntiSpam.lowGain);
+                heatMap.put(p, heatMap.get(p) + Sentinel.mainConfig.chat.antiSpam.lowGain);
+                ServerUtils.sendDebugMessage("AntiSpam: Similarity: " + similarity + ", is greater than 25% for " + p.getName() + ". Adding " + Sentinel.mainConfig.chat.antiSpam.lowGain);
             }
         }
 
-        if (heatMap.get(p) > MainConfig.Chat.AntiSpam.punishHeat) {
+        if (heatMap.get(p) > Sentinel.mainConfig.chat.antiSpam.punishHeat) {
             e.setCancelled(true);
-            FilterAction.filterAction(p,e,null,null, GPTUtils.calcSim(e.getMessage(),lastMessageMap.get(p)), FAT.SPAM);
+            FilterAction.filterAction(p,e,null,null, GPTUtils.calcSim(e.getMessage(),lastMessageMap.get(p)), FAT.SPAM_PUNISH);
             return;
         }
 
-        if (heatMap.get(p) > MainConfig.Chat.AntiSpam.blockHeat) {
+        if (heatMap.get(p) > Sentinel.mainConfig.chat.antiSpam.blockHeat) {
             e.setCancelled(true);
             FilterAction.filterAction(p,e,null,null, GPTUtils.calcSim(e.getMessage(),lastMessageMap.get(p)), FAT.BLOCK_SPAM);
-            heatMap.put(p, heatMap.get(p) + MainConfig.Chat.AntiSpam.highGain);
+            heatMap.put(p, heatMap.get(p) + Sentinel.mainConfig.chat.antiSpam.highGain);
             return;
         }
         lastMessageMap.put(p, message);
@@ -69,7 +69,7 @@ public class AntiSpam {
         for (Player p : heatMap.keySet()) {
             int heat = heatMap.get(p);
             if (heat > 0) {
-                heat = heat - MainConfig.Chat.AntiSpam.heatDecay;
+                heat = heat - Sentinel.mainConfig.chat.antiSpam.heatDecay;
                 heatMap.put(p, Math.max(0, heat));
             }
             //ServerUtils.sendDebugMessage("AntiSpam: Decaying heat for " + p.getName() + ": " + heatMap.get(p));

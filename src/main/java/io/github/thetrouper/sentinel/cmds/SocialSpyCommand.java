@@ -1,7 +1,9 @@
 package io.github.thetrouper.sentinel.cmds;
 
 import io.github.itzispyder.pdk.commands.Args;
+import io.github.itzispyder.pdk.commands.CommandRegistry;
 import io.github.itzispyder.pdk.commands.CustomCommand;
+import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.server.util.Text;
@@ -12,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@CommandRegistry(value = "socialspy", permission = @Permission("sentinel.spy"))
 public class SocialSpyCommand implements CustomCommand {
 
     public static Map<UUID, Boolean> spyMap = new HashMap<>();

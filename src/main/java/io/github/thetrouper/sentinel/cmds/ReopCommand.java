@@ -1,13 +1,16 @@
 package io.github.thetrouper.sentinel.cmds;
 
 import io.github.itzispyder.pdk.commands.Args;
+import io.github.itzispyder.pdk.commands.CommandRegistry;
 import io.github.itzispyder.pdk.commands.CustomCommand;
+import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.server.util.Text;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+@CommandRegistry(value = "reop")
 public class ReopCommand implements CustomCommand {
     @Override
     public void dispatchCommand(CommandSender sender, Args args) {

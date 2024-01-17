@@ -48,7 +48,7 @@ public class Text {
         return result.toString();
     }
     public static String fromLeetString(String s) {
-        Map<String, String> dictionary = AdvancedConfig.leetPatterns;
+        Map<String, String> dictionary = Sentinel.advConfig.leetPatterns;
         String msg = s;
 
         for (String key : dictionary.keySet()) {

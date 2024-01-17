@@ -5,13 +5,17 @@ import io.github.itzispyder.pdk.commands.CommandRegistry;
 import io.github.itzispyder.pdk.commands.CustomCommand;
 import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
+import io.github.itzispyder.pdk.utils.ArrayUtils;
+import io.github.itzispyder.pdk.utils.ServerUtils;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.server.functions.Message;
-import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.Arrays;
+import java.util.List;
 
 @CommandRegistry(value = "sentinelmessage",permission = @Permission("sentinel.message"))
 public class MessageCommand implements CustomCommand {
@@ -39,7 +43,7 @@ public class MessageCommand implements CustomCommand {
 
     @Override
     public void dispatchCompletions(CompletionBuilder b) {
-        b.then(b.arg(ServerUtils.unVanishedPlayers())
+        b.then(b.arg(ArrayUtils.toNewList(Bukkit.getOnlinePlayers(), Player::getName))
                 .then(b.arg("[<Message>]")));
     }
 }

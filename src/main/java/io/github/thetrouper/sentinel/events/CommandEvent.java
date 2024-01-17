@@ -29,15 +29,15 @@ public class CommandEvent implements CustomListener {
                         .setPlayer(p)
                         .setCommand(fullcommand)
                         .setDenied(true)
-                        .setDeoped(MainConfig.Plugin.deop)
-                        .setPunished(MainConfig.Plugin.commandPunish)
-                        .setnotifyDiscord(MainConfig.Plugin.logDangerous)
+                        .setDeoped(Sentinel.mainConfig.plugin.deop)
+                        .setPunished(Sentinel.mainConfig.plugin.commandPunish)
+                        .setnotifyDiscord(Sentinel.mainConfig.plugin.logDangerous)
                         .setNotifyConsole(true)
                         .setNotifyTrusted(true)
                         .execute();
             }
         }
-        if (MainConfig.Plugin.blockSpecific) {
+        if (Sentinel.mainConfig.plugin.blockSpecific) {
             ServerUtils.sendDebugMessage("CommandEvent: Checking command for specific");
             if (command.contains(":")) {
                 ServerUtils.sendDebugMessage("CommandEvent: Failed check");
@@ -50,9 +50,9 @@ public class CommandEvent implements CustomListener {
                             .setPlayer(p)
                             .setCommand(command)
                             .setDenied(true)
-                            .setDeoped(MainConfig.Plugin.deop)
-                            .setPunished(MainConfig.Plugin.specificPunish)
-                            .setnotifyDiscord(MainConfig.Plugin.logSpecific)
+                            .setDeoped(Sentinel.mainConfig.plugin.deop)
+                            .setPunished(Sentinel.mainConfig.plugin.specificPunish)
+                            .setnotifyDiscord(Sentinel.mainConfig.plugin.logSpecific)
                             .setNotifyConsole(true)
                             .setNotifyTrusted(true)
                             .execute();

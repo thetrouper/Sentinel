@@ -53,7 +53,7 @@ public class ReportFalsePositives {
                                  String simplifyRep,
                                  String sanitized) {
         ServerUtils.sendDebugMessage("Creating FalsePositive Webhook...");
-        DiscordWebhook webhook = new DiscordWebhook(MainConfig.Plugin.webhook);
+        DiscordWebhook webhook = new DiscordWebhook(Sentinel.mainConfig.plugin.webhook);
         webhook.setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png");
         webhook.setUsername("Sentinel Anti-Nuke | Logs");
         DiscordWebhook.EmbedObject embed = new DiscordWebhook.EmbedObject()

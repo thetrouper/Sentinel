@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LanguageFile implements JsonSerializable<LanguageFile> {
-    public static final File PATH = new File(Sentinel.getInstance().getDataFolder(), "/lang/" + MainConfig.Plugin.lang);
+    public static final File PATH = new File(Sentinel.getInstance().getDataFolder(), "/lang/" + Sentinel.mainConfig.plugin.lang);
     private final Map<String,String> dictionary = new HashMap<>();
     public LanguageFile() {}
 

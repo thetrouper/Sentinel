@@ -60,7 +60,7 @@ public class SentinelCommand implements CustomCommand {
                     p.sendMessage(Text.prefix("Invalid Player!"));
                     return;
                 }
-                p.sendMessage(Text.prefix("Heat of " + target.getName() + ": &8(&c" + io.github.thetrouper.sentinel.server.functions.AntiSpam.heatMap.get(target) + "&7/&4" + MainConfig.Chat.AntiSpam.punishHeat + "&8)"));
+                p.sendMessage(Text.prefix("Heat of " + target.getName() + ": &8(&c" + io.github.thetrouper.sentinel.server.functions.AntiSpam.heatMap.get(target) + "&7/&4" + Sentinel.mainConfig.chat.antiSpam.punishHeat + "&8)"));
             }
         }
     }

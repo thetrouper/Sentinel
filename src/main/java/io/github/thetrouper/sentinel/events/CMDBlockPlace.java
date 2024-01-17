@@ -16,9 +16,9 @@ public class CMDBlockPlace implements CustomListener {
     @EventHandler
     private void onCMDBlockPlace(BlockPlaceEvent e) {
         ServerUtils.sendDebugMessage("CommandBlockPlace: Detected block place");
-        if (!MainConfig.Plugin.preventCmdBlockPlace) return;
+        if (!Sentinel.mainConfig.plugin.preventCmdBlockPlace) return;
         ServerUtils.sendDebugMessage("CommandBlockPlace: Enabled");
-        if (MainConfig.Plugin.cmdBlockOpCheck && !e.getPlayer().isOp()) return;
+        if (Sentinel.mainConfig.plugin.cmdBlockOpCheck && !e.getPlayer().isOp()) return;
         ServerUtils.sendDebugMessage("CommandBlockPlace: Player is operator");
         Block b = e.getBlockPlaced();
         if (b.getType() == Material.COMMAND_BLOCK || b.getType() == Material.CHAIN_COMMAND_BLOCK || b.getType() == Material.REPEATING_COMMAND_BLOCK ) {
@@ -33,8 +33,8 @@ public class CMDBlockPlace implements CustomListener {
                         .setBlock(b)
                         .setPlayer(p)
                         .setDenied(true)
-                        .setPunished(MainConfig.Plugin.cmdBlockPunish)
-                        .setnotifyDiscord(MainConfig.Plugin.logCmdBlocks)
+                        .setPunished(Sentinel.mainConfig.plugin.cmdBlockPunish)
+                        .setnotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
                         .setNotifyTrusted(true)
                         .setNotifyConsole(true)
                         .execute();

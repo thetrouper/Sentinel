@@ -15,7 +15,7 @@ public class AdvancedConfig implements JsonSerializable<AdvancedConfig> {
         return file;
     }
 
-    public static Map<String, String> leetPatterns = new HashMap<>() {{
+    public Map<String, String> leetPatterns = new HashMap<>() {{
         put("0", "o");
         put("1", "i");
         put("3", "e");
@@ -33,8 +33,8 @@ public class AdvancedConfig implements JsonSerializable<AdvancedConfig> {
         put("V", "u");
         put("v", "u");
     }};
-    public static String falsePosRegex = "";
-    public static String swearRegex = "";
-    public static String strictRegex = "";
-    public static String urlRegex = "^(https?://)?([a-zA-Z0-9-]+\\.)*[a-zA-Z0-9-]+\\.[a-zA-Z]{2,}(/\\S*)?$\n";
+    public String falsePosRegex = "";
+    public String swearRegex = "";
+    public String strictRegex = "";
+    public String urlRegex = "(http(s)?:\\/\\/.)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)";
 }
