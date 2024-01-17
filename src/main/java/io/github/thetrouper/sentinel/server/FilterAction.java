@@ -62,7 +62,7 @@ public class FilterAction {
             sendDiscordLog(offender,e,type);
             sendConsoleLog(offender,e,type);
         }
-        if (type == FAT.SPAM && MainConfig.Chat.AntiSpam.logSpam) {
+        if (type == FAT.SPAM && Sentinel.mainConfig) {
             sendDiscordLog(offender,e,type);
             sendConsoleLog(offender,e,type);
         }
@@ -83,7 +83,7 @@ public class FilterAction {
         String title = offender.getName() + " has triggered the " + type.getName() + "!";
         String executed = type.getExecutedCommand() != null ? type.getExecutedCommand() : "Nothing, its a standard flag. You shouldn't be seeing this, please report it.";
 
-        DiscordWebhook webhook = new DiscordWebhook(MainConfig.Plugin.webhook);
+        DiscordWebhook webhook = new DiscordWebhook(Sentinel.mainConfig.);
         webhook.setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png");
         webhook.setUsername("Sentinel Anti-Nuke | Logs");
 

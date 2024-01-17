@@ -11,7 +11,9 @@ public class FPConfig implements JsonSerializable<FPConfig> {
 
     @Override
     public File getFile() {
-        return new File("plugins/Sentinel/false-positives.json");
+        File file = new File("plugins/Sentinel/false-positives.json");
+        file.getParentFile().mkdirs();
+        return file;
     }
 
     public static List<String> swearWhitelist = new ArrayList<>(Arrays.asList(

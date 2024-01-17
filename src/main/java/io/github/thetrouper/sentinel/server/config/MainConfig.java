@@ -10,25 +10,29 @@ public class MainConfig implements JsonSerializable<MainConfig> {
 
     @Override
     public File getFile() {
-        return new File("plugins/Sentinel/main-config.json");
+        File file = new File("plugins/Sentinel/main-config.json");
+        file.getParentFile().mkdirs();
+        return file;
     }
+    public Plugin plugin = new Plugin();
+    public Chat chat = new Chat();
 
-    public static class Plugin {
-        public static String prefix = "§d§lSentinel §8» §7";
-        public static String webhook = "https://discord.com/api/webhooks/id/token";
-        public static String lang = "en-us.json";
-        public static List<String> trustedPlayers = new ArrayList<>() {{
+    public class Plugin {
+        public String prefix = "§d§lSentinel §8» §7";
+        public String webhook = "https://discord.com/api/webhooks/id/token";
+        public String lang = "en-us.json";
+        public List<String> trustedPlayers = new ArrayList<>() {{
             add("049460f7-21cb-42f5-8059-d42752bf406f");
         }};
-        public static boolean blockSpecific = true;
-        public static boolean preventNBT = true;
-        public static boolean preventCmdBlockPlace = true;
-        public static boolean preventCmdBlockUse = true;
-        public static boolean preventCmdBlockChange = true;
-        public static boolean preventCmdCartPlace = true;
-        public static boolean preventCmdCartUse = true;
-        public static boolean cmdBlockOpCheck = true;
-        public static List<String> dangerous = new ArrayList<>() {{
+        public boolean blockSpecific = true;
+        public boolean preventNBT = true;
+        public boolean preventCmdBlockPlace = true;
+        public boolean preventCmdBlockUse = true;
+        public boolean preventCmdBlockChange = true;
+        public boolean preventCmdCartPlace = true;
+        public boolean preventCmdCartUse = true;
+        public boolean cmdBlockOpCheck = true;
+        public List<String> dangerous = new ArrayList<>() {{
             add("op");
             add("deop");
             add("stop");
@@ -41,56 +45,58 @@ public class MainConfig implements JsonSerializable<MainConfig> {
             add("data");
             add("whitelist");
         }};
-        public static boolean logDangerous = true;
-        public static boolean logCmdBlocks = true;
-        public static boolean logNBT = true;
-        public static boolean logSpecific = false;
-        public static List<String> logged = new ArrayList<>() {{
+        public boolean logDangerous = true;
+        public boolean logCmdBlocks = true;
+        public boolean logNBT = true;
+        public boolean logSpecific = false;
+        public List<String> logged = new ArrayList<>() {{
             add("give");
             add("item");
         }};
-        public static boolean deop = true;
-        public static boolean nbtPunish = false;
-        public static boolean cmdBlockPunish = false;
-        public static boolean commandPunish = false;
-        public static boolean specificPunish = false;
-        public static List<String> punishCommands = new ArrayList<>() {{
+        public boolean deop = true;
+        public boolean nbtPunish = false;
+        public boolean cmdBlockPunish = false;
+        public boolean commandPunish = false;
+        public boolean specificPunish = false;
+        public List<String> punishCommands = new ArrayList<>() {{
             add("smite %player%");
             add("ban %player% ]=- Sentinel -=[ You have been banned for attempting a dangerous action. If you believe this to be a mistake, please contact the server owner.");
         }};
-        public static boolean reopCommand = false;
+        public boolean reopCommand = false;
     }
 
-    public static class Chat {
-        public static boolean antiUnicode = true;
+    public class Chat {
+        public AntiSwear antiSwear = new AntiSwear();
+        public AntiSpam antiSpam = new AntiSpam();
+        public boolean antiUnicode = true;
 
-        public static class AntiSpam {
-            public static boolean antiSpamEnabled = true;
-            public static int defaultGain = 1;
-            public static int lowGain = 2;
-            public static int mediumGain = 4;
-            public static int highGain = 6;
-            public static int heatDecay = 1;
-            public static int blockHeat = 10;
-            public static int punishHeat = 25;
-            public static boolean clearChat = true;
-            public static String chatClearCommand = "cc";
-            public static String spamPunishCommand = "mute %player% 1m Please refrain from spamming!";
-            public static boolean logSpam = true;
+        public class AntiSpam {
+            public boolean antiSpamEnabled = true;
+            public int defaultGain = 1;
+            public int lowGain = 2;
+            public int mediumGain = 4;
+            public int highGain = 6;
+            public int heatDecay = 1;
+            public int blockHeat = 10;
+            public int punishHeat = 25;
+            public boolean clearChat = true;
+            public String chatClearCommand = "cc";
+            public String spamPunishCommand = "mute %player% 1m Please refrain from spamming!";
+            public boolean logSpam = true;
         }
-        public static class AntiSwear {
-            public static boolean antiSwearEnabled = true;
-            public static int lowScore = 0;
-            public static int mediumLowScore = 1;
-            public static int mediumScore = 3;
-            public static int mediumHighScore = 5;
-            public static int highScore = 7;
-            public static int scoreDecay = 3;
-            public static int punishScore = 20;
-            public static boolean strictInstaPunish = true;
-            public static String swearPunishCommand = "mute %player% 15m Do not attempt to bypass the Profanity Filter";
-            public static String strictPunishCommand = "mute %player% 1h Discriminatory speech is not tolerated on this server!";
-            public static boolean logSwears = true;
+        public class AntiSwear {
+            public boolean antiSwearEnabled = true;
+            public int lowScore = 0;
+            public int mediumLowScore = 1;
+            public int mediumScore = 3;
+            public int mediumHighScore = 5;
+            public int highScore = 7;
+            public int scoreDecay = 3;
+            public int punishScore = 20;
+            public boolean strictInstaPunish = true;
+            public String swearPunishCommand = "mute %player% 15m Do not attempt to bypass the Profanity Filter";
+            public String strictPunishCommand = "mute %player% 1h Discriminatory speech is not tolerated on this server!";
+            public boolean logSwears = true;
         }
 
     }

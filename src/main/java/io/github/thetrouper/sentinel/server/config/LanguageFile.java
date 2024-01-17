@@ -1,7 +1,7 @@
 package io.github.thetrouper.sentinel.server.config;
 
-import io.github.thetrouper.sentinel.Sentinel;
 import io.github.itzispyder.pdk.utils.misc.JsonSerializable;
+import io.github.thetrouper.sentinel.Sentinel;
 
 import java.io.File;
 import java.util.HashMap;

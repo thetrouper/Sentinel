@@ -9,7 +9,9 @@ import java.util.List;
 public class StrictConfig implements JsonSerializable<StrictConfig> {
     @Override
     public File getFile() {
-        return new File("plugins/Sentinel/strict.json");
+        File file = new File("plugins/Sentinel/strict.json");
+        file.getParentFile().mkdirs();
+        return file;
     }
 
     public static List<String> strict = new ArrayList<>() {{

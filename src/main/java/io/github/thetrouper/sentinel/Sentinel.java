@@ -50,15 +50,16 @@ public final class Sentinel extends JavaPlugin {
         instance = this;
         log.info("Loading Config...");
         loadConfig();
+        log.info("Language Status: (" + dict.get("if-you-see-this-lang-is-broken") + ")");
         log.info("Initializing Server ID...");
         String serverID = Authenticator.getServerID();
         identifier = serverID;
-        log.info("Pre-load finished!\n]====---- Requesting Authentication (" + dict.get("if-you-see-this-lang-is-broken") + ") ----====[ \n- License Key: " + key + " \n- Server ID: " + serverID);
+        log.info("Pre-load finished!\n]====---- Requesting Authentication ----====[ \n- License Key: " + key + " \n- Server ID: " + serverID);
         String authStatus = "ERROR";
         String authstatus = "ERROR";
         try {
             authStatus = Authenticator.authorize(key, serverID);
-            authstatus = Auth.authorize(key,serverID);
+            authstatus = Auth.authorize(key, serverID);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -154,9 +155,18 @@ public final class Sentinel extends JavaPlugin {
         strictConfig = JsonSerializable.load(strctcfg,StrictConfig.class,new StrictConfig());
         swearConfig = JsonSerializable.load(swrcfg,SwearsConfig.class,new SwearsConfig());
         nbtConfig = JsonSerializable.load(nbtcfg,NBTConfig.class,new NBTConfig());
+        dict = JsonSerializable.load(LanguageFile.PATH,LanguageFile.class,new LanguageFile());
+
+        // Save
+        mainConfig.save();
+        advConfig.save();
+        fpConfig.save();
+        strictConfig.save();
+        swearConfig.save();
+        nbtConfig.save();
+        dict.save();
 
         log.info("Loading Dictionary (" + MainConfig.Plugin.lang + ")...");
-        dict = JsonSerializable.load(LanguageFile.PATH,LanguageFile.class,new LanguageFile());
 
         log.info("Verifying Config...");
         //getConfig().options().copyDefaults();

@@ -10,7 +10,9 @@ public class AdvancedConfig implements JsonSerializable<AdvancedConfig> {
 
     @Override
     public File getFile() {
-        return new File("plugins/Sentinel/advanced-config.json");
+        File file = new File("plugins/Sentinel/advanced-config.json");
+        file.getParentFile().mkdirs();
+        return file;
     }
 
     public static Map<String, String> leetPatterns = new HashMap<>() {{

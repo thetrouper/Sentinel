@@ -10,7 +10,9 @@ import java.io.FileWriter;
 public class NBTConfig implements JsonSerializable<NBTConfig> {
     @Override
     public File getFile() {
-        return new File("plugins/Sentinel/NBTConfig.json");
+        File file = new File("plugins/Sentinel/nbt-config.json");
+        file.getParentFile().mkdirs();
+        return file;
     }
 
     public static boolean allowName = true;

@@ -9,7 +9,9 @@ import java.util.List;
 public class SwearsConfig implements JsonSerializable<SwearsConfig> {
     @Override
     public File getFile() {
-        return new File("plugins/Sentinel/swears.json");
+        File file = new File("plugins/Sentinel/swears.json");
+        file.getParentFile().mkdirs();
+        return file;
     }
 
     public static List<String> swears = new ArrayList<>() {{
