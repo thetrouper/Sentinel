@@ -1,33 +1,11 @@
 package io.github.thetrouper.sentinel.server.util;
 
-import com.google.gson.reflect.TypeToken;
 import io.github.thetrouper.sentinel.Sentinel;
 
-import java.io.*;
-import java.time.*;
-import java.util.List;
-import java.util.Random;
-import com.google.gson.Gson;
-import org.bukkit.Location;
-import com.google.gson.Gson;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Map;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Map;
-import java.util.UUID;
-import com.google.gson.Gson;
-import java.lang.reflect.Type;
-import java.io.FileWriter;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Map;
-import java.util.List;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.UUID;
-import org.bukkit.Location;
 public class FileUtils {
     public static boolean folderExists(String folderName) {
         File folder = new File(Sentinel.getInstance().getDataFolder(), folderName);

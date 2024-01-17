@@ -1,4 +1,4 @@
-package io.github.thetrouper.sentinel.data;
+package io.github.thetrouper.sentinel.server.config;
 
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.server.util.JsonSerializable;

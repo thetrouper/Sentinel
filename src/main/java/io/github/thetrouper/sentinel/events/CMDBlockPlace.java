@@ -1,18 +1,18 @@
 package io.github.thetrouper.sentinel.events;
 
+import io.github.itzispyder.pdk.events.CustomListener;
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.data.Config;
-import io.github.thetrouper.sentinel.data.Action;
 import io.github.thetrouper.sentinel.data.ActionType;
+import io.github.thetrouper.sentinel.server.Action;
+import io.github.thetrouper.sentinel.server.config.Config;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-public class CMDBlockPlace implements Listener {
+public class CMDBlockPlace implements CustomListener {
     @EventHandler
     private void onCMDBlockPlace(BlockPlaceEvent e) {
         ServerUtils.sendDebugMessage("CommandBlockPlace: Detected block place");

@@ -1,10 +1,12 @@
 package io.github.thetrouper.sentinel;
 
+import io.github.itzispyder.pdk.PDK;
 import io.github.thetrouper.sentinel.auth.Auth;
-import io.github.thetrouper.sentinel.commands.*;
-import io.github.thetrouper.sentinel.data.Config;
-import io.github.thetrouper.sentinel.data.LanguageFile;
+import io.github.thetrouper.sentinel.cmds.*;
 import io.github.thetrouper.sentinel.events.*;
+import io.github.thetrouper.sentinel.server.config.Config;
+import io.github.thetrouper.sentinel.server.config.LanguageFile;
+import io.github.thetrouper.sentinel.server.config.MainConfig;
 import io.github.thetrouper.sentinel.server.functions.AntiSpam;
 import io.github.thetrouper.sentinel.server.functions.Authenticator;
 import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
@@ -15,11 +17,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.logging.Logger;
 
 public final class Sentinel extends JavaPlugin {
     private static Sentinel instance;
     public static LanguageFile dict;
+    private static File cfgfile = new File("plugins/Sentinel/main-config.json");
+    public static MainConfig mainConfig = JsonSerializable.load(cfgfile, MainConfig.class, new MainConfig());
     public static final PluginManager manager = Bukkit.getPluginManager();
     public static String prefix = "";
     public static String key = "";
@@ -33,6 +38,7 @@ public final class Sentinel extends JavaPlugin {
     @Override
     public void onEnable() {
         log.info("\n]======------ Pre-load started! ------======[");
+        PDK.init(this);
         instance = this;
         log.info("Loading Config...");
         loadConfig();
@@ -49,7 +55,7 @@ public final class Sentinel extends JavaPlugin {
         } catch (Exception e) {
             e.printStackTrace();
             log.info("WTFFFF ARE YOU DOING MAN??????");
-            getServer().getPluginManager().disablePlugin(this);
+            manager.disablePlugin(this);
         }
         switch (authStatus) {
             case "AUTHORIZED" -> {
@@ -67,21 +73,21 @@ public final class Sentinel extends JavaPlugin {
                     }
                     case "FAILURE" -> {
                         log.info("Dynamic IP Failure. Webhook Error possible? Please contact obvWolf to fix this.");
-                        getServer().getPluginManager().disablePlugin(this);
+                        manager.disablePlugin(this);
                     }
                 }
             }
             case "INVALID-ID" -> {
                 log.info("Authentication Failure, You have not whitelisted this server ID yet.");
-                getServer().getPluginManager().disablePlugin(this);
+                manager.disablePlugin(this);
             }
             case "UNREGISTERED" -> {
                 log.warning("Authentication Failure, YOU SHALL NOT PASS! License: " + key + " Server ID: " + serverID);
-                getServer().getPluginManager().disablePlugin(this);
+                manager.disablePlugin(this);
             }
             case "ERROR" -> {
                 log.warning("Hmmmmmm thats not right... License: " + key + " Server ID: " + serverID + "\nPlease report the above stacktrace.");
-                getServer().getPluginManager().disablePlugin(this);
+                manager.disablePlugin(this);
             }
         }
     }
@@ -96,7 +102,7 @@ public final class Sentinel extends JavaPlugin {
         AntiSpam.enableAntiSpam();
         ProfanityFilter.enableAntiSwear();
 
-        prefix = Config.Plugin.getPrefix();
+        prefix = MainConfig.Plugin.prefix;
 
         // Commands -> BE SURE TO REGISTER ANY NEW COMMANDS IN PLUGIN.YML (src/main/java/resources/plugin.yml)!
         new SentinelCommand().register();
@@ -107,14 +113,15 @@ public final class Sentinel extends JavaPlugin {
         new ChatClickCallback().register();
 
         // Events
-        manager.registerEvents(new CommandEvent(),this);
-        manager.registerEvents(new CMDBlockExecute(), this);
-        manager.registerEvents(new CMDBlockPlace(), this);
-        manager.registerEvents(new CMDBlockUse(), this);
-        manager.registerEvents(new CMDMinecartPlace(), this);
-        manager.registerEvents(new CMDMinecartUse(), this);
-        manager.registerEvents(new NBTEvents(), this);
-        manager.registerEvents(new ChatEvent(),this);
+        new ChatEvent().register();
+        new CommandEvent().register();
+        new CMDBlockExecute().register();
+        new CMDBlockPlace().register();
+        new CMDBlockUse().register();
+        new CMDMinecartPlace().register();
+        new CMDMinecartUse().register();
+        new NBTEvents().register();
+
 
         // Scheduled timers
         Bukkit.getScheduler().runTaskTimer(this, AntiSpam::decayHeat,0, 20);
@@ -132,9 +139,8 @@ public final class Sentinel extends JavaPlugin {
 
     public void loadConfig() {
         // Init
-        Config.loadConfiguration();
 
-        log.info("Loading Dictionary (" + Config.lang + ")...");
+        log.info("Loading Dictionary (" + MainConfig.Plugin.lang + ")...");
         dict = JsonSerializable.load(LanguageFile.PATH,LanguageFile.class,new LanguageFile());
 
         log.info("Verifying Config...");
@@ -160,7 +166,7 @@ public final class Sentinel extends JavaPlugin {
      * @return true if the player is trusted, false otherwise
      */
     public static boolean isTrusted(Player player) {
-        return Config.trustedPlayers.contains(player.getUniqueId().toString());
+        return MainConfig.Plugin.trustedPlayers.contains(player.getUniqueId().toString());
     }
 
     /**
@@ -169,7 +175,7 @@ public final class Sentinel extends JavaPlugin {
      * @return true if the command is logged, false otherwise
      */
     public static boolean isLoggedCommand(String command) {
-        return Config.logged.contains(command);
+        return MainConfig.Plugin.logged.contains(command);
     }
 
     /**
@@ -178,7 +184,7 @@ public final class Sentinel extends JavaPlugin {
      * @return true if the command is dangerous, false otherwise
      */
     public static boolean isDangerousCommand(String command) {
-        return Config.dangerous.contains(command);
+        return MainConfig.Plugin.dangerous.contains(command);
     }
     /**
      * Returns an instance of this plugin

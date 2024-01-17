@@ -2,18 +2,14 @@
  * This file is for tutorial purposes made by ImproperIssues. Distribute if you want :)
  */
 
-package io.github.thetrouper.sentinel.data;
+package io.github.thetrouper.sentinel.server.config;
 
-import com.google.common.base.Charsets;
 import io.github.thetrouper.sentinel.Sentinel;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

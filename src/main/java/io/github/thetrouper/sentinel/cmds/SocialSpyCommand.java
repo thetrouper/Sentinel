@@ -1,8 +1,10 @@
-package io.github.thetrouper.sentinel.commands;
+package io.github.thetrouper.sentinel.cmds;
 
+import io.github.itzispyder.pdk.commands.Args;
+import io.github.itzispyder.pdk.commands.CustomCommand;
+import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.server.util.Text;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -10,16 +12,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class SocialSpyCommand extends CustomCommand {
+public class SocialSpyCommand implements CustomCommand {
+
     public static Map<UUID, Boolean> spyMap = new HashMap<>();
-
-    public SocialSpyCommand() {
-        super("socialspy");
-        this.setPrintStacktrace(true);
-    }
-
     @Override
-    public void dispatchCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void dispatchCommand(CommandSender sender, Args args) {
         String name = sender.getName();
         Player p = sender.getServer().getPlayer(name);
         UUID senderID = p.getUniqueId();
@@ -33,7 +30,7 @@ public class SocialSpyCommand extends CustomCommand {
     }
 
     @Override
-    public void registerCompletions(CompletionBuilder builder) {
+    public void dispatchCompletions(CompletionBuilder completionBuilder) {
 
     }
 }

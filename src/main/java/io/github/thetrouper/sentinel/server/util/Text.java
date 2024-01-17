@@ -2,7 +2,7 @@ package io.github.thetrouper.sentinel.server.util;
 
 
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.data.Config;
+import io.github.thetrouper.sentinel.server.config.Config;
 
 import java.util.Map;
 import java.util.regex.PatternSyntaxException;

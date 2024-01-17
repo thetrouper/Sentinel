@@ -1,8 +1,8 @@
 package io.github.thetrouper.sentinel.server.functions;
 
-import io.github.thetrouper.sentinel.data.Config;
 import io.github.thetrouper.sentinel.data.FAT;
-import io.github.thetrouper.sentinel.data.FilterAction;
+import io.github.thetrouper.sentinel.server.FilterAction;
+import io.github.thetrouper.sentinel.server.config.Config;
 import io.github.thetrouper.sentinel.server.util.GPTUtils;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
@@ -29,6 +29,7 @@ public class AntiSpam {
             lastMessageMap.put(p,"/* Placeholder Message from Sentinel */");
             ServerUtils.sendDebugMessage("AntiSpam: " + p.getName() + " did not have a previous message, setting to placeholder!");
         }
+
         if (!heatMap.containsKey(p)) {
             heatMap.put(p,0);
             ServerUtils.sendDebugMessage("AntiSpam: " + p.getName() + " did not have a heat, setting it to 0!");

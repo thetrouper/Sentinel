@@ -1,15 +1,17 @@
-package io.github.thetrouper.sentinel.data;
+package io.github.thetrouper.sentinel.server;
 
 
 import io.github.thetrouper.sentinel.Sentinel;
+import io.github.thetrouper.sentinel.data.ActionType;
+import io.github.thetrouper.sentinel.data.Emojis;
 import io.github.thetrouper.sentinel.discord.DiscordWebhook;
+import io.github.thetrouper.sentinel.server.config.Config;
 import io.github.thetrouper.sentinel.server.util.FileUtils;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -19,36 +21,8 @@ import java.io.IOException;
 import java.util.List;
 
 public class Action {
-    private final Cancellable event;
-    private final ActionType action;
-    private final Player player;
-    private final String command;
-    private final String loggedCommand;
-    private final ItemStack item;
-    private final Block block;
-    private final boolean denied;
-    private final boolean deoped;
-    private final boolean punished;
-    private final boolean revertGM;
-    private final boolean notifyDiscord;
-    private final boolean notifyTrusted;
-    private final boolean notifyConsole;
 
-    private Action(Cancellable event, ActionType action, Player player, String command, String loggedCommand, ItemStack item, Block block,boolean denied, boolean deoped, boolean punished, boolean revertedGM, boolean notifyDiscord, boolean notifyTrusted, boolean notifyConsole) {
-        this.event = event;
-        this.action = action;
-        this.player = player;
-        this.command = command;
-        this.loggedCommand = loggedCommand;
-        this.item = item;
-        this.block = block;
-        this.denied = denied;
-        this.deoped = deoped;
-        this.punished = punished;
-        this.revertGM = revertedGM;
-        this.notifyDiscord = notifyDiscord;
-        this.notifyTrusted = notifyTrusted;
-        this.notifyConsole = notifyConsole;
+    private Action(Cancellable event, ActionType action, Player player, String command, String loggedCommand, ItemStack item, Block block, boolean denied, boolean deoped, boolean punished, boolean revertedGM, boolean notifyDiscord, boolean notifyTrusted, boolean notifyConsole) {
     }
 
     public static class Builder {
@@ -140,7 +114,7 @@ public class Action {
 
             if (punished) {
                 for (String command : punishCommands) {
-                    ServerUtils.sendCommand(command);
+                    ServerUtils.sendCommand(command.replaceAll("%player%",player.getName()));
                 }
             }
 

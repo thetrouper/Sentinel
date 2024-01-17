@@ -17,8 +17,8 @@ public enum ActionType {
     private final String messageTitle;
     private final Color embedColor;
 
-    ActionType(String messagetop, String messageTitle, Color embedColor) {
-        this.messageTop = messagetop;
+    ActionType(String messageTop, String messageTitle, Color embedColor) {
+        this.messageTop = messageTop;
         this.messageTitle = messageTitle;
         this.embedColor = embedColor;
     }

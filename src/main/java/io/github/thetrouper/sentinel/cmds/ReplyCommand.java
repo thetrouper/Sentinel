@@ -1,26 +1,21 @@
-package io.github.thetrouper.sentinel.commands;
+package io.github.thetrouper.sentinel.cmds;
 
+import io.github.itzispyder.pdk.commands.Args;
+import io.github.itzispyder.pdk.commands.CustomCommand;
+import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.server.functions.Message;
 import io.github.thetrouper.sentinel.server.util.Text;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 
-public class ReplyCommand extends CustomCommand {
-    public static Map<UUID, UUID> replyMap = MessageCommand.replyMap;
-
-    public ReplyCommand() {
-        super("reply");
-        this.setPrintStacktrace(true);
-    }
-
+public class ReplyCommand implements CustomCommand {
+    public static Map<UUID, UUID> replyMap = Message.replyMap;
     @Override
-    public void dispatchCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void dispatchCommand(CommandSender sender, Args args) {
         String name = sender.getName();
         Player p = sender.getServer().getPlayer(name);
         UUID senderID = p.getUniqueId();
@@ -29,10 +24,10 @@ public class ReplyCommand extends CustomCommand {
         }
         Player r = sender.getServer().getPlayer(replyMap.get(senderID));
         UUID reciverID = r.getUniqueId();
-        if (args[0] == null) {
+        if (args.get(0).toString() == null) {
             p.sendMessage(Text.prefix(Sentinel.dict.get("no-message-provided")));
         }
-        String msg = String.join(" ", Arrays.asList(args));
+        String msg = args.getAll().toString();
         if (p.hasPermission("sentinel.message")) {
             Message.messagePlayer(p,r,msg);
             replyMap.put(senderID,reciverID);
@@ -42,7 +37,7 @@ public class ReplyCommand extends CustomCommand {
     }
 
     @Override
-    public void registerCompletions(CompletionBuilder builder) {
-        builder.addCompletion(1,builder.args.length >= 2, "[<message>]");
+    public void dispatchCompletions(CompletionBuilder b) {
+        b.then(b.arg("[<Message>]"));
     }
 }

@@ -1,5 +1,7 @@
 package io.github.thetrouper.sentinel.data;
 
+import io.github.thetrouper.sentinel.server.config.Config;
+
 import java.awt.*;
 
 public enum FAT {

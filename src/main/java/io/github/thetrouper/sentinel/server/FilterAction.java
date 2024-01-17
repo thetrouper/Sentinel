@@ -1,10 +1,11 @@
-package io.github.thetrouper.sentinel.data;
+package io.github.thetrouper.sentinel.server;
 
 import io.github.thetrouper.sentinel.Sentinel;
+import io.github.thetrouper.sentinel.data.Emojis;
+import io.github.thetrouper.sentinel.data.FAT;
 import io.github.thetrouper.sentinel.discord.DiscordWebhook;
-import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
+import io.github.thetrouper.sentinel.server.config.Config;
 import io.github.thetrouper.sentinel.server.functions.ReportFalsePositives;
-import io.github.thetrouper.sentinel.server.util.GPTUtils;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -13,7 +14,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import java.awt.*;
 import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;

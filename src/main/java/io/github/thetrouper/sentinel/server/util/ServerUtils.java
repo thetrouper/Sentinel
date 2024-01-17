@@ -1,12 +1,13 @@
 package io.github.thetrouper.sentinel.server.util;
 
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.commands.SentinelCommand;
+import io.github.thetrouper.sentinel.cmds.SentinelCommand;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.MetadataValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +28,7 @@ public class ServerUtils {
         },1);
     }
     public static void sendDebugMessage(String message) {
-        if (SentinelCommand.debugmode) {
+        if (SentinelCommand.debugMode) {
             String log = "[Sentinel] [DEBUG]: " + message;
             Sentinel.log.info(log);
             for (Player trustedPlayer : Bukkit.getOnlinePlayers()) {
@@ -89,5 +90,16 @@ public class ServerUtils {
             }
         }
         return false;
+    }
+
+    public static boolean isVanished(Player player) {
+        for (MetadataValue meta : player.getMetadata("vanished")) {
+            if (meta.asBoolean()) return true;
+        }
+        return false;
+    }
+
+    public static String[] unVanishedPlayers() {
+        return io.github.itzispyder.pdk.utils.ServerUtils.players(ServerUtils::isVanished).stream().map(Player::getName).toArray(String[]::new);
     }
 }

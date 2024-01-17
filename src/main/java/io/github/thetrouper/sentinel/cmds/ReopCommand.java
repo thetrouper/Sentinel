@@ -1,19 +1,16 @@
-package io.github.thetrouper.sentinel.commands;
+package io.github.thetrouper.sentinel.cmds;
 
+import io.github.itzispyder.pdk.commands.Args;
+import io.github.itzispyder.pdk.commands.CustomCommand;
+import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.server.util.Text;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class ReopCommand extends CustomCommand {
-    public ReopCommand() {
-        super("reop");
-        this.setPrintStacktrace(true);
-    }
-
+public class ReopCommand implements CustomCommand {
     @Override
-    public void dispatchCommand(CommandSender sender, Command command, String label, String[] args) {
+    public void dispatchCommand(CommandSender sender, Args args) {
         Player p = (Player) sender;
         if (Sentinel.isTrusted(p)) {
             if (!p.isOp()) {
@@ -31,8 +28,7 @@ public class ReopCommand extends CustomCommand {
     }
 
     @Override
-    public void registerCompletions(CompletionBuilder builder) {
+    public void dispatchCompletions(CompletionBuilder completionBuilder) {
 
     }
-
 }

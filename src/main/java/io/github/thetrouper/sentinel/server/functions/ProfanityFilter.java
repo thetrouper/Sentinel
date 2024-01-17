@@ -1,17 +1,16 @@
 package io.github.thetrouper.sentinel.server.functions;
-import io.github.thetrouper.sentinel.data.Config;
-import io.github.thetrouper.sentinel.data.FilterAction;
+
 import io.github.thetrouper.sentinel.data.FAT;
+import io.github.thetrouper.sentinel.server.FilterAction;
+import io.github.thetrouper.sentinel.server.config.Config;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-import static io.github.thetrouper.sentinel.server.util.Text.SECTION_SYMBOL;
 
 public class ProfanityFilter {
     public static Map<Player, Integer> scoreMap;

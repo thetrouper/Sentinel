@@ -1,9 +1,10 @@
 package io.github.thetrouper.sentinel.events;
 
+import io.github.itzispyder.pdk.events.CustomListener;
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.data.Config;
-import io.github.thetrouper.sentinel.data.Action;
 import io.github.thetrouper.sentinel.data.ActionType;
+import io.github.thetrouper.sentinel.server.Action;
+import io.github.thetrouper.sentinel.server.config.Config;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -11,11 +12,10 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class CMDBlockUse implements Listener {
+public class CMDBlockUse implements CustomListener {
     @EventHandler
     private void onCMDBlockUse(PlayerInteractEvent e) {
         ServerUtils.sendDebugMessage("CommandBlockUse: Detected Interaction");

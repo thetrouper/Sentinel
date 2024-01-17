@@ -15,7 +15,7 @@
 #
 config:
   plugin:
-    key: "beta" # Put your license key here. If you do not have  one, join the discord to verify your purchase
+    key: "beta" # Put your license key here. If you do not have one, join the discord to verify your purchase
     lang: "en_us.json" # Languages
     # --------------------------------
     # Anti-Nuke Setup (Do this first)
