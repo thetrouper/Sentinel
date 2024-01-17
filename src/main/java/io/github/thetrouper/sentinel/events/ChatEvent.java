@@ -2,7 +2,6 @@ package io.github.thetrouper.sentinel.events;
 
 import io.github.itzispyder.pdk.events.CustomListener;
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.server.config.Config;
 import io.github.thetrouper.sentinel.server.config.MainConfig;
 import io.github.thetrouper.sentinel.server.functions.AntiSpam;
 import io.github.thetrouper.sentinel.server.functions.AntiUnicode;
@@ -26,14 +25,14 @@ public class ChatEvent implements CustomListener {
         }
         if (!Sentinel.isTrusted(e.getPlayer()) || !e.getPlayer().hasPermission("sentinel.chat.antiswear.bypass")) {
             ServerUtils.sendDebugMessage("ChatEvent: Permission bypass failed, checking for swears");
-            if (Config.antiSwearEnabled) {
+            if (MainConfig.Chat.AntiSwear.antiSwearEnabled) {
                 ServerUtils.sendDebugMessage(("ChatEvent: Enabled, Continuing swear check!"));
                 ProfanityFilter.handleProfanityFilter(e);
             }
         }
         if (!Sentinel.isTrusted(e.getPlayer()) || !e.getPlayer().hasPermission("sentinel.chat.antispam.bypass")) {
             ServerUtils.sendDebugMessage(("ChatEvent: Permission bypass failed, checking for spam"));
-            if (Config.antiSpamEnabled) {
+            if (MainConfig.Chat.AntiSpam.antiSpamEnabled) {
                 ServerUtils.sendDebugMessage(("ChatEvent: Enabled, Continuing spam check!"));
                 AntiSpam.handleAntiSpam(e);
             }

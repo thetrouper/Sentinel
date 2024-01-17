@@ -3,7 +3,7 @@ package io.github.thetrouper.sentinel.server.functions;
 import io.github.itzispyder.pdk.utils.ServerUtils;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.cmds.SocialSpyCommand;
-import io.github.thetrouper.sentinel.server.config.Config;
+import io.github.thetrouper.sentinel.server.config.MainConfig;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
@@ -23,9 +23,9 @@ public class Message {
         receivers.add(sender);
         AsyncPlayerChatEvent checkEvent = new AsyncPlayerChatEvent(true,sender,message,receivers);
         if (checkEvent.isCancelled()) return;
-        if (!Sentinel.isTrusted(sender) || !sender.hasPermission("sentinel.chat.antiswear.bypass")) if (Config.antiSwearEnabled) ProfanityFilter.handleProfanityFilter(checkEvent);
-        if (!Sentinel.isTrusted(sender) || !sender.hasPermission("sentinel.chat.antispam.bypass")) if (Config.antiSpamEnabled) AntiSpam.handleAntiSpam(checkEvent);
-        if (!Sentinel.isTrusted(sender) || !sender.hasPermission("sentinel.chat.antiunicode.bypass")) if (Config.antiUnicode) AntiUnicode.handleAntiUnicode(checkEvent);
+        if (!Sentinel.isTrusted(sender) || !sender.hasPermission("sentinel.chat.antiswear.bypass")) if (MainConfig.Chat.AntiSwear.antiSwearEnabled) ProfanityFilter.handleProfanityFilter(checkEvent);
+        if (!Sentinel.isTrusted(sender) || !sender.hasPermission("sentinel.chat.antispam.bypass")) if (MainConfig.Chat.AntiSpam.antiSpamEnabled) AntiSpam.handleAntiSpam(checkEvent);
+        if (!Sentinel.isTrusted(sender) || !sender.hasPermission("sentinel.chat.antiunicode.bypass")) if (MainConfig.Chat.antiUnicode) AntiUnicode.handleAntiUnicode(checkEvent);
         if (checkEvent.isCancelled()) return;
 
         sender.sendMessage(Sentinel.dict.get("message-sent").formatted(receiver.getName(),message));

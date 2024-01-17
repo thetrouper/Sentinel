@@ -32,7 +32,7 @@ public class AdvancedConfig implements JsonSerializable<AdvancedConfig> {
         put("v", "u");
     }};
     public static String falsePosRegex = "";
-    public static String swearRegex;
-    public static String strictRegex;
+    public static String swearRegex = "";
+    public static String strictRegex = "";
     public static String urlRegex = "^(https?://)?([a-zA-Z0-9-]+\\.)*[a-zA-Z0-9-]+\\.[a-zA-Z]{2,}(/\\S*)?$\n";
 }

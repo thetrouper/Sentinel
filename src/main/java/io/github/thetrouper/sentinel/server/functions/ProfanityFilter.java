@@ -2,7 +2,7 @@ package io.github.thetrouper.sentinel.server.functions;
 
 import io.github.thetrouper.sentinel.data.FAT;
 import io.github.thetrouper.sentinel.server.FilterAction;
-import io.github.thetrouper.sentinel.server.config.Config;
+import io.github.thetrouper.sentinel.server.config.*;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
 import org.bukkit.entity.Player;
@@ -14,9 +14,9 @@ import java.util.Map;
 
 public class ProfanityFilter {
     public static Map<Player, Integer> scoreMap;
-    private static final List<String> swearBlacklist = Config.swearBlacklist;
-    private static final List<String> swearWhitelist = Config.swearWhitelist;
-    private static final List<String> slurs = Config.slurs;
+    private static final List<String> swearBlacklist = SwearsConfig.swears;
+    private static final List<String> swearWhitelist = FPConfig.swearWhitelist;
+    private static final List<String> slurs = StrictConfig.strict;
 
     public static void enableAntiSwear() {
         scoreMap = new HashMap<>();
@@ -28,48 +28,48 @@ public class ProfanityFilter {
         String severity = ProfanityFilter.checkSeverity(message);
         if (!scoreMap.containsKey(p)) scoreMap.put(p, 0);
         // Old: if (scoreMap.get(p) > Config.punishScore) punishSwear(p,highlighted,message,e);
-        if (scoreMap.get(p) > Config.punishScore) FilterAction.filterAction(p,e,highlighted,severity, null, FAT.SWEAR);
+        if (scoreMap.get(p) > MainConfig.Chat.AntiSwear.punishScore) FilterAction.filterAction(p,e,highlighted,severity, null, FAT.SWEAR);
 
         switch (severity) {
             case "low" -> {
-                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.lowScore);
-                scoreMap.put(p, scoreMap.get(p) + Config.lowScore);
+                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + MainConfig.Chat.AntiSwear.lowScore);
+                scoreMap.put(p, scoreMap.get(p) + MainConfig.Chat.AntiSwear.lowScore);
                 e.setCancelled(true);
                 // Old: blockSwear(p,highlighted,message,severity,e);
                 FilterAction.filterAction(p,e,highlighted,severity, null, FAT.BLOCK_SWEAR);
             }
             case "medium-low" -> {
-                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.mediumLowScore);
-                scoreMap.put(p, scoreMap.get(p) + Config.mediumLowScore);
+                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + MainConfig.Chat.AntiSwear.mediumLowScore);
+                scoreMap.put(p, scoreMap.get(p) + MainConfig.Chat.AntiSwear.mediumLowScore);
                 e.setCancelled(true);
                 // Old: blockSwear(p,highlighted,message,severity,e);
                 FilterAction.filterAction(p,e,highlighted,severity, null, FAT.BLOCK_SWEAR);
             }
             case "medium" -> {
-                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.mediumScore);
-                scoreMap.put(p, scoreMap.get(p) + Config.mediumScore);
+                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + MainConfig.Chat.AntiSwear.mediumScore);
+                scoreMap.put(p, scoreMap.get(p) + MainConfig.Chat.AntiSwear.mediumScore);
                 e.setCancelled(true);
                 // Old: blockSwear(p,highlighted,message,severity,e);
                 FilterAction.filterAction(p,e,highlighted,severity, null, FAT.BLOCK_SWEAR);
             }
             case "medium-high" -> {
-                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.mediumHighScore);
-                scoreMap.put(p, scoreMap.get(p) + Config.mediumHighScore);
+                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + MainConfig.Chat.AntiSwear.mediumHighScore);
+                scoreMap.put(p, scoreMap.get(p) + MainConfig.Chat.AntiSwear.mediumHighScore);
                 e.setCancelled(true);
                 // Old: blockSwear(p,highlighted,message,severity,e);
                 FilterAction.filterAction(p,e,highlighted,severity, null, FAT.BLOCK_SWEAR);
             }
             case "high" -> {
-                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.highScore);
-                scoreMap.put(p, scoreMap.get(p) + Config.highScore);
+                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + MainConfig.Chat.AntiSwear.highScore);
+                scoreMap.put(p, scoreMap.get(p) + MainConfig.Chat.AntiSwear.highScore);
                 e.setCancelled(true);
                 // Old: blockSwear(p,highlighted,message,severity,e);
                 FilterAction.filterAction(p,e,highlighted,severity, null, FAT.BLOCK_SWEAR);
             }
             case "slur" -> {
                 // Insta-Punish
-                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Config.highScore);
-                scoreMap.put(p, scoreMap.get(p) + Config.highScore);
+                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + MainConfig.Chat.AntiSwear.highScore);
+                scoreMap.put(p, scoreMap.get(p) + MainConfig.Chat.AntiSwear.highScore);
                 e.setCancelled(true);
                 // Old: punishSlur(p,highlighted,message,e);
                 FilterAction.filterAction(p,e,highlighted,severity, null,FAT.SLUR);
@@ -286,7 +286,7 @@ public class ProfanityFilter {
         for (Player p : scoreMap.keySet()) {
             int score = scoreMap.get(p);
             if (score > 0) {
-                score = score - Config.scoreDecay;
+                score = score - MainConfig.Chat.AntiSwear.scoreDecay;
                 scoreMap.put(p, Math.max(0, score));
             }
         }

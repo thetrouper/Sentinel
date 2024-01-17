@@ -4,7 +4,7 @@ import io.github.itzispyder.pdk.events.CustomListener;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.ActionType;
 import io.github.thetrouper.sentinel.server.Action;
-import io.github.thetrouper.sentinel.server.config.Config;
+import io.github.thetrouper.sentinel.server.config.MainConfig;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -16,9 +16,9 @@ public class CMDBlockPlace implements CustomListener {
     @EventHandler
     private void onCMDBlockPlace(BlockPlaceEvent e) {
         ServerUtils.sendDebugMessage("CommandBlockPlace: Detected block place");
-        if (!Config.preventCmdBlockPlace) return;
+        if (!MainConfig.Plugin.preventCmdBlockPlace) return;
         ServerUtils.sendDebugMessage("CommandBlockPlace: Enabled");
-        if (Config.cmdBlockOpCheck && !e.getPlayer().isOp()) return;
+        if (MainConfig.Plugin.cmdBlockOpCheck && !e.getPlayer().isOp()) return;
         ServerUtils.sendDebugMessage("CommandBlockPlace: Player is operator");
         Block b = e.getBlockPlaced();
         if (b.getType() == Material.COMMAND_BLOCK || b.getType() == Material.CHAIN_COMMAND_BLOCK || b.getType() == Material.REPEATING_COMMAND_BLOCK ) {
@@ -33,8 +33,8 @@ public class CMDBlockPlace implements CustomListener {
                         .setBlock(b)
                         .setPlayer(p)
                         .setDenied(true)
-                        .setPunished(Config.cmdBlockPunish)
-                        .setnotifyDiscord(Config.logCmdBlocks)
+                        .setPunished(MainConfig.Plugin.cmdBlockPunish)
+                        .setnotifyDiscord(MainConfig.Plugin.logCmdBlocks)
                         .setNotifyTrusted(true)
                         .setNotifyConsole(true)
                         .execute();

@@ -4,7 +4,7 @@ import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Emojis;
 import io.github.thetrouper.sentinel.data.FAT;
 import io.github.thetrouper.sentinel.discord.DiscordWebhook;
-import io.github.thetrouper.sentinel.server.config.Config;
+import io.github.thetrouper.sentinel.server.config.MainConfig;
 import io.github.thetrouper.sentinel.server.functions.ReportFalsePositives;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
@@ -43,7 +43,7 @@ public class FilterAction {
 
         String notiftext = Sentinel.dict.get(type.getNotifTranslationKey());
 
-        notif.setText(Text.prefix((type != FAT.SPAM && type != FAT.BLOCK_SPAM ? notiftext.formatted(offender.getName(), scoreMap.get(offender), Config.punishScore) : notiftext.formatted(offender.getName(),heatMap.get(offender),Config.punishHeat))));
+        notif.setText(Text.prefix((type != FAT.SPAM && type != FAT.BLOCK_SPAM ? notiftext.formatted(offender.getName(), scoreMap.get(offender), MainConfig.Chat.AntiSwear.punishScore) : notiftext.formatted(offender.getName(),heatMap.get(offender),MainConfig.Chat.AntiSpam.punishHeat))));
 
         ServerUtils.forEachStaff(staffmember -> {
             staffmember.spigot().sendMessage(notif);
@@ -53,16 +53,16 @@ public class FilterAction {
             ServerUtils.sendCommand(type.getExecutedCommand().replace("%player%", offender.getName()));
         }
 
-        if (type == FAT.SWEAR && Config.logSwear) {
+        if (type == FAT.SWEAR && MainConfig.Chat.AntiSwear.logSwears) {
             sendDiscordLog(offender,e,type);
             sendConsoleLog(offender,e,type);
         }
 
-        if (type == FAT.SLUR && Config.logSwear) {
+        if (type == FAT.SLUR && MainConfig.Chat.AntiSwear.logSwears) {
             sendDiscordLog(offender,e,type);
             sendConsoleLog(offender,e,type);
         }
-        if (type == FAT.SPAM && Config.logSpam) {
+        if (type == FAT.SPAM && MainConfig.Chat.AntiSpam.logSpam) {
             sendDiscordLog(offender,e,type);
             sendConsoleLog(offender,e,type);
         }
@@ -70,7 +70,7 @@ public class FilterAction {
     public static void sendConsoleLog(Player offender, AsyncPlayerChatEvent e, FAT type) {
         String log = "]=-" + type.getTitle() + "-=[\n" +
                 "Player: " + offender.getName() +
-                (type != FAT.BLOCK_SPAM && type != FAT.SPAM ? "> Score: `" + scoreMap.get(offender) + "/" + Config.punishScore : "> Heat: `" + heatMap.get(offender) + "/" + Config.punishHeat) + "\n" +
+                (type != FAT.BLOCK_SPAM && type != FAT.SPAM ? "> Score: `" + scoreMap.get(offender) + "/" + MainConfig.Chat.AntiSwear.punishScore : "> Heat: `" + heatMap.get(offender) + "/" + MainConfig.Chat.AntiSpam.punishHeat) + "\n" +
                 "> UUID: " + offender.getUniqueId() + "\n" +
                 (type != FAT.BLOCK_SPAM && type != FAT.SPAM ? "Message: " + e.getMessage() : "Previous: " + lastMessageMap.get(offender)) + "\n" +
                 (type != FAT.BLOCK_SPAM && type != FAT.SPAM ? "Reduced: " + fullSimplify(e.getMessage()) : "Current: " + e.getMessage()) + "\n" +
@@ -83,7 +83,7 @@ public class FilterAction {
         String title = offender.getName() + " has triggered the " + type.getName() + "!";
         String executed = type.getExecutedCommand() != null ? type.getExecutedCommand() : "Nothing, its a standard flag. You shouldn't be seeing this, please report it.";
 
-        DiscordWebhook webhook = new DiscordWebhook(Config.webhook);
+        DiscordWebhook webhook = new DiscordWebhook(MainConfig.Plugin.webhook);
         webhook.setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png");
         webhook.setUsername("Sentinel Anti-Nuke | Logs");
 
@@ -92,7 +92,7 @@ public class FilterAction {
                 .setTitle(title)
                 .setDescription(
                         Emojis.rightSort + "Player: " + offender.getName() + " " + Emojis.target + "\\n" +
-                                Emojis.space + Emojis.arrowRight + (type != FAT.BLOCK_SPAM ? "Score: `" + scoreMap.get(offender) + "/" + Config.punishScore : "Heat: `" + heatMap.get(offender) + "/" + Config.punishHeat) + "`\\n" +
+                                Emojis.space + Emojis.arrowRight + (type != FAT.BLOCK_SPAM ? "Score: `" + scoreMap.get(offender) + "/" + MainConfig.Chat.AntiSwear.punishScore : "Heat: `" + heatMap.get(offender) + "/" + MainConfig.Chat.AntiSpam.punishHeat) + "`\\n" +
                                 Emojis.space + Emojis.arrowRight + "UUID: `" + offender.getUniqueId() + "`\\n" +
                                 Emojis.rightSort + "Executed: " + executed + " " + Emojis.mute + "\\n"
                 )

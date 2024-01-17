@@ -6,8 +6,7 @@ import io.github.itzispyder.pdk.commands.CustomCommand;
 import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.server.config.Config;
-import io.github.thetrouper.sentinel.server.functions.AntiSpam;
+import io.github.thetrouper.sentinel.server.config.MainConfig;
 import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
 import io.github.thetrouper.sentinel.server.util.Text;
 import org.bukkit.Bukkit;
@@ -44,7 +43,7 @@ public class SentinelCommand implements CustomCommand {
                         players.add(p);
                         String msg = args.getAll(1).toString().trim();
                         AsyncPlayerChatEvent e = new AsyncPlayerChatEvent(true, p, msg, players);
-                        AntiSpam.handleAntiSpam(e);
+                        io.github.thetrouper.sentinel.server.functions.AntiSpam.handleAntiSpam(e);
                     }
                     case "lang" -> {
                         p.sendMessage(Sentinel.dict.get("exmaple-message"));
@@ -61,7 +60,7 @@ public class SentinelCommand implements CustomCommand {
                     p.sendMessage(Text.prefix("Invalid Player!"));
                     return;
                 }
-                p.sendMessage(Text.prefix("Heat of " + target.getName() + ": &8(&c" + AntiSpam.heatMap.get(target) + "&7/&4" + Config.punishHeat + "&8)"));
+                p.sendMessage(Text.prefix("Heat of " + target.getName() + ": &8(&c" + io.github.thetrouper.sentinel.server.functions.AntiSpam.heatMap.get(target) + "&7/&4" + MainConfig.Chat.AntiSpam.punishHeat + "&8)"));
             }
         }
     }

@@ -1,6 +1,6 @@
 {
   "dictionary" : {
-    "example-message" : "Test Message",
+    "if-you-see-this-lang-is-broken" : "Sentinel language is working!",
     "no-permission" : "§cInsufficient Permissions!",
     "cooldown" : "This action is on cooldown!",
     "false-positive-report-success" : "Successfully reported a false positive!",

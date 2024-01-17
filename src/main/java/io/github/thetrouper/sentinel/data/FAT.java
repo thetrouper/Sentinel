@@ -1,15 +1,15 @@
 package io.github.thetrouper.sentinel.data;
 
-import io.github.thetrouper.sentinel.server.config.Config;
+import io.github.thetrouper.sentinel.server.config.MainConfig;
 
 import java.awt.*;
 
 public enum FAT {
     BLOCK_SWEAR("Sentinel Profanity Filter",null,"swear-block-warn", "swear-block-notification", null,null),
     BLOCK_SPAM("Sentinel Anti-Spam", null, "spam-block-warn", "spam-notification",null,null),
-    SWEAR("Sentinel Anti-Swear Log","Anti-Swear", "profanity-mute-warn", "profanity-mute-notification", Config.swearPunishCommand, Color.orange),
-    SLUR("Sentinel Anti-Slur Log", "Anti-Slur", "slur-mute-warn", "slur-mute-notification", Config.strictPunishCommand, Color.red),
-    SPAM("Sentinel Anti-Spam Log", "Anti-Spam", "spam-mute-warn", "spam-mute-notification", Config.spamPunishCommand, Color.pink);
+    SWEAR("Sentinel Anti-Swear Log","Anti-Swear", "profanity-mute-warn", "profanity-mute-notification", MainConfig.Chat.AntiSwear.swearPunishCommand, Color.orange),
+    SLUR("Sentinel Anti-Slur Log", "Anti-Slur", "slur-mute-warn", "slur-mute-notification", MainConfig.Chat.AntiSwear.strictPunishCommand, Color.red),
+    SPAM("Sentinel Anti-Spam Log", "Anti-Spam", "spam-mute-warn", "spam-mute-notification", MainConfig.Chat.AntiSpam.spamPunishCommand, Color.pink);
 
     private final String title;
     private final String name;

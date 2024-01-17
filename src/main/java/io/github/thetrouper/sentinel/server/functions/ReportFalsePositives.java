@@ -3,7 +3,7 @@ package io.github.thetrouper.sentinel.server.functions;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Emojis;
 import io.github.thetrouper.sentinel.discord.DiscordWebhook;
-import io.github.thetrouper.sentinel.server.config.Config;
+import io.github.thetrouper.sentinel.server.config.MainConfig;
 import io.github.thetrouper.sentinel.server.util.Randomizer;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import org.bukkit.Bukkit;
@@ -53,7 +53,7 @@ public class ReportFalsePositives {
                                  String simplifyRep,
                                  String sanitized) {
         ServerUtils.sendDebugMessage("Creating FalsePositive Webhook...");
-        DiscordWebhook webhook = new DiscordWebhook(Config.webhook);
+        DiscordWebhook webhook = new DiscordWebhook(MainConfig.Plugin.webhook);
         webhook.setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png");
         webhook.setUsername("Sentinel Anti-Nuke | Logs");
         DiscordWebhook.EmbedObject embed = new DiscordWebhook.EmbedObject()

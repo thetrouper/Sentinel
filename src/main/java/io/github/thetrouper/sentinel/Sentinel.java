@@ -4,14 +4,12 @@ import io.github.itzispyder.pdk.PDK;
 import io.github.thetrouper.sentinel.auth.Auth;
 import io.github.thetrouper.sentinel.cmds.*;
 import io.github.thetrouper.sentinel.events.*;
-import io.github.thetrouper.sentinel.server.config.Config;
-import io.github.thetrouper.sentinel.server.config.LanguageFile;
-import io.github.thetrouper.sentinel.server.config.MainConfig;
+import io.github.thetrouper.sentinel.server.config.*;
 import io.github.thetrouper.sentinel.server.functions.AntiSpam;
 import io.github.thetrouper.sentinel.server.functions.Authenticator;
 import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
 import io.github.thetrouper.sentinel.server.functions.Telemetry;
-import io.github.thetrouper.sentinel.server.util.JsonSerializable;
+import io.github.itzispyder.pdk.utils.misc.JsonSerializable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -23,8 +21,18 @@ import java.util.logging.Logger;
 public final class Sentinel extends JavaPlugin {
     private static Sentinel instance;
     public static LanguageFile dict;
-    private static File cfgfile = new File("plugins/Sentinel/main-config.json");
+    private static final File cfgfile = new File("plugins/Sentinel/main-config.json");
+    private static final File nbtcfg = new File("plugins/Sentinel/nbt-config.json");
+    private static final File strctcfg = new File("plugins/Sentinel/strict.json");
+    private static final File swrcfg = new File("plugins/Sentinel/swears.json");
+    private static final File fpcfg = new File("plugins/Sentinel/false-positives.json");
+    private static final File advcfg = new File("plugins/Sentinel/advanced-config.json");
     public static MainConfig mainConfig = JsonSerializable.load(cfgfile, MainConfig.class, new MainConfig());
+    public static FPConfig fpConfig = JsonSerializable.load(fpcfg, FPConfig.class, new FPConfig());
+    public static SwearsConfig swearConfig = JsonSerializable.load(swrcfg, SwearsConfig.class, new SwearsConfig());
+    public static StrictConfig strictConfig = JsonSerializable.load(strctcfg, StrictConfig.class, new StrictConfig());
+    public static NBTConfig nbtConfig = JsonSerializable.load(nbtcfg, NBTConfig.class, new NBTConfig());
+    public static AdvancedConfig advConfig = JsonSerializable.load(advcfg, AdvancedConfig.class, new AdvancedConfig());
     public static final PluginManager manager = Bukkit.getPluginManager();
     public static String prefix = "";
     public static String key = "";
@@ -45,7 +53,7 @@ public final class Sentinel extends JavaPlugin {
         log.info("Initializing Server ID...");
         String serverID = Authenticator.getServerID();
         identifier = serverID;
-        log.info("Pre-load finished!\n]====---- Requesting Authentication (" + dict.get("example-message") + ") ----====[ \n- License Key: " + key + " \n- Server ID: " + serverID);
+        log.info("Pre-load finished!\n]====---- Requesting Authentication (" + dict.get("if-you-see-this-lang-is-broken") + ") ----====[ \n- License Key: " + key + " \n- Server ID: " + serverID);
         String authStatus = "ERROR";
         String authstatus = "ERROR";
         try {
@@ -138,14 +146,21 @@ public final class Sentinel extends JavaPlugin {
     }
 
     public void loadConfig() {
+
         // Init
+        mainConfig = JsonSerializable.load(cfgfile,MainConfig.class,new MainConfig());
+        advConfig = JsonSerializable.load(advcfg,AdvancedConfig.class,new AdvancedConfig());
+        fpConfig = JsonSerializable.load(fpcfg,FPConfig.class,new FPConfig());
+        strictConfig = JsonSerializable.load(strctcfg,StrictConfig.class,new StrictConfig());
+        swearConfig = JsonSerializable.load(swrcfg,SwearsConfig.class,new SwearsConfig());
+        nbtConfig = JsonSerializable.load(nbtcfg,NBTConfig.class,new NBTConfig());
 
         log.info("Loading Dictionary (" + MainConfig.Plugin.lang + ")...");
         dict = JsonSerializable.load(LanguageFile.PATH,LanguageFile.class,new LanguageFile());
 
         log.info("Verifying Config...");
-        getConfig().options().copyDefaults();
-        saveDefaultConfig();
+        //getConfig().options().copyDefaults();
+        //saveDefaultConfig();
     }
 
     /**

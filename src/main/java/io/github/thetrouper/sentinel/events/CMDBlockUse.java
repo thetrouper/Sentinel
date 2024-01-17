@@ -4,7 +4,7 @@ import io.github.itzispyder.pdk.events.CustomListener;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.ActionType;
 import io.github.thetrouper.sentinel.server.Action;
-import io.github.thetrouper.sentinel.server.config.Config;
+import io.github.thetrouper.sentinel.server.config.MainConfig;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -19,9 +19,9 @@ public class CMDBlockUse implements CustomListener {
     @EventHandler
     private void onCMDBlockUse(PlayerInteractEvent e) {
         ServerUtils.sendDebugMessage("CommandBlockUse: Detected Interaction");
-        if (!Config.preventCmdBlockUse) return;
+        if (!MainConfig.Plugin.preventCmdBlockUse) return;
         ServerUtils.sendDebugMessage("CommandBlockUse: Enabled");
-        if (Config.cmdBlockOpCheck && !e.getPlayer().isOp()) return;
+        if (MainConfig.Plugin.cmdBlockOpCheck && !e.getPlayer().isOp()) return;
         ServerUtils.sendDebugMessage("CommandBlockUse: Player is op");
         if (e.getClickedBlock() == null) return;
         ServerUtils.sendDebugMessage("CommandBlockUse: Block isn't null");
@@ -38,9 +38,9 @@ public class CMDBlockUse implements CustomListener {
                         .setBlock(b)
                         .setPlayer(p)
                         .setDenied(true)
-                        .setPunished(Config.cmdBlockPunish)
-                        .setDeoped(Config.deop)
-                        .setnotifyDiscord(Config.logCmdBlocks)
+                        .setPunished(MainConfig.Plugin.cmdBlockPunish)
+                        .setDeoped(MainConfig.Plugin.deop)
+                        .setnotifyDiscord(MainConfig.Plugin.logCmdBlocks)
                         .setNotifyTrusted(true)
                         .setNotifyConsole(true)
                         .execute();
@@ -52,9 +52,9 @@ public class CMDBlockUse implements CustomListener {
         ServerUtils.sendDebugMessage("CommandBlockChange: Detected change block");
         if (!(e.getEntity() instanceof Player p)) return;
         ServerUtils.sendDebugMessage("CommandBlockChange: Changer is a player");
-        if (!Config.preventCmdBlockUse) return;
+        if (!MainConfig.Plugin.preventCmdBlockUse) return;
         ServerUtils.sendDebugMessage("CommandBlockChange: Enabled");
-        if (Config.cmdBlockOpCheck && !p.isOp()) return;
+        if (MainConfig.Plugin.cmdBlockOpCheck && !p.isOp()) return;
         ServerUtils.sendDebugMessage("CommandBlockChange: Player is op");
         Block b = e.getBlock();
         if (b.getType() == Material.COMMAND_BLOCK || b.getType() == Material.REPEATING_COMMAND_BLOCK || b.getType() == Material.CHAIN_COMMAND_BLOCK) {
@@ -71,9 +71,9 @@ public class CMDBlockUse implements CustomListener {
                         .setCommand(cb.getCommand())
                         .setPlayer(p)
                         .setDenied(true)
-                        .setPunished(Config.cmdBlockPunish)
-                        .setDeoped(Config.deop)
-                        .setnotifyDiscord(Config.logCmdBlocks)
+                        .setPunished(MainConfig.Plugin.cmdBlockPunish)
+                        .setDeoped(MainConfig.Plugin.deop)
+                        .setnotifyDiscord(MainConfig.Plugin.logCmdBlocks)
                         .setNotifyTrusted(true)
                         .setNotifyConsole(true)
                         .execute();

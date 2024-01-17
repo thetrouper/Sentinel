@@ -2,7 +2,7 @@ package io.github.thetrouper.sentinel.server.util;
 
 
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.server.config.Config;
+import io.github.thetrouper.sentinel.server.config.AdvancedConfig;
 
 import java.util.Map;
 import java.util.regex.PatternSyntaxException;
@@ -48,7 +48,7 @@ public class Text {
         return result.toString();
     }
     public static String fromLeetString(String s) {
-        Map<String, String> dictionary = Config.leetPatterns;
+        Map<String, String> dictionary = AdvancedConfig.leetPatterns;
         String msg = s;
 
         for (String key : dictionary.keySet()) {

@@ -4,7 +4,7 @@ import io.github.itzispyder.pdk.events.CustomListener;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.ActionType;
 import io.github.thetrouper.sentinel.server.Action;
-import io.github.thetrouper.sentinel.server.config.Config;
+import io.github.thetrouper.sentinel.server.config.MainConfig;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -16,9 +16,9 @@ public class CMDMinecartPlace implements CustomListener {
     @EventHandler
     private void onCMDMinecartPlace(PlayerInteractEvent e) {
         ServerUtils.sendDebugMessage("MinecartCommandPlace: Detected interaction");
-        if (Config.preventCmdCartPlace) {
+        if (MainConfig.Plugin.preventCmdCartPlace) {
             ServerUtils.sendDebugMessage("MinecartCommandPlace: Enabled");
-            if (Config.cmdBlockOpCheck && !e.getPlayer().isOp()) return;
+            if (MainConfig.Plugin.cmdBlockOpCheck && !e.getPlayer().isOp()) return;
             ServerUtils.sendDebugMessage("MinecartCommandPlace: Player is op");
             if (e.getItem() == null) return;
             ServerUtils.sendDebugMessage("MinecartCommandPlace: Item isn't null");
@@ -38,12 +38,12 @@ public class CMDMinecartPlace implements CustomListener {
                             .setEvent(e)
                             .setPlayer(p)
                             .setBlock(e.getClickedBlock())
-                            .setDenied(Config.preventCmdCartPlace)
-                            .setPunished(Config.cmdBlockPunish)
-                            .setDeoped(Config.deop)
+                            .setDenied(MainConfig.Plugin.preventCmdCartPlace)
+                            .setPunished(MainConfig.Plugin.cmdBlockPunish)
+                            .setDeoped(MainConfig.Plugin.deop)
                             .setNotifyConsole(true)
                             .setNotifyTrusted(true)
-                            .setnotifyDiscord(Config.logCmdBlocks)
+                            .setnotifyDiscord(MainConfig.Plugin.logCmdBlocks)
                             .execute();
                 }
             }

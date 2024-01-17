@@ -4,7 +4,8 @@ import io.github.itzispyder.pdk.events.CustomListener;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.ActionType;
 import io.github.thetrouper.sentinel.server.Action;
-import io.github.thetrouper.sentinel.server.config.Config;
+import io.github.thetrouper.sentinel.server.config.MainConfig;
+import io.github.thetrouper.sentinel.server.config.NBTConfig;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -25,7 +26,7 @@ public class NBTEvents implements CustomListener {
     @EventHandler
     private void onNBTPull(InventoryCreativeEvent e) {
         ServerUtils.sendDebugMessage("NBT: Detected creative mode action");
-        if (!Config.preventNBT) return;
+        if (!MainConfig.Plugin.preventNBT) return;
         ServerUtils.sendDebugMessage("NBT: Enabled");
         if (!(e.getWhoClicked() instanceof Player p)) return;
         ServerUtils.sendDebugMessage("NBT: Clicker is a player");
@@ -45,13 +46,13 @@ public class NBTEvents implements CustomListener {
                         .setAction(ActionType.NBT)
                         .setPlayer(Bukkit.getPlayer(e.getWhoClicked().getName()))
                         .setItem(e.getCursor())
-                        .setDenied(Config.preventNBT)
-                        .setDeoped(Config.deop)
-                        .setPunished(Config.nbtPunish)
-                        .setRevertGM(Config.preventNBT)
+                        .setDenied(MainConfig.Plugin.preventNBT)
+                        .setDeoped(MainConfig.Plugin.deop)
+                        .setPunished(MainConfig.Plugin.nbtPunish)
+                        .setRevertGM(MainConfig.Plugin.preventNBT)
                         .setNotifyConsole(true)
                         .setNotifyTrusted(true)
-                        .setnotifyDiscord(Config.logNBT)
+                        .setnotifyDiscord(MainConfig.Plugin.logNBT)
                         .execute();
             }
         }
@@ -118,19 +119,19 @@ public class NBTEvents implements CustomListener {
                 return false;
             }
         }
-        if (!Config.allowName && meta.hasDisplayName()) {
+        if (!NBTConfig.allowName && meta.hasDisplayName()) {
             ServerUtils.sendDebugMessage("NBT: No pass N");
             return false;
         }
-        if (!Config.allowLore && meta.hasLore()) {
+        if (!NBTConfig.allowLore && meta.hasLore()) {
             ServerUtils.sendDebugMessage("NBT: No Pass L ");
             return false;
         }
-        if (!Config.allowAttributes && meta.hasAttributeModifiers()) {
+        if (!NBTConfig.allowAttributes && meta.hasAttributeModifiers()) {
             ServerUtils.sendDebugMessage("NBT: No pass A");
             return false;
         }
-        if (Config.globalMaxEnchant != 0 && hasIllegalEnchants(i)) {
+        if (NBTConfig.globalMaxEnchant != 0 && hasIllegalEnchants(i)) {
             ServerUtils.sendDebugMessage("NBT: No pass E");
             return false;
         }
@@ -155,174 +156,174 @@ public class NBTEvents implements CustomListener {
             final ItemMeta meta = i.getItemMeta();
             final Map<Enchantment, Integer> enchantments = meta.getEnchants();
             for (Integer value : enchantments.values()) {
-                if (value > Config.globalMaxEnchant) {
+                if (value > NBTConfig.globalMaxEnchant) {
                     return true;
                 }
             }
             // ALL
             if (meta.hasEnchant(Enchantment.MENDING)) {
                 final int level = meta.getEnchantLevel(Enchantment.MENDING);
-                return level > Config.maxMending || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxMending || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.DURABILITY)) {
                 final int level = meta.getEnchantLevel(Enchantment.DURABILITY);
-                return level > Config.maxUnbreaking || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxUnbreaking || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.VANISHING_CURSE)) {
                 final int level = meta.getEnchantLevel(Enchantment.VANISHING_CURSE);
-                return level > Config.maxVanishing || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxVanishing || level > NBTConfig.globalMaxEnchant;
             }
 
             // ARMOR
             if (meta.hasEnchant(Enchantment.BINDING_CURSE)) {
                 final int level = meta.getEnchantLevel(Enchantment.BINDING_CURSE);
-                return level > Config.maxCurseOfBinding || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxCurseOfBinding || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.WATER_WORKER)) {
                 final int level = meta.getEnchantLevel(Enchantment.WATER_WORKER);
-                return level > Config.maxAquaAffinity || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxAquaAffinity || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.PROTECTION_ENVIRONMENTAL)) {
                 final int level = meta.getEnchantLevel(Enchantment.PROTECTION_ENVIRONMENTAL);
-                return level > Config.maxProtection || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxProtection || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.PROTECTION_EXPLOSIONS)) {
                 final int level = meta.getEnchantLevel(Enchantment.PROTECTION_EXPLOSIONS);
-                return level > Config.maxBlastProtection || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxBlastProtection || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.DEPTH_STRIDER)) {
                 final int level = meta.getEnchantLevel(Enchantment.DEPTH_STRIDER);
-                return level > Config.maxDepthStrider || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxDepthStrider || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.PROTECTION_FALL)) {
                 final int level = meta.getEnchantLevel(Enchantment.PROTECTION_FALL);
-                return level > Config.maxFeatherFalling || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxFeatherFalling || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.PROTECTION_FIRE)) {
                 final int level = meta.getEnchantLevel(Enchantment.PROTECTION_FIRE);
-                return level > Config.maxFireProtection || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxFireProtection || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.FROST_WALKER)) {
                 final int level = meta.getEnchantLevel(Enchantment.FROST_WALKER);
-                return level > Config.maxFrostWalker || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxFrostWalker || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.PROTECTION_PROJECTILE)) {
                 final int level = meta.getEnchantLevel(Enchantment.PROTECTION_PROJECTILE);
-                return level > Config.maxProjectileProtection || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxProjectileProtection || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.OXYGEN)) {
                 final int level = meta.getEnchantLevel(Enchantment.OXYGEN);
-                return level > Config.maxRespiration || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxRespiration || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.SOUL_SPEED)) {
                 final int level = meta.getEnchantLevel(Enchantment.SOUL_SPEED);
-                return level > Config.maxSoulSpeed || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxSoulSpeed || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.THORNS)) {
                 final int level = meta.getEnchantLevel(Enchantment.THORNS);
-                return level > Config.maxThorns || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxThorns || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.SWEEPING_EDGE)) {
                 final int level = meta.getEnchantLevel(Enchantment.SWEEPING_EDGE);
-                return level > Config.maxSweepingEdge || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxSweepingEdge || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.FROST_WALKER)) {
                 final int level = meta.getEnchantLevel(Enchantment.FROST_WALKER);
-                return level > Config.maxFrostWalker || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxFrostWalker || level > NBTConfig.globalMaxEnchant;
             }
 
             // MELEE WEAPONS
             if (meta.hasEnchant(Enchantment.DAMAGE_ARTHROPODS)) {
                 final int level = meta.getEnchantLevel(Enchantment.DAMAGE_ARTHROPODS);
-                return level > Config.maxBaneOfArthropods || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxBaneOfArthropods || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.FIRE_ASPECT)) {
                 final int level = meta.getEnchantLevel(Enchantment.FIRE_ASPECT);
-                return level > Config.maxFireAspect || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxFireAspect || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.LOOT_BONUS_MOBS)) {
                 final int level = meta.getEnchantLevel(Enchantment.LOOT_BONUS_MOBS);
-                return level > Config.maxLooting || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxLooting || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.IMPALING)) {
                 final int level = meta.getEnchantLevel(Enchantment.IMPALING);
-                return level > Config.maxImpaling || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxImpaling || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.KNOCKBACK)) {
                 final int level = meta.getEnchantLevel(Enchantment.KNOCKBACK);
-                return level > Config.maxKnockback || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxKnockback || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.DAMAGE_ALL)) {
                 final int level = meta.getEnchantLevel(Enchantment.DAMAGE_ALL);
-                return level > Config.maxSharpness || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxSharpness || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.DAMAGE_UNDEAD)) {
                 final int level = meta.getEnchantLevel(Enchantment.DAMAGE_UNDEAD);
-                return level > Config.maxSmite || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxSmite || level > NBTConfig.globalMaxEnchant;
             }
 
             // RANGED WEAPONS
             if (meta.hasEnchant(Enchantment.CHANNELING)) {
                 final int level = meta.getEnchantLevel(Enchantment.CHANNELING);
-                return level > Config.maxChanneling || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxChanneling || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.ARROW_FIRE)) {
                 final int level = meta.getEnchantLevel(Enchantment.ARROW_FIRE);
-                return level > Config.maxFlame || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxFlame || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.ARROW_INFINITE)) {
                 final int level = meta.getEnchantLevel(Enchantment.ARROW_INFINITE);
-                return level > Config.maxInfinity || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxInfinity || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.LOYALTY)) {
                 final int level = meta.getEnchantLevel(Enchantment.LOYALTY);
-                return level > Config.maxLoyalty || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxLoyalty || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.RIPTIDE)) {
                 final int level = meta.getEnchantLevel(Enchantment.RIPTIDE);
-                return level > Config.maxRiptide || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxRiptide || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.MULTISHOT)) {
                 final int level = meta.getEnchantLevel(Enchantment.MULTISHOT);
-                return level > Config.maxMultishot || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxMultishot || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.PIERCING)) {
                 final int level = meta.getEnchantLevel(Enchantment.PIERCING);
-                return level > Config.maxPiercing || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxPiercing || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.ARROW_DAMAGE)) {
                 final int level = meta.getEnchantLevel(Enchantment.ARROW_DAMAGE);
-                return level > Config.maxPower || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxPower || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.ARROW_KNOCKBACK)) {
                 final int level = meta.getEnchantLevel(Enchantment.ARROW_KNOCKBACK);
-                return level > Config.maxPunch || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxPunch || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.QUICK_CHARGE)) {
                 final int level = meta.getEnchantLevel(Enchantment.QUICK_CHARGE);
-                return level > Config.maxQuickCharge || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxQuickCharge || level > NBTConfig.globalMaxEnchant;
             }
 
             // TOOLS
             if (meta.hasEnchant(Enchantment.DIG_SPEED)) {
                 final int level = meta.getEnchantLevel(Enchantment.DIG_SPEED);
-                return level > Config.maxEfficiency || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxEfficiency || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.LOOT_BONUS_BLOCKS)) {
                 final int level = meta.getEnchantLevel(Enchantment.LOOT_BONUS_BLOCKS);
-                return level > Config.maxFortune || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxFortune || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.LUCK)) {
                 final int level = meta.getEnchantLevel(Enchantment.LUCK);
-                return level > Config.maxLuckOfTheSea || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxLuckOfTheSea || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.LURE)) {
                 final int level = meta.getEnchantLevel(Enchantment.LURE);
-                return level > Config.maxLure || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxLure || level > NBTConfig.globalMaxEnchant;
             }
             if (meta.hasEnchant(Enchantment.SILK_TOUCH)) {
                 final int level = meta.getEnchantLevel(Enchantment.SILK_TOUCH);
-                return level > Config.maxSilkTouch || level > Config.globalMaxEnchant;
+                return level > NBTConfig.maxSilkTouch || level > NBTConfig.globalMaxEnchant;
             }
         }
         return false;

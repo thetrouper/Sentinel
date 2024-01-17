@@ -4,7 +4,7 @@ import io.github.itzispyder.pdk.events.CustomListener;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.ActionType;
 import io.github.thetrouper.sentinel.server.Action;
-import io.github.thetrouper.sentinel.server.config.Config;
+import io.github.thetrouper.sentinel.server.config.MainConfig;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,15 +29,15 @@ public class CommandEvent implements CustomListener {
                         .setPlayer(p)
                         .setCommand(fullcommand)
                         .setDenied(true)
-                        .setDeoped(Config.deop)
-                        .setPunished(Config.commandPunish)
-                        .setnotifyDiscord(Config.logDangerous)
+                        .setDeoped(MainConfig.Plugin.deop)
+                        .setPunished(MainConfig.Plugin.commandPunish)
+                        .setnotifyDiscord(MainConfig.Plugin.logDangerous)
                         .setNotifyConsole(true)
                         .setNotifyTrusted(true)
                         .execute();
             }
         }
-        if (Config.blockSpecific) {
+        if (MainConfig.Plugin.blockSpecific) {
             ServerUtils.sendDebugMessage("CommandEvent: Checking command for specific");
             if (command.contains(":")) {
                 ServerUtils.sendDebugMessage("CommandEvent: Failed check");
@@ -50,9 +50,9 @@ public class CommandEvent implements CustomListener {
                             .setPlayer(p)
                             .setCommand(command)
                             .setDenied(true)
-                            .setDeoped(Config.deop)
-                            .setPunished(Config.specificPunish)
-                            .setnotifyDiscord(Config.logSpecific)
+                            .setDeoped(MainConfig.Plugin.deop)
+                            .setPunished(MainConfig.Plugin.specificPunish)
+                            .setnotifyDiscord(MainConfig.Plugin.logSpecific)
                             .setNotifyConsole(true)
                             .setNotifyTrusted(true)
                             .execute();

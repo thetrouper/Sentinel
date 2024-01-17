@@ -5,7 +5,7 @@ import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.ActionType;
 import io.github.thetrouper.sentinel.data.Emojis;
 import io.github.thetrouper.sentinel.discord.DiscordWebhook;
-import io.github.thetrouper.sentinel.server.config.Config;
+import io.github.thetrouper.sentinel.server.config.MainConfig;
 import io.github.thetrouper.sentinel.server.util.FileUtils;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
@@ -102,7 +102,7 @@ public class Action {
             String itemLog = (item != null) ? FileUtils.createNBTLog(item.getItemMeta().getAsString()) : "";
             String commandLog = (loggedCommand != null) ? FileUtils.createCommandLog(loggedCommand) : "";
 
-            final List<String> punishCommands = Config.getPunishCommands();
+            final List<String> punishCommands = MainConfig.Plugin.punishCommands;
 
             if (denied) {
                 event.setCancelled(true);
@@ -159,7 +159,7 @@ public class Action {
             }
 
             if (notifyDiscord) {
-                DiscordWebhook webhook = new DiscordWebhook(Config.webhook);
+                DiscordWebhook webhook = new DiscordWebhook(MainConfig.Plugin.webhook);
                 webhook.setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png");
                 webhook.setUsername("Sentinel Anti-Nuke | Logs");
                 String description = (player != null) ? Emojis.rightSort + " **Player:** " + player.getName() + " " + Emojis.member + "\n" : "";
