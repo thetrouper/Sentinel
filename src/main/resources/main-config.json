@@ -1,0 +1,81 @@
+{ // Comment!
+  "plugin": {
+    "license": "beta", // Here is a comment!
+    "prefix": "§d§lSentinel §8» §7", // Here is another one!
+    "webhook": "https://discord.com/api/webhooks/id/token",
+    "lang": "en-us.json",
+    "trustedPlayers": [
+      "049460f7-21cb-42f5-8059-d42752bf406f"
+    ],
+    "blockSpecific": true,
+    "preventNBT": true,
+    "preventCmdBlockPlace": true,
+    "preventCmdBlockUse": true,
+    "preventCmdBlockChange": true,
+    "preventCmdCartPlace": true,
+    "preventCmdCartUse": true,
+    "cmdBlockOpCheck": true,
+    "dangerous": [
+      "op",
+      "deop",
+      "stop",
+      "restart",
+      "execute",
+      "sudo",
+      "esudo",
+      "fill",
+      "setblock",
+      "data",
+      "whitelist"
+    ],
+    "logDangerous": true,
+    "logCmdBlocks": true,
+    "logNBT": true,
+    "logSpecific": false,
+    "logged": [
+      "give",
+      "item"
+    ],
+    "deop": true,
+    "nbtPunish": false,
+    "cmdBlockPunish": false,
+    "commandPunish": false,
+    "specificPunish": false,
+    "punishCommands": [
+      "smite %player%",
+      "ban %player% ]\u003d- Sentinel -\u003d[ You have been banned for attempting a dangerous action. If you believe this to be a mistake, please contact the server owner."
+    ],
+    "reopCommand": false
+  },
+  "chat": {
+    "antiSwear": {
+      "antiSwearEnabled": true,
+      "lowScore": 0,
+      "mediumLowScore": 1,
+      "mediumScore": 3,
+      "mediumHighScore": 5,
+      "highScore": 7,
+      "scoreDecay": 3,
+      "punishScore": 20,
+      "strictInstaPunish": true,
+      "swearPunishCommand": "mute %player% 15m Do not attempt to bypass the Profanity Filter",
+      "strictPunishCommand": "mute %player% 1h Discriminatory speech is not tolerated on this server!",
+      "logSwears": true
+    },
+    "antiSpam": {
+      "antiSpamEnabled": true,
+      "defaultGain": 1,
+      "lowGain": 2,
+      "mediumGain": 4,
+      "highGain": 6,
+      "heatDecay": 1,
+      "blockHeat": 10,
+      "punishHeat": 25,
+      "clearChat": true,
+      "chatClearCommand": "cc",
+      "spamPunishCommand": "mute %player% 1m Please refrain from spamming!",
+      "logSpam": true
+    },
+    "antiUnicode": true
+  }
+}

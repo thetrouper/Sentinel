@@ -1,6 +1,6 @@
 {
-  "dictionary" : {
-    "if-you-see-this-lang-is-broken" : "Sentinel language is working!",
+  "dictionary" : { // Comment!
+    "if-you-see-this-lang-is-broken" : "Sentinel language is working!", // Comment!
     "no-permission" : "§cInsufficient Permissions!",
     "cooldown" : "This action is on cooldown!",
     "false-positive-report-success" : "Successfully reported a false positive!",
