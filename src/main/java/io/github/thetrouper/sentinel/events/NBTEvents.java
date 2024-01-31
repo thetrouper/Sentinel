@@ -4,8 +4,6 @@ import io.github.itzispyder.pdk.events.CustomListener;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.ActionType;
 import io.github.thetrouper.sentinel.server.Action;
-import io.github.thetrouper.sentinel.server.config.MainConfig;
-import io.github.thetrouper.sentinel.server.config.NBTConfig;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -125,6 +123,10 @@ public class NBTEvents implements CustomListener {
         }
         if (!Sentinel.nbtConfig.allowLore && meta.hasLore()) {
             ServerUtils.sendDebugMessage("NBT: No Pass L ");
+            return false;
+        }
+        if (!Sentinel.nbtConfig.allowPotions && (i.getType().equals(Material.POTION) || i.getType().equals(Material.SPLASH_POTION) || i.getType().equals(Material.LINGERING_POTION))) {
+            ServerUtils.sendDebugMessage("NBT: No pass P");
             return false;
         }
         if (!Sentinel.nbtConfig.allowAttributes && meta.hasAttributeModifiers()) {

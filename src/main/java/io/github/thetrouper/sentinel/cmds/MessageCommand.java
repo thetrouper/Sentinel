@@ -24,11 +24,11 @@ public class MessageCommand implements CustomCommand {
         Player p = (Player) sender;
         Player r = null;
         if (args.getSize() == 0) {
-            p.sendMessage(Text.prefix(Sentinel.dict.get("no-online-player")));
+            p.sendMessage(Text.prefix(Sentinel.language.get("no-online-player")));
             return;
         }
         if (args.getSize() == 1) {
-            p.sendMessage(Text.prefix(Sentinel.dict.get("no-message-provided")));
+            p.sendMessage(Text.prefix(Sentinel.language.get("no-message-provided")));
             return;
         }
         r = Bukkit.getPlayer(args.get(0).toString());
@@ -37,8 +37,8 @@ public class MessageCommand implements CustomCommand {
 
         if (p.hasPermission("sentinel.message") && r != null) {
             Message.messagePlayer(p,r,msg);
-        } else if (r == null) p.sendMessage(Text.prefix((Sentinel.dict.get("no-online-player"))));
-        else sender.sendMessage(Text.prefix(Sentinel.dict.get("no-permission")));
+        } else if (r == null) p.sendMessage(Text.prefix((Sentinel.language.get("no-online-player"))));
+        else sender.sendMessage(Text.prefix(Sentinel.language.get("no-permission")));
     }
 
     @Override

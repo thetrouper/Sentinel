@@ -4,7 +4,6 @@ import io.github.itzispyder.pdk.events.CustomListener;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.ActionType;
 import io.github.thetrouper.sentinel.server.Action;
-import io.github.thetrouper.sentinel.server.config.MainConfig;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

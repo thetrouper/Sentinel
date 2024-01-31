@@ -12,7 +12,7 @@ public class AntiUnicode {
 
         }
         if (nonAllowed.length() != 0) {
-            e.getPlayer().sendMessage(Text.prefix(Sentinel.dict.get("unicode-warn")));
+            e.getPlayer().sendMessage(Text.prefix(Sentinel.language.get("unicode-warn")));
             e.setCancelled(true);
         }
     }

@@ -1,6 +1,8 @@
 package io.github.thetrouper.sentinel.server.util;
 
 import io.github.thetrouper.sentinel.Sentinel;
+import org.bukkit.entity.Item;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -36,6 +38,36 @@ public class FileUtils {
 
             BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
             writer.append(contents);
+            writer.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return fileName;
+    }
+
+    public static String createNBTLog(ItemStack i)  {
+        ServerUtils.sendDebugMessage("FileUtils: Creating NBT log");
+
+        String item = i.getType().name().toLowerCase() + i.getItemMeta().getAsString();
+
+        String fileName = "nbt_log-" + Randomizer.generateID();
+
+        File dataFolder = Sentinel.getInstance().getDataFolder();
+
+        File loggedNBTFolder = new File(dataFolder,"LoggedNBT");
+        if (!loggedNBTFolder.exists()) {
+            loggedNBTFolder.mkdirs();
+        }
+
+        File file = new File(loggedNBTFolder, fileName + ".txt");
+        try {
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
+            writer.append(item);
             writer.close();
 
         } catch (IOException e) {

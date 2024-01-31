@@ -4,7 +4,6 @@ import io.github.itzispyder.pdk.events.CustomListener;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.ActionType;
 import io.github.thetrouper.sentinel.server.Action;
-import io.github.thetrouper.sentinel.server.config.MainConfig;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -32,6 +31,7 @@ public class CMDMinecartUse implements CustomListener {
                         .setDenied(true)
                         .setPunished(Sentinel.mainConfig.plugin.cmdBlockPunish)
                         .setnotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
+                        .setDeoped(Sentinel.mainConfig.plugin.deop)
                         .setNotifyTrusted(true)
                         .setNotifyConsole(true)
                         .execute();

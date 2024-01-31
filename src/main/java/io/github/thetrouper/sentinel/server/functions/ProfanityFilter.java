@@ -264,15 +264,15 @@ public class ProfanityFilter {
         ServerUtils.sendCommand(Config.swearPunishCommand.replace("%player%", player.getName()));
         String fpreport = ReportFalsePositives.generateReport(e);
         TextComponent offender = new TextComponent();
-        String hoverPlayer = Sentinel.dict.get("action-automatic-reportable");
-        offender.setText(Text.prefix(Sentinel.dict.get("profanity-mute-warn")));
+        String hoverPlayer = Sentinel.language.get("action-automatic-reportable");
+        offender.setText(Text.prefix(Sentinel.language.get("profanity-mute-warn")));
         offender.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hoverPlayer)));
         offender.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + fpreport));
         player.spigot().sendMessage(offender);
 
         TextComponent text = new TextComponent();
-        text.setText(Text.prefix(Sentinel.dict.get("profanity-mute-notification").formatted(player.getName(),scoreMap.get(player),Config.punishScore)));
-        text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.dict.get("filter-notification-hover").formatted(origMessage,highlightedMSG))));
+        text.setText(Text.prefix(Sentinel.language.get("profanity-mute-notification").formatted(player.getName(),scoreMap.get(player),Config.punishScore)));
+        text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.language.get("filter-notification-hover").formatted(origMessage,highlightedMSG))));
         text.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + fpreport));
 
         ServerUtils.forEachStaff(staff -> {
@@ -288,14 +288,14 @@ public class ProfanityFilter {
         ServerUtils.sendCommand(Config.strictPunishCommand.replace("%player%", player.getName()));
         String fpreport = ReportFalsePositives.generateReport(e);
         TextComponent offender = new TextComponent();
-        String hoverPlayer = Sentinel.dict.get("action-automatic-reportable");
-        offender.setText(Text.prefix((Sentinel.dict.get("slur-mute-warn"))));
+        String hoverPlayer = Sentinel.language.get("action-automatic-reportable");
+        offender.setText(Text.prefix((Sentinel.language.get("slur-mute-warn"))));
         offender.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hoverPlayer)));
         offender.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + fpreport));
         player.spigot().sendMessage(offender);
         TextComponent text = new TextComponent();
-        text.setText(Text.prefix(Sentinel.dict.get("slur-mute-notification").formatted(player.getName(),scoreMap.get(player),Config.punishScore)));
-        text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.dict.get("filter-notification-hover").formatted(origMessage,highlightedMSG))));
+        text.setText(Text.prefix(Sentinel.language.get("slur-mute-notification").formatted(player.getName(),scoreMap.get(player),Config.punishScore)));
+        text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.language.get("filter-notification-hover").formatted(origMessage,highlightedMSG))));
         text.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + fpreport));
 
         ServerUtils.forEachStaff(staff -> {
@@ -306,15 +306,15 @@ public class ProfanityFilter {
     public static void blockSwear(Player player, String highlightedMSG, String origMessage, String severity, AsyncPlayerChatEvent e) {
         String FPReport = ReportFalsePositives.generateReport(e);
         TextComponent offender = new TextComponent();
-        String hover = Sentinel.dict.get("action-automatic-reportable");
-        offender.setText(Text.prefix((Sentinel.dict.get("swear-block-warn"))));
+        String hover = Sentinel.language.get("action-automatic-reportable");
+        offender.setText(Text.prefix((Sentinel.language.get("swear-block-warn"))));
         offender.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hover)));
         offender.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + FPReport));
         player.spigot().sendMessage(offender);
 
         TextComponent staff = new TextComponent();
-        staff.setText(Text.prefix(Sentinel.dict.get("swear-block-notification").formatted(player.getName(),scoreMap.get(player),Config.punishScore)));
-        staff.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.dict.get("severity-notification-hover").formatted(origMessage,highlightedMSG,severity))));
+        staff.setText(Text.prefix(Sentinel.language.get("swear-block-notification").formatted(player.getName(),scoreMap.get(player),Config.punishScore)));
+        staff.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.language.get("severity-notification-hover").formatted(origMessage,highlightedMSG,severity))));
         staff.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + FPReport));
 
         ServerUtils.forEachStaff(staffmember -> {

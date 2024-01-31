@@ -24,10 +24,10 @@ public class SocialSpyCommand implements CustomCommand {
         Player p = sender.getServer().getPlayer(name);
         UUID senderID = p.getUniqueId();
         if (!spyMap.containsKey(senderID) || !spyMap.get(senderID)) {
-            sender.sendMessage(Text.prefix(Sentinel.dict.get("spy-enabled")));
+            sender.sendMessage(Text.prefix(Sentinel.language.get("spy-enabled")));
             spyMap.put(senderID,true);
         } else if (spyMap.get(senderID)) {
-            sender.sendMessage(Text.prefix(Sentinel.dict.get("spy-disabled")));
+            sender.sendMessage(Text.prefix(Sentinel.language.get("spy-disabled")));
             spyMap.put(senderID,false);
         }
     }

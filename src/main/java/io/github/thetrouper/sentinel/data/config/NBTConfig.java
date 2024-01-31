@@ -1,11 +1,8 @@
-package io.github.thetrouper.sentinel.server.config;
+package io.github.thetrouper.sentinel.data.config;
 
-import io.github.itzispyder.pdk.utils.FileValidationUtils;
 import io.github.itzispyder.pdk.utils.misc.JsonSerializable;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 
 public class NBTConfig implements JsonSerializable<NBTConfig> {
     @Override
@@ -18,6 +15,7 @@ public class NBTConfig implements JsonSerializable<NBTConfig> {
     public boolean allowName = true;
     public boolean allowLore = true;
     public boolean allowAttributes = false;
+    public boolean allowPotions = false;
     public int globalMaxEnchant = 5;
     public int maxMending = 1;
     public int maxUnbreaking = 3;

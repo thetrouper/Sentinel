@@ -2,7 +2,6 @@ package io.github.thetrouper.sentinel.events;
 
 import io.github.itzispyder.pdk.events.CustomListener;
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.server.config.MainConfig;
 import io.github.thetrouper.sentinel.server.functions.AntiSpam;
 import io.github.thetrouper.sentinel.server.functions.AntiUnicode;
 import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;

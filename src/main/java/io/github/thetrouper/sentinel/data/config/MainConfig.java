@@ -1,4 +1,4 @@
-package io.github.thetrouper.sentinel.server.config;
+package io.github.thetrouper.sentinel.data.config;
 
 import io.github.itzispyder.pdk.utils.misc.JsonSerializable;
 

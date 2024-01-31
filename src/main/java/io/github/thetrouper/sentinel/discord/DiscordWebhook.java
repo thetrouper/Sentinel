@@ -12,6 +12,8 @@ import java.util.*;
 /**
  * Class used to execute Discord Webhooks with low effort
  */
+
+@Deprecated
 public class DiscordWebhook {
 
     private final String url;

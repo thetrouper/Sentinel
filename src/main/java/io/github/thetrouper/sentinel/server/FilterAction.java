@@ -1,5 +1,9 @@
 package io.github.thetrouper.sentinel.server;
 
+import club.minnced.discord.webhook.send.WebhookEmbed;
+import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
+import club.minnced.discord.webhook.send.WebhookMessage;
+import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Emojis;
 import io.github.thetrouper.sentinel.data.FAT;
@@ -24,20 +28,20 @@ import static io.github.thetrouper.sentinel.server.functions.ProfanityFilter.*;
 
 public class FilterAction {
 
-
+    @SuppressWarnings("deprecation")
     public static void filterAction(Player offender, AsyncPlayerChatEvent e, String highlighted, FilterSeverity severity, Double similarity, FAT type) {
         String report = ReportFalsePositives.generateReport(e);
         DecimalFormat fs = new DecimalFormat("##.#");
         fs.setRoundingMode(RoundingMode.DOWN);
 
-        TextComponent warn = createTextComponent(Text.prefix(Sentinel.dict.get(type.getWarnTranslationKey())));
-        warn.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.dict.get("action-automatic-reportable"))));
+        TextComponent warn = createTextComponent(Text.prefix(Sentinel.language.get(type.getWarnTranslationKey())));
+        warn.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.language.get("action-automatic-reportable"))));
         warn.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + report));
 
         TextComponent notif = createTextComponent(Text.prefix((type != FAT.SPAM_PUNISH && type != FAT.BLOCK_SPAM ?
-                Sentinel.dict.get("severity-notification-hover").formatted(e.getMessage(), highlighted, severity.name().toLowerCase().replace("_"," ")) :
-                Sentinel.dict.get("spam-notification-hover").formatted(e.getMessage(), lastMessageMap.get(offender), fs.format(similarity)))));
-        notif.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.dict.get("severity-notification-hover"))));
+                Sentinel.language.get("severity-notification-hover").formatted(e.getMessage(), highlighted, severity.name().toLowerCase().replace("_"," ")) :
+                Sentinel.language.get("spam-notification-hover").formatted(e.getMessage(), lastMessageMap.get(offender), fs.format(similarity)))));
+        notif.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.language.get("severity-notification-hover"))));
         notif.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + report));
 
         sendMessages(offender, warn, notif, type);
@@ -51,7 +55,7 @@ public class FilterAction {
     private static void sendMessages(Player offender, TextComponent warn, TextComponent notif, FAT type) {
         offender.spigot().sendMessage(warn);
 
-        String notifText = Sentinel.dict.get(type.getNotifTranslationKey());
+        String notifText = Sentinel.language.get(type.getNotifTranslationKey());
         notif.setText(Text.prefix((type != FAT.SPAM_PUNISH && type != FAT.BLOCK_SPAM ?
                 notifText.formatted(offender.getName(), scoreMap.get(offender), Sentinel.mainConfig.chat.antiSwear.punishScore) :
                 notifText.formatted(offender.getName(), heatMap.get(offender), Sentinel.mainConfig.chat.antiSpam.punishHeat))));
@@ -74,75 +78,83 @@ public class FilterAction {
                 || (type == FAT.SPAM_PUNISH && Sentinel.mainConfig.chat.antiSpam.logSpam);
     }
 
-
+    /** ToDo
+     * Optimize this junk
+     * Prolly put it all in one function with switching type
+     */
     public static void sendConsoleLog(Player offender, AsyncPlayerChatEvent e, FAT type) {
-        String log = "]=-" + type.getTitle() + "-=[\n" +
-                "Player: " + offender.getName() +
-                (type != FAT.BLOCK_SPAM && type != FAT.SPAM_PUNISH ? "> Score: `" + scoreMap.get(offender) + "/" + Sentinel.mainConfig.chat.antiSwear.punishScore :
-                        "> Heat: `" + heatMap.get(offender) + "/" + Sentinel.mainConfig.chat.antiSpam.punishHeat) + "\n" +
-                "> UUID: " + offender.getUniqueId() + "\n" +
-                (type != FAT.BLOCK_SPAM && type != FAT.SPAM_PUNISH ? "Message: " + e.getMessage() : "Previous: " + lastMessageMap.get(offender)) + "\n" +
-                (type != FAT.BLOCK_SPAM && type != FAT.SPAM_PUNISH ? "Reduced: " + fullSimplify(e.getMessage()) : "Current: " + e.getMessage()) + "\n" +
-                (type.getExecutedCommand() != null ? "Executed: " + type.getExecutedCommand() : "Executed: Nothing, its a standard flag. You shouldn't be seeing this, please report it.");
-        Sentinel.log.info(log);
+        StringBuilder log = new StringBuilder().append("\"]=-\" + type.getTitle() + \"-=[\\n\"");
+        log.append("Player: " + offender.getName());
+        log.append(type != FAT.BLOCK_SPAM && type != FAT.SPAM_PUNISH ? "> Score: `" + scoreMap.get(offender) + "/" + Sentinel.mainConfig.chat.antiSwear.punishScore :
+                "> Heat: `" + heatMap.get(offender) + "/" + Sentinel.mainConfig.chat.antiSpam.punishHeat).append("\n").append("> UUID: ").append(offender.getUniqueId()).append("\n").append(type != FAT.BLOCK_SPAM && type != FAT.SPAM_PUNISH ? "Message: " + e.getMessage() : "Previous: " + lastMessageMap.get(offender)).append("\n").append(type != FAT.BLOCK_SPAM && type != FAT.SPAM_PUNISH ? "Reduced: " + fullSimplify(e.getMessage()) : "Current: " + e.getMessage()).append("\n").append(type.getExecutedCommand() != null ? "Executed: " + type.getExecutedCommand() : "Executed: Nothing, its a standard flag. You shouldn't be seeing this, please report it.");
+
+        Sentinel.log.info(String.valueOf(log));
     }
 
     private static void sendDiscordLog(Player offender, AsyncPlayerChatEvent e, FAT type) {
         String supertitle = type.getTitle();
         String title = offender.getName() + " has triggered the " + type.getName() + "!";
+
         String executed = type.getExecutedCommand() != null ? type.getExecutedCommand() : "Nothing, its a standard flag. You shouldn't be seeing this, please report it.";
 
-        DiscordWebhook webhook = new DiscordWebhook(Sentinel.mainConfig.plugin.webhook);
-        webhook.setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png");
-        webhook.setUsername("Sentinel Anti-Nuke | Logs");
+        String description =
+                Emojis.rightSort + "Player: " + offender.getName() + " " + Emojis.target + "\\n" +
+                        Emojis.space + Emojis.arrowRight + (type != FAT.BLOCK_SPAM ?
+                        "Score: `" + scoreMap.get(offender) + "/" + Sentinel.mainConfig.chat.antiSwear.punishScore :
+                        "Heat: `" + heatMap.get(offender) + "/" + Sentinel.mainConfig.chat.antiSpam.punishHeat) + "`\\n" +
+                        Emojis.space + Emojis.arrowRight + "UUID: `" + offender.getUniqueId() + "`\\n" +
+                        Emojis.rightSort + "Executed: " + executed + " " + Emojis.mute + "\\n";
 
-        DiscordWebhook.EmbedObject embed = new DiscordWebhook.EmbedObject()
-                .setAuthor(supertitle, "", "")
-                .setTitle(title)
-                .setDescription(
-                        Emojis.rightSort + "Player: " + offender.getName() + " " + Emojis.target + "\\n" +
-                                Emojis.space + Emojis.arrowRight + (type != FAT.BLOCK_SPAM ?
-                                    "Score: `" + scoreMap.get(offender) + "/" + Sentinel.mainConfig.chat.antiSwear.punishScore :
-                                    "Heat: `" + heatMap.get(offender) + "/" + Sentinel.mainConfig.chat.antiSpam.punishHeat) + "`\\n" +
-                                Emojis.space + Emojis.arrowRight + "UUID: `" + offender.getUniqueId() + "`\\n" +
-                                Emojis.rightSort + "Executed: " + executed + " " + Emojis.mute + "\\n"
-                )
-                .addField((type != FAT.BLOCK_SPAM && type != FAT.SPAM_PUNISH ? "Message: " : "Previous: "),
-                        (type != FAT.BLOCK_SPAM && type != FAT.SPAM_PUNISH ? e.getMessage() : lastMessageMap.get(offender)) + Emojis.alarm, false)
-                .addField((type != FAT.BLOCK_SPAM && type != FAT.SPAM_PUNISH ? "Reduced: " : "Current: "),
-                        (type != FAT.BLOCK_SPAM && type != FAT.SPAM_PUNISH ? highlightProfanity(e.getMessage(), "||", "||") : e.getMessage()) + " " + Emojis.noDM, false)
-                .setColor(type.getColor())
-                .setThumbnail("https://crafatar.com/avatars/" + offender.getUniqueId() + "?size=64&&overlay");
+        String historyTitle = (type != FAT.BLOCK_SPAM && type != FAT.SPAM_PUNISH ? "Message: " : "Previous: ");
+        String historyValue = (type != FAT.BLOCK_SPAM && type != FAT.SPAM_PUNISH ? e.getMessage() : lastMessageMap.get(offender)) + Emojis.alarm;
 
-        webhook.addEmbed(embed);
+        String currentTitle = (type != FAT.BLOCK_SPAM && type != FAT.SPAM_PUNISH ? "Reduced: " : "Current: ");
+        String currentValue = (type != FAT.BLOCK_SPAM && type != FAT.SPAM_PUNISH ? highlightProfanity(e.getMessage(), "||", "||") : e.getMessage()) + " " + Emojis.noDM;
+
+        WebhookMessage message = new WebhookMessageBuilder()
+                .setUsername("Sentinel Anti-Nuke | Logs")
+                .setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png").
+                addEmbeds(new WebhookEmbedBuilder()
+                        .setAuthor(new WebhookEmbed.EmbedAuthor(supertitle,null,"https://builtbybit.com/resources/sentinel-anti-nuke.30130/"))
+                        .setTitle(new WebhookEmbed.EmbedTitle(title,null))
+                        .setDescription(description)
+                        .addField(new WebhookEmbed.EmbedField(false,historyTitle,historyValue))
+                        .addField(new WebhookEmbed.EmbedField(false,currentTitle,currentValue))
+                        .setThumbnailUrl("https://crafatar.com/avatars/" + offender.getUniqueId() + "?size=64&&overlay")
+                        .setColor(type.getColor().getRGB())
+                        .build())
+                .build();
 
         try {
             ServerUtils.sendDebugMessage("Executing webhook...");
-            webhook.execute();
-        } catch (IOException ex) {
+            Sentinel.webclient.send(message);
+        } catch (Exception ex) {
             ServerUtils.sendDebugMessage("Filter Actions: Epic webhook failure!!!");
             Sentinel.log.info(ex.toString());
         }
+
+
+
     }
     /*
     public static void filterAction(Player offender, AsyncPlayerChatEvent e, String highlighted, String severity, Double similarity, FAT type) {
         String report = ReportFalsePositives.generateReport(e);
 
         TextComponent warn = new TextComponent();
-        warn.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.dict.get("action-automatic-reportable"))));
+        warn.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.language.get("action-automatic-reportable"))));
         warn.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + report));
 
         DecimalFormat fs = new DecimalFormat("##.#");
         fs.setRoundingMode(RoundingMode.DOWN);
 
         TextComponent notif = new TextComponent();
-        notif.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText((type != FAT.SPAM_PUNISH && type != FAT.BLOCK_SPAM ? Sentinel.dict.get("severity-notification-hover").formatted(e.getMessage(), highlighted, severity) : Sentinel.dict.get("spam-notification-hover").formatted(e.getMessage(),lastMessageMap.get(offender),fs.format(similarity))))));
+        notif.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText((type != FAT.SPAM_PUNISH && type != FAT.BLOCK_SPAM ? Sentinel.language.get("severity-notification-hover").formatted(e.getMessage(), highlighted, severity) : Sentinel.language.get("spam-notification-hover").formatted(e.getMessage(),lastMessageMap.get(offender),fs.format(similarity))))));
         notif.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + report));
 
-        warn.setText(Text.prefix(Sentinel.dict.get(type.getWarnTranslationKey())));
+        warn.setText(Text.prefix(Sentinel.language.get(type.getWarnTranslationKey())));
         offender.spigot().sendMessage(warn);
 
-        String notiftext = Sentinel.dict.get(type.getNotifTranslationKey());
+        String notiftext = Sentinel.language.get(type.getNotifTranslationKey());
 
         notif.setText(Text.prefix((type != FAT.SPAM_PUNISH && type != FAT.BLOCK_SPAM ? notiftext.formatted(offender.getName(), scoreMap.get(offender), Sentinel.mainConfig.chat.antiSwear.punishScore) : notiftext.formatted(offender.getName(),heatMap.get(offender),Sentinel.mainConfig.chat.antiSpam.punishHeat))));
 

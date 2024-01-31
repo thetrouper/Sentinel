@@ -2,7 +2,6 @@ package io.github.thetrouper.sentinel.server.util;
 
 
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.server.config.AdvancedConfig;
 
 import java.util.Map;
 import java.util.regex.PatternSyntaxException;
@@ -14,7 +13,7 @@ public class Text {
         return msg.replace('&', SECTION_SYMBOL);
     }
     public static String prefix(String text) {
-        String prefix = Sentinel.prefix;
+        String prefix = Sentinel.mainConfig.plugin.prefix;
         return color(prefix + text);
     }
     public static String removeFirstColor(String input) {

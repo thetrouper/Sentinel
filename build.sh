@@ -17,7 +17,7 @@ if [ $? -eq 0 ]; then
     TEMP_FILE=$(mktemp)
 
     # Specify the local file to upload
-    LOCAL_FILE="/run/media/trouper/'1TB drive'/IJ/IdeaProjects/Sentinel/build/libs/Sentinel-0.2.2.jar"
+    LOCAL_FILE="/run/media/trouper/'1TB drive'/IJ/IdeaProjects/Sentinel/build/libs/Sentinel-0.2.4.jar"
 
     # Write the SFTP commands to the temporary file
     echo "put $LOCAL_FILE $SFTP_REMOTE_DIR" > "$TEMP_FILE"
@@ -39,7 +39,7 @@ EOF
     )
 
     for cmd in "${SSH_COMMANDS[@]}"; do
-      ssh -oStrictHostKeyChecking=no -oBatchMode=no "$SFTP_USER@$SFTP_HOST" "docker exec docker-mc-1 mc-send-to-console $cmd"
+      ssh -oStrictHostKeyChecking=no -oBatchMode=no "$SFTP_USER@$SFTP_HOST" "docker exec docker_mc_1 mc-send-to-console $cmd"
     done
 
     echo "Plugin reloaded."

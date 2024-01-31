@@ -1,46 +1,52 @@
 package io.github.thetrouper.sentinel;
 
-import com.google.gson.JsonObject;
+import club.minnced.discord.webhook.WebhookClient;
+import club.minnced.discord.webhook.WebhookClientBuilder;
+import club.minnced.discord.webhook.send.WebhookEmbed;
+import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
+import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import io.github.itzispyder.pdk.PDK;
+import io.github.itzispyder.pdk.utils.misc.JsonSerializable;
 import io.github.thetrouper.sentinel.auth.Auth;
 import io.github.thetrouper.sentinel.cmds.*;
+import io.github.thetrouper.sentinel.data.config.*;
 import io.github.thetrouper.sentinel.events.*;
-import io.github.thetrouper.sentinel.server.config.*;
 import io.github.thetrouper.sentinel.server.functions.AntiSpam;
 import io.github.thetrouper.sentinel.server.functions.Authenticator;
 import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
 import io.github.thetrouper.sentinel.server.functions.Telemetry;
-import io.github.itzispyder.pdk.utils.misc.JsonSerializable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.*;
-import java.net.URL;
+import java.io.File;
+import java.time.temporal.TemporalAccessor;
 import java.util.logging.Logger;
 
 public final class Sentinel extends JavaPlugin {
+
+
     private static Sentinel instance;
-    public static LanguageFile dict;
     private static final File cfgfile = new File("plugins/Sentinel/main-config.json");
     private static final File nbtcfg = new File("plugins/Sentinel/nbt-config.json");
     private static final File strctcfg = new File("plugins/Sentinel/strict.json");
     private static final File swrcfg = new File("plugins/Sentinel/swears.json");
     private static final File fpcfg = new File("plugins/Sentinel/false-positives.json");
     private static final File advcfg = new File("plugins/Sentinel/advanced-config.json");
+
     public static MainConfig mainConfig = JsonSerializable.load(cfgfile, MainConfig.class, new MainConfig());
     public static FPConfig fpConfig = JsonSerializable.load(fpcfg, FPConfig.class, new FPConfig());
     public static SwearsConfig swearConfig = JsonSerializable.load(swrcfg, SwearsConfig.class, new SwearsConfig());
     public static StrictConfig strictConfig = JsonSerializable.load(strctcfg, StrictConfig.class, new StrictConfig());
     public static NBTConfig nbtConfig = JsonSerializable.load(nbtcfg, NBTConfig.class, new NBTConfig());
     public static AdvancedConfig advConfig = JsonSerializable.load(advcfg, AdvancedConfig.class, new AdvancedConfig());
+    public static LanguageFile language;
     public static final PluginManager manager = Bukkit.getPluginManager();
-    public static String prefix = "";
-    public static String key = "";
+
     public static final Logger log = Bukkit.getLogger();
-    public static String identifier = "";
     public static boolean usesDynamicIP;
+    public static WebhookClient webclient;
 
     /**
      * Plugin startup logic
@@ -53,22 +59,23 @@ public final class Sentinel extends JavaPlugin {
         instance = this;
 
         log.info("Loading Config...");
+
         loadConfig();
-        log.info("Language Status: (" + dict.get("if-you-see-this-lang-is-broken") + ")");
+
+        log.info("Language Status: (" + language.get("if-you-see-this-lang-is-broken") + ")");
 
         log.info("Initializing Server ID...");
         String serverID = Authenticator.getServerID();
 
-        key = mainConfig.plugin.license;
-        identifier = serverID;
+        String license = mainConfig.plugin.license;
 
-        log.info("Pre-load finished!\n]====---- Requesting Authentication ----====[ \n- License Key: " + key + " \n- Server ID: " + serverID);
+        log.info("Pre-load finished!\n]====---- Requesting Authentication ----====[ \n- License Key: " + license + " \n- Server ID: " + serverID);
         log.info("Auth Requested...");
         String authStatus = "ERROR";
         String authstatus = "ERROR";
         try {
-            authStatus = Authenticator.authorize(key, serverID);
-            authstatus = Auth.authorize(key, serverID);
+            authStatus = Authenticator.authorize(license, serverID);
+            authstatus = Auth.authorize(license, serverID);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -79,13 +86,13 @@ public final class Sentinel extends JavaPlugin {
             case "AUTHORIZED" -> {
                 log.info("\n]======----- Auth Success! -----======[");
                 startup();
-                authstatus = authstatus.replaceAll("ur a skid lmao","get out of here kiddo");
             }
             case "MINEHUT" -> {
                 usesDynamicIP = true;
-                String minehutStatus = Telemetry.loadTelemetryHook(serverID, key);
+                String minehutStatus = Telemetry.loadTelemetryHook(serverID, license);
                 switch (minehutStatus) {
                     case "SUCCESS" -> {
+                        authstatus = authstatus.replaceAll("ur a skid lmao","get out of here kiddo");
                         log.info("Dynamic IP auth Success! " + authstatus);
                         startup();
                     }
@@ -100,15 +107,15 @@ public final class Sentinel extends JavaPlugin {
                 manager.disablePlugin(this);
             }
             case "UNREGISTERED" -> {
-                log.warning("Authentication Failure, YOU SHALL NOT PASS! License: " + key + " Server ID: " + serverID);
+                log.warning("Authentication Failure, YOU SHALL NOT PASS! License: " + license + " Server ID: " + serverID);
                 manager.disablePlugin(this);
             }
             case "ERROR" -> {
-                log.warning("Hmmmmmm thats not right... License: " + key + " Server ID: " + serverID + "\nPlease report the above stacktrace.");
+                log.warning("Hmmmmmm thats not right... License: " + license + " Server ID: " + serverID + "\nPlease report the above stacktrace.");
                 manager.disablePlugin(this);
             }
             default -> {
-                log.warning("Achievment unlocked:\n How did we get here? \nLicense: " + key + " Server ID: " + serverID + "\nPlease report the above stacktrace.");
+                log.warning("Achievement unlocked:\n How did we get here? \nLicense: " + license + " Server ID: " + serverID + "\nPlease report the above stacktrace.");
                 manager.disablePlugin(this);
             }
         }
@@ -116,17 +123,17 @@ public final class Sentinel extends JavaPlugin {
 
     public void startup() {
         log.info("\n]======----- Loading Sentinel! -----======[");
-        loadConfig();
+
         // Plugin startup logic
         log.info("Starting Up! (" + getDescription().getVersion() + ")...");
+
+        loadWebhook();
 
         // Enable Functions
         AntiSpam.enableAntiSpam();
         ProfanityFilter.enableAntiSwear();
 
-        prefix = mainConfig.plugin.prefix;
-
-        // Commands -> BE SURE TO REGISTER ANY NEW COMMANDS IN PLUGIN.YML (src/main/java/resources/plugin.yml)!
+        // Commands
         new SentinelCommand().register();
         new MessageCommand().register();
         new ReplyCommand().register();
@@ -168,7 +175,6 @@ public final class Sentinel extends JavaPlugin {
         strictConfig = JsonSerializable.load(strctcfg,StrictConfig.class,new StrictConfig());
         swearConfig = JsonSerializable.load(swrcfg,SwearsConfig.class,new SwearsConfig());
         nbtConfig = JsonSerializable.load(nbtcfg,NBTConfig.class,new NBTConfig());
-        dict = JsonSerializable.load(LanguageFile.PATH,LanguageFile.class,new LanguageFile());
 
         // Save
         mainConfig.save();
@@ -177,34 +183,28 @@ public final class Sentinel extends JavaPlugin {
         strictConfig.save();
         swearConfig.save();
         nbtConfig.save();
-        dict.save();
-
-        try {
-            InputStream langIn = Sentinel.class.getClassLoader().getResourceAsStream("lang/en_us.json");
-            InputStreamReader langReader = new InputStreamReader(langIn);
-            BufferedReader langBR = new BufferedReader(langReader);
-            File langFile = LanguageFile.PATH;
-            FileWriter langFW = new FileWriter(langFile,true);
-            String line;
-            while ((line = langBR.readLine()) != null) {
-                langFW.write(line);
-            }
-            langFW.close();
-            langIn.close();
-            langReader.close();
-            langBR.close();
-        } catch (Exception ex) {
-            log.warning("Error during config initialization: " + ex.getMessage());
-        }
-
-
 
         log.info("Loading Dictionary (" + Sentinel.mainConfig.plugin.lang + ")...");
 
-        log.info("Verifying Config...");
-        getConfig().options().copyDefaults();
-        saveDefaultConfig();
+        language = JsonSerializable.load(LanguageFile.PATH,LanguageFile.class,new LanguageFile());
+        language.save();
     }
+
+    public void loadWebhook() {
+        // Init Client
+        log.info("Loading Webhook...");
+
+        WebhookClientBuilder buildah = new WebhookClientBuilder(mainConfig.plugin.webhook);
+        buildah.setThreadFactory((job) -> {
+            Thread thread = new Thread(job);
+            thread.setName("WebhookThread");
+            thread.setDaemon(true);
+            return thread;
+        });
+        buildah.setWait(true);
+        webclient = buildah.build();
+    }
+
 
     /**
      * Plugin shutdown logic
@@ -214,7 +214,7 @@ public final class Sentinel extends JavaPlugin {
         // Plugin shutdown logic
         log.info("Sentinel has disabled! (" + getDescription().getVersion() + ") Your server is now no longer protected!");
         if (usesDynamicIP) {
-            Telemetry.sendShutdownLog(identifier,key);
+            Telemetry.sendShutdownLog(Authenticator.getServerID(), mainConfig.plugin.license);
         }
     }
 

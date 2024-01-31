@@ -82,11 +82,11 @@ public class AntiSpam {
         DecimalFormat fs = new DecimalFormat("##.#");
         fs.setRoundingMode(RoundingMode.DOWN);
         TextComponent warning = new TextComponent();
-        warning.setText(Text.prefix(Sentinel.dict.get("spam-warning")));
+        warning.setText(Text.prefix(Sentinel.language.get("spam-warning")));
         warning.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("action-automatic")));
         p.spigot().sendMessage(warning);
-        text.setText(Text.prefix(Sentinel.dict.get("spam-notification").formatted(p.getName(),heatMap.get(p),Config.punishHeat)));
-        text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.dict.get("spam-notification-hover").formatted(message1,message2,fs.format(similarity)))));
+        text.setText(Text.prefix(Sentinel.language.get("spam-notification").formatted(p.getName(),heatMap.get(p),Config.punishHeat)));
+        text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.language.get("spam-notification-hover").formatted(message1,message2,fs.format(similarity)))));
         ServerUtils.forEachStaff(staff -> {
             staff.spigot().sendMessage(text);
         });
@@ -99,11 +99,11 @@ public class AntiSpam {
         }
         ServerUtils.sendCommand(Config.spamPunishCommand.replace("%player%", p.getName()));
         TextComponent warning = new TextComponent();
-        warning.setText(Text.prefix(Sentinel.dict.get("spam-punished")));
-        warning.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.dict.get("action-automatic"))));
+        warning.setText(Text.prefix(Sentinel.language.get("spam-punished")));
+        warning.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.language.get("action-automatic"))));
         p.spigot().sendMessage(warning);
         TextComponent text = new TextComponent();
-        text.setText(Text.prefix(Sentinel.dict.get("spam-punish-notification").formatted(p.getName(),heatMap.get(p),Config.punishHeat)));
+        text.setText(Text.prefix(Sentinel.language.get("spam-punish-notification").formatted(p.getName(),heatMap.get(p),Config.punishHeat)));
         ServerUtils.forEachStaff(staff -> {
             staff.spigot().sendMessage(text);
         });

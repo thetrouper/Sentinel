@@ -1,11 +1,14 @@
 package io.github.thetrouper.sentinel.server;
 
 
+import club.minnced.discord.webhook.send.WebhookEmbed;
+import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
+import club.minnced.discord.webhook.send.WebhookMessage;
+import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.ActionType;
 import io.github.thetrouper.sentinel.data.Emojis;
 import io.github.thetrouper.sentinel.discord.DiscordWebhook;
-import io.github.thetrouper.sentinel.server.config.MainConfig;
 import io.github.thetrouper.sentinel.server.util.FileUtils;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
@@ -99,7 +102,7 @@ public class Action {
         public Action execute() {
             String actionTop = action.getMessageTop();
             String actionTitle = action.getMessageTitle();
-            String itemLog = (item != null) ? FileUtils.createNBTLog(item.getItemMeta().getAsString()) : "";
+            String itemLog = (item != null && item.hasItemMeta() && item.getItemMeta().getAsString() != null) ? FileUtils.createNBTLog(item) : "";
             String commandLog = (loggedCommand != null) ? FileUtils.createCommandLog(loggedCommand) : "";
 
             final List<String> punishCommands = Sentinel.mainConfig.plugin.punishCommands;
@@ -159,9 +162,7 @@ public class Action {
             }
 
             if (notifyDiscord) {
-                DiscordWebhook webhook = new DiscordWebhook(Sentinel.mainConfig.plugin.webhook);
-                webhook.setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png");
-                webhook.setUsername("Sentinel Anti-Nuke | Logs");
+
                 String description = (player != null) ? Emojis.rightSort + " **Player:** " + player.getName() + " " + Emojis.member + "\n" : "";
                 description += (command != null) ? ((loggedCommand != null && loggedCommand.length() > 128) ? Emojis.rightSort + " **Command:** Too long to show here! " + Emojis.nuke + "\n | Saved to file: " + commandLog + "\n" : Emojis.rightSort + " **Command:** " + command + " " + Emojis.nuke + "\n") : "";
                 description += (item != null) ? Emojis.rightSort + " **Item:** " + item.getType().toString().toLowerCase() + " " + Emojis.nuke + "\n" + Emojis.space + Emojis.rightDoubleArrow + "**NBT:** Uploaded to /Sentinel/LoggedNBT/" + itemLog : "";
@@ -171,18 +172,24 @@ public class Action {
                 actions += Emojis.rightSort + " **Punished:** " + (punished ? Emojis.success : Emojis.failure) + "\n";
                 actions += (revertGM) ? Emojis.rightSort + " **GM Reverted:** " + Emojis.success + "\n" : "";
                 actions += Emojis.rightSort + " **Logged:** " + Emojis.success;
-                DiscordWebhook.EmbedObject embed = new DiscordWebhook.EmbedObject()
-                        .setAuthor(actionTop, "", "")
-                        .setTitle(actionTitle)
-                        .setDescription(description)
-                        .addField("Actions:", actions, false)
-                        .setThumbnail("https://crafatar.com/avatars/" + player.getUniqueId() + "?size=64&&overlay")
-                        .setColor(action.getEmbedColor());
-                webhook.addEmbed(embed);
+
+                WebhookMessage message = new WebhookMessageBuilder()
+                        .setUsername("Sentinel Anti-Nuke | Logs")
+                        .setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png").
+                                addEmbeds(new WebhookEmbedBuilder()
+                                .setAuthor(new WebhookEmbed.EmbedAuthor(actionTop,null,"https://builtbybit.com/resources/sentinel-anti-nuke.30130/"))
+                                .setTitle(new WebhookEmbed.EmbedTitle(actionTitle,null))
+                                .setDescription(description)
+                                .addField(new WebhookEmbed.EmbedField(false,"Actions:", actions))
+                                .setThumbnailUrl("https://crafatar.com/avatars/" + player.getUniqueId() + "?size=64&&overlay")
+                                .setColor(action.getEmbedColor().getRGB())
+                                .build())
+                        .build();
+
                 try {
                     ServerUtils.sendDebugMessage("Executing webhook...");
-                    webhook.execute();
-                } catch (IOException e) {
+                    Sentinel.webclient.send(message);
+                } catch (Exception e) {
                     ServerUtils.sendDebugMessage(Text.prefix("Epic webhook failure!!!"));
                     Sentinel.log.info(e.toString());
                 }

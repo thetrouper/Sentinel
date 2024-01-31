@@ -1,31 +1,30 @@
 package io.github.thetrouper.sentinel.server.functions;
 
+import io.github.thetrouper.sentinel.server.util.MathUtils;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Authenticator {
 
-    public Authenticator() throws UnknownHostException {
-    }
-    private static final String ENCRYPTION_KEY = "lllIIlllIlSentinelAuthIllIllllII";
-    private static final String ENCRYPTION_ALGORITHM = "AES";
-    private static final String ENCRYPTION_MODE_PADDING = "AES/ECB/PKCS5Padding";
-    static InetAddress IP;
-
-    static {
+    public static String getServerID() {
         try {
-            IP = InetAddress.getLocalHost();
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
+            return MathUtils.SHA512(getPublicIPAddress());
+        } catch (IOException e) {
+            return e.getMessage();
         }
     }
 
@@ -94,31 +93,34 @@ public class Authenticator {
 
 
 
-    public static String getServerID() {
-        return encrypt(IP.getHostAddress());
-    }
+    public static String getPublicIPAddress() throws IOException {
+        String apiUrl = "http://checkip.amazonaws.com";
 
+        URL url = new URL(apiUrl);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-    public static String encrypt(String text) {
         try {
-            SecretKeySpec secretKey = new SecretKeySpec(ENCRYPTION_KEY.getBytes(), ENCRYPTION_ALGORITHM);
-            Cipher cipher = Cipher.getInstance(ENCRYPTION_MODE_PADDING);
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+            connection.setRequestMethod("GET");
 
-            byte[] encryptedBytes = cipher.doFinal(text.getBytes());
-            String encryptedText = bytesToHex(encryptedBytes);
-            return encryptedText;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "ERR";
-    }
+            int responseCode = connection.getResponseCode();
 
-    private static String bytesToHex(byte[] bytes) {
-        StringBuilder result = new StringBuilder();
-        for (byte b : bytes) {
-            result.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String line;
+                StringBuilder response = new StringBuilder();
+
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+
+                reader.close();
+
+                return response.toString().trim();
+            } else {
+                throw new IOException("Failed to get public IP address. HTTP error code: " + responseCode);
+            }
+        } finally {
+            connection.disconnect();
         }
-        return result.toString();
     }
 }

@@ -6,7 +6,6 @@ import io.github.itzispyder.pdk.commands.CustomCommand;
 import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.server.config.MainConfig;
 import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
 import io.github.thetrouper.sentinel.server.util.Text;
 import org.bukkit.Bukkit;
@@ -46,7 +45,7 @@ public class SentinelCommand implements CustomCommand {
                         io.github.thetrouper.sentinel.server.functions.AntiSpam.handleAntiSpam(e);
                     }
                     case "lang" -> {
-                        p.sendMessage(Sentinel.dict.get("exmaple-message"));
+                        p.sendMessage(Sentinel.language.get("exmaple-message"));
                     }
                     case "toggle" -> {
                         debugMode = !debugMode;
