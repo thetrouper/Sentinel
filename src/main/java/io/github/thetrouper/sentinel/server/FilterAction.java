@@ -28,7 +28,6 @@ import static io.github.thetrouper.sentinel.server.functions.ProfanityFilter.*;
 
 public class FilterAction {
 
-    @SuppressWarnings("deprecation")
     public static void filterAction(Player offender, AsyncPlayerChatEvent e, String highlighted, FilterSeverity severity, Double similarity, FAT type) {
         String report = ReportFalsePositives.generateReport(e);
         DecimalFormat fs = new DecimalFormat("##.#");
@@ -78,16 +77,32 @@ public class FilterAction {
                 || (type == FAT.SPAM_PUNISH && Sentinel.mainConfig.chat.antiSpam.logSpam);
     }
 
-    /** ToDo
-     * Optimize this junk
-     * Prolly put it all in one function with switching type
-     */
     public static void sendConsoleLog(Player offender, AsyncPlayerChatEvent e, FAT type) {
-        StringBuilder log = new StringBuilder().append("\"]=-\" + type.getTitle() + \"-=[\\n\"");
-        log.append("Player: " + offender.getName());
-        log.append(type != FAT.BLOCK_SPAM && type != FAT.SPAM_PUNISH ? "> Score: `" + scoreMap.get(offender) + "/" + Sentinel.mainConfig.chat.antiSwear.punishScore :
-                "> Heat: `" + heatMap.get(offender) + "/" + Sentinel.mainConfig.chat.antiSpam.punishHeat).append("\n").append("> UUID: ").append(offender.getUniqueId()).append("\n").append(type != FAT.BLOCK_SPAM && type != FAT.SPAM_PUNISH ? "Message: " + e.getMessage() : "Previous: " + lastMessageMap.get(offender)).append("\n").append(type != FAT.BLOCK_SPAM && type != FAT.SPAM_PUNISH ? "Reduced: " + fullSimplify(e.getMessage()) : "Current: " + e.getMessage()).append("\n").append(type.getExecutedCommand() != null ? "Executed: " + type.getExecutedCommand() : "Executed: Nothing, its a standard flag. You shouldn't be seeing this, please report it.");
-
+        StringBuilder log = new StringBuilder().append("]=- %s -=[".formatted(type.getTitle()));
+        log.append("\nPlayer: %s".formatted(offender.getName()));
+        log.append("\n> UUID: %s".formatted(offender.getUniqueId()));
+        switch (type) {
+            case SPAM_PUNISH -> {
+                log.append("\n> Heat: %1$s/%2$s".formatted(heatMap.get(offender),Sentinel.mainConfig.chat.antiSpam.punishHeat));
+                log.append("\nMessage: %s".formatted(e.getMessage()));
+                log.append("\nReduced: %s".formatted(fullSimplify(e.getMessage())));
+            }
+            case SWEAR_PUNISH -> {
+                log.append("\n> Score: %1$s/%2$s".formatted(heatMap.get(offender),Sentinel.mainConfig.chat.antiSwear.punishScore));
+                log.append("\nPrevious: %s".formatted(lastMessageMap.get(offender)));
+                log.append("\nCurrent: %s".formatted(e.getMessage()));
+            }
+            default -> {
+                log.append("\nYou shouldn't be seeing this! Please report this message, and the context surrounding it!");
+                log.append("\n> Heat: %1$s/%2$s".formatted(heatMap.get(offender),Sentinel.mainConfig.chat.antiSpam.punishHeat));
+                log.append("\nMessage: %s".formatted(e.getMessage()));
+                log.append("\nReduced: %s".formatted(fullSimplify(e.getMessage())));
+                log.append("\n> Score: %1$s/%2$s".formatted(heatMap.get(offender),Sentinel.mainConfig.chat.antiSwear.punishScore));
+                log.append("\nPrevious: %s".formatted(lastMessageMap.get(offender)));
+                log.append("\nCurrent: %s".formatted(e.getMessage()));
+            }
+        }
+        log.append("\nExecuted: %s".formatted(type.getExecutedCommand()));
         Sentinel.log.info(String.valueOf(log));
     }
 
@@ -96,20 +111,43 @@ public class FilterAction {
         String title = offender.getName() + " has triggered the " + type.getName() + "!";
 
         String executed = type.getExecutedCommand() != null ? type.getExecutedCommand() : "Nothing, its a standard flag. You shouldn't be seeing this, please report it.";
+        StringBuilder description = new StringBuilder();
 
-        String description =
-                Emojis.rightSort + "Player: " + offender.getName() + " " + Emojis.target + "\\n" +
-                        Emojis.space + Emojis.arrowRight + (type != FAT.BLOCK_SPAM ?
-                        "Score: `" + scoreMap.get(offender) + "/" + Sentinel.mainConfig.chat.antiSwear.punishScore :
-                        "Heat: `" + heatMap.get(offender) + "/" + Sentinel.mainConfig.chat.antiSpam.punishHeat) + "`\\n" +
-                        Emojis.space + Emojis.arrowRight + "UUID: `" + offender.getUniqueId() + "`\\n" +
-                        Emojis.rightSort + "Executed: " + executed + " " + Emojis.mute + "\\n";
+        String historyTitle = "You found a bug! :D";
+        String historyValue = "Congratulations.";
 
-        String historyTitle = (type != FAT.BLOCK_SPAM && type != FAT.SPAM_PUNISH ? "Message: " : "Previous: ");
-        String historyValue = (type != FAT.BLOCK_SPAM && type != FAT.SPAM_PUNISH ? e.getMessage() : lastMessageMap.get(offender)) + Emojis.alarm;
+        String currentTitle = "Now go report it!";
+        String currentValue = ">:(";
 
-        String currentTitle = (type != FAT.BLOCK_SPAM && type != FAT.SPAM_PUNISH ? "Reduced: " : "Current: ");
-        String currentValue = (type != FAT.BLOCK_SPAM && type != FAT.SPAM_PUNISH ? highlightProfanity(e.getMessage(), "||", "||") : e.getMessage()) + " " + Emojis.noDM;
+        description.append("%1$sPlayer: `%2$s` %3$s".formatted(Emojis.rightSort,offender.getName(),Emojis.target));
+        switch (type) {
+            case SPAM_PUNISH -> {
+                description.append("%1$s%2$sHeat: `%3$s/%4$s`".formatted(
+                        Emojis.space,
+                        Emojis.arrowRight,
+                        heatMap.get(offender),
+                        Sentinel.mainConfig.chat.antiSpam.punishHeat
+                ));
+                historyTitle = "Previous: ";
+                historyValue = lastMessageMap.get(offender);
+
+                currentTitle = "Current: ";
+                currentValue = e.getMessage();
+            }
+            case SWEAR_PUNISH -> {
+                description.append("%1$s%2$sScore: `%3$s/%4$s`".formatted(
+                        Emojis.space,
+                        Emojis.arrowRight,
+                        scoreMap.get(offender),
+                        Sentinel.mainConfig.chat.antiSwear.punishScore
+                ));
+                historyTitle = "Message: ";
+                historyValue = e.getMessage();
+
+                currentTitle = "Reduced: ";
+                currentValue = highlightProfanity(e.getMessage(),"||", "||");
+            }
+        }
 
         WebhookMessage message = new WebhookMessageBuilder()
                 .setUsername("Sentinel Anti-Nuke | Logs")
@@ -117,9 +155,10 @@ public class FilterAction {
                 addEmbeds(new WebhookEmbedBuilder()
                         .setAuthor(new WebhookEmbed.EmbedAuthor(supertitle,null,"https://builtbybit.com/resources/sentinel-anti-nuke.30130/"))
                         .setTitle(new WebhookEmbed.EmbedTitle(title,null))
-                        .setDescription(description)
-                        .addField(new WebhookEmbed.EmbedField(false,historyTitle,historyValue))
-                        .addField(new WebhookEmbed.EmbedField(false,currentTitle,currentValue))
+                        .setDescription(String.valueOf(description))
+                        .addField(new WebhookEmbed.EmbedField(true,historyTitle,historyValue))
+                        .addField(new WebhookEmbed.EmbedField(true,currentTitle,currentValue))
+                        .addField(new WebhookEmbed.EmbedField(false,"Executed: ", executed))
                         .setThumbnailUrl("https://crafatar.com/avatars/" + offender.getUniqueId() + "?size=64&&overlay")
                         .setColor(type.getColor().getRGB())
                         .build())
