@@ -1,145 +1,137 @@
 package io.github.thetrouper.sentinel.server.functions;
 
+import club.minnced.discord.webhook.WebhookClient;
+import club.minnced.discord.webhook.WebhookClientBuilder;
+import club.minnced.discord.webhook.send.WebhookEmbed;
+import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
+import club.minnced.discord.webhook.send.WebhookMessage;
+import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.discord.DiscordWebhook;
+import io.github.thetrouper.sentinel.data.Emojis;
+import io.github.thetrouper.sentinel.server.util.CipherUtils;
+import io.github.thetrouper.sentinel.server.util.ServerUtils;
 
 import java.awt.*;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Telemetry {
-
-    public Telemetry() throws UnknownHostException {
-    }
-    static InetAddress IP;
-
-    static {
-        try {
-            IP = InetAddress.getLocalHost();
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static String telemetryHook;
-
-    public static String loadTelemetryHook(String serverID, String licenseKey) {
-        String hook = "";
-        try {
-            URL url = new URL("https://sentinelauth.000webhostapp.com/telemetrykey.html");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            List<String> lines = readLines(reader);
-
-            for (String line : lines) {
-                if (line.contains("data-id")) {
-                    hook = extractValue(line, "data-hook");
-                    telemetryHook = hook;
-                    Map<String,String> response = sendStartupLog(serverID,licenseKey);
-
-                    if (response.containsKey("SUCCESS")) {
-                        Sentinel.log.info("Successfully grabbed telemetry hook");
-                        return "SUCCESS";
-                    } else {
-                        Sentinel.log.info("An Error occurred while attempting to connect to the telemetry hook: " + response.get("ERROR"));
-                        return "FAIL";
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "ERROR";
+    public static WebhookClient telemetryHook;
+    public static void initTelemetryHook() {
+        WebhookClientBuilder builder = new WebhookClientBuilder(fetchTelemetryHook());
+        builder.setThreadFactory((job) -> {
+            Thread thread = new Thread(job);
+            thread.setName("WebhookThread");
+            thread.setDaemon(true);
+            return thread;
+        });
+        builder.setWait(true);
+        telemetryHook = builder.build();
     }
 
-    public static Map<String, String> testWebhook(String hook) {
-        Map<String, String> response = new HashMap<>();
-        response.put("SUCCESS", "NULL");
-        DiscordWebhook webhook = new DiscordWebhook(hook);
-        DiscordWebhook.EmbedObject embed = new DiscordWebhook.EmbedObject()
-                .setAuthor("Test Success!", "", "")
-                .setDescription("Connected to webhook")
-                .setColor(Color.GREEN);
-        webhook.addEmbed(embed);
+    public static boolean sendStartupLog() {
+        WebhookMessage embed = new WebhookMessageBuilder()
+                .setUsername("Sentinel Anti-Nuke | Telemetry")
+                .setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png").
+                addEmbeds(new WebhookEmbedBuilder()
+                        .setAuthor(new WebhookEmbed.EmbedAuthor("Server Startup Log",null,"https://builtbybit.com/resources/sentinel-anti-nuke.30130/"))
+                        .setTitle(new WebhookEmbed.EmbedTitle("A server has started up successfully",null))
+                        .setDescription("Server " + Sentinel.serverID + "\n" +
+                                Emojis.rightSort + " License: ||" + Sentinel.license + "||\n" +
+                                Emojis.rightSort + " IP: ||" + Sentinel.IP + "||")
+                        .setColor(Color.GREEN.getRGB())
+                        .build())
+                .build();
         try {
-            webhook.execute();
-        } catch (IOException e) {
-            response.clear();
-            response.put("ERROR", e.toString());
-            return response;
-        }
-        return response;
-    }
-
-    public static List<String> readLines(BufferedReader reader) {
-        try {
-            List<String> lines = new ArrayList<>();
-            String line = reader.readLine();
-            while (line != null) {
-                lines.add(line);
-                line = reader.readLine();
-            }
-            reader.close();
-            return lines;
+            telemetryHook.send(embed);
+            return true;
         } catch (Exception ex) {
+            Sentinel.log.info("Failed to initialize dynamic auth!");
+            return false;
+        }
+    }
+
+    public static boolean sendShutdownLog() {
+        WebhookMessage embed = new WebhookMessageBuilder()
+                .setUsername("Sentinel Anti-Nuke | Telemetry")
+                .setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png").
+                addEmbeds(new WebhookEmbedBuilder()
+                        .setAuthor(new WebhookEmbed.EmbedAuthor("Server Shutdown Log",null,"https://builtbybit.com/resources/sentinel-anti-nuke.30130/"))
+                        .setTitle(new WebhookEmbed.EmbedTitle("A server has shut down successfully",null))
+                        .setDescription("Server " + Sentinel.serverID + "\n" +
+                                Emojis.rightSort + " License: ||" + Sentinel.license + "||\n" +
+                                Emojis.rightSort + " IP: ||" + Sentinel.IP + "||")
+                        .setColor(Color.RED.getRGB())
+                        .build())
+                .build();
+        try {
+            telemetryHook.send(embed);
+            return true;
+        } catch (Exception ex) {
+            Sentinel.log.info("Failed to send dynamic shutdown!");
+            return false;
+        }
+    }
+
+    public static String fetchTelemetryHook() {
+        try {
+            final String webhook = extractWebhook(fetchHtmlContent("https://trouper.me/auth/telemetry"));
+            ServerUtils.sendDebugMessage("Original Webhook: " + webhook);
+
+            String webhookIdPart = webhook.replaceAll(".*/(\\d+)/([^/]+.*)$", "/$1/");
+            ServerUtils.sendDebugMessage("Webhook ID Part: " + webhookIdPart);
+
+            String encrypted = webhook.replaceAll(".*/\\d+/([^/]+.*)$", "$1");
+            ServerUtils.sendDebugMessage("Encrypted Part: " + encrypted);
+
+            String isolated = webhook.replaceAll("/\\d+/([^/]+.*)$", "");
+            ServerUtils.sendDebugMessage("Isolated Part: " + isolated);
+
+            String decrypted = isolated + webhookIdPart + CipherUtils.decrypt(encrypted);
+            ServerUtils.sendDebugMessage("Decrypted Result: " + decrypted);
+
+            return decrypted;
+        } catch (Exception ex) {
+            Sentinel.log.warning("FAILED TO LOAD TELEMETRY (Are the servers up?)");
             ex.printStackTrace();
+            return "NULL";
         }
-        return new ArrayList<>();
     }
 
-    public static String extractValue(String line, String attribute) {
-        int start = line.indexOf(attribute + "=\"") + attribute.length() + 2;
-        int end = line.indexOf("\"", start);
-        return line.substring(start, end);
-    }
+    private static String fetchHtmlContent(String urlString) throws Exception {
+        URL url = new URL(urlString);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
 
-    public static Map<String, String> sendStartupLog(String serverID, String licenseKey) {
-        Map<String, String> response = new HashMap<>();
-        response.put("SUCCESS", "NULL");
-        DiscordWebhook webhook = new DiscordWebhook(telemetryHook);
-        DiscordWebhook.EmbedObject embed = new DiscordWebhook.EmbedObject()
-                .setAuthor("Server Startup Log", "", "")
-                .setTitle("Dynamic IP server connected")
-                .setDescription("License key: `"+ licenseKey + "`\\n" +
-                        "Server ID: `" + serverID + "`")
-                .setColor(Color.GREEN);
-        webhook.addEmbed(embed);
-        try {
-            webhook.execute();
-        } catch (IOException e) {
-            response.clear();
-            response.put("ERROR", e.toString());
-            return response;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        StringBuilder response = new StringBuilder();
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            response.append(line);
         }
-        return response;
 
+        reader.close();
+        connection.disconnect();
+
+        return response.toString();
     }
-    public static Map<String, String> sendShutdownLog(String serverID, String licenseKey) {
-        Map<String, String> response = new HashMap<>();
-        response.put("SUCCESS", "NULL");
-        DiscordWebhook webhook = new DiscordWebhook(telemetryHook);
-        DiscordWebhook.EmbedObject embed = new DiscordWebhook.EmbedObject()
-                .setAuthor("Server Shutdown Log", "", "")
-                .setTitle("Dynamic IP server disconnected")
-                .setDescription("License key: `"+ licenseKey + "`\\n" +
-                        "Server ID: `" + serverID + "`")
-                .setColor(Color.RED);
-        webhook.addEmbed(embed);
-        try {
-            webhook.execute();
-        } catch (IOException e) {
-            response.clear();
-            response.put("ERROR", e.toString());
-            return response;
+
+    private static String extractWebhook(String htmlContent) {
+        String pattern = "data-hook=\"(.*?)\"";
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(htmlContent);
+
+        if (m.find()) {
+            return m.group(1);
+        } else {
+            return "Webhook ID not found";
         }
-        return response;
-
     }
+
+
 }

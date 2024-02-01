@@ -23,8 +23,8 @@ public class Authenticator {
     public static String getServerID() {
         try {
             return MathUtils.SHA512(getPublicIPAddress());
-        } catch (IOException e) {
-            return e.getMessage();
+        } catch (Exception e) {
+            return "NULL";
         }
     }
 

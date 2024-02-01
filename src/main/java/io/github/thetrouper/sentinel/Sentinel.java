@@ -2,9 +2,6 @@ package io.github.thetrouper.sentinel;
 
 import club.minnced.discord.webhook.WebhookClient;
 import club.minnced.discord.webhook.WebhookClientBuilder;
-import club.minnced.discord.webhook.send.WebhookEmbed;
-import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
-import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import io.github.itzispyder.pdk.PDK;
 import io.github.itzispyder.pdk.utils.misc.JsonSerializable;
 import io.github.thetrouper.sentinel.auth.Auth;
@@ -21,7 +18,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.time.temporal.TemporalAccessor;
 import java.util.logging.Logger;
 
 public final class Sentinel extends JavaPlugin {
@@ -46,6 +42,9 @@ public final class Sentinel extends JavaPlugin {
 
     public static final Logger log = Bukkit.getLogger();
     public static boolean usesDynamicIP;
+    public static String serverID;
+    public static String license;
+    public static String IP;
     public static WebhookClient webclient;
 
     /**
@@ -65,9 +64,9 @@ public final class Sentinel extends JavaPlugin {
         log.info("Language Status: (" + language.get("if-you-see-this-lang-is-broken") + ")");
 
         log.info("Initializing Server ID...");
-        String serverID = Authenticator.getServerID();
+        serverID = Authenticator.getServerID();
 
-        String license = mainConfig.plugin.license;
+        license = mainConfig.plugin.license;
 
         log.info("Pre-load finished!\n]====---- Requesting Authentication ----====[ \n- License Key: " + license + " \n- Server ID: " + serverID);
         log.info("Auth Requested...");
@@ -76,7 +75,7 @@ public final class Sentinel extends JavaPlugin {
         try {
             authStatus = Authenticator.authorize(license, serverID);
             authstatus = Auth.authorize(license, serverID);
-
+            IP = Authenticator.getPublicIPAddress();
         } catch (Exception e) {
             e.printStackTrace();
             log.info("WTFFFF ARE YOU DOING MAN??????");
@@ -89,17 +88,15 @@ public final class Sentinel extends JavaPlugin {
             }
             case "MINEHUT" -> {
                 usesDynamicIP = true;
-                String minehutStatus = Telemetry.loadTelemetryHook(serverID, license);
-                switch (minehutStatus) {
-                    case "SUCCESS" -> {
-                        authstatus = authstatus.replaceAll("ur a skid lmao","get out of here kiddo");
-                        log.info("Dynamic IP auth Success! " + authstatus);
-                        startup();
-                    }
-                    case "FAILURE" -> {
-                        log.info("Dynamic IP Failure. Webhook Error possible? Please contact obvWolf to fix this.");
-                        manager.disablePlugin(this);
-                    }
+                Telemetry.initTelemetryHook();
+                boolean minehutStatus = Telemetry.sendStartupLog();
+                if (minehutStatus) {
+                    authstatus = authstatus.replaceAll("ur a skid lmao", "get out of here kiddo");
+                    log.info("Dynamic IP auth Success! " + authstatus);
+                    startup();
+                } else {
+                    log.info("Dynamic IP Failure. Webhook Error possible? Please contact obvWolf to fix this.");
+                    manager.disablePlugin(this);
                 }
             }
             case "INVALID-ID" -> {
@@ -214,7 +211,7 @@ public final class Sentinel extends JavaPlugin {
         // Plugin shutdown logic
         log.info("Sentinel has disabled! (" + getDescription().getVersion() + ") Your server is now no longer protected!");
         if (usesDynamicIP) {
-            Telemetry.sendShutdownLog(Authenticator.getServerID(), mainConfig.plugin.license);
+            Telemetry.sendShutdownLog();
         }
     }
 

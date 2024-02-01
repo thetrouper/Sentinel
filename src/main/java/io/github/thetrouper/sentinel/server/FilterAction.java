@@ -122,7 +122,7 @@ public class FilterAction {
         description.append("%1$sPlayer: `%2$s` %3$s".formatted(Emojis.rightSort,offender.getName(),Emojis.target));
         switch (type) {
             case SPAM_PUNISH -> {
-                description.append("%1$s%2$sHeat: `%3$s/%4$s`".formatted(
+                description.append("\n%1$s%2$sHeat: `%3$s/%4$s`".formatted(
                         Emojis.space,
                         Emojis.arrowRight,
                         heatMap.get(offender),
@@ -135,7 +135,7 @@ public class FilterAction {
                 currentValue = e.getMessage();
             }
             case SWEAR_PUNISH -> {
-                description.append("%1$s%2$sScore: `%3$s/%4$s`".formatted(
+                description.append("\n%1$s%2$sScore: `%3$s/%4$s`".formatted(
                         Emojis.space,
                         Emojis.arrowRight,
                         scoreMap.get(offender),
@@ -158,7 +158,7 @@ public class FilterAction {
                         .setDescription(String.valueOf(description))
                         .addField(new WebhookEmbed.EmbedField(true,historyTitle,historyValue))
                         .addField(new WebhookEmbed.EmbedField(true,currentTitle,currentValue))
-                        .addField(new WebhookEmbed.EmbedField(false,"Executed: ", executed))
+                        .addField(new WebhookEmbed.EmbedField(false,"Executed: ", executed.replaceAll("%player%",offender.getName())))
                         .setThumbnailUrl("https://crafatar.com/avatars/" + offender.getUniqueId() + "?size=64&&overlay")
                         .setColor(type.getColor().getRGB())
                         .build())

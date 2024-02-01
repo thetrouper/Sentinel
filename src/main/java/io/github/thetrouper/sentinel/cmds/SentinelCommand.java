@@ -7,12 +7,18 @@ import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
+import io.github.thetrouper.sentinel.server.functions.Telemetry;
+import io.github.thetrouper.sentinel.server.util.CipherUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import java.awt.*;
 import java.util.HashSet;
 @CommandRegistry(value = "sentinel",permission = @Permission("sentinel.debug"))
 public class SentinelCommand implements CustomCommand {
@@ -50,6 +56,20 @@ public class SentinelCommand implements CustomCommand {
                     case "toggle" -> {
                         debugMode = !debugMode;
                         p.sendMessage(Text.prefix((debugMode ? "Enabled" : "Disabled") + " debug mode."));
+                    }
+                    case "encrypt" -> {
+                        final String enc = CipherUtils.encrypt(args.getAll(2).toString());
+                        final String check = CipherUtils.decrypt(enc);
+                        final String main = Text.prefix("Successfully encrypted \"&e" + check + "&7\" using AES.\n &7> &b" + enc);
+                        Sentinel.log.info(args.getAll(2).toString() + "\n" + enc + "\n" + check);
+                        TextComponent message = new TextComponent();
+                        message.setText(main);
+                        message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new net.md_5.bungee.api.chat.hover.content.Text("&bClick to copy!")));
+                        message.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, enc));
+                        p.spigot().sendMessage(message);
+                    }
+                    case "tele" -> {
+                        p.sendMessage(Telemetry.fetchTelemetryHook());
                     }
                 }
             }
