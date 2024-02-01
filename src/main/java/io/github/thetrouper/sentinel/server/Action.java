@@ -5,10 +5,11 @@ import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessage;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+import io.github.itzispyder.pdk.PDK;
+import io.github.itzispyder.pdk.utils.discord.DiscordWebhook;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.ActionType;
 import io.github.thetrouper.sentinel.data.Emojis;
-import io.github.thetrouper.sentinel.discord.DiscordWebhook;
 import io.github.thetrouper.sentinel.server.util.FileUtils;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
@@ -173,6 +174,7 @@ public class Action {
                 actions += (revertGM) ? Emojis.rightSort + " **GM Reverted:** " + Emojis.success + "\n" : "";
                 actions += Emojis.rightSort + " **Logged:** " + Emojis.success;
 
+                Webhook
                 WebhookMessage message = new WebhookMessageBuilder()
                         .setUsername("Sentinel Anti-Nuke | Logs")
                         .setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png").

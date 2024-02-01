@@ -45,7 +45,6 @@ public final class Sentinel extends JavaPlugin {
     public static String serverID;
     public static String license;
     public static String IP;
-    public static WebhookClient webclient;
 
     /**
      * Plugin startup logic

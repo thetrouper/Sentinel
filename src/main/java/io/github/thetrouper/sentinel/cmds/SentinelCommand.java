@@ -34,6 +34,9 @@ public class SentinelCommand implements CustomCommand {
                 Sentinel.log.info("[Sentinel] Re-Initializing Sentinel!");
                 instance.loadConfig();
             }
+            case "full-system-check" -> {
+
+            }
             case "debug" -> {
                 switch (args.get(1).toString()) {
                     case "antiswear" -> {
@@ -86,7 +89,7 @@ public class SentinelCommand implements CustomCommand {
 
     @Override
     public void dispatchCompletions(CompletionBuilder b) {
-        b.then(b.arg("reload","getheat"));
+        b.then(b.arg("reload","getheat","full-system-check"));
         b.then(b.arg("debug").then(
                 b.arg("antiswear","antispam","lang","toggle")));
     }

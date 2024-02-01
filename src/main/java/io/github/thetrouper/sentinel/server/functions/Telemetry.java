@@ -6,6 +6,8 @@ import club.minnced.discord.webhook.send.WebhookEmbed;
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
 import club.minnced.discord.webhook.send.WebhookMessage;
 import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+import io.github.itzispyder.pdk.utils.discord.DiscordEmbed;
+import io.github.itzispyder.pdk.utils.discord.DiscordWebhook;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Emojis;
 import io.github.thetrouper.sentinel.server.util.CipherUtils;
@@ -20,34 +22,25 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Telemetry {
-    public static WebhookClient telemetryHook;
+    public static String webhook;
     public static void initTelemetryHook() {
-        WebhookClientBuilder builder = new WebhookClientBuilder(fetchTelemetryHook());
-        builder.setThreadFactory((job) -> {
-            Thread thread = new Thread(job);
-            thread.setName("WebhookThread");
-            thread.setDaemon(true);
-            return thread;
-        });
-        builder.setWait(true);
-        telemetryHook = builder.build();
+        webhook = fetchTelemetryHook();
     }
 
     public static boolean sendStartupLog() {
-        WebhookMessage embed = new WebhookMessageBuilder()
-                .setUsername("Sentinel Anti-Nuke | Telemetry")
-                .setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png").
-                addEmbeds(new WebhookEmbedBuilder()
-                        .setAuthor(new WebhookEmbed.EmbedAuthor("Server Startup Log",null,"https://builtbybit.com/resources/sentinel-anti-nuke.30130/"))
-                        .setTitle(new WebhookEmbed.EmbedTitle("A server has started up successfully",null))
-                        .setDescription("Server " + Sentinel.serverID + "\n" +
-                                Emojis.rightSort + " License: ||" + Sentinel.license + "||\n" +
-                                Emojis.rightSort + " IP: ||" + Sentinel.IP + "||")
-                        .setColor(Color.GREEN.getRGB())
-                        .build())
-                .build();
         try {
-            telemetryHook.send(embed);
+            DiscordWebhook.create()
+                    .username("Sentinel Anti-Nuke | Telemetry")
+                    .avatar("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png")
+                    .addEmbed(DiscordEmbed.create()
+                            .author(new DiscordEmbed.Author("Server Startup Log","https://builtbybit.com/resources/sentinel-anti-nuke.30130/",null))
+                            .title("A server has started up successfully")
+                            .desc("Server " + Sentinel.serverID + "\n" +
+                                    Emojis.rightSort + " License: ||" + Sentinel.license + "||\n" +
+                                    Emojis.rightSort + " IP: ||" + Sentinel.IP + "||")
+                            .color(0x44FF44)
+                            .build()
+                    ).send(webhook);
             return true;
         } catch (Exception ex) {
             Sentinel.log.info("Failed to initialize dynamic auth!");
@@ -55,25 +48,22 @@ public class Telemetry {
         }
     }
 
-    public static boolean sendShutdownLog() {
-        WebhookMessage embed = new WebhookMessageBuilder()
-                .setUsername("Sentinel Anti-Nuke | Telemetry")
-                .setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png").
-                addEmbeds(new WebhookEmbedBuilder()
-                        .setAuthor(new WebhookEmbed.EmbedAuthor("Server Shutdown Log",null,"https://builtbybit.com/resources/sentinel-anti-nuke.30130/"))
-                        .setTitle(new WebhookEmbed.EmbedTitle("A server has shut down successfully",null))
-                        .setDescription("Server " + Sentinel.serverID + "\n" +
-                                Emojis.rightSort + " License: ||" + Sentinel.license + "||\n" +
-                                Emojis.rightSort + " IP: ||" + Sentinel.IP + "||")
-                        .setColor(Color.RED.getRGB())
-                        .build())
-                .build();
+    public static void sendShutdownLog() {
         try {
-            telemetryHook.send(embed);
-            return true;
+            DiscordWebhook.create()
+                    .username("Sentinel Anti-Nuke | Telemetry")
+                    .avatar("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png")
+                    .addEmbed(DiscordEmbed.create()
+                            .author(new DiscordEmbed.Author("Server Shutdown Log","https://builtbybit.com/resources/sentinel-anti-nuke.30130/",null))
+                            .title("A server has shut down")
+                            .desc("Server " + Sentinel.serverID + "\n" +
+                                    Emojis.rightSort + " License: ||" + Sentinel.license + "||\n" +
+                                    Emojis.rightSort + " IP: ||" + Sentinel.IP + "||")
+                            .color(0xFF0000)
+                            .build()
+                    ).send(webhook);
         } catch (Exception ex) {
             Sentinel.log.info("Failed to send dynamic shutdown!");
-            return false;
         }
     }
 
