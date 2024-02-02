@@ -18,7 +18,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import java.awt.*;
 import java.util.HashSet;
 @CommandRegistry(value = "sentinel",permission = @Permission("sentinel.debug"))
 public class SentinelCommand implements CustomCommand {

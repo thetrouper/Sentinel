@@ -1,24 +1,21 @@
 package io.github.thetrouper.sentinel.server;
 
-import club.minnced.discord.webhook.send.WebhookEmbed;
-import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
-import club.minnced.discord.webhook.send.WebhookMessage;
-import club.minnced.discord.webhook.send.WebhookMessageBuilder;
+import io.github.itzispyder.pdk.utils.discord.DiscordEmbed;
+import io.github.itzispyder.pdk.utils.discord.DiscordWebhook;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Emojis;
 import io.github.thetrouper.sentinel.data.FAT;
 import io.github.thetrouper.sentinel.data.FilterSeverity;
-import io.github.thetrouper.sentinel.discord.DiscordWebhook;
 import io.github.thetrouper.sentinel.server.functions.ReportFalsePositives;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
@@ -28,7 +25,107 @@ import static io.github.thetrouper.sentinel.server.functions.ProfanityFilter.*;
 
 public class FilterAction {
 
-    public static void filterAction(Player offender, AsyncPlayerChatEvent e, String highlighted, FilterSeverity severity, Double similarity, FAT type) {
+    public static void filterPunish(AsyncPlayerChatEvent e, FAT type, Double similarity, FilterSeverity severity) {
+        String report = ReportFalsePositives.generateReport(e);
+        TextComponent staffNotif = Component.text("");
+        TextComponent playerWarning = Component.text("");
+        Player offender = e.getPlayer();
+        switch (type) {
+            case BLOCK_SPAM -> {
+                staffNotif = Component
+                        .text(Text.prefix(String.format(Sentinel.language.get("spam-notification"),
+                            offender.getName(),
+                            heatMap.get(offender),
+                            Sentinel.mainConfig.chat.antiSpam.punishHeat
+                        )))
+                        .hoverEvent(Component.text(String.format(Sentinel.language.get("spam-notification-hover"),
+                            lastMessageMap.get(offender),
+                            e.getMessage(),
+                            similarity
+                        )));
+
+                playerWarning = Component.text(Text.prefix(Sentinel.language.get("spam-block-warn")))
+                        .hoverEvent(Component.text(Sentinel.language.get("action-automatic-reportable")));
+            }
+            case SPAM_PUNISH -> {
+                staffNotif = Component.text(Text.prefix(String.format(Sentinel.language.get("spam-mute-notification"),
+                            offender.getName(),
+                            heatMap.get(offender),
+                            Sentinel.mainConfig.chat.antiSpam.punishHeat
+                        )))
+                        .hoverEvent(Component.text(String.format(Sentinel.language.get("spam-notification-hover"),
+                                lastMessageMap.get(offender),
+                                e.getMessage(),
+                                similarity
+                        )));
+
+                playerWarning = Component.text(Sentinel.language.get("spam-mute-warn"))
+                        .hoverEvent(Component.text(Sentinel.language.get("action-automatic-reportable")));
+                sendConsoleLog(offender,e,type);
+                sendDiscordLog(offender,e,type);
+            }
+            case BLOCK_SWEAR -> {
+                staffNotif = Component.text(Text.prefix(String.format(Sentinel.language.get("profanity-block-notification"),
+                                offender.getName(),
+                                scoreMap.get(offender),
+                                Sentinel.mainConfig.chat.antiSwear.punishScore
+                            )))
+                        .hoverEvent(Component.text(String.format(Sentinel.language.get("severity-notification-hover"),
+                                e.getMessage(),
+                                highlightProfanity(fullSimplify(e.getMessage())),
+                                severity.name()
+                            )));
+
+                playerWarning = Component.text(Text.prefix(Sentinel.language.get("profanity-block-warn")))
+                        .hoverEvent(Component.text(Sentinel.language.get("action-automatic-reportable")));
+            }
+            case SWEAR_PUNISH -> {
+                staffNotif = Component.text(Text.prefix(String.format(Sentinel.language.get("profanity-mute-notification"),
+                                offender.getName(),
+                                scoreMap.get(offender),
+                                Sentinel.mainConfig.chat.antiSwear.punishScore
+                            )))
+                        .hoverEvent(Component.text(String.format(Sentinel.language.get("severity-notification-hover"),
+                                e.getMessage(),
+                                highlightProfanity(fullSimplify(e.getMessage())),
+                                severity.name()
+                            )));
+
+                playerWarning = Component.text(Text.prefix(Sentinel.language.get("profanity-mute-warn")))
+                        .hoverEvent(Component.text(Sentinel.language.get("action-automatic-reportable")));
+                sendConsoleLog(offender,e,type);
+                sendDiscordLog(offender,e,type);
+            }
+            case SLUR_PUNISH -> {
+                staffNotif = Component.text(Text.prefix(String.format(Sentinel.language.get("slur-mute-notification"),
+                                offender.getName(),
+                                scoreMap.get(offender),
+                                Sentinel.mainConfig.chat.antiSwear.punishScore
+                            )))
+                        .hoverEvent(Component.text(String.format(Sentinel.language.get("severity-notification-hover"),
+                                e.getMessage(),
+                                highlightProfanity(fullSimplify(e.getMessage())),
+                                severity.name()
+                            )));
+
+                playerWarning = Component.text(Text.prefix(Sentinel.language.get("slur-mute-warn")))
+                        .hoverEvent(Component.text(Sentinel.language.get("action-automatic-reportable")));
+                sendConsoleLog(offender,e,type);
+                sendDiscordLog(offender,e,type);
+            }
+        }
+        if (type.getExecutedCommand() != null) {
+            ServerUtils.sendCommand(type.getExecutedCommand().replace("%player%", offender.getName()));
+        }
+        staffNotif = staffNotif.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/sentinelcallback fpreport " + report));
+
+        for (Player staff : ServerUtils.getStaff()) {
+            staff.sendMessage(staffNotif);
+        }
+        e.getPlayer().sendMessage(playerWarning);
+    }
+
+    /*public static void filterAction(Player offender, AsyncPlayerChatEvent e, String highlighted, FilterSeverity severity, Double similarity, FAT type) {
         String report = ReportFalsePositives.generateReport(e);
         DecimalFormat fs = new DecimalFormat("##.#");
         fs.setRoundingMode(RoundingMode.DOWN);
@@ -70,7 +167,7 @@ public class FilterAction {
         TextComponent component = new TextComponent();
         component.setText(text);
         return component;
-    }
+    }*/
 
     private static boolean shouldLogSwears(FAT type) {
         return (type == FAT.SWEAR_PUNISH || type == FAT.SLUR_PUNISH) && Sentinel.mainConfig.chat.antiSwear.logSwears
@@ -78,31 +175,31 @@ public class FilterAction {
     }
 
     public static void sendConsoleLog(Player offender, AsyncPlayerChatEvent e, FAT type) {
-        StringBuilder log = new StringBuilder().append("]=- %s -=[".formatted(type.getTitle()));
-        log.append("\nPlayer: %s".formatted(offender.getName()));
-        log.append("\n> UUID: %s".formatted(offender.getUniqueId()));
+        StringBuilder log = new StringBuilder().append(String.format("]=- %s -=[",type.getTitle()));
+        log.append(String.format("\nPlayer: %s",offender.getName()));
+        log.append(String.format("\n> UUID: %s",offender.getUniqueId()));
         switch (type) {
             case SPAM_PUNISH -> {
-                log.append("\n> Heat: %1$s/%2$s".formatted(heatMap.get(offender),Sentinel.mainConfig.chat.antiSpam.punishHeat));
-                log.append("\nMessage: %s".formatted(e.getMessage()));
-                log.append("\nReduced: %s".formatted(fullSimplify(e.getMessage())));
+                log.append(String.format("\n> Heat: %1$s/%2$s",heatMap.get(offender),Sentinel.mainConfig.chat.antiSpam.punishHeat));
+                log.append(String.format("\nMessage: %s", e.getMessage()));
+                log.append(String.format("\nReduced: %s",fullSimplify(e.getMessage())));
             }
-            case SWEAR_PUNISH -> {
-                log.append("\n> Score: %1$s/%2$s".formatted(heatMap.get(offender),Sentinel.mainConfig.chat.antiSwear.punishScore));
-                log.append("\nPrevious: %s".formatted(lastMessageMap.get(offender)));
-                log.append("\nCurrent: %s".formatted(e.getMessage()));
+            case SWEAR_PUNISH, SLUR_PUNISH -> {
+                log.append(String.format("\n> Score: %1$s/%2$s",heatMap.get(offender),Sentinel.mainConfig.chat.antiSwear.punishScore));
+                log.append(String.format("\nPrevious: %s",lastMessageMap.get(offender)));
+                log.append(String.format("\nCurrent: %s",e.getMessage()));
             }
             default -> {
                 log.append("\nYou shouldn't be seeing this! Please report this message, and the context surrounding it!");
-                log.append("\n> Heat: %1$s/%2$s".formatted(heatMap.get(offender),Sentinel.mainConfig.chat.antiSpam.punishHeat));
-                log.append("\nMessage: %s".formatted(e.getMessage()));
-                log.append("\nReduced: %s".formatted(fullSimplify(e.getMessage())));
-                log.append("\n> Score: %1$s/%2$s".formatted(heatMap.get(offender),Sentinel.mainConfig.chat.antiSwear.punishScore));
-                log.append("\nPrevious: %s".formatted(lastMessageMap.get(offender)));
-                log.append("\nCurrent: %s".formatted(e.getMessage()));
+                log.append(String.format("\n> Heat: %1$s/%2$s",heatMap.get(offender),Sentinel.mainConfig.chat.antiSpam.punishHeat));
+                log.append(String.format("\nMessage: %s",e.getMessage()));
+                log.append(String.format("\nReduced: %s",fullSimplify(e.getMessage())));
+                log.append(String.format("\n> Score: %1$s/%2$s",heatMap.get(offender),Sentinel.mainConfig.chat.antiSwear.punishScore));
+                log.append(String.format("\nPrevious: %s",lastMessageMap.get(offender)));
+                log.append(String.format("\nCurrent: %s",e.getMessage()));
             }
         }
-        log.append("\nExecuted: %s".formatted(type.getExecutedCommand()));
+        log.append(String.format("\nExecuted: %s",type.getExecutedCommand()));
         Sentinel.log.info(String.valueOf(log));
     }
 
@@ -119,10 +216,10 @@ public class FilterAction {
         String currentTitle = "Now go report it!";
         String currentValue = ">:(";
 
-        description.append("%1$sPlayer: `%2$s` %3$s".formatted(Emojis.rightSort,offender.getName(),Emojis.target));
+        description.append(String.format("%1$sPlayer: `%2$s` %3$s",Emojis.rightSort,offender.getName(),Emojis.target));
         switch (type) {
             case SPAM_PUNISH -> {
-                description.append("\n%1$s%2$sHeat: `%3$s/%4$s`".formatted(
+                description.append(String.format("\n%1$s%2$sHeat: `%3$s/%4$s`",
                         Emojis.space,
                         Emojis.arrowRight,
                         heatMap.get(offender),
@@ -134,8 +231,8 @@ public class FilterAction {
                 currentTitle = "Current: ";
                 currentValue = e.getMessage();
             }
-            case SWEAR_PUNISH -> {
-                description.append("\n%1$s%2$sScore: `%3$s/%4$s`".formatted(
+            case SWEAR_PUNISH, SLUR_PUNISH -> {
+                description.append(String.format("\n%1$s%2$sScore: `%3$s/%4$s`",
                         Emojis.space,
                         Emojis.arrowRight,
                         scoreMap.get(offender),
@@ -149,24 +246,22 @@ public class FilterAction {
             }
         }
 
-        WebhookMessage message = new WebhookMessageBuilder()
-                .setUsername("Sentinel Anti-Nuke | Logs")
-                .setAvatarUrl("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png").
-                addEmbeds(new WebhookEmbedBuilder()
-                        .setAuthor(new WebhookEmbed.EmbedAuthor(supertitle,null,"https://builtbybit.com/resources/sentinel-anti-nuke.30130/"))
-                        .setTitle(new WebhookEmbed.EmbedTitle(title,null))
-                        .setDescription(String.valueOf(description))
-                        .addField(new WebhookEmbed.EmbedField(true,historyTitle,historyValue))
-                        .addField(new WebhookEmbed.EmbedField(true,currentTitle,currentValue))
-                        .addField(new WebhookEmbed.EmbedField(false,"Executed: ", executed.replaceAll("%player%",offender.getName())))
-                        .setThumbnailUrl("https://crafatar.com/avatars/" + offender.getUniqueId() + "?size=64&&overlay")
-                        .setColor(type.getColor().getRGB())
-                        .build())
-                .build();
-
         try {
             ServerUtils.sendDebugMessage("Executing webhook...");
-            Sentinel.webclient.send(message);
+            DiscordWebhook.create()
+                    .username("Sentinel Anti-Nuke | Logs")
+                    .avatar("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png")
+                    .addEmbed(DiscordEmbed.create()
+                            .author(new DiscordEmbed.Author(supertitle,"https://builtbybit.com/resources/sentinel-anti-nuke.30130/",null))
+                            .title(title)
+                            .desc(String.valueOf(description))
+                            .addField(new DiscordEmbed.Field(historyTitle,historyValue,true))
+                            .addField(new DiscordEmbed.Field(currentTitle,currentValue,true))
+                            .addField(new DiscordEmbed.Field("Executed: ", executed.replaceAll("%player%",offender.getName()),false))
+                            .thumbnail("https://crafatar.com/avatars/" + offender.getUniqueId() + "?size=64&&overlay")
+                            .color(type.getColor())
+                            .build()).send(Sentinel.mainConfig.plugin.webhook);
+
         } catch (Exception ex) {
             ServerUtils.sendDebugMessage("Filter Actions: Epic webhook failure!!!");
             Sentinel.log.info(ex.toString());

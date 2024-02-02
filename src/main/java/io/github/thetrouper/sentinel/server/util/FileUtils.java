@@ -1,7 +1,6 @@
 package io.github.thetrouper.sentinel.server.util;
 
 import io.github.thetrouper.sentinel.Sentinel;
-import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.BufferedWriter;

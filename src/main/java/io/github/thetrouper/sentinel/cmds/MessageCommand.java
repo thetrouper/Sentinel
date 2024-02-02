@@ -6,16 +6,12 @@ import io.github.itzispyder.pdk.commands.CustomCommand;
 import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import io.github.itzispyder.pdk.utils.ArrayUtils;
-import io.github.itzispyder.pdk.utils.ServerUtils;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.server.functions.Message;
 import io.github.thetrouper.sentinel.server.util.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.Arrays;
-import java.util.List;
 
 @CommandRegistry(value = "sentinelmessage",permission = @Permission("sentinel.message"))
 public class MessageCommand implements CustomCommand {

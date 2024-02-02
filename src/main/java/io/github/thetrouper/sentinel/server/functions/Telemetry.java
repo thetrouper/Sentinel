@@ -1,11 +1,5 @@
 package io.github.thetrouper.sentinel.server.functions;
 
-import club.minnced.discord.webhook.WebhookClient;
-import club.minnced.discord.webhook.WebhookClientBuilder;
-import club.minnced.discord.webhook.send.WebhookEmbed;
-import club.minnced.discord.webhook.send.WebhookEmbedBuilder;
-import club.minnced.discord.webhook.send.WebhookMessage;
-import club.minnced.discord.webhook.send.WebhookMessageBuilder;
 import io.github.itzispyder.pdk.utils.discord.DiscordEmbed;
 import io.github.itzispyder.pdk.utils.discord.DiscordWebhook;
 import io.github.thetrouper.sentinel.Sentinel;
@@ -13,7 +7,6 @@ import io.github.thetrouper.sentinel.data.Emojis;
 import io.github.thetrouper.sentinel.server.util.CipherUtils;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;

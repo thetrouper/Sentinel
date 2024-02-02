@@ -9,7 +9,6 @@ import io.github.thetrouper.sentinel.server.util.Text;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import javax.print.attribute.standard.Severity;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,6 @@ public class ProfanityFilter {
     public static void handleProfanityFilter(AsyncPlayerChatEvent e) {
         Player p = e.getPlayer();
         String message = Text.removeFirstColor(e.getMessage());
-        String highlighted = highlightProfanity(message);
         FilterSeverity severity = ProfanityFilter.checkSeverity(message);
 
         if (severity.equals(FilterSeverity.SAFE)) return;
@@ -37,7 +35,15 @@ public class ProfanityFilter {
         ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + severity.getScore());
         e.setCancelled(true);
 
-        FilterAction.filterAction(p,e,highlighted,severity,null,getFAT(severity));
+        if (scoreMap.get(p)+severity.getScore() > Sentinel.mainConfig.chat.antiSwear.punishScore) {
+            scoreMap.put(p,scoreMap.get(p)+severity.getScore());
+            FilterAction.filterPunish(e,FAT.SWEAR_PUNISH,null,severity);
+            return;
+        }
+
+        scoreMap.put(p,scoreMap.get(p)+severity.getScore());
+
+        FilterAction.filterPunish(e,getFAT(severity),null,severity);
     }
 
     private static FAT getFAT(FilterSeverity severity) {

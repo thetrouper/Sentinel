@@ -53,13 +53,13 @@ public class AntiSpam {
 
         if (heatMap.get(p) > Sentinel.mainConfig.chat.antiSpam.punishHeat) {
             e.setCancelled(true);
-            FilterAction.filterAction(p,e,null,null, GPTUtils.calcSim(e.getMessage(),lastMessageMap.get(p)), FAT.SPAM_PUNISH);
+            FilterAction.filterPunish(e,FAT.SPAM_PUNISH,GPTUtils.calcSim(e.getMessage(),lastMessageMap.get(p)), null);
             return;
         }
 
         if (heatMap.get(p) > Sentinel.mainConfig.chat.antiSpam.blockHeat) {
             e.setCancelled(true);
-            FilterAction.filterAction(p,e,null,null, GPTUtils.calcSim(e.getMessage(),lastMessageMap.get(p)), FAT.BLOCK_SPAM);
+            FilterAction.filterPunish(e,FAT.BLOCK_SPAM, GPTUtils.calcSim(e.getMessage(),lastMessageMap.get(p)), null);
             heatMap.put(p, heatMap.get(p) + Sentinel.mainConfig.chat.antiSpam.highGain);
             return;
         }

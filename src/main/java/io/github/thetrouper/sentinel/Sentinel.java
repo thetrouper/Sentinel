@@ -1,7 +1,5 @@
 package io.github.thetrouper.sentinel;
 
-import club.minnced.discord.webhook.WebhookClient;
-import club.minnced.discord.webhook.WebhookClientBuilder;
 import io.github.itzispyder.pdk.PDK;
 import io.github.itzispyder.pdk.utils.misc.JsonSerializable;
 import io.github.thetrouper.sentinel.auth.Auth;
@@ -12,6 +10,7 @@ import io.github.thetrouper.sentinel.server.functions.AntiSpam;
 import io.github.thetrouper.sentinel.server.functions.Authenticator;
 import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
 import io.github.thetrouper.sentinel.server.functions.Telemetry;
+import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -91,7 +90,8 @@ public final class Sentinel extends JavaPlugin {
                 boolean minehutStatus = Telemetry.sendStartupLog();
                 if (minehutStatus) {
                     authstatus = authstatus.replaceAll("ur a skid lmao", "get out of here kiddo");
-                    log.info("Dynamic IP auth Success! " + authstatus);
+                    ServerUtils.sendDebugMessage(authstatus);
+                    log.info("Dynamic IP auth Success! ");
                     startup();
                 } else {
                     log.info("Dynamic IP Failure. Webhook Error possible? Please contact obvWolf to fix this.");
@@ -122,8 +122,6 @@ public final class Sentinel extends JavaPlugin {
 
         // Plugin startup logic
         log.info("Starting Up! (" + getDescription().getVersion() + ")...");
-
-        loadWebhook();
 
         // Enable Functions
         AntiSpam.enableAntiSpam();
@@ -184,21 +182,6 @@ public final class Sentinel extends JavaPlugin {
 
         language = JsonSerializable.load(LanguageFile.PATH,LanguageFile.class,new LanguageFile());
         language.save();
-    }
-
-    public void loadWebhook() {
-        // Init Client
-        log.info("Loading Webhook...");
-
-        WebhookClientBuilder buildah = new WebhookClientBuilder(mainConfig.plugin.webhook);
-        buildah.setThreadFactory((job) -> {
-            Thread thread = new Thread(job);
-            thread.setName("WebhookThread");
-            thread.setDaemon(true);
-            return thread;
-        });
-        buildah.setWait(true);
-        webclient = buildah.build();
     }
 
 

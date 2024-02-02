@@ -1,7 +1,6 @@
 package io.github.thetrouper.sentinel.server.functions;
 
 import io.github.itzispyder.pdk.utils.SchedulerUtils;
-import io.github.itzispyder.pdk.utils.discord.DiscordWebhook;
 import io.github.thetrouper.sentinel.cmds.SocialSpyCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
