@@ -7,7 +7,8 @@ public enum FAT {
     BLOCK_SPAM("Sentinel Anti-Spam", null, "spam-block-warn", "spam-notification",null,0x000000),
     SWEAR_PUNISH("Sentinel Anti-Swear Log","Anti-Swear", "profanity-mute-warn", "profanity-mute-notification", Sentinel.mainConfig.chat.antiSwear.swearPunishCommand, 0xFFB000),
     SLUR_PUNISH("Sentinel Anti-Slur Log", "Anti-Slur", "slur-mute-warn", "slur-mute-notification", Sentinel.mainConfig.chat.antiSwear.strictPunishCommand, 0xFF0000),
-    SPAM_PUNISH("Sentinel Anti-Spam Log", "Anti-Spam", "spam-mute-warn", "spam-mute-notification", Sentinel.mainConfig.chat.antiSpam.spamPunishCommand, 0xFF8000);
+    SPAM_PUNISH("Sentinel Anti-Spam Log", "Anti-Spam", "spam-mute-warn", "spam-mute-notification", Sentinel.mainConfig.chat.antiSpam.spamPunishCommand, 0xFF8000),
+    SAFE("Sentinel Chat Log", "You Shouldn't See this!", "spam-mute-warn", "spam-mute-notification", Sentinel.mainConfig.chat.antiSpam.spamPunishCommand, 0x00FF00);
 
     private final String title;
     private final String name;

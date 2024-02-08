@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class NBTEvents implements CustomListener {
     @EventHandler
-    private void onNBTPull(InventoryCreativeEvent e) {
+    public void onNBTPull(InventoryCreativeEvent e) {
         ServerUtils.sendDebugMessage("NBT: Detected creative mode action");
         if (!Sentinel.mainConfig.plugin.preventNBT) return;
         ServerUtils.sendDebugMessage("NBT: Enabled");

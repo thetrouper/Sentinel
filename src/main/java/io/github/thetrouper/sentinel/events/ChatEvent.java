@@ -2,38 +2,53 @@ package io.github.thetrouper.sentinel.events;
 
 import io.github.itzispyder.pdk.events.CustomListener;
 import io.github.thetrouper.sentinel.Sentinel;
+import io.github.thetrouper.sentinel.server.functions.AdvancedBlockers;
 import io.github.thetrouper.sentinel.server.functions.AntiSpam;
-import io.github.thetrouper.sentinel.server.functions.AntiUnicode;
 import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-public class ChatEvent implements CustomListener {
+import java.util.function.Consumer;
 
+public class ChatEvent implements CustomListener {
     @EventHandler
-    public static void onChat(AsyncPlayerChatEvent e) {
+    private void onChat(AsyncPlayerChatEvent e) {
+        handleChatEvent(e);
+    }
+    public static void handleChatEvent(AsyncPlayerChatEvent e) {
         if (e.isCancelled()) return;
-        ServerUtils.sendDebugMessage("ChatEvent: Chat event detected!");
-        if (!Sentinel.isTrusted(e.getPlayer()) || !e.getPlayer().hasPermission("sentinel.chat.antiunicode.bypass")) {
-            ServerUtils.sendDebugMessage("ChatEvent: Permission bypass failed, checking for unicode");
-            if (Sentinel.mainConfig.chat.antiUnicode) {
-                ServerUtils.sendDebugMessage(("ChatEvent: Enabled, Continuing unicode check!"));
-                AntiUnicode.handleAntiUnicode(e);
-            }
-        }
-        if (!Sentinel.isTrusted(e.getPlayer()) || !e.getPlayer().hasPermission("sentinel.chat.antiswear.bypass")) {
-            ServerUtils.sendDebugMessage("ChatEvent: Permission bypass failed, checking for swears");
-            if (Sentinel.mainConfig.chat.antiSwear.antiSwearEnabled) {
-                ServerUtils.sendDebugMessage(("ChatEvent: Enabled, Continuing swear check!"));
-                ProfanityFilter.handleProfanityFilter(e);
-            }
-        }
-        if (!Sentinel.isTrusted(e.getPlayer()) || !e.getPlayer().hasPermission("sentinel.chat.antispam.bypass")) {
-            ServerUtils.sendDebugMessage(("ChatEvent: Permission bypass failed, checking for spam"));
-            if (Sentinel.mainConfig.chat.antiSpam.antiSpamEnabled) {
-                ServerUtils.sendDebugMessage(("ChatEvent: Enabled, Continuing spam check!"));
-                AntiSpam.handleAntiSpam(e);
+
+        Player p = e.getPlayer();
+
+        handleEventIfNotBypassed(p,
+                "sentinel.chat.antiunicode.bypass",
+                Sentinel.mainConfig.chat.antiUnicode, "unicode",
+                e,
+                AdvancedBlockers::handleAdvanced);
+
+        handleEventIfNotBypassed(p,
+                "sentinel.chat.antiswear.bypass",
+                Sentinel.mainConfig.chat.antiSwear.antiSwearEnabled,
+                "swear",
+                e,
+                ProfanityFilter::handleProfanityFilter);
+
+        handleEventIfNotBypassed(p,
+                "sentinel.chat.antispam.bypass",
+                Sentinel.mainConfig.chat.antiSpam.antiSpamEnabled,
+                "spam",
+                e,
+                AntiSpam::handleAntiSpam);
+    }
+
+    private static void handleEventIfNotBypassed(Player p, String permission, boolean isEnabled, String eventType, AsyncPlayerChatEvent e, Consumer<AsyncPlayerChatEvent> handler) {
+        if (!Sentinel.isTrusted(p) || !p.hasPermission(permission)) {
+            ServerUtils.sendDebugMessage("ChatEvent: Permission bypass failed, checking for " + eventType);
+            if (isEnabled) {
+                ServerUtils.sendDebugMessage("ChatEvent: " + eventType + " check enabled, continuing!");
+                handler.accept(e);
             }
         }
     }

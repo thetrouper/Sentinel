@@ -35,7 +35,7 @@ public class ProfanityFilter {
         ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + severity.getScore());
         e.setCancelled(true);
 
-        if (scoreMap.get(p)+severity.getScore() > Sentinel.mainConfig.chat.antiSwear.punishScore) {
+        if (scoreMap.get(p) + severity.getScore() > Sentinel.mainConfig.chat.antiSwear.punishScore) {
             scoreMap.put(p,scoreMap.get(p)+severity.getScore());
             FilterAction.filterPunish(e,FAT.SWEAR_PUNISH,null,severity);
             return;
@@ -48,6 +48,9 @@ public class ProfanityFilter {
 
     private static FAT getFAT(FilterSeverity severity) {
         switch (severity) {
+            case SAFE -> {
+                return FAT.SAFE;
+            }
             case LOW, MEDIUM_LOW, MEDIUM, MEDIUM_HIGH, HIGH -> {
                 return FAT.BLOCK_SWEAR;
             }
@@ -179,6 +182,7 @@ public class ProfanityFilter {
         for (String falsePositive : swearWhitelist) {
             text = text.replace(falsePositive, "");
         }
+        text = text.replaceAll(Sentinel.advConfig.falsePosRegex,"");
         return text;
     }
     public static String convertLeetSpeakCharacters(String text) {
@@ -208,124 +212,4 @@ public class ProfanityFilter {
             }
         }
     }
-
-    /*public static void handleProfanityFilter(AsyncPlayerChatEvent e) {
-        Player p = e.getPlayer();
-        String message = Text.removeFirstColor(e.getMessage());
-        String highlighted = highlightProfanity(message);
-        String severity = ProfanityFilter.checkSeverity(message);
-        if (!scoreMap.containsKey(p)) scoreMap.put(p, 0);
-        // Old: if (scoreMap.get(p) > Config.punishScore) punishSwear(p,highlighted,message,e);
-        if (scoreMap.get(p) > Sentinel.mainConfig.chat.antiSwear.punishScore) FilterAction.filterAction(p,e,highlighted,severity, null, FAT.SWEAR);
-
-        switch (severity) {
-            case "low" -> {
-                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Sentinel.mainConfig.chat.antiSwear.lowScore);
-                scoreMap.put(p, scoreMap.get(p) + Sentinel.mainConfig.chat.antiSwear.lowScore);
-                e.setCancelled(true);
-                // Old: blockSwear(p,highlighted,message,severity,e);
-                FilterAction.filterAction(p,e,highlighted,severity, null, FAT.BLOCK_SWEAR);
-            }
-            case "medium-low" -> {
-                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Sentinel.mainConfig.chat.antiSwear.mediumLowScore);
-                scoreMap.put(p, scoreMap.get(p) + Sentinel.mainConfig.chat.antiSwear.mediumLowScore);
-                e.setCancelled(true);
-                // Old: blockSwear(p,highlighted,message,severity,e);
-                FilterAction.filterAction(p,e,highlighted,severity, null, FAT.BLOCK_SWEAR);
-            }
-            case "medium" -> {
-                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Sentinel.mainConfig.chat.antiSwear.mediumScore);
-                scoreMap.put(p, scoreMap.get(p) + Sentinel.mainConfig.chat.antiSwear.mediumScore);
-                e.setCancelled(true);
-                // Old: blockSwear(p,highlighted,message,severity,e);
-                FilterAction.filterAction(p,e,highlighted,severity, null, FAT.BLOCK_SWEAR);
-            }
-            case "medium-high" -> {
-                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Sentinel.mainConfig.chat.antiSwear.mediumHighScore);
-                scoreMap.put(p, scoreMap.get(p) + Sentinel.mainConfig.chat.antiSwear.mediumHighScore);
-                e.setCancelled(true);
-                // Old: blockSwear(p,highlighted,message,severity,e);
-                FilterAction.filterAction(p,e,highlighted,severity, null, FAT.BLOCK_SWEAR);
-            }
-            case "high" -> {
-                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Sentinel.mainConfig.chat.antiSwear.highScore);
-                scoreMap.put(p, scoreMap.get(p) + Sentinel.mainConfig.chat.antiSwear.highScore);
-                e.setCancelled(true);
-                // Old: blockSwear(p,highlighted,message,severity,e);
-                FilterAction.filterAction(p,e,highlighted,severity, null, FAT.BLOCK_SWEAR);
-            }
-            case "slur" -> {
-                // Insta-Punish
-                ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + Sentinel.mainConfig.chat.antiSwear.highScore);
-                scoreMap.put(p, scoreMap.get(p) + Sentinel.mainConfig.chat.antiSwear.highScore);
-                e.setCancelled(true);
-                // Old: punishSlur(p,highlighted,message,e);
-                FilterAction.filterAction(p,e,highlighted,severity, null,FAT.SLUR);
-            }
-        }
-    }*/
-
-      /*
-    public static void punishSwear(Player player, String highlightedMSG, String origMessage, AsyncPlayerChatEvent e) {
-        ServerUtils.sendCommand(Config.swearPunishCommand.replace("%player%", player.getName()));
-        String fpreport = ReportFalsePositives.generateReport(e);
-        TextComponent offender = new TextComponent();
-        String hoverPlayer = Sentinel.language.get("action-automatic-reportable");
-        offender.setText(Text.prefix(Sentinel.language.get("profanity-mute-warn")));
-        offender.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hoverPlayer)));
-        offender.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + fpreport));
-        player.spigot().sendMessage(offender);
-
-        TextComponent text = new TextComponent();
-        text.setText(Text.prefix(Sentinel.language.get("profanity-mute-notification").formatted(player.getName(),scoreMap.get(player),Config.punishScore)));
-        text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.language.get("filter-notification-hover").formatted(origMessage,highlightedMSG))));
-        text.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + fpreport));
-
-        ServerUtils.forEachStaff(staff -> {
-            staff.spigot().sendMessage(text);
-        });
-        if (Config.logSwear) WebhookSender.sendSwearLog(player,origMessage,scoreMap.get(player));
-    }
-
-
-    public static void punishSlur(Player player, String highlightedMSG, String origMessage, AsyncPlayerChatEvent e) {
-        if (!Config.strictInstaPunish) return;
-
-        ServerUtils.sendCommand(Config.strictPunishCommand.replace("%player%", player.getName()));
-        String fpreport = ReportFalsePositives.generateReport(e);
-        TextComponent offender = new TextComponent();
-        String hoverPlayer = Sentinel.language.get("action-automatic-reportable");
-        offender.setText(Text.prefix((Sentinel.language.get("slur-mute-warn"))));
-        offender.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hoverPlayer)));
-        offender.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + fpreport));
-        player.spigot().sendMessage(offender);
-        TextComponent text = new TextComponent();
-        text.setText(Text.prefix(Sentinel.language.get("slur-mute-notification").formatted(player.getName(),scoreMap.get(player),Config.punishScore)));
-        text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.language.get("filter-notification-hover").formatted(origMessage,highlightedMSG))));
-        text.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + fpreport));
-
-        ServerUtils.forEachStaff(staff -> {
-            staff.spigot().sendMessage(text);
-        });
-        if (Config.logSwear) WebhookSender.sendSlurLog(player,origMessage,scoreMap.get(player));
-    }
-    public static void blockSwear(Player player, String highlightedMSG, String origMessage, String severity, AsyncPlayerChatEvent e) {
-        String FPReport = ReportFalsePositives.generateReport(e);
-        TextComponent offender = new TextComponent();
-        String hover = Sentinel.language.get("action-automatic-reportable");
-        offender.setText(Text.prefix((Sentinel.language.get("swear-block-warn"))));
-        offender.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(hover)));
-        offender.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + FPReport));
-        player.spigot().sendMessage(offender);
-
-        TextComponent staff = new TextComponent();
-        staff.setText(Text.prefix(Sentinel.language.get("swear-block-notification").formatted(player.getName(),scoreMap.get(player),Config.punishScore)));
-        staff.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.language.get("severity-notification-hover").formatted(origMessage,highlightedMSG,severity))));
-        staff.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + FPReport));
-
-        ServerUtils.forEachStaff(staffmember -> {
-            staffmember.spigot().sendMessage(staff);
-        });
-    }
-*/
 }

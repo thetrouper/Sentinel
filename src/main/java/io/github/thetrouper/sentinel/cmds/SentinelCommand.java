@@ -7,6 +7,7 @@ import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
+import io.github.thetrouper.sentinel.server.functions.SystemCheck;
 import io.github.thetrouper.sentinel.server.functions.Telemetry;
 import io.github.thetrouper.sentinel.server.util.CipherUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
@@ -34,7 +35,7 @@ public class SentinelCommand implements CustomCommand {
                 instance.loadConfig();
             }
             case "full-system-check" -> {
-
+                SystemCheck.fullCheck(p);
             }
             case "debug" -> {
                 switch (args.get(1).toString()) {

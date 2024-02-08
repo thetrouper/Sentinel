@@ -44,8 +44,7 @@ public class FilterAction {
                             similarity
                         )));
 
-                playerWarning = Component.text(Text.prefix(Sentinel.language.get("spam-block-warn")))
-                        .hoverEvent(Component.text(Sentinel.language.get("action-automatic-reportable")));
+                playerWarning = Component.text(Text.prefix(Sentinel.language.get("spam-block-warn")));
             }
             case SPAM_PUNISH -> {
                 staffNotif = Component.text(Text.prefix(String.format(Sentinel.language.get("spam-mute-notification"),
@@ -59,8 +58,7 @@ public class FilterAction {
                                 similarity
                         )));
 
-                playerWarning = Component.text(Sentinel.language.get("spam-mute-warn"))
-                        .hoverEvent(Component.text(Sentinel.language.get("action-automatic-reportable")));
+                playerWarning = Component.text(Sentinel.language.get("spam-mute-warn"));
                 sendConsoleLog(offender,e,type);
                 sendDiscordLog(offender,e,type);
             }
@@ -77,7 +75,8 @@ public class FilterAction {
                             )));
 
                 playerWarning = Component.text(Text.prefix(Sentinel.language.get("profanity-block-warn")))
-                        .hoverEvent(Component.text(Sentinel.language.get("action-automatic-reportable")));
+                        .hoverEvent(Component.text(Sentinel.language.get("action-automatic-reportable")))
+                        .clickEvent(ClickEvent.runCommand("sentinelcallback fpreport " + report));
             }
             case SWEAR_PUNISH -> {
                 staffNotif = Component.text(Text.prefix(String.format(Sentinel.language.get("profanity-mute-notification"),

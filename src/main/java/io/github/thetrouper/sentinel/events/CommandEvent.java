@@ -10,61 +10,59 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 public class CommandEvent implements CustomListener {
-    private String trusted;
+
     @EventHandler
-    private void onCommand(PlayerCommandPreprocessEvent e) {
+    public void onCommand(PlayerCommandPreprocessEvent e) {
         Player p = e.getPlayer();
+        if (Sentinel.isTrusted(p)) return;
         String command = e.getMessage().substring(1).split(" ")[0];
         String fullcommand = e.getMessage();
         ServerUtils.sendDebugMessage("CommandEvent: Checking command");
-        if (Sentinel.isDangerousCommand(command)) {
+        if (Sentinel.isDangerousCommand(fullcommand)) {
             ServerUtils.sendDebugMessage("CommandEvent: Command is dangerous");
-            if (!Sentinel.isTrusted(p)) {
-                e.setCancelled(true);
-                ServerUtils.sendDebugMessage("CommandEvent: Command is canceled");
-                Action a = new Action.Builder()
-                        .setAction(ActionType.DANGEROUS_COMMAND)
-                        .setEvent(e)
-                        .setPlayer(p)
-                        .setCommand(fullcommand)
-                        .setDenied(true)
-                        .setDeoped(Sentinel.mainConfig.plugin.deop)
-                        .setPunished(Sentinel.mainConfig.plugin.commandPunish)
-                        .setnotifyDiscord(Sentinel.mainConfig.plugin.logDangerous)
-                        .setNotifyConsole(true)
-                        .setNotifyTrusted(true)
-                        .execute();
-            }
+            e.setCancelled(true);
+            ServerUtils.sendDebugMessage("CommandEvent: Command is canceled");
+            Action a = new Action.Builder()
+                    .setAction(ActionType.DANGEROUS_COMMAND)
+                    .setEvent(e)
+                    .setPlayer(p)
+                    .setCommand(fullcommand)
+                    .setDenied(true)
+                    .setDeoped(Sentinel.mainConfig.plugin.deop)
+                    .setPunished(Sentinel.mainConfig.plugin.commandPunish)
+                    .setnotifyDiscord(Sentinel.mainConfig.plugin.logDangerous)
+                    .setNotifyConsole(true)
+                    .setNotifyTrusted(true)
+                    .execute();
         }
         if (Sentinel.mainConfig.plugin.blockSpecific) {
             ServerUtils.sendDebugMessage("CommandEvent: Checking command for specific");
             if (command.contains(":")) {
                 ServerUtils.sendDebugMessage("CommandEvent: Failed check");
-                if (!Sentinel.isTrusted(p)) {
-                    e.setCancelled(true);
-                    ServerUtils.sendDebugMessage(("CommandEvent: Not trusted, preforming action"));
-                    Action a = new Action.Builder()
-                            .setAction(ActionType.SPECIFIC_COMMAND)
-                            .setEvent(e)
-                            .setPlayer(p)
-                            .setCommand(command)
-                            .setDenied(true)
-                            .setDeoped(Sentinel.mainConfig.plugin.deop)
-                            .setPunished(Sentinel.mainConfig.plugin.specificPunish)
-                            .setnotifyDiscord(Sentinel.mainConfig.plugin.logSpecific)
-                            .setNotifyConsole(true)
-                            .setNotifyTrusted(true)
-                            .execute();
-                }
+                e.setCancelled(true);
+                ServerUtils.sendDebugMessage(("CommandEvent: Not trusted, preforming action"));
+                Action a = new Action.Builder()
+                        .setAction(ActionType.SPECIFIC_COMMAND)
+                        .setEvent(e)
+                        .setPlayer(p)
+                        .setCommand(fullcommand)
+                        .setDenied(true)
+                        .setDeoped(Sentinel.mainConfig.plugin.deop)
+                        .setPunished(Sentinel.mainConfig.plugin.specificPunish)
+                        .setnotifyDiscord(Sentinel.mainConfig.plugin.logSpecific)
+                        .setNotifyConsole(true)
+                        .setNotifyTrusted(true)
+                        .execute();
+
             }
         }
-        if (Sentinel.isLoggedCommand(command)) {
+        if (Sentinel.isLoggedCommand(fullcommand)) {
             ServerUtils.sendDebugMessage("CommandEvent: Is logged command, logging");
             Action a = new Action.Builder()
                     .setAction(ActionType.LOGGED_COMMAND)
                     .setEvent(e)
                     .setPlayer(p)
-                    .setCommand(command)
+                    .setCommand(fullcommand)
                     .setDenied(false)
                     .setDeoped(false)
                     .setPunished(false)

@@ -33,8 +33,9 @@ public class AdvancedConfig implements JsonSerializable<AdvancedConfig> {
         put("V", "u");
         put("v", "u");
     }};
+    public String allowedCharRegex = "[A-Za-z0-9\\[,./?><|\\]§()*&^%$#@!~`{}:;'\"-_]";
     public String falsePosRegex = "";
     public String swearRegex = "";
     public String strictRegex = "";
-    public String urlRegex = "(http(s)?:\\/\\/.)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)";
+    public String urlRegex = "(?:https?://)?(?:www.)?(?:(?<subdomain>[a-z0-9-]+).)?(?<domain>[a-z0-9-]+).(?:(?<tld>[a-z]{1,63}))?(?::(?<port>[0-9]{1,5}))?(?:[/#](?<path>[A-Za-z0-9_/.~:/?#\\[\\]@!$&'()*+,;=.]*)?)?";
 }

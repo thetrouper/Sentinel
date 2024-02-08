@@ -3,6 +3,7 @@ package io.github.thetrouper.sentinel.server.functions;
 import io.github.itzispyder.pdk.utils.ServerUtils;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.cmds.SocialSpyCommand;
+import io.github.thetrouper.sentinel.events.ChatEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
@@ -22,9 +23,7 @@ public class Message {
         receivers.add(sender);
         AsyncPlayerChatEvent checkEvent = new AsyncPlayerChatEvent(true,sender,message,receivers);
         if (checkEvent.isCancelled()) return;
-        if (!Sentinel.isTrusted(sender) || !sender.hasPermission("sentinel.chat.antiswear.bypass")) if (Sentinel.mainConfig.chat.antiSwear.antiSwearEnabled) ProfanityFilter.handleProfanityFilter(checkEvent);
-        if (!Sentinel.isTrusted(sender) || !sender.hasPermission("sentinel.chat.antispam.bypass")) if (Sentinel.mainConfig.chat.antiSpam.antiSpamEnabled) AntiSpam.handleAntiSpam(checkEvent);
-        if (!Sentinel.isTrusted(sender) || !sender.hasPermission("sentinel.chat.antiunicode.bypass")) if (Sentinel.mainConfig.chat.antiUnicode) AntiUnicode.handleAntiUnicode(checkEvent);
+        ChatEvent.handleChatEvent(checkEvent);
         if (checkEvent.isCancelled()) return;
 
         sender.sendMessage(Sentinel.language.get("message-sent").formatted(receiver.getName(),message));

@@ -212,7 +212,13 @@ public final class Sentinel extends JavaPlugin {
      * @return true if the command is logged, false otherwise
      */
     public static boolean isLoggedCommand(String command) {
-        return Sentinel.mainConfig.plugin.logged.contains(command);
+        if (command.startsWith("/")) {
+            command = command.substring(1);
+        }
+        for (String logged : Sentinel.mainConfig.plugin.logged) {
+            if (command.contains(logged)) return true;
+        }
+        return false;
     }
 
     /**
@@ -221,7 +227,13 @@ public final class Sentinel extends JavaPlugin {
      * @return true if the command is dangerous, false otherwise
      */
     public static boolean isDangerousCommand(String command) {
-        return Sentinel.mainConfig.plugin.dangerous.contains(command);
+        if (command.startsWith("/")) {
+            command = command.substring(1);
+        }
+        for (String blocked : Sentinel.mainConfig.plugin.dangerous) {
+            if (command.contains(blocked)) return true;
+        }
+        return false;
     }
     /**
      * Returns an instance of this plugin
