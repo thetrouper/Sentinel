@@ -4,12 +4,10 @@ import io.github.itzispyder.pdk.PDK;
 import io.github.itzispyder.pdk.utils.misc.JsonSerializable;
 import io.github.thetrouper.sentinel.auth.Auth;
 import io.github.thetrouper.sentinel.cmds.*;
+import io.github.thetrouper.sentinel.data.cmdblocks.WhitelistStorage;
 import io.github.thetrouper.sentinel.data.config.*;
 import io.github.thetrouper.sentinel.events.*;
-import io.github.thetrouper.sentinel.server.functions.AntiSpam;
-import io.github.thetrouper.sentinel.server.functions.Authenticator;
-import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
-import io.github.thetrouper.sentinel.server.functions.Telemetry;
+import io.github.thetrouper.sentinel.server.functions.*;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -29,6 +27,8 @@ public final class Sentinel extends JavaPlugin {
     private static final File swrcfg = new File("plugins/Sentinel/swears.json");
     private static final File fpcfg = new File("plugins/Sentinel/false-positives.json");
     private static final File advcfg = new File("plugins/Sentinel/advanced-config.json");
+    private static final File cmdWhitelist = new File("plugins/Sentinel/storage/whitelist.json");
+    public static WhitelistStorage whitelist = JsonSerializable.load(cmdWhitelist, WhitelistStorage.class, new WhitelistStorage());
 
     public static MainConfig mainConfig = JsonSerializable.load(cfgfile, MainConfig.class, new MainConfig());
     public static FPConfig fpConfig = JsonSerializable.load(fpcfg, FPConfig.class, new FPConfig());
@@ -169,6 +169,7 @@ public final class Sentinel extends JavaPlugin {
         strictConfig = JsonSerializable.load(strctcfg,StrictConfig.class,new StrictConfig());
         swearConfig = JsonSerializable.load(swrcfg,SwearsConfig.class,new SwearsConfig());
         nbtConfig = JsonSerializable.load(nbtcfg,NBTConfig.class,new NBTConfig());
+
 
         // Save
         mainConfig.save();

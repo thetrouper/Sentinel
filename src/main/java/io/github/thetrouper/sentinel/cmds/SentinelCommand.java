@@ -28,6 +28,9 @@ public class SentinelCommand implements CustomCommand {
         Player p = (Player) commandSender;
         Sentinel instance = Sentinel.getInstance();
         switch (args.get(0).toString()) {
+            case "commandblock", "cb" -> {
+
+            }
             case "reload" -> {
                 if (!Sentinel.isTrusted(p)) return;
                 p.sendMessage(Text.prefix("Reloading Sentinel!"));
@@ -39,29 +42,29 @@ public class SentinelCommand implements CustomCommand {
                 SystemCheck.fullCheck(p);
             }
             case "debug" -> {
-                switch (args.get(1).toString()) {
-                    case "antiswear" -> {
-                        HashSet<Player> players = new HashSet<>();
-                        players.add(p);
-                        String msg = args.getAll(1).toString().trim();
-                        AsyncPlayerChatEvent e = new AsyncPlayerChatEvent(true, p, msg, players);
-                        ProfanityFilter.handleProfanityFilter(e);
-                    }
-                    case "antispam" -> {
-                        HashSet<Player> players = new HashSet<>();
-                        players.add(p);
-                        String msg = args.getAll(1).toString().trim();
-                        AsyncPlayerChatEvent e = new AsyncPlayerChatEvent(true, p, msg, players);
-                        io.github.thetrouper.sentinel.server.functions.AntiSpam.handleAntiSpam(e);
-                    }
-                    case "lang" -> {
-                        p.sendMessage(Sentinel.language.get("exmaple-message"));
-                    }
-                    case "toggle" -> {
-                        debugMode = !debugMode;
-                        p.sendMessage(Text.prefix((debugMode ? "Enabled" : "Disabled") + " debug mode."));
-                    }
-                    case "encrypt" -> {
+                handleDebugCommand(p,args);
+            }
+        }
+    }
+
+    private void handleCommandBlock(Player p, Args args) {
+        switch (args.get(1).toString()) {
+            case "whitelist" -> {
+
+            }
+        }
+    }
+
+    private void handleDebugCommand(Player p, Args args) {
+        switch (args.get(1).toString()) {
+            case "lang" -> {
+                p.sendMessage(Sentinel.language.get("exmaple-message"));
+            }
+            case "toggle" -> {
+                debugMode = !debugMode;
+                p.sendMessage(Text.prefix((debugMode ? "Enabled" : "Disabled") + " debug mode."));
+            }
+                    /*case "encrypt" -> {
                         final String enc = CipherUtils.encrypt(args.getAll(2).toString());
                         final String check = CipherUtils.decrypt(enc);
                         final String main = Text.prefix("Successfully encrypted \"&e" + check + "&7\" using AES.\n &7> &b" + enc);
@@ -71,24 +74,15 @@ public class SentinelCommand implements CustomCommand {
                         message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new net.md_5.bungee.api.chat.hover.content.Text("&bClick to copy!")));
                         message.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, enc));
                         p.spigot().sendMessage(message);
-                    }
-                }
-            }
-            case "getHeat" -> {
-                Player target = Bukkit.getPlayer(args.get(1).toString());
-                if (target == null) {
-                    p.sendMessage(Text.prefix("Invalid Player!"));
-                    return;
-                }
-                p.sendMessage(Text.prefix("Heat of " + target.getName() + ": &8(&c" + io.github.thetrouper.sentinel.server.functions.AntiSpam.heatMap.get(target) + "&7/&4" + Sentinel.mainConfig.chat.antiSpam.punishHeat + "&8)"));
-            }
+                    }*/
         }
     }
 
     @Override
     public void dispatchCompletions(CompletionBuilder b) {
-        b.then(b.arg("reload","getheat","full-system-check"));
+        b.then(b.arg("reload","full-system-check"));
         b.then(b.arg("debug").then(
-                b.arg("antiswear","antispam","lang","toggle")));
+                b.arg("lang","toggle")));
+        b.then(b.arg("commandblock"));
     }
 }
