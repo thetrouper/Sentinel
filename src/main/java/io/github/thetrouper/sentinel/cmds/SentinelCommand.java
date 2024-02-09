@@ -20,7 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.HashSet;
-@CommandRegistry(value = "sentinel",permission = @Permission("sentinel.debug"))
+@CommandRegistry(value = "sentinel",permission = @Permission("sentinel.debug"),printStackTrace = true)
 public class SentinelCommand implements CustomCommand {
     public static boolean debugMode;
     @Override
@@ -35,6 +35,7 @@ public class SentinelCommand implements CustomCommand {
                 instance.loadConfig();
             }
             case "full-system-check" -> {
+                p.sendMessage(Text.prefix("Initiating a full system check!"));
                 SystemCheck.fullCheck(p);
             }
             case "debug" -> {
@@ -70,9 +71,6 @@ public class SentinelCommand implements CustomCommand {
                         message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new net.md_5.bungee.api.chat.hover.content.Text("&bClick to copy!")));
                         message.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, enc));
                         p.spigot().sendMessage(message);
-                    }
-                    case "tele" -> {
-                        p.sendMessage(Telemetry.fetchTelemetryHook());
                     }
                 }
             }

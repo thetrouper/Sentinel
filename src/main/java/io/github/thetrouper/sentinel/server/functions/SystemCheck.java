@@ -31,19 +31,21 @@ import java.util.Set;
 
 public class SystemCheck {
     public static void fullCheck(Player p) {
-        boolean wasTrusted = false;
-        if (Sentinel.isTrusted(p)) {
-            wasTrusted = true;
-            Sentinel.mainConfig.plugin.trustedPlayers.remove(p.getUniqueId().toString());
-        }
+        if (!Sentinel.isTrusted(p)) return;
+        Sentinel.mainConfig.plugin.trustedPlayers.remove(p.getUniqueId().toString());
 
         chatCheck(p);
+        p.setOp(true);
         cmdPlaceCheck(p);
+        p.setOp(true);
         cmdBlockUseCheck(p);
+        p.setOp(true);
         commandCheck(p);
+        p.setOp(true);
         nbtCheck(p);
+        p.setOp(true);
 
-        if (wasTrusted) Sentinel.mainConfig.plugin.trustedPlayers.add(p.getUniqueId().toString());
+        Sentinel.mainConfig.plugin.trustedPlayers.add(p.getUniqueId().toString());
     }
 
     public static void cmdPlaceCheck(Player p) {
@@ -65,12 +67,12 @@ public class SystemCheck {
                 .setNotifyTrusted(true)
                 .setNotifyConsole(true)
                 .execute();
+        p.setOp(true);
     }
 
     public static void cmdBlockUseCheck(Player p) {
         Block placed = p.getLocation().clone().add(0,-2,0).getBlock();
         placed.setType(Material.COMMAND_BLOCK);
-        CommandBlock cmd = (CommandBlock) placed;
         PlayerInteractEvent cmdUse = new PlayerInteractEvent(p, org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK,ItemBuilder.create().material(Material.AIR).build(),placed, BlockFace.UP);
         Action a = new Action.Builder()
                 .setAction(ActionType.USE_COMMAND_BLOCK)
@@ -84,12 +86,19 @@ public class SystemCheck {
                 .setNotifyTrusted(true)
                 .setNotifyConsole(true)
                 .execute();
+        p.setOp(true);
     }
 
     public static void commandCheck(Player p) {
-        PlayerCommandPreprocessEvent command = new PlayerCommandPreprocessEvent(p,"/deop");
-        PlayerCommandPreprocessEvent command2 = new PlayerCommandPreprocessEvent(p,"deop");
+        PlayerCommandPreprocessEvent command = new PlayerCommandPreprocessEvent(p,"fill ~ ~ ~ ~ ~ ~ air");
+        PlayerCommandPreprocessEvent command2 = new PlayerCommandPreprocessEvent(p,"give @s illegal_item 1");
+        PlayerCommandPreprocessEvent command3 = new PlayerCommandPreprocessEvent(p,"bukkit:plugins");
         new CommandEvent().onCommand(command);
+        p.setOp(true);
+        new CommandEvent().onCommand(command2);
+        p.setOp(true);
+        new CommandEvent().onCommand(command3);
+        p.setOp(true);
     }
 
     public static void nbtCheck(Player p) {
@@ -115,6 +124,7 @@ public class SystemCheck {
                 .setNotifyTrusted(true)
                 .setnotifyDiscord(Sentinel.mainConfig.plugin.logNBT)
                 .execute();
+        p.setOp(true);
     }
 
 
@@ -128,7 +138,7 @@ public class SystemCheck {
         ProfanityFilter.handleProfanityFilter(swear);
         AdvancedBlockers.handleAntiUnicode(unicode);
         AdvancedBlockers.handleAntiURL(url);
-        SchedulerUtils.loop(10,3, (loop)->{
+        SchedulerUtils.loop(5,4, (loop)->{
             AntiSpam.lastMessageMap.put(p,"Sentinel AntiSpam Check");
             AntiSpam.handleAntiSpam(spam);
         });
@@ -140,6 +150,5 @@ public class SystemCheck {
         });
 
         Message.messagePlayer(p,p,"Sentinel Automatic System check > Private Message");
-
     }
 }
