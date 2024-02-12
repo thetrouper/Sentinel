@@ -83,7 +83,7 @@ public class Action {
             this.revertGM = revertGM;
             return this;
         }
-        public Builder setnotifyDiscord(boolean notifyDiscord) {
+        public Builder setNotifyDiscord(boolean notifyDiscord) {
             this.notifyDiscord= notifyDiscord;
             return this;
         }

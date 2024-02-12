@@ -14,7 +14,6 @@ import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.data.type.CommandBlock;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -63,7 +62,7 @@ public class SystemCheck {
                 .setDenied(true)
                 .setPunished(Sentinel.mainConfig.plugin.cmdBlockPunish)
                 .setDeoped(Sentinel.mainConfig.plugin.deop)
-                .setnotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
+                .setNotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
                 .setNotifyTrusted(true)
                 .setNotifyConsole(true)
                 .execute();
@@ -82,7 +81,7 @@ public class SystemCheck {
                 .setDenied(true)
                 .setPunished(Sentinel.mainConfig.plugin.cmdBlockPunish)
                 .setDeoped(Sentinel.mainConfig.plugin.deop)
-                .setnotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
+                .setNotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
                 .setNotifyTrusted(true)
                 .setNotifyConsole(true)
                 .execute();
@@ -122,7 +121,7 @@ public class SystemCheck {
                 .setRevertGM(Sentinel.mainConfig.plugin.preventNBT)
                 .setNotifyConsole(true)
                 .setNotifyTrusted(true)
-                .setnotifyDiscord(Sentinel.mainConfig.plugin.logNBT)
+                .setNotifyDiscord(Sentinel.mainConfig.plugin.logNBT)
                 .execute();
         p.setOp(true);
     }

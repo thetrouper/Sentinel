@@ -178,6 +178,9 @@ public final class Sentinel extends JavaPlugin {
         swearConfig.save();
         nbtConfig.save();
 
+        whitelist = JsonSerializable.load(cmdWhitelist, WhitelistStorage.class, new WhitelistStorage());
+        whitelist.save();
+
         log.info("Loading Dictionary (" + Sentinel.mainConfig.plugin.lang + ")...");
 
         language = JsonSerializable.load(LanguageFile.PATH,LanguageFile.class,new LanguageFile());
@@ -204,6 +207,10 @@ public final class Sentinel extends JavaPlugin {
      */
     public static boolean isTrusted(Player player) {
         return Sentinel.mainConfig.plugin.trustedPlayers.contains(player.getUniqueId().toString());
+    }
+
+    public static boolean isTrusted(String uuid) {
+        return Sentinel.mainConfig.plugin.trustedPlayers.contains(uuid);
     }
 
     /**

@@ -5,7 +5,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class WhitelistStorage implements JsonSerializable<WhitelistStorage> {
@@ -16,6 +18,6 @@ public class WhitelistStorage implements JsonSerializable<WhitelistStorage> {
         return file;
     }
 
-    public Set<WhitelistedBlock> whitelistedCMDBlocks = new HashSet<>();
+    public List<WhitelistedBlock> whitelistedCMDBlocks = new ArrayList<>();
 
 }

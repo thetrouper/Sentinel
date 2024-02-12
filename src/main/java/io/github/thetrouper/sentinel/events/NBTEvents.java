@@ -50,7 +50,7 @@ public class NBTEvents implements CustomListener {
                         .setRevertGM(Sentinel.mainConfig.plugin.preventNBT)
                         .setNotifyConsole(true)
                         .setNotifyTrusted(true)
-                        .setnotifyDiscord(Sentinel.mainConfig.plugin.logNBT)
+                        .setNotifyDiscord(Sentinel.mainConfig.plugin.logNBT)
                         .execute();
             }
         }

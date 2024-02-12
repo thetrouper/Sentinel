@@ -39,7 +39,7 @@ public class CMDBlockUse implements CustomListener {
                         .setDenied(true)
                         .setPunished(Sentinel.mainConfig.plugin.cmdBlockPunish)
                         .setDeoped(Sentinel.mainConfig.plugin.deop)
-                        .setnotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
+                        .setNotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
                         .setNotifyTrusted(true)
                         .setNotifyConsole(true)
                         .execute();
@@ -72,7 +72,7 @@ public class CMDBlockUse implements CustomListener {
                         .setDenied(true)
                         .setPunished(Sentinel.mainConfig.plugin.cmdBlockPunish)
                         .setDeoped(Sentinel.mainConfig.plugin.deop)
-                        .setnotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
+                        .setNotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
                         .setNotifyTrusted(true)
                         .setNotifyConsole(true)
                         .execute();

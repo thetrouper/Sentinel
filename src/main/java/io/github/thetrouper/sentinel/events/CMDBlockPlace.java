@@ -34,7 +34,7 @@ public class CMDBlockPlace implements CustomListener {
                         .setDenied(true)
                         .setDeoped(Sentinel.mainConfig.plugin.deop)
                         .setPunished(Sentinel.mainConfig.plugin.cmdBlockPunish)
-                        .setnotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
+                        .setNotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
                         .setNotifyTrusted(true)
                         .setNotifyConsole(true)
                         .execute();

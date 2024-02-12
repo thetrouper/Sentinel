@@ -30,7 +30,7 @@ public class CommandEvent implements CustomListener {
                     .setDenied(true)
                     .setDeoped(Sentinel.mainConfig.plugin.deop)
                     .setPunished(Sentinel.mainConfig.plugin.commandPunish)
-                    .setnotifyDiscord(Sentinel.mainConfig.plugin.logDangerous)
+                    .setNotifyDiscord(Sentinel.mainConfig.plugin.logDangerous)
                     .setNotifyConsole(true)
                     .setNotifyTrusted(true)
                     .execute();
@@ -49,7 +49,7 @@ public class CommandEvent implements CustomListener {
                         .setDenied(true)
                         .setDeoped(Sentinel.mainConfig.plugin.deop)
                         .setPunished(Sentinel.mainConfig.plugin.specificPunish)
-                        .setnotifyDiscord(Sentinel.mainConfig.plugin.logSpecific)
+                        .setNotifyDiscord(Sentinel.mainConfig.plugin.logSpecific)
                         .setNotifyConsole(true)
                         .setNotifyTrusted(true)
                         .execute();
@@ -66,7 +66,7 @@ public class CommandEvent implements CustomListener {
                     .setDenied(false)
                     .setDeoped(false)
                     .setPunished(false)
-                    .setnotifyDiscord(true)
+                    .setNotifyDiscord(true)
                     .setNotifyConsole(true)
                     .setNotifyTrusted(true)
                     .execute();

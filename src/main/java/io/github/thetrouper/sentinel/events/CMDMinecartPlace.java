@@ -42,7 +42,7 @@ public class CMDMinecartPlace implements CustomListener {
                             .setDeoped(Sentinel.mainConfig.plugin.deop)
                             .setNotifyConsole(true)
                             .setNotifyTrusted(true)
-                            .setnotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
+                            .setNotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
                             .execute();
                 }
             }

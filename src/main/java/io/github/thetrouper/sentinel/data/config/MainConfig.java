@@ -30,6 +30,8 @@ public class MainConfig implements JsonSerializable<MainConfig> {
         public boolean preventCmdBlockPlace = true;
         public boolean preventCmdBlockUse = true;
         public boolean preventCmdBlockChange = true;
+        public boolean cmdBlockWhitelist = false;
+        public boolean logUnauthorizedCmdBlocks = false;
         public boolean preventCmdCartPlace = true;
         public boolean preventCmdCartUse = true;
         public boolean cmdBlockOpCheck = true;

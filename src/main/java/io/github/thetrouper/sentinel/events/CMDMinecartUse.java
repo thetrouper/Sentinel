@@ -30,7 +30,7 @@ public class CMDMinecartUse implements CustomListener {
                         .setPlayer(p)
                         .setDenied(true)
                         .setPunished(Sentinel.mainConfig.plugin.cmdBlockPunish)
-                        .setnotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
+                        .setNotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
                         .setDeoped(Sentinel.mainConfig.plugin.deop)
                         .setNotifyTrusted(true)
                         .setNotifyConsole(true)

@@ -52,10 +52,8 @@ public class SentinelCommand implements CustomCommand {
 
     private void handleCommandBlock(Player p, Args args) {
         Block target = p.getTargetBlock(Set.of(Material.AIR),10);
-        p.sendMessage("1");
         switch (args.get(1).toString()) {
             case "add" -> {
-                p.sendMessage("2");
                 if (target.getType().equals(Material.COMMAND_BLOCK) || target.getType().equals(Material.REPEATING_COMMAND_BLOCK) || target.getType().equals(Material.CHAIN_COMMAND_BLOCK)) {
                     CommandBlock cb = (CommandBlock) target.getState();
                     CMDBlockWhitelist.add(cb,p.getUniqueId());
@@ -68,7 +66,7 @@ public class SentinelCommand implements CustomCommand {
                 WhitelistedBlock wb = CMDBlockWhitelist.get(target.getLocation());
                 if (wb != null) {
                     CMDBlockWhitelist.remove(target.getLocation());
-                    p.sendMessage(Text.prefix("Successfully removed 1 &b" + Text.blockName(wb.loc().getBlock().getType().toString()) + "&7 with the command &a" + wb.command() + "&7."));
+                    p.sendMessage(Text.prefix("Successfully removed 1 &b" + Text.blockName(WhitelistedBlock.fromSerialized(wb.loc()).getBlock().getType().toString()) + "&7 with the command &a" + wb.command() + "&7."));
                     return;
                 }
                 p.sendMessage(Text.prefix("Could not un-whitelist the &b" + Text.blockName(target.getType().toString()) + "&7 it wasn't whitelisted in the first place!"));
