@@ -6,6 +6,8 @@ import io.github.itzispyder.pdk.commands.CustomCommand;
 import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import io.github.thetrouper.sentinel.Sentinel;
+import io.github.thetrouper.sentinel.data.cmdblocks.WhitelistedBlock;
+import io.github.thetrouper.sentinel.server.functions.CMDBlockWhitelist;
 import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
 import io.github.thetrouper.sentinel.server.functions.SystemCheck;
 import io.github.thetrouper.sentinel.server.functions.Telemetry;
@@ -15,11 +17,16 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.CommandBlock;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.HashSet;
+import java.util.Set;
+
 @CommandRegistry(value = "sentinel",permission = @Permission("sentinel.debug"),printStackTrace = true)
 public class SentinelCommand implements CustomCommand {
     public static boolean debugMode;
@@ -28,9 +35,7 @@ public class SentinelCommand implements CustomCommand {
         Player p = (Player) commandSender;
         Sentinel instance = Sentinel.getInstance();
         switch (args.get(0).toString()) {
-            case "commandblock", "cb" -> {
-
-            }
+            case "commandblock", "cb" -> handleCommandBlock(p,args);
             case "reload" -> {
                 if (!Sentinel.isTrusted(p)) return;
                 p.sendMessage(Text.prefix("Reloading Sentinel!"));
@@ -41,16 +46,32 @@ public class SentinelCommand implements CustomCommand {
                 p.sendMessage(Text.prefix("Initiating a full system check!"));
                 SystemCheck.fullCheck(p);
             }
-            case "debug" -> {
-                handleDebugCommand(p,args);
-            }
+            case "debug" -> handleDebugCommand(p,args);
         }
     }
 
     private void handleCommandBlock(Player p, Args args) {
+        Block target = p.getTargetBlock(Set.of(Material.AIR),10);
+        p.sendMessage("1");
         switch (args.get(1).toString()) {
-            case "whitelist" -> {
-
+            case "add" -> {
+                p.sendMessage("2");
+                if (target.getType().equals(Material.COMMAND_BLOCK) || target.getType().equals(Material.REPEATING_COMMAND_BLOCK) || target.getType().equals(Material.CHAIN_COMMAND_BLOCK)) {
+                    CommandBlock cb = (CommandBlock) target.getState();
+                    CMDBlockWhitelist.add(cb,p.getUniqueId());
+                    p.sendMessage(Text.prefix("Successfully whitelisted a &b" + Text.blockName(cb.getType().toString()) + "&7 with the command &a" + cb.getCommand() + "&7."));
+                    return;
+                }
+                p.sendMessage(Text.prefix("Could not whitelist the &b" + Text.blockName(target.getType().toString()) + "&7 it is not a command block!"));
+            }
+            case "remove" -> {
+                WhitelistedBlock wb = CMDBlockWhitelist.get(target.getLocation());
+                if (wb != null) {
+                    CMDBlockWhitelist.remove(target.getLocation());
+                    p.sendMessage(Text.prefix("Successfully removed 1 &b" + Text.blockName(wb.loc().getBlock().getType().toString()) + "&7 with the command &a" + wb.command() + "&7."));
+                    return;
+                }
+                p.sendMessage(Text.prefix("Could not un-whitelist the &b" + Text.blockName(target.getType().toString()) + "&7 it wasn't whitelisted in the first place!"));
             }
         }
     }

@@ -5,14 +5,50 @@ import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.cmdblocks.CMDBlockType;
 import io.github.thetrouper.sentinel.data.cmdblocks.WhitelistStorage;
 import io.github.thetrouper.sentinel.data.cmdblocks.WhitelistedBlock;
+import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.CommandBlock;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.UUID;
 
 public class CMDBlockWhitelist {
-    public static void addWhitelist(CommandBlock cb, UUID owner) {
-        //WhitelistedBlock commandblock = new WhitelistedBlock(cb.getLocation(),owner,getType(cb),)
-        //Sentinel.whitelist.whitelistedCMDBlocks.add(new WhitelistedBlock(cb.getLocation(),))
+    public static void add(CommandBlock cb, UUID owner) {
+        boolean alwaysActive = getNBTBoolean(cb, "auto");
+        WhitelistedBlock wb = new WhitelistedBlock(owner,cb.getLocation(),getType(cb),alwaysActive,cb.getCommand());
+
+        Location wbl = WhitelistedBlock.fromSerialized(wb.loc());
+
+        for (WhitelistedBlock wl : Sentinel.whitelist.whitelistedCMDBlocks) {
+            Location wll = WhitelistedBlock.fromSerialized(wl.loc());
+            if (wll.distance(wbl) < 0.5) {
+                Sentinel.whitelist.whitelistedCMDBlocks.remove(wb);
+                break;
+            }
+        }
+
+        Sentinel.whitelist.whitelistedCMDBlocks.add(wb);
+        Sentinel.whitelist.save();
+    }
+
+    public static void remove(Location where) {
+        for (WhitelistedBlock cb : Sentinel.whitelist.whitelistedCMDBlocks) {
+            if (cb.loc().distance(where) < 0.5) {
+                Sentinel.whitelist.whitelistedCMDBlocks.remove(cb);
+                break;
+            }
+        }
+
+        Sentinel.whitelist.save();
+    }
+
+    public static WhitelistedBlock get(Location where) {
+        for (WhitelistedBlock cb : Sentinel.whitelist.whitelistedCMDBlocks) {
+            if (cb.loc().distance(where) < 0.5) {
+                return cb;
+            }
+        }
+        return null;
     }
 
     public static CMDBlockType getType(CommandBlock cb) {
@@ -28,5 +64,20 @@ public class CMDBlockWhitelist {
             }
         }
         return null;
+    }
+
+    private static boolean getNBTBoolean(CommandBlock cmdBlock, String key) {
+        return cmdBlock.getPersistentDataContainer().has(
+                getKey(key),
+                PersistentDataType.BYTE
+        ) && cmdBlock.getPersistentDataContainer().get(
+                getKey(key),
+                PersistentDataType.BYTE
+        ) == 1;
+    }
+
+    // Helper method to get PersistentDataContainer key
+    private static NamespacedKey getKey(String key) {
+        return new NamespacedKey(Sentinel.getInstance(), key);
     }
 }

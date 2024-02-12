@@ -19,7 +19,6 @@ import java.util.logging.Logger;
 
 public final class Sentinel extends JavaPlugin {
 
-
     private static Sentinel instance;
     private static final File cfgfile = new File("plugins/Sentinel/main-config.json");
     private static final File nbtcfg = new File("plugins/Sentinel/nbt-config.json");

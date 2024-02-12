@@ -1,6 +1,8 @@
 package io.github.thetrouper.sentinel.data.cmdblocks;
 
 import io.github.itzispyder.pdk.utils.misc.JsonSerializable;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 
 import java.io.File;
 import java.util.HashSet;
@@ -15,4 +17,5 @@ public class WhitelistStorage implements JsonSerializable<WhitelistStorage> {
     }
 
     public Set<WhitelistedBlock> whitelistedCMDBlocks = new HashSet<>();
+
 }
