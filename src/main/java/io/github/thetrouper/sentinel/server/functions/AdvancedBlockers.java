@@ -60,7 +60,7 @@ public class AdvancedBlockers {
 
         if (matcher.find()) {
             e.setCancelled(true);
-            e.getPlayer().sendMessage(Text.prefix(Sentinel.language.get("unicode-warn")));
+            e.getPlayer().sendMessage(Text.prefix(Sentinel.language.get("url-warn")));
         }
     }
 

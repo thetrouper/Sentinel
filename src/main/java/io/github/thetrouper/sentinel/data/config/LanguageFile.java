@@ -44,6 +44,7 @@ public class LanguageFile implements JsonSerializable<LanguageFile> {
         put("spam-block-warn", "Do not spam in chat! Please wait before sending another message.");
         put("spam-mute-warn", "§cYou have been auto-punished for violating the anti-spam repetitively!");
         put("spam-mute-notification", "§b§n%1$s§7 has been auto-muted by the anti spam! §8(§c%2$s§7/§4%3$s§8)");
+        put("url-warn", "§cDo not send urls in chat!");
     }};
     public LanguageFile() {}
 

@@ -14,6 +14,7 @@ public class CMDBlockExecute implements CustomListener {
 
     @EventHandler
     private void onCommandBlock(ServerCommandEvent e) {
+        if (!Sentinel.mainConfig.plugin.cmdBlockWhitelist) return;
         if (!(e.getSender() instanceof BlockCommandSender s)) return;
         Block cmdBlock = s.getBlock();
         if (CMDBlockWhitelist.canRun(cmdBlock)) return;

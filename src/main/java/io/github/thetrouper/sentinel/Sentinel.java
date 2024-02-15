@@ -148,15 +148,16 @@ public final class Sentinel extends JavaPlugin {
         // Scheduled timers
         Bukkit.getScheduler().runTaskTimer(this, AntiSpam::decayHeat,0, 20);
         Bukkit.getScheduler().runTaskTimer(this, ProfanityFilter::decayScore,0,1200);
-        log.info("Finished!\n" +
-                " ____                   __                        ___      \n" +
-                "/\\  _`\\                /\\ \\__  __                /\\_ \\     \n" +
-                "\\ \\,\\L\\_\\     __    ___\\ \\ ,_\\/\\_\\    ___      __\\//\\ \\    \n" +
-                " \\/_\\__ \\   /'__`\\/' _ `\\ \\ \\/\\/\\ \\ /' _ `\\  /'__`\\\\ \\ \\   \n" +
-                "   /\\ \\L\\ \\/\\  __//\\ \\/\\ \\ \\ \\_\\ \\ \\/\\ \\/\\ \\/\\  __/ \\_\\ \\_ \n" +
-                "   \\ `\\____\\ \\____\\ \\_\\ \\_\\ \\__\\\\ \\_\\ \\_\\ \\_\\ \\____\\/\\____\\\n" +
-                "    \\/_____/\\/____/\\/_/\\/_/\\/__/ \\/_/\\/_/\\/_/\\/____/\\/____/\n" +
-                "     ]====---- Advanced Anti-Grief & Chat Filter ----====[");
+        log.info("""
+                Finished!
+                 ____                   __                        ___     \s
+                /\\  _`\\                /\\ \\__  __                /\\_ \\    \s
+                \\ \\,\\L\\_\\     __    ___\\ \\ ,_\\/\\_\\    ___      __\\//\\ \\   \s
+                 \\/_\\__ \\   /'__`\\/' _ `\\ \\ \\/\\/\\ \\ /' _ `\\  /'__`\\\\ \\ \\  \s
+                   /\\ \\L\\ \\/\\  __//\\ \\/\\ \\ \\ \\_\\ \\ \\/\\ \\/\\ \\/\\  __/ \\_\\ \\_\s
+                   \\ `\\____\\ \\____\\ \\_\\ \\_\\ \\__\\\\ \\_\\ \\_\\ \\_\\ \\____\\/\\____\\
+                    \\/_____/\\/____/\\/_/\\/_/\\/__/ \\/_/\\/_/\\/_/\\/____/\\/____/
+                     ]====---- Advanced Anti-Grief & Chat Filter ----====[""");
     }
 
     public void loadConfig() {
@@ -238,7 +239,7 @@ public final class Sentinel extends JavaPlugin {
             command = command.substring(1);
         }
         for (String blocked : Sentinel.mainConfig.plugin.dangerous) {
-            if (command.contains(blocked)) return true;
+            if (command.startsWith(blocked)) return true;
         }
         return false;
     }

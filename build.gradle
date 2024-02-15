@@ -52,6 +52,13 @@ tasks.withType(JavaCompile).configureEach {
     }
 }
 
+tasks.register('copyDeps', Copy) {
+    from configurations.runtimeClasspath
+    into 'build/deps'
+    include '*.jar'
+}
+
+
 processResources {
     def props = [version: version]
     inputs.properties props
