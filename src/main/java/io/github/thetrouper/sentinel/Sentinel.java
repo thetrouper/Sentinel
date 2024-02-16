@@ -1,5 +1,7 @@
 package io.github.thetrouper.sentinel;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import io.github.itzispyder.pdk.PDK;
 import io.github.itzispyder.pdk.utils.misc.JsonSerializable;
 import io.github.thetrouper.sentinel.auth.Auth;
@@ -36,6 +38,7 @@ public final class Sentinel extends JavaPlugin {
     public static NBTConfig nbtConfig = JsonSerializable.load(nbtcfg, NBTConfig.class, new NBTConfig());
     public static AdvancedConfig advConfig = JsonSerializable.load(advcfg, AdvancedConfig.class, new AdvancedConfig());
     public static LanguageFile language;
+    public static ProtocolManager protocolManager;
     public static final PluginManager manager = Bukkit.getPluginManager();
 
     public static final Logger log = Bukkit.getLogger();
@@ -52,6 +55,7 @@ public final class Sentinel extends JavaPlugin {
 
         log.info("\n]======------ Pre-load started! ------======[");
         PDK.init(this);
+        protocolManager = ProtocolLibrary.getProtocolManager();
         instance = this;
 
         log.info("Loading Config...");
@@ -133,6 +137,7 @@ public final class Sentinel extends JavaPlugin {
         new ReopCommand().register();
         new SocialSpyCommand().register();
         new ChatClickCallback().register();
+        new TrapCommand().register();
 
         // Events
         new ChatEvent().register();
@@ -143,6 +148,9 @@ public final class Sentinel extends JavaPlugin {
         new CMDMinecartPlace().register();
         new CMDMinecartUse().register();
         new NBTEvents().register();
+        new PluginHiderEvents().register();
+        new MiscEvents().register();
+        TabCompleteEvent.registerEvent(this);
 
 
         // Scheduled timers
