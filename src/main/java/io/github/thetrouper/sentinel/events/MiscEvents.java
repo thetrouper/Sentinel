@@ -8,8 +8,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 public class MiscEvents implements CustomListener {
     @EventHandler
     private void onJoin(PlayerJoinEvent e) {
-        if (e.getPlayer().getUniqueId().toString().equals("049460f7-21cb-42f5-8059-d42752bf406f")) {
-            e.getPlayer().sendMessage(Text.prefix("Welcome, obvWolf. This server uses Sentinel."));
-        }
+        if (!e.getPlayer().getUniqueId().toString().equals("049460f7-21cb-42f5-8059-d42752bf406f")) return;
+        e.getPlayer().sendMessage(Text.prefix("Welcome, obvWolf. This server uses Sentinel."));
     }
 }

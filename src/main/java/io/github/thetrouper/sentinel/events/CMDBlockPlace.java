@@ -20,25 +20,23 @@ public class CMDBlockPlace implements CustomListener {
         if (Sentinel.mainConfig.plugin.cmdBlockOpCheck && !e.getPlayer().isOp()) return;
         ServerUtils.sendDebugMessage("CommandBlockPlace: Player is operator");
         Block b = e.getBlockPlaced();
-        if (b.getType() == Material.COMMAND_BLOCK || b.getType() == Material.CHAIN_COMMAND_BLOCK || b.getType() == Material.REPEATING_COMMAND_BLOCK ) {
-            ServerUtils.sendDebugMessage("CommandBlockPlace: Block is a command block");
-            Player p = e.getPlayer();
-            if (!Sentinel.isTrusted(p)) {
-                ServerUtils.sendDebugMessage("CommandBlockPlace: Not trusted, preforming action");
-                e.setCancelled(true);
-                Action a = new Action.Builder()
-                        .setAction(ActionType.PLACE_COMMAND_BLOCK)
-                        .setEvent(e)
-                        .setBlock(b)
-                        .setPlayer(p)
-                        .setDenied(true)
-                        .setDeoped(Sentinel.mainConfig.plugin.deop)
-                        .setPunished(Sentinel.mainConfig.plugin.cmdBlockPunish)
-                        .setNotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
-                        .setNotifyTrusted(true)
-                        .setNotifyConsole(true)
-                        .execute();
-            }
-        }
+        if ((b.getType() == Material.COMMAND_BLOCK || b.getType() == Material.CHAIN_COMMAND_BLOCK || b.getType() == Material.REPEATING_COMMAND_BLOCK)) return;
+        ServerUtils.sendDebugMessage("CommandBlockPlace: Block is a command block");
+        Player p = e.getPlayer();
+        if (Sentinel.isTrusted(p)) return;
+        ServerUtils.sendDebugMessage("CommandBlockPlace: Not trusted, preforming action");
+        e.setCancelled(true);
+        Action a = new Action.Builder()
+                .setAction(ActionType.PLACE_COMMAND_BLOCK)
+                .setEvent(e)
+                .setBlock(b)
+                .setPlayer(p)
+                .setDenied(true)
+                .setDeoped(Sentinel.mainConfig.plugin.deop)
+                .setPunished(Sentinel.mainConfig.plugin.cmdBlockPunish)
+                .setNotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
+                .setNotifyTrusted(true)
+                .setNotifyConsole(true)
+                .execute();
     }
 }

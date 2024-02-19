@@ -35,25 +35,23 @@ public class NBTEvents implements CustomListener {
         ServerUtils.sendDebugMessage("NBT: Not trusted");
         if (e.getCursor().getItemMeta() == null) return;
         ServerUtils.sendDebugMessage("NBT: Cursor has meta");
-        if (i.hasItemMeta() && i.getItemMeta() != null) {
-            ServerUtils.sendDebugMessage("NBT: Item has meta");
-            if (!itemPasses(i)) {
-                ServerUtils.sendDebugMessage("NBT: Item doesn't pass, preforming action");
-                Action a = new Action.Builder()
-                        .setEvent(e)
-                        .setAction(ActionType.NBT)
-                        .setPlayer(Bukkit.getPlayer(e.getWhoClicked().getName()))
-                        .setItem(e.getCursor())
-                        .setDenied(Sentinel.mainConfig.plugin.preventNBT)
-                        .setDeoped(Sentinel.mainConfig.plugin.deop)
-                        .setPunished(Sentinel.mainConfig.plugin.nbtPunish)
-                        .setRevertGM(Sentinel.mainConfig.plugin.preventNBT)
-                        .setNotifyConsole(true)
-                        .setNotifyTrusted(true)
-                        .setNotifyDiscord(Sentinel.mainConfig.plugin.logNBT)
-                        .execute();
-            }
-        }
+        if (!(i.hasItemMeta() && i.getItemMeta() != null)) return;
+        ServerUtils.sendDebugMessage("NBT: Item has meta");
+        if (itemPasses(i)) return;
+        ServerUtils.sendDebugMessage("NBT: Item doesn't pass, preforming action");
+        Action a = new Action.Builder()
+                .setEvent(e)
+                .setAction(ActionType.NBT)
+                .setPlayer(Bukkit.getPlayer(e.getWhoClicked().getName()))
+                .setItem(e.getCursor())
+                .setDenied(Sentinel.mainConfig.plugin.preventNBT)
+                .setDeoped(Sentinel.mainConfig.plugin.deop)
+                .setPunished(Sentinel.mainConfig.plugin.nbtPunish)
+                .setRevertGM(Sentinel.mainConfig.plugin.preventNBT)
+                .setNotifyConsole(true)
+                .setNotifyTrusted(true)
+                .setNotifyDiscord(Sentinel.mainConfig.plugin.logNBT)
+                .execute();
     }
 
     private boolean isContainer(ItemStack itemStack) {

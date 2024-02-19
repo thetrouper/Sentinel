@@ -10,8 +10,8 @@ public enum ActionType {
     UPDATE_COMMAND_BLOCK("HoneyPot log","Caught a command block command!", 0xF8FF00),
     PLACE_MINECART_COMMAND("Anti-Nuke has been triggered","The placing of a minecart command has been detected!", 0xFF0000),
     USE_MINECART_COMMAND("Anti-Nuke has been triggered", "The use of a command block has been detected!", 0xFF0000),
-    UPDATE_MINECART_COMMAND("HoneyPot log","Caught a command minecart command!", 0xFFB000),
-    COMMAND_BLOCK_EXECUTE("Command Block log","Caught an invalid command block!", 0xFFB000);
+    UPDATE_MINECART_COMMAND("HoneyPot has been triggered","Caught a command minecart command!", 0xFFB000),
+    COMMAND_BLOCK_EXECUTE("Command block whitelist has been triggered","Caught an invalid command block.", 0xFFB000);
     private final String messageTop;
     private final String messageTitle;
     private final int embedColor;

@@ -1,5 +1,6 @@
 package io.github.thetrouper.sentinel.server.util;
 
+import io.github.itzispyder.pdk.utils.FileValidationUtils;
 import io.github.thetrouper.sentinel.Sentinel;
 import org.bukkit.inventory.ItemStack;
 
@@ -75,9 +76,12 @@ public class FileUtils {
         return fileName;
     }
 
+
     public static String createCommandLog(String command)  {
+
         String fileName = "command_log-" + Randomizer.generateID();
         File file = new File(Sentinel.getInstance().getDataFolder() + "/LoggedCommands/" + fileName + ".txt");
+        FileValidationUtils.validate(file);
         try {
             if (!file.exists()) {
                 file.createNewFile();
@@ -90,6 +94,7 @@ public class FileUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return fileName;
     }
 }

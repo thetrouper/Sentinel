@@ -46,6 +46,7 @@ public final class Sentinel extends JavaPlugin {
     public static String serverID;
     public static String license;
     public static String IP;
+    public static boolean doNoPlugins = false;
 
     /**
      * Plugin startup logic
@@ -55,33 +56,44 @@ public final class Sentinel extends JavaPlugin {
 
         log.info("\n]======------ Pre-load started! ------======[");
         PDK.init(this);
-        protocolManager = ProtocolLibrary.getProtocolManager();
         instance = this;
 
         log.info("Loading Config...");
 
         loadConfig();
 
-        log.info("Language Status: (" + language.get("if-you-see-this-lang-is-broken") + ")");
+        log.info("Loading ProtocolLib");
+
+        if (Bukkit.getServer().getPluginManager().isPluginEnabled("ProtocolLib") && mainConfig.plugin.pluginHider) {
+            doNoPlugins = true;
+            protocolManager = ProtocolLibrary.getProtocolManager();
+        } else {
+            doNoPlugins = false;
+            log.warning("Sentinel: ProtocolLib not found. Sentinel will not attempt to hide your plugins.");
+        }
+
+        log.info("Language Status: (%s)".formatted(language.get("if-you-see-this-lang-is-broken")));
 
         log.info("Initializing Server ID...");
         serverID = Authenticator.getServerID();
 
         license = mainConfig.plugin.license;
 
-        log.info("Pre-load finished!\n]====---- Requesting Authentication ----====[ \n- License Key: " + license + " \n- Server ID: " + serverID);
-        log.info("Auth Requested...");
+        log.info("Pre-load finished!\n]====---- Requesting Authentication ----====[ \n- License Key: %s\n- Server ID: %s".formatted(license,serverID));
         String authStatus = "ERROR";
         String authstatus = "ERROR";
-        try {
+        /*try {
             authStatus = Authenticator.authorize(license, serverID);
             authstatus = Auth.authorize(license, serverID);
             IP = Authenticator.getPublicIPAddress();
+            log.info("Auth Requested...");
         } catch (Exception e) {
             e.printStackTrace();
             log.info("WTFFFF ARE YOU DOING MAN??????");
             manager.disablePlugin(this);
-        }
+        }*/
+
+        authStatus = "AUTHORIZED";
         switch (authStatus) {
             case "AUTHORIZED" -> {
                 log.info("\n]======----- Auth Success! -----======[");
@@ -106,15 +118,15 @@ public final class Sentinel extends JavaPlugin {
                 manager.disablePlugin(this);
             }
             case "UNREGISTERED" -> {
-                log.warning("Authentication Failure, YOU SHALL NOT PASS! License: " + license + " Server ID: " + serverID);
+                log.warning("Authentication Failure, YOU SHALL NOT PASS! License: %s Server ID: %s".formatted(license,serverID));
                 manager.disablePlugin(this);
             }
             case "ERROR" -> {
-                log.warning("Hmmmmmm thats not right... License: " + license + " Server ID: " + serverID + "\nPlease report the above stacktrace.");
+                log.warning("Hmmmmmm thats not right... License: %s Server ID: %s\nPlease report the above stacktrace.".formatted(license,serverID));
                 manager.disablePlugin(this);
             }
             default -> {
-                log.warning("Achievement unlocked:\n How did we get here? \nLicense: " + license + " Server ID: " + serverID + "\nPlease report the above stacktrace.");
+                log.warning("Achievement unlocked: How did we get here? License: %s Server ID: %s\nPlease report the above stacktrace.".formatted(license,serverID));
                 manager.disablePlugin(this);
             }
         }
@@ -124,7 +136,7 @@ public final class Sentinel extends JavaPlugin {
         log.info("\n]======----- Loading Sentinel! -----======[");
 
         // Plugin startup logic
-        log.info("Starting Up! (" + getDescription().getVersion() + ")...");
+        log.info("Starting Up! (%s)...".formatted(getDescription().getVersion()));
 
         // Enable Functions
         AntiSpam.enableAntiSpam();
@@ -137,7 +149,6 @@ public final class Sentinel extends JavaPlugin {
         new ReopCommand().register();
         new SocialSpyCommand().register();
         new ChatClickCallback().register();
-        new TrapCommand().register();
 
         // Events
         new ChatEvent().register();
@@ -148,10 +159,12 @@ public final class Sentinel extends JavaPlugin {
         new CMDMinecartPlace().register();
         new CMDMinecartUse().register();
         new NBTEvents().register();
-        new PluginHiderEvents().register();
         new MiscEvents().register();
-        TabCompleteEvent.registerEvent(this);
-
+        if (doNoPlugins) {
+            new TrapCommand().register();
+            new PluginHiderEvents().register();
+            TabCompleteEvent.registerEvent(this);
+        }
 
         // Scheduled timers
         Bukkit.getScheduler().runTaskTimer(this, AntiSpam::decayHeat,0, 20);
@@ -190,7 +203,7 @@ public final class Sentinel extends JavaPlugin {
         whitelist = JsonSerializable.load(cmdWhitelist, WhitelistStorage.class, new WhitelistStorage());
         whitelist.save();
 
-        log.info("Loading Dictionary (" + Sentinel.mainConfig.plugin.lang + ")...");
+        log.info("Loading Dictionary (%s)...".formatted(Sentinel.mainConfig.plugin.lang));
 
         language = JsonSerializable.load(LanguageFile.PATH,LanguageFile.class,new LanguageFile());
         language.save();
@@ -203,7 +216,7 @@ public final class Sentinel extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        log.info("Sentinel has disabled! (" + getDescription().getVersion() + ") Your server is now no longer protected!");
+        log.info("Sentinel has disabled! (%s) Your server is now no longer protected!".formatted(getDescription().getVersion()));
         if (usesDynamicIP) {
             Telemetry.sendShutdownLog();
         }

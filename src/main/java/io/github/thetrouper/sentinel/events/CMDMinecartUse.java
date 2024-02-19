@@ -18,24 +18,22 @@ public class CMDMinecartUse implements CustomListener {
         ServerUtils.sendDebugMessage("MinecartCommandUse: Enabled");
         if (Sentinel.mainConfig.plugin.cmdBlockOpCheck && !e.getPlayer().isOp()) return;
         ServerUtils.sendDebugMessage("MinecartCommandUse: Player op");
-        if (e.getRightClicked().getType() == EntityType.MINECART_COMMAND) {
-            ServerUtils.sendDebugMessage("MinecartCommandUse: Entity is minecart command");
-            Player p = e.getPlayer();
-            if (!Sentinel.isTrusted(p)) {
-                ServerUtils.sendDebugMessage("MinecartCommandUse: Not trusted, preforming action");
-                e.setCancelled(true);
-                Action a = new Action.Builder()
-                        .setAction(ActionType.USE_MINECART_COMMAND)
-                        .setEvent(e)
-                        .setPlayer(p)
-                        .setDenied(true)
-                        .setPunished(Sentinel.mainConfig.plugin.cmdBlockPunish)
-                        .setNotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
-                        .setDeoped(Sentinel.mainConfig.plugin.deop)
-                        .setNotifyTrusted(true)
-                        .setNotifyConsole(true)
-                        .execute();
-            }
-        }
+        if (e.getRightClicked().getType() != EntityType.MINECART_COMMAND) return;
+        ServerUtils.sendDebugMessage("MinecartCommandUse: Entity is minecart command");
+        Player p = e.getPlayer();
+        if (Sentinel.isTrusted(p)) return;
+        ServerUtils.sendDebugMessage("MinecartCommandUse: Not trusted, preforming action");
+        e.setCancelled(true);
+        Action a = new Action.Builder()
+                .setAction(ActionType.USE_MINECART_COMMAND)
+                .setEvent(e)
+                .setPlayer(p)
+                .setDenied(true)
+                .setPunished(Sentinel.mainConfig.plugin.cmdBlockPunish)
+                .setNotifyDiscord(Sentinel.mainConfig.plugin.logCmdBlocks)
+                .setDeoped(Sentinel.mainConfig.plugin.deop)
+                .setNotifyTrusted(true)
+                .setNotifyConsole(true)
+                .execute();
     }
 }

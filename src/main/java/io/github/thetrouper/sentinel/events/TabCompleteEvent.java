@@ -9,7 +9,7 @@ import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import org.bukkit.plugin.Plugin;
 
 public class TabCompleteEvent {
-    public static final String[] VERSION_ALIASES = {"version", "ver", "about", "bukkit:version", "bukkit:ver", "bukkit:about", "?", "bukkit:?","pl","bukkit:pl","plugins","bukkit:plugins","bukkit:help"};
+    public static final String[] VERSION_ALIASES = Sentinel.advConfig.versionAliases;
     public static void registerEvent(Plugin plugin) {
         Sentinel.protocolManager.addPacketListener(new PacketAdapter(
                 plugin,

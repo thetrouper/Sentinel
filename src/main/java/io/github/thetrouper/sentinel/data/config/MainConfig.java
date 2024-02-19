@@ -31,6 +31,7 @@ public class MainConfig implements JsonSerializable<MainConfig> {
         public boolean preventCmdBlockUse = true;
         public boolean preventCmdBlockChange = true;
         public boolean cmdBlockWhitelist = false;
+        public boolean deleteUnauthorizedCmdBlocks = false;
         public boolean logUnauthorizedCmdBlocks = false;
         public boolean preventCmdCartPlace = true;
         public boolean preventCmdCartUse = true;
@@ -66,11 +67,15 @@ public class MainConfig implements JsonSerializable<MainConfig> {
             add("ban %player% ]=- Sentinel -=[ You have been banned for attempting a dangerous action. If you believe this to be a mistake, please contact the server owner.");
         }};
         public boolean reopCommand = false;
+        public boolean pluginHider = true;
     }
 
     public class Chat {
         public AntiSwear antiSwear = new AntiSwear();
         public AntiSpam antiSpam = new AntiSpam();
+        public boolean blockURLs = false;
+        public boolean useSwearRegex = false;
+        public boolean useStrictRegex = false;
         public boolean antiUnicode = true;
 
         public class AntiSpam {
@@ -96,7 +101,6 @@ public class MainConfig implements JsonSerializable<MainConfig> {
             public int highScore = 7;
             public int scoreDecay = 3;
             public int punishScore = 20;
-            public boolean strictInstaPunish = true;
             public String swearPunishCommand = "mute %player% 15m Do not attempt to bypass the Profanity Filter";
             public String strictPunishCommand = "mute %player% 1h Discriminatory speech is not tolerated on this server!";
             public boolean logSwears = true;

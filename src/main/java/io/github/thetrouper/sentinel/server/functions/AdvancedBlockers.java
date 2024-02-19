@@ -14,10 +14,11 @@ import java.util.regex.Pattern;
 public class AdvancedBlockers {
 
     public static void handleAdvanced(AsyncPlayerChatEvent e) {
-        if (!Sentinel.advConfig.allowedCharRegex.isBlank()) handleAntiUnicode(e);
-        if (!Sentinel.advConfig.urlRegex.isBlank()) handleAntiURL(e);
-        if (!Sentinel.advConfig.strictRegex.isBlank()) handleStrictRegex(e);
-        if (!Sentinel.advConfig.swearRegex.isBlank()) handleSwearRegex(e);
+        if (Sentinel.isTrusted(e.getPlayer())) return;
+        if (Sentinel.mainConfig.chat.antiUnicode) handleAntiUnicode(e);
+        if (Sentinel.mainConfig.chat.blockURLs) handleAntiURL(e);
+        if (Sentinel.mainConfig.chat.useStrictRegex) handleStrictRegex(e);
+        if (Sentinel.mainConfig.chat.useSwearRegex) handleSwearRegex(e);
     }
     public static void handleAntiUnicode(AsyncPlayerChatEvent e) {
         String message = Text.removeFirstColor(e.getMessage());

@@ -3,8 +3,7 @@ package io.github.thetrouper.sentinel.data.config;
 import io.github.itzispyder.pdk.utils.misc.JsonSerializable;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class AdvancedConfig implements JsonSerializable<AdvancedConfig> {
 
@@ -14,6 +13,29 @@ public class AdvancedConfig implements JsonSerializable<AdvancedConfig> {
         file.getParentFile().mkdirs();
         return file;
     }
+    public List<String> fakePlugins = Arrays.asList(
+            "This server wishes to keep their plugins confidential. Anyways, Enjoy your meteor client! If the owner is incompetent, then .server plugins MassScan should still work ;)",
+            "NoCheatPlus",
+            "Negativity",
+            "Warden",
+            "Horizon",
+            "Illegalstack",
+            "CoreProtect",
+            "ExploitsX",
+            "Vulcan (Outdated version frfr)",
+            "ABC",
+            "Spartan",
+            "Kauri",
+            "AnticheatReloaded",
+            "WitherAC",
+            "GodsEye",
+            "Matrix",
+            "Wraith",
+            "AntiXrayHeuristics",
+            "GrimAC"
+    );
+
+    public String[] versionAliases = {"version", "ver", "about", "bukkit:version", "bukkit:ver", "bukkit:about", "?", "bukkit:?","pl","bukkit:pl","plugins","bukkit:plugins","bukkit:help"};
 
     public Map<String, String> leetPatterns = new HashMap<>() {{
         put("0", "o");

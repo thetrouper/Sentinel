@@ -32,6 +32,8 @@ public class FilterAction {
         Player offender = e.getPlayer();
         switch (type) {
             case BLOCK_SPAM -> {
+                if (Sentinel.mainConfig.chat.antiSpam.clearChat) ServerUtils.sendCommand(Sentinel.mainConfig.chat.antiSpam.chatClearCommand);
+
                 staffNotif = Component
                         .text(Text.prefix(String.format(Sentinel.language.get("spam-notification"),
                             offender.getName(),
@@ -47,6 +49,7 @@ public class FilterAction {
                 playerWarning = Component.text(Text.prefix(Sentinel.language.get("spam-block-warn")));
             }
             case SPAM_PUNISH -> {
+                if (Sentinel.mainConfig.chat.antiSpam.clearChat) ServerUtils.sendCommand(Sentinel.mainConfig.chat.antiSpam.chatClearCommand);
                 staffNotif = Component.text(Text.prefix(String.format(Sentinel.language.get("spam-mute-notification"),
                             offender.getName(),
                             heatMap.get(offender),
@@ -60,7 +63,7 @@ public class FilterAction {
 
                 playerWarning = Component.text(Sentinel.language.get("spam-mute-warn"));
                 sendConsoleLog(offender,e,type);
-                sendDiscordLog(offender,e,type);
+                if (Sentinel.mainConfig.chat.antiSpam.logSpam) sendDiscordLog(offender,e,type);
             }
             case BLOCK_SWEAR -> {
                 staffNotif = Component.text(Text.prefix(String.format(Sentinel.language.get("profanity-block-notification"),
@@ -93,7 +96,7 @@ public class FilterAction {
                 playerWarning = Component.text(Text.prefix(Sentinel.language.get("profanity-mute-warn")))
                         .hoverEvent(Component.text(Sentinel.language.get("action-automatic-reportable")));
                 sendConsoleLog(offender,e,type);
-                sendDiscordLog(offender,e,type);
+                if (Sentinel.mainConfig.chat.antiSwear.logSwears) sendDiscordLog(offender,e,type);
             }
             case SLUR_PUNISH -> {
                 staffNotif = Component.text(Text.prefix(String.format(Sentinel.language.get("slur-mute-notification"),
@@ -110,7 +113,7 @@ public class FilterAction {
                 playerWarning = Component.text(Text.prefix(Sentinel.language.get("slur-mute-warn")))
                         .hoverEvent(Component.text(Sentinel.language.get("action-automatic-reportable")));
                 sendConsoleLog(offender,e,type);
-                sendDiscordLog(offender,e,type);
+                if (Sentinel.mainConfig.chat.antiSwear.logSwears) sendDiscordLog(offender,e,type);
             }
         }
         if (type.getExecutedCommand() != null) {
@@ -122,55 +125,6 @@ public class FilterAction {
             staff.sendMessage(staffNotif);
         }
         e.getPlayer().sendMessage(playerWarning);
-    }
-
-    /*public static void filterAction(Player offender, AsyncPlayerChatEvent e, String highlighted, FilterSeverity severity, Double similarity, FAT type) {
-        String report = ReportFalsePositives.generateReport(e);
-        DecimalFormat fs = new DecimalFormat("##.#");
-        fs.setRoundingMode(RoundingMode.DOWN);
-
-        TextComponent warn = createTextComponent(Text.prefix(Sentinel.language.get(type.getWarnTranslationKey())));
-        warn.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.language.get("action-automatic-reportable"))));
-        warn.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + report));
-
-        TextComponent notif = createTextComponent(Text.prefix((type != FAT.SPAM_PUNISH && type != FAT.BLOCK_SPAM ?
-                Sentinel.language.get("severity-notification-hover").formatted(e.getMessage(), highlighted, severity.name().toLowerCase().replace("_"," ")) :
-                Sentinel.language.get("spam-notification-hover").formatted(e.getMessage(), lastMessageMap.get(offender), fs.format(similarity)))));
-        notif.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.language.get("severity-notification-hover"))));
-        notif.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + report));
-
-        sendMessages(offender, warn, notif, type);
-
-        if (shouldLogSwears(type)) {
-            sendDiscordLog(offender, e, type);
-            sendConsoleLog(offender, e, type);
-        }
-    }
-
-    private static void sendMessages(Player offender, TextComponent warn, TextComponent notif, FAT type) {
-        offender.spigot().sendMessage(warn);
-
-        String notifText = Sentinel.language.get(type.getNotifTranslationKey());
-        notif.setText(Text.prefix((type != FAT.SPAM_PUNISH && type != FAT.BLOCK_SPAM ?
-                notifText.formatted(offender.getName(), scoreMap.get(offender), Sentinel.mainConfig.chat.antiSwear.punishScore) :
-                notifText.formatted(offender.getName(), heatMap.get(offender), Sentinel.mainConfig.chat.antiSpam.punishHeat))));
-
-        ServerUtils.forEachStaff(staffmember -> staffmember.spigot().sendMessage(notif));
-
-        if (type.getExecutedCommand() != null) {
-            ServerUtils.sendCommand(type.getExecutedCommand().replace("%player%", offender.getName()));
-        }
-    }
-
-    private static TextComponent createTextComponent(String text) {
-        TextComponent component = new TextComponent();
-        component.setText(text);
-        return component;
-    }*/
-
-    private static boolean shouldLogSwears(FAT type) {
-        return (type == FAT.SWEAR_PUNISH || type == FAT.SLUR_PUNISH) && Sentinel.mainConfig.chat.antiSwear.logSwears
-                || (type == FAT.SPAM_PUNISH && Sentinel.mainConfig.chat.antiSpam.logSpam);
     }
 
     public static void sendConsoleLog(Player offender, AsyncPlayerChatEvent e, FAT type) {
@@ -269,51 +223,4 @@ public class FilterAction {
 
 
     }
-    /*
-    public static void filterAction(Player offender, AsyncPlayerChatEvent e, String highlighted, String severity, Double similarity, FAT type) {
-        String report = ReportFalsePositives.generateReport(e);
-
-        TextComponent warn = new TextComponent();
-        warn.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.language.get("action-automatic-reportable"))));
-        warn.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + report));
-
-        DecimalFormat fs = new DecimalFormat("##.#");
-        fs.setRoundingMode(RoundingMode.DOWN);
-
-        TextComponent notif = new TextComponent();
-        notif.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText((type != FAT.SPAM_PUNISH && type != FAT.BLOCK_SPAM ? Sentinel.language.get("severity-notification-hover").formatted(e.getMessage(), highlighted, severity) : Sentinel.language.get("spam-notification-hover").formatted(e.getMessage(),lastMessageMap.get(offender),fs.format(similarity))))));
-        notif.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sentinelcallback fpreport " + report));
-
-        warn.setText(Text.prefix(Sentinel.language.get(type.getWarnTranslationKey())));
-        offender.spigot().sendMessage(warn);
-
-        String notiftext = Sentinel.language.get(type.getNotifTranslationKey());
-
-        notif.setText(Text.prefix((type != FAT.SPAM_PUNISH && type != FAT.BLOCK_SPAM ? notiftext.formatted(offender.getName(), scoreMap.get(offender), Sentinel.mainConfig.chat.antiSwear.punishScore) : notiftext.formatted(offender.getName(),heatMap.get(offender),Sentinel.mainConfig.chat.antiSpam.punishHeat))));
-
-        ServerUtils.forEachStaff(staffmember -> {
-            staffmember.spigot().sendMessage(notif);
-        });
-
-        if (type.getExecutedCommand() != null) {
-            ServerUtils.sendCommand(type.getExecutedCommand().replace("%player%", offender.getName()));
-        }
-
-        if (type == FAT.SWEAR_PUNISH && Sentinel.mainConfig.chat.antiSwear.logSwears) {
-            sendDiscordLog(offender,e,type);
-            sendConsoleLog(offender,e,type);
-        }
-
-        if (type == FAT.SLUR_PUNISH && Sentinel.mainConfig.chat.antiSwear.logSwears) {
-            sendDiscordLog(offender,e,type);
-            sendConsoleLog(offender,e,type);
-        }
-        if (type == FAT.SPAM_PUNISH && Sentinel.mainConfig.chat.antiSpam.logSpam) {
-            sendDiscordLog(offender,e,type);
-            sendConsoleLog(offender,e,type);
-        }
-    }*/
-
-
-
 }

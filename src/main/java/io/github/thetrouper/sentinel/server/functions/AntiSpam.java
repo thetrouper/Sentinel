@@ -51,6 +51,8 @@ public class AntiSpam {
             }
         }
 
+        lastMessageMap.put(p, message);
+
         if (heatMap.get(p) > Sentinel.mainConfig.chat.antiSpam.punishHeat) {
             e.setCancelled(true);
             FilterAction.filterPunish(e,FAT.SPAM_PUNISH,GPTUtils.calcSim(e.getMessage(),lastMessageMap.get(p)), null);
@@ -63,7 +65,8 @@ public class AntiSpam {
             heatMap.put(p, heatMap.get(p) + Sentinel.mainConfig.chat.antiSpam.highGain);
             return;
         }
-        lastMessageMap.put(p, message);
+
+        heatMap.put(p,heatMap.get(p) + Sentinel.mainConfig.chat.antiSpam.defaultGain);
     }
     public static void decayHeat() {
         for (Player p : heatMap.keySet()) {

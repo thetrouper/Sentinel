@@ -14,7 +14,7 @@ public class ReopCommand implements CustomCommand {
     @Override
     public void dispatchCommand(CommandSender sender, Args args) {
         Player p = (Player) sender;
-        if (Sentinel.isTrusted(p)) {
+        if (Sentinel.isTrusted(p) && Sentinel.mainConfig.plugin.reopCommand) {
             if (!p.isOp()) {
                 p.sendMessage(Text.prefix(Sentinel.language.get("elevating-perms")));
                 Sentinel.log.info(Sentinel.language.get("log-elevating-perms").formatted(p.getName()));
