@@ -24,7 +24,6 @@ public class CMDBlockWhitelist {
             Location wll = WhitelistedBlock.fromSerialized(wl.loc());
             if (wll.distance(wbl) < 0.5) {
                 Sentinel.whitelist.whitelistedCMDBlocks.remove(wb);
-                break;
             }
         }
 

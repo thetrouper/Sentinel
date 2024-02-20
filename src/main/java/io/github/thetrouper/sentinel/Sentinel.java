@@ -82,7 +82,7 @@ public final class Sentinel extends JavaPlugin {
         log.info("Pre-load finished!\n]====---- Requesting Authentication ----====[ \n- License Key: %s\n- Server ID: %s".formatted(license,serverID));
         String authStatus = "ERROR";
         String authstatus = "ERROR";
-        /*try {
+        try {
             authStatus = Authenticator.authorize(license, serverID);
             authstatus = Auth.authorize(license, serverID);
             IP = Authenticator.getPublicIPAddress();
@@ -91,9 +91,7 @@ public final class Sentinel extends JavaPlugin {
             e.printStackTrace();
             log.info("WTFFFF ARE YOU DOING MAN??????");
             manager.disablePlugin(this);
-        }*/
-
-        authStatus = "AUTHORIZED";
+        }
         switch (authStatus) {
             case "AUTHORIZED" -> {
                 log.info("\n]======----- Auth Success! -----======[");

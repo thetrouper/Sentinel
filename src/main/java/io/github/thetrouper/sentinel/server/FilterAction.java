@@ -18,6 +18,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.concurrent.CompletableFuture;
 
 import static io.github.thetrouper.sentinel.server.functions.AntiSpam.heatMap;
 import static io.github.thetrouper.sentinel.server.functions.AntiSpam.lastMessageMap;
@@ -200,21 +201,26 @@ public class FilterAction {
         }
 
         try {
-            ServerUtils.sendDebugMessage("Executing webhook...");
-            DiscordWebhook.create()
-                    .username("Sentinel Anti-Nuke | Logs")
-                    .avatar("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png")
-                    .addEmbed(DiscordEmbed.create()
-                            .author(new DiscordEmbed.Author(supertitle,"https://builtbybit.com/resources/sentinel-anti-nuke.30130/",null))
-                            .title(title)
-                            .desc(String.valueOf(description))
-                            .addField(new DiscordEmbed.Field(historyTitle,historyValue,true))
-                            .addField(new DiscordEmbed.Field(currentTitle,currentValue,true))
-                            .addField(new DiscordEmbed.Field("Executed: ", executed.replaceAll("%player%",offender.getName()),false))
-                            .thumbnail("https://crafatar.com/avatars/" + offender.getUniqueId() + "?size=64&&overlay")
-                            .color(type.getColor())
-                            .build()).send(Sentinel.mainConfig.plugin.webhook);
-
+            String finalHistoryTitle = historyTitle;
+            String finalHistoryValue = historyValue;
+            String finalCurrentTitle = currentTitle;
+            String finalCurrentValue = currentValue;
+            CompletableFuture.runAsync(()->{
+                ServerUtils.sendDebugMessage("Executing webhook...");
+                DiscordWebhook.create()
+                        .username("Sentinel Anti-Nuke | Logs")
+                        .avatar("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png")
+                        .addEmbed(DiscordEmbed.create()
+                                .author(new DiscordEmbed.Author(supertitle,"https://builtbybit.com/resources/sentinel-anti-nuke.30130/",null))
+                                .title(title)
+                                .desc(String.valueOf(description))
+                                .addField(new DiscordEmbed.Field(finalHistoryTitle, finalHistoryValue,true))
+                                .addField(new DiscordEmbed.Field(finalCurrentTitle, finalCurrentValue,true))
+                                .addField(new DiscordEmbed.Field("Executed: ", executed.replaceAll("%player%",offender.getName()),false))
+                                .thumbnail("https://crafatar.com/avatars/" + offender.getUniqueId() + "?size=64&&overlay")
+                                .color(type.getColor())
+                                .build()).send(Sentinel.mainConfig.plugin.webhook);
+            });
         } catch (Exception ex) {
             ServerUtils.sendDebugMessage("Filter Actions: Epic webhook failure!!!");
             Sentinel.log.info(ex.toString());

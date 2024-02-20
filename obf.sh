@@ -7,17 +7,24 @@
 if [ $? -eq 0 ]; then
     echo "Gradle build successful."
 
+    # Obfuscate with Grunt
+    cd ./obf/
+    java -jar grunt-1.5.7.jar
+    cd ..
+
+    echo "Obfuscation complete."
+
     # SFTP upload
     SFTP_HOST="192.168.1.199"
     SFTP_USER="trouper"
     SFTP_PASSWORD="Trouper12()1"
     SFTP_REMOTE_DIR="/home/trouper/docker/data/plugins/"
 
+    # Specify the local file to upload
+    LOCAL_FILE="./build/libs/Sentinel-0.2.5.jar"
+
     # Create a temporary file with a unique name
     TEMP_FILE=$(mktemp)
-
-    # Specify the local file to upload
-    LOCAL_FILE="/run/media/trouper/'1TB drive'/IJ/IdeaProjects/Sentinel/build/libs/Sentinel-0.2.5.jar"
 
     # Write the SFTP commands to the temporary file
     echo "put $LOCAL_FILE $SFTP_REMOTE_DIR" > "$TEMP_FILE"
@@ -31,15 +38,19 @@ EOF
     # Remove the temporary file
     rm -f "$TEMP_FILE"
 
-    # SSH command to reload the plugin on the host
+    echo "File uploaded via SFTP."
+
+    # SSH commands to reload the plugin on the host
+    SSH_HOST="trouper@$SFTP_HOST"
+    SSH_PASSWORD="Trouper12()1"
+
     SSH_COMMANDS=(
-        "pm reload Sentinel"
-        "execute at @a run playsound minecraft:entity.experience_orb.pickup master @a \~ \~ \~ 100 1 1"
-        "tellraw @a '\"'[Server] Reload Complete, Upload Successful.'\"'"
+        "docker exec docker_mc_1 mc-send-to-console pm reload Sentinel"
+        "docker exec docker_mc_1 mc-send-to-console tellraw @a '\"'[Server] Reload Complete, Upload Successful.'\"'"
     )
 
     for cmd in "${SSH_COMMANDS[@]}"; do
-      ssh -oStrictHostKeyChecking=no -oBatchMode=no "$SFTP_USER@$SFTP_HOST" "docker exec docker_mc_1 mc-send-to-console $cmd"
+        sshpass -p "$SSH_PASSWORD" ssh -oStrictHostKeyChecking=no -oBatchMode=no "$SSH_HOST" "$cmd"
     done
 
     echo "Plugin reloaded."
