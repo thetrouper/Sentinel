@@ -73,10 +73,10 @@ public class MainConfig implements JsonSerializable<MainConfig> {
     public class Chat {
         public AntiSwear antiSwear = new AntiSwear();
         public AntiSpam antiSpam = new AntiSpam();
-        public boolean blockURLs = false;
+        public boolean useAntiURL = false;
         public boolean useSwearRegex = false;
         public boolean useStrictRegex = false;
-        public boolean antiUnicode = true;
+        public boolean useAntiUnicode = true;
 
         public class AntiSpam {
             public boolean antiSpamEnabled = true;
@@ -92,6 +92,7 @@ public class MainConfig implements JsonSerializable<MainConfig> {
             public String spamPunishCommand = "mute %player% 1m Please refrain from spamming!";
             public boolean logSpam = true;
         }
+
         public class AntiSwear {
             public boolean antiSwearEnabled = true;
             public int lowScore = 0;

@@ -78,39 +78,4 @@ public class AntiSpam {
             //ServerUtils.sendDebugMessage("AntiSpam: Decaying heat for " + p.getName() + ": " + heatMap.get(p));
         }
     }
-    /*
-    public static void alertSpam(Player p, String message1, String message2) {
-        TextComponent text = new TextComponent();
-        double similarity = GPTUtils.calculateSimilarity(message1,message2 + "%");
-        DecimalFormat fs = new DecimalFormat("##.#");
-        fs.setRoundingMode(RoundingMode.DOWN);
-        TextComponent warning = new TextComponent();
-        warning.setText(Text.prefix(Sentinel.language.get("spam-warning")));
-        warning.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("action-automatic")));
-        p.spigot().sendMessage(warning);
-        text.setText(Text.prefix(Sentinel.language.get("spam-notification").formatted(p.getName(),heatMap.get(p),Config.punishHeat)));
-        text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.language.get("spam-notification-hover").formatted(message1,message2,fs.format(similarity)))));
-        ServerUtils.forEachStaff(staff -> {
-            staff.spigot().sendMessage(text);
-        });
-    }
-    public static void punishSpam(Player p, String message1, String message2) {
-        boolean chatCleared = false;
-        if (Config.clearChat) {
-            ServerUtils.sendCommand(Config.chatClearCommand);
-            chatCleared = true;
-        }
-        ServerUtils.sendCommand(Config.spamPunishCommand.replace("%player%", p.getName()));
-        TextComponent warning = new TextComponent();
-        warning.setText(Text.prefix(Sentinel.language.get("spam-punished")));
-        warning.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(Sentinel.language.get("action-automatic"))));
-        p.spigot().sendMessage(warning);
-        TextComponent text = new TextComponent();
-        text.setText(Text.prefix(Sentinel.language.get("spam-punish-notification").formatted(p.getName(),heatMap.get(p),Config.punishHeat)));
-        ServerUtils.forEachStaff(staff -> {
-            staff.spigot().sendMessage(text);
-        });
-        if (Config.logSpam) WebhookSender.sendSpamLog(p,message1,message2,heatMap.get(p),chatCleared);
-    }
-    */
 }

@@ -4,9 +4,33 @@ package io.github.thetrouper.sentinel.server.util;
 import io.github.thetrouper.sentinel.Sentinel;
 
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class Text {
+
+    public static String regexHighlighter(String input, String regex, String startString, String endString) {
+        // Create a Pattern object
+        Pattern pattern = Pattern.compile(regex);
+
+        // Create a Matcher object
+        Matcher matcher = pattern.matcher(input);
+
+        // StringBuffer to store the result
+        StringBuffer result = new StringBuffer();
+
+        // Find and append matches
+        while (matcher.find()) {
+            matcher.appendReplacement(result, startString + matcher.group() + endString);
+        }
+
+        // Append the remainder of the input
+        matcher.appendTail(result);
+
+        return result.toString();
+    }
+
     public static final char SECTION_SYMBOL = (char)167;
 
     public static String color(String msg) {

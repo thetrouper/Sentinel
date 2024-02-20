@@ -26,7 +26,6 @@ public class LanguageFile implements JsonSerializable<LanguageFile> {
         put("spy-disabled", "SocialSpy is now disabled.");
         put("action-automatic", "§7This action was preformed automatically\n§7by the §bSentinel Anti-Spam§7 algorithm.");
         put("action-automatic-reportable", "§7This action was preformed automatically \n§7by the §bSentinel Profanity Filter§7 algorithm!\n§8§o(Click to report false positive)");
-        put("unicode-warn", "§cDo not send non-standard unicode in chat!");
         put("message-sent", "§d§lMessage §8» §b[§fYou §e>§f %1$s§b] §7%2$s");
         put("message-received", "§d§lMessage §8» §b[§f%1$s §e>§f You§b] §7%2$s");
         put("spy-message", "§d§lSpy §8» §b§n%1$s§7 has messaged §b§n%2$s§7.");
@@ -45,6 +44,11 @@ public class LanguageFile implements JsonSerializable<LanguageFile> {
         put("spam-mute-warn", "§cYou have been auto-punished for violating the anti-spam repetitively!");
         put("spam-mute-notification", "§b§n%1$s§7 has been auto-muted by the anti spam! §8(§c%2$s§7/§4%3$s§8)");
         put("url-warn", "§cDo not send urls in chat!");
+        put("url-notification", "§b§n%1$s§7 has triggered the anti-URL.");
+        put("url-notification-hover", "§8]==-- §d§lSentinel §8--==[\n§bDetected: %1$s");
+        put("unicode-warn", "§cDo not send non-standard unicode in chat!");
+        put("unicode-notification", "§b§n%1$s§7 has triggered the anti-unicode.");
+        put("unicode-notification-hover", "§8]==-- §d§lSentinel §8--==[\n§bMessage: §f%1$s");
         put("no-plugins-for-u", "§cThis server wishes to keep their plugins confidential.");
     }};
     public LanguageFile() {}

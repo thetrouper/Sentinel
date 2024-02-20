@@ -6,18 +6,16 @@ import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Emojis;
 import io.github.thetrouper.sentinel.data.FAT;
 import io.github.thetrouper.sentinel.data.FilterSeverity;
+import io.github.thetrouper.sentinel.server.functions.AdvancedBlockers;
 import io.github.thetrouper.sentinel.server.functions.ReportFalsePositives;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.concurrent.CompletableFuture;
 
 import static io.github.thetrouper.sentinel.server.functions.AntiSpam.heatMap;
@@ -32,6 +30,24 @@ public class FilterAction {
         TextComponent playerWarning = Component.text("");
         Player offender = e.getPlayer();
         switch (type) {
+            case BLOCK_UNICODE -> {
+                staffNotif = Component
+                        .text(Text.prefix(Sentinel.language.get("unicode-notification")
+                                .formatted(offender)))
+                        .hoverEvent(Component.text(Sentinel.language.get("unicode-notification-hover")
+                                .formatted(e.getMessage())));
+                playerWarning = Component
+                        .text(Text.prefix(Sentinel.language.get("unicode-warn")));
+            }
+            case BLOCK_URL -> {
+                staffNotif = Component
+                        .text(Text.prefix(Sentinel.language.get("url-notification")
+                                .formatted(offender)))
+                        .hoverEvent(Component.text(Sentinel.language.get("url-notification-hover")
+                                .formatted(Text.color(Text.regexHighlighter(e.getMessage(),Sentinel.advConfig.urlRegex," &e> &n"," &r&e<&f ")))));
+                playerWarning = Component
+                        .text(Text.prefix(Sentinel.language.get("url-warn")));
+            }
             case BLOCK_SPAM -> {
                 if (Sentinel.mainConfig.chat.antiSpam.clearChat) ServerUtils.sendCommand(Sentinel.mainConfig.chat.antiSpam.chatClearCommand);
 

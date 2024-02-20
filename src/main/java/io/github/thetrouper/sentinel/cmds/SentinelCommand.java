@@ -7,10 +7,8 @@ import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.cmdblocks.WhitelistedBlock;
-import io.github.thetrouper.sentinel.server.functions.CMDBlockWhitelist;
-import io.github.thetrouper.sentinel.server.functions.ProfanityFilter;
-import io.github.thetrouper.sentinel.server.functions.SystemCheck;
-import io.github.thetrouper.sentinel.server.functions.Telemetry;
+import io.github.thetrouper.sentinel.events.ChatEvent;
+import io.github.thetrouper.sentinel.server.functions.*;
 import io.github.thetrouper.sentinel.server.util.CipherUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -25,6 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @CommandRegistry(value = "sentinel",permission = @Permission("sentinel.debug"),printStackTrace = true)
@@ -94,6 +93,12 @@ public class SentinelCommand implements CustomCommand {
                         message.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, enc));
                         p.spigot().sendMessage(message);
                     }*/
+            case "chat" -> {
+                AsyncPlayerChatEvent message = new AsyncPlayerChatEvent(true,p,args.getAll(1).toString(), Set.of(p));
+                AdvancedBlockers.handleAdvanced(message);
+                AntiSpam.handleAntiSpam(message);
+                ProfanityFilter.handleProfanityFilter(message);
+            }
         }
     }
 
@@ -101,7 +106,7 @@ public class SentinelCommand implements CustomCommand {
     public void dispatchCompletions(CompletionBuilder b) {
         b.then(b.arg("reload","full-system-check"));
         b.then(b.arg("debug").then(
-                b.arg("lang","toggle")));
+                b.arg("lang","toggle","chat")));
         b.then(b.arg("commandblock"));
     }
 }

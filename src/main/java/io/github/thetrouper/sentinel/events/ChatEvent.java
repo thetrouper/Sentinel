@@ -24,16 +24,9 @@ public class ChatEvent implements CustomListener {
 
         handleEventIfNotBypassed(p,
                 "sentinel.chat.antiunicode.bypass",
-                Sentinel.mainConfig.chat.antiUnicode, "unicode",
+                Sentinel.mainConfig.chat.useAntiUnicode, "unicode",
                 e,
                 AdvancedBlockers::handleAdvanced);
-
-        handleEventIfNotBypassed(p,
-                "sentinel.chat.antiswear.bypass",
-                Sentinel.mainConfig.chat.antiSwear.antiSwearEnabled,
-                "swear",
-                e,
-                ProfanityFilter::handleProfanityFilter);
 
         handleEventIfNotBypassed(p,
                 "sentinel.chat.antispam.bypass",
@@ -41,6 +34,13 @@ public class ChatEvent implements CustomListener {
                 "spam",
                 e,
                 AntiSpam::handleAntiSpam);
+
+        handleEventIfNotBypassed(p,
+                "sentinel.chat.antiswear.bypass",
+                Sentinel.mainConfig.chat.antiSwear.antiSwearEnabled,
+                "swear",
+                e,
+                ProfanityFilter::handleProfanityFilter);
     }
 
     private static void handleEventIfNotBypassed(Player p, String permission, boolean isEnabled, String eventType, AsyncPlayerChatEvent e, Consumer<AsyncPlayerChatEvent> handler) {

@@ -12,9 +12,9 @@
     "preventCmdBlockPlace": true,
     "preventCmdBlockUse": true,
     "preventCmdBlockChange": true,
-    "cmdBlockWhitelist": true,
-    "deleteUnauthorizedCmdBlocks": true,
-    "logUnauthorizedCmdBlocks": true,
+    "cmdBlockWhitelist": false,
+    "deleteUnauthorizedCmdBlocks": false,
+    "logUnauthorizedCmdBlocks": false,
     "preventCmdCartPlace": true,
     "preventCmdCartUse": true,
     "cmdBlockOpCheck": true,
@@ -79,9 +79,9 @@
       "spamPunishCommand": "mute %player% 1m Please refrain from spamming!",
       "logSpam": true
     },
-    "blockURLs": false,
+    "useAntiURL": true,
     "useSwearRegex": false,
     "useStrictRegex": false,
-    "antiUnicode": true
+    "useAntiUnicode": true
   }
 }

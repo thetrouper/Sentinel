@@ -8,6 +8,8 @@ public enum FAT {
     SWEAR_PUNISH("Sentinel Anti-Swear Log","Anti-Swear", "profanity-mute-warn", "profanity-mute-notification", Sentinel.mainConfig.chat.antiSwear.swearPunishCommand, 0xFFB000),
     SLUR_PUNISH("Sentinel Anti-Slur Log", "Anti-Slur", "slur-mute-warn", "slur-mute-notification", Sentinel.mainConfig.chat.antiSwear.strictPunishCommand, 0xFF0000),
     SPAM_PUNISH("Sentinel Anti-Spam Log", "Anti-Spam", "spam-mute-warn", "spam-mute-notification", Sentinel.mainConfig.chat.antiSpam.spamPunishCommand, 0xFF8000),
+    BLOCK_URL("Sentinel Anti-URL Log", "Anti-URL","url-warn","url-notification", null,0xFF0000),
+    BLOCK_UNICODE("Sentinel Anti-Unicode Log", "Anti-Unicode","unicode-warn","unicode-notification", null,0xFF0000),
     SAFE("Sentinel Chat Log", "You Shouldn't See this!", "spam-mute-warn", "spam-mute-notification", Sentinel.mainConfig.chat.antiSpam.spamPunishCommand, 0x00FF00);
 
     private final String title;
