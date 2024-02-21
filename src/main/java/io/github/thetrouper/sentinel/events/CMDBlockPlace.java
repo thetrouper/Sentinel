@@ -20,7 +20,9 @@ public class CMDBlockPlace implements CustomListener {
         if (Sentinel.mainConfig.plugin.cmdBlockOpCheck && !e.getPlayer().isOp()) return;
         ServerUtils.sendDebugMessage("CommandBlockPlace: Player is operator");
         Block b = e.getBlockPlaced();
-        if ((b.getType() == Material.COMMAND_BLOCK || b.getType() == Material.CHAIN_COMMAND_BLOCK || b.getType() == Material.REPEATING_COMMAND_BLOCK)) return;
+        if (!(b.getType().equals(Material.COMMAND_BLOCK) ||
+                b.getType().equals(Material.REPEATING_COMMAND_BLOCK) ||
+                b.getType().equals(Material.CHAIN_COMMAND_BLOCK))) return;
         ServerUtils.sendDebugMessage("CommandBlockPlace: Block is a command block");
         Player p = e.getPlayer();
         if (Sentinel.isTrusted(p)) return;

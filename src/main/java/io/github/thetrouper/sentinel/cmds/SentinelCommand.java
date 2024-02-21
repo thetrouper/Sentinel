@@ -82,22 +82,12 @@ public class SentinelCommand implements CustomCommand {
                 debugMode = !debugMode;
                 p.sendMessage(Text.prefix((debugMode ? "Enabled" : "Disabled") + " debug mode."));
             }
-                    /*case "encrypt" -> {
-                        final String enc = CipherUtils.encrypt(args.getAll(2).toString());
-                        final String check = CipherUtils.decrypt(enc);
-                        final String main = Text.prefix("Successfully encrypted \"&e" + check + "&7\" using AES.\n &7> &b" + enc);
-                        Sentinel.log.info(args.getAll(2).toString() + "\n" + enc + "\n" + check);
-                        TextComponent message = new TextComponent();
-                        message.setText(main);
-                        message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new net.md_5.bungee.api.chat.hover.content.Text("&bClick to copy!")));
-                        message.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, enc));
-                        p.spigot().sendMessage(message);
-                    }*/
             case "chat" -> {
-                AsyncPlayerChatEvent message = new AsyncPlayerChatEvent(true,p,args.getAll(1).toString(), Set.of(p));
+                AsyncPlayerChatEvent message = new AsyncPlayerChatEvent(true,p,args.getAll(2).toString(), Set.of(p));
                 AdvancedBlockers.handleAdvanced(message);
                 AntiSpam.handleAntiSpam(message);
                 ProfanityFilter.handleProfanityFilter(message);
+                if (!message.isCancelled()) p.sendMessage(Text.prefix("Message did not get flagged."));
             }
         }
     }

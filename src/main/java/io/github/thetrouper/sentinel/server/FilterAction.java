@@ -25,7 +25,7 @@ import static io.github.thetrouper.sentinel.server.functions.ProfanityFilter.*;
 public class FilterAction {
 
     public static void filterPunish(AsyncPlayerChatEvent e, FAT type, Double similarity, FilterSeverity severity) {
-        String report = ReportFalsePositives.generateReport(e);
+        String report = "This action is not reportable.";
         TextComponent staffNotif = Component.text("");
         TextComponent playerWarning = Component.text("");
         Player offender = e.getPlayer();
@@ -33,7 +33,7 @@ public class FilterAction {
             case BLOCK_UNICODE -> {
                 staffNotif = Component
                         .text(Text.prefix(Sentinel.language.get("unicode-notification")
-                                .formatted(offender)))
+                                .formatted(offender.getName())))
                         .hoverEvent(Component.text(Sentinel.language.get("unicode-notification-hover")
                                 .formatted(e.getMessage())));
                 playerWarning = Component
@@ -42,9 +42,9 @@ public class FilterAction {
             case BLOCK_URL -> {
                 staffNotif = Component
                         .text(Text.prefix(Sentinel.language.get("url-notification")
-                                .formatted(offender)))
+                                .formatted(offender.getName())))
                         .hoverEvent(Component.text(Sentinel.language.get("url-notification-hover")
-                                .formatted(Text.color(Text.regexHighlighter(e.getMessage(),Sentinel.advConfig.urlRegex," &e> &n"," &r&e<&f ")))));
+                                .formatted(Text.color(Text.regexHighlighter(e.getMessage(),Sentinel.advConfig.urlRegex," &e> &n","&r &e<&f ")))));
                 playerWarning = Component
                         .text(Text.prefix(Sentinel.language.get("url-warn")));
             }
@@ -83,6 +83,7 @@ public class FilterAction {
                 if (Sentinel.mainConfig.chat.antiSpam.logSpam) sendDiscordLog(offender,e,type);
             }
             case BLOCK_SWEAR -> {
+                report = ReportFalsePositives.generateReport(e);
                 staffNotif = Component.text(Text.prefix(String.format(Sentinel.language.get("profanity-block-notification"),
                                 offender.getName(),
                                 scoreMap.get(offender),
@@ -99,6 +100,7 @@ public class FilterAction {
                         .clickEvent(ClickEvent.runCommand("sentinelcallback fpreport " + report));
             }
             case SWEAR_PUNISH -> {
+                report = ReportFalsePositives.generateReport(e);
                 staffNotif = Component.text(Text.prefix(String.format(Sentinel.language.get("profanity-mute-notification"),
                                 offender.getName(),
                                 scoreMap.get(offender),
@@ -116,6 +118,7 @@ public class FilterAction {
                 if (Sentinel.mainConfig.chat.antiSwear.logSwears) sendDiscordLog(offender,e,type);
             }
             case SLUR_PUNISH -> {
+                report = ReportFalsePositives.generateReport(e);
                 staffNotif = Component.text(Text.prefix(String.format(Sentinel.language.get("slur-mute-notification"),
                                 offender.getName(),
                                 scoreMap.get(offender),
@@ -137,6 +140,7 @@ public class FilterAction {
             ServerUtils.sendCommand(type.getExecutedCommand().replace("%player%", offender.getName()));
         }
         staffNotif = staffNotif.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/sentinelcallback fpreport " + report));
+        playerWarning = playerWarning.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/sentinelcallback fpreport " + report));
 
         for (Player staff : ServerUtils.getStaff()) {
             staff.sendMessage(staffNotif);

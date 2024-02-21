@@ -48,6 +48,7 @@ public class MainConfig implements JsonSerializable<MainConfig> {
             add("setblock");
             add("data");
             add("whitelist");
+            add("lp")
         }};
         public boolean logDangerous = true;
         public boolean logCmdBlocks = true;

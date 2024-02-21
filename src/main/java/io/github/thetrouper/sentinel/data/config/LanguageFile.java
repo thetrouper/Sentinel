@@ -45,7 +45,7 @@ public class LanguageFile implements JsonSerializable<LanguageFile> {
         put("spam-mute-notification", "§b§n%1$s§7 has been auto-muted by the anti spam! §8(§c%2$s§7/§4%3$s§8)");
         put("url-warn", "§cDo not send urls in chat!");
         put("url-notification", "§b§n%1$s§7 has triggered the anti-URL.");
-        put("url-notification-hover", "§8]==-- §d§lSentinel §8--==[\n§bDetected: %1$s");
+        put("url-notification-hover", "§8]==-- §d§lSentinel §8--==[\n§bDetected: §f%1$s");
         put("unicode-warn", "§cDo not send non-standard unicode in chat!");
         put("unicode-notification", "§b§n%1$s§7 has triggered the anti-unicode.");
         put("unicode-notification-hover", "§8]==-- §d§lSentinel §8--==[\n§bMessage: §f%1$s");
