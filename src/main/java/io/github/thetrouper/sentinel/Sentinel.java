@@ -137,10 +137,6 @@ public final class Sentinel extends JavaPlugin {
         // Plugin startup logic
         log.info("Starting Up! (%s)...".formatted(getDescription().getVersion()));
 
-        // Enable Functions
-        AntiSpam.enableAntiSpam();
-        ProfanityFilter.enableAntiSwear();
-
         // Commands
         new SentinelCommand().register();
         new MessageCommand().register();

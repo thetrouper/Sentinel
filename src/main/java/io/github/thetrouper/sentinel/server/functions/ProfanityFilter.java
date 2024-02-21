@@ -1,6 +1,7 @@
 package io.github.thetrouper.sentinel.server.functions;
 
 import io.github.thetrouper.sentinel.Sentinel;
+import io.github.thetrouper.sentinel.data.Emojis;
 import io.github.thetrouper.sentinel.data.FAT;
 import io.github.thetrouper.sentinel.data.FilterSeverity;
 import io.github.thetrouper.sentinel.data.Report;
@@ -15,14 +16,10 @@ import java.util.List;
 import java.util.Map;
 
 public class ProfanityFilter {
-    public static Map<Player, Integer> scoreMap;
+    public static Map<Player, Integer> scoreMap = new HashMap<>();
     private static final List<String> swearBlacklist = Sentinel.swearConfig.swears;
     private static final List<String> swearWhitelist = Sentinel.fpConfig.swearWhitelist;
     private static final List<String> slurs = Sentinel.strictConfig.strict;
-
-    public static void enableAntiSwear() {
-        scoreMap = new HashMap<>();
-    }
 
     public static void handleProfanityFilter(AsyncPlayerChatEvent event, Report report) {
         Player player = event.getPlayer();
@@ -41,11 +38,11 @@ public class ProfanityFilter {
         scoreMap.put(player, newScore);
 
         if (newScore > Sentinel.mainConfig.chat.antiSwear.punishScore) {
-            FilterAction.filterPunish(event, FAT.SWEAR_PUNISH, null, severity);
+            FilterAction.filterPunish(event, FAT.SWEAR_PUNISH, null, severity,report.id());
             return;
         }
 
-        FilterAction.filterPunish(event, getFAT(severity), null, severity);
+        FilterAction.filterPunish(event, getFAT(severity), null, severity,report.id());
     }
 
 
@@ -105,6 +102,7 @@ public class ProfanityFilter {
         return removePeriodsAndSpaces(simplifiedText);
     }
     public static FilterSeverity checkSeverity(String text, Report report) {
+        FilterSeverity severity = FilterSeverity.SAFE;
         // 1:
         String lowercasedText = text.toLowerCase();
         report.stepsTaken().put("Lowercased", lowercasedText);
@@ -116,8 +114,13 @@ public class ProfanityFilter {
         ServerUtils.sendDebugMessage(("ProfanityFilter: Removed False positives: " + cleanedText));
 
         // 3:
-        if (containsSwears(cleanedText)) return FilterSeverity.LOW;
-        if (containsSlurs(cleanedText)) return FilterSeverity.SLUR;
+        severity = checkProfanity(cleanedText,FilterSeverity.LOW);
+        if (severity != FilterSeverity.SAFE) {
+            report.stepsTaken().replace("Remove False Positives", "%s %s".formatted(
+                    highlightProfanity(cleanedText,"||","||"),
+                    Emojis.alarm));
+            return severity;
+        }
 
         // 4:
         String convertedText = convertLeetSpeakCharacters(cleanedText);
@@ -125,42 +128,61 @@ public class ProfanityFilter {
         ServerUtils.sendDebugMessage(("ProfanityFilter: Leet Converted: " + convertedText));
 
         // 5:
-        if (containsSwears(convertedText)) return FilterSeverity.MEDIUM_LOW;
-        if (containsSlurs(cleanedText)) return FilterSeverity.SLUR;
-
+        severity = checkProfanity(convertedText,FilterSeverity.MEDIUM_LOW);
+        if (severity != FilterSeverity.SAFE) {
+            report.stepsTaken().replace("Convert LeetSpeak", "%s %s".formatted(
+                    highlightProfanity(cleanedText,"||","||"),
+                    Emojis.alarm));
+            return severity;
+        }
         // 6:
         String strippedText = stripSpecialCharacters(convertedText);
         report.stepsTaken().put("Remove Special Characters", strippedText);
         ServerUtils.sendDebugMessage(("ProfanityFilter: Specials Removed: " + strippedText));
 
         // 7:
-        if (containsSwears(strippedText)) return FilterSeverity.MEDIUM;
-        if (containsSlurs(strippedText)) return FilterSeverity.SLUR;
-
+        severity = checkProfanity(strippedText,FilterSeverity.MEDIUM);
+        if (severity != FilterSeverity.SAFE) {
+            report.stepsTaken().replace("Remove Special Characters", "%s %s".formatted(
+                    highlightProfanity(cleanedText,"||","||"),
+                    Emojis.alarm));
+            return severity;
+        }
         // 8:
         String simplifiedText = simplifyRepeatingLetters(strippedText);
         report.stepsTaken().put("Remove Repeats", simplifiedText);
         ServerUtils.sendDebugMessage(("ProfanityFilter: Removed Repeating: " + simplifiedText));
 
         // 9:
-        if (containsSwears(simplifiedText)) return FilterSeverity.MEDIUM_HIGH;
-        if (containsSlurs(simplifiedText)) return FilterSeverity.SLUR;
-
+        severity = checkProfanity(simplifiedText,FilterSeverity.MEDIUM_HIGH);
+        if (severity != FilterSeverity.SAFE) {
+            report.stepsTaken().replace("Remove Repeats", "%s %s".formatted(
+                    highlightProfanity(cleanedText,"||","||"),
+                    Emojis.alarm));
+            return severity;
+        }
         // 10:
         String finalText = removePeriodsAndSpaces(simplifiedText);
         report.stepsTaken().put("Remove Punctuation", finalText);
         ServerUtils.sendDebugMessage(("ProfanityFilter: Remove Punctuation: " + finalText));
 
         // 11:
-        if (containsSwears(finalText)) return FilterSeverity.HIGH;
-        if (containsSlurs(finalText)) return FilterSeverity.SLUR;
+        severity = checkProfanity(finalText,FilterSeverity.HIGH);
+        if (severity != FilterSeverity.SAFE) {
+            report.stepsTaken().replace("Remove Punctuation", "%s %s".formatted(
+                    highlightProfanity(cleanedText,"||","||"),
+                    Emojis.alarm));
+            return severity;
+        }
 
-        return FilterSeverity.SAFE;
+        return severity;
     }
 
 
-    public static boolean ContainsProfanity(String text) {
-        return containsSwears(text) || containsSlurs(text);
+    public static FilterSeverity checkProfanity(String text, FilterSeverity severity) {
+        if (containsSlurs(text)) return FilterSeverity.SLUR;
+        if (containsSwears(text)) return severity;
+        return FilterSeverity.SAFE;
     }
     private static boolean containsSwears(String text) {
         ServerUtils.sendDebugMessage("ProfanityFilter: Checking for swears");

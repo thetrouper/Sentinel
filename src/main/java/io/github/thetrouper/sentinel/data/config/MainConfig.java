@@ -22,9 +22,9 @@ public class MainConfig implements JsonSerializable<MainConfig> {
         public String prefix = "§d§lSentinel §8» §7";
         public String webhook = "https://discord.com/api/webhooks/id/token";
         public String lang = "en-us.json";
-        public List<String> trustedPlayers = new ArrayList<>() {{
-            add("049460f7-21cb-42f5-8059-d42752bf406f");
-        }};
+        public List<String> trustedPlayers = List.of(
+                "049460f7-21cb-42f5-8059-d42752bf406f"
+        );
         public boolean blockSpecific = true;
         public boolean preventNBT = true;
         public boolean preventCmdBlockPlace = true;
@@ -53,25 +53,30 @@ public class MainConfig implements JsonSerializable<MainConfig> {
                 "perms",
                 "perm",
                 "permission",
-                "permissions"
+                "permissions",
+                "pm",
+                "pluginmanager",
+                "rl",
+                "reload",
+                "plugman"
         );
         public boolean logDangerous = true;
         public boolean logCmdBlocks = true;
         public boolean logNBT = true;
         public boolean logSpecific = false;
-        public List<String> logged = new ArrayList<>() {{
-            add("give");
-            add("item");
-        }};
+        public List<String> logged = List.of(
+                "give",
+                "item"
+        );
         public boolean deop = true;
         public boolean nbtPunish = false;
         public boolean cmdBlockPunish = false;
         public boolean commandPunish = false;
         public boolean specificPunish = false;
-        public List<String> punishCommands = new ArrayList<>() {{
-            add("smite %player%");
-            add("ban %player% ]=- Sentinel -=[ You have been banned for attempting a dangerous action. If you believe this to be a mistake, please contact the server owner.");
-        }};
+        public List<String> punishCommands = List.of(
+                "smite %player%",
+                "ban %player% ]=- Sentinel -=[ \nYou have been banned for attempting a dangerous action. \nIf you believe this to be a mistake, please contact the server owner."
+        );
         public boolean reopCommand = false;
         public boolean pluginHider = true;
     }

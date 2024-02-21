@@ -51,24 +51,39 @@ public class Text {
             return input;
         }
     }
-    public static String replaceRepeatingLetters(String message) {
-        StringBuilder result = new StringBuilder();
-        char prevChar = '\0';
-        int count = 0;
+    public static String replaceRepeatingLetters(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
 
-        for (char c : message.toCharArray()) {
-            if (c == prevChar) {
+        StringBuilder simplifiedText = new StringBuilder();
+        char currentChar = input.charAt(0);
+        int count = 1;
+
+        for (int i = 1; i < input.length(); i++) {
+            char nextChar = input.charAt(i);
+
+            if (Character.toLowerCase(nextChar) == Character.toLowerCase(currentChar)) {
                 count++;
-                if (count <= 3) {
-                    result.append(c);
-                }
             } else {
-                prevChar = c;
+                simplifiedText.append(currentChar);
+
+                if (count > 1) {
+                    simplifiedText.append(currentChar);
+                }
+
+                currentChar = nextChar;
                 count = 1;
-                result.append(c);
             }
         }
-        return result.toString();
+
+        simplifiedText.append(currentChar);
+
+        if (count > 1) {
+            simplifiedText.append(currentChar);
+        }
+
+        return simplifiedText.toString();
     }
     public static String fromLeetString(String s) {
         Map<String, String> dictionary = Sentinel.advConfig.leetPatterns;

@@ -144,10 +144,8 @@ public class SystemCheck {
             AntiSpam.handleAntiSpam(spam,ReportFalsePositives.initializeReport(spam));
         });
 
-        String report = ReportFalsePositives.generateReport(falsePositive);
-
         SchedulerUtils.later(20,()->{
-            ReportFalsePositives.sendFalsePositiveReport(report);
+
         });
 
         Message.messagePlayer(p,p,"Sentinel Automatic System check > Private Message");

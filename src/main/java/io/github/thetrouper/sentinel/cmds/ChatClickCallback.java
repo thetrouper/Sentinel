@@ -7,12 +7,14 @@ import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import io.github.itzispyder.pdk.utils.misc.Cooldown;
 import io.github.thetrouper.sentinel.Sentinel;
+import io.github.thetrouper.sentinel.data.Report;
 import io.github.thetrouper.sentinel.server.functions.ReportFalsePositives;
 import io.github.thetrouper.sentinel.server.util.Text;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
+
 @CommandRegistry(value = "sentinelcallback", permission = @Permission("sentinel.callbacks"), printStackTrace = true)
 public class ChatClickCallback implements CustomCommand {
     Cooldown<UUID> fpReportCooldown = new Cooldown<>();
@@ -24,7 +26,14 @@ public class ChatClickCallback implements CustomCommand {
                 if (fpReportCooldown.isOnCooldown(p.getUniqueId()) && !p.isOp()) {
                     p.sendMessage(Text.prefix(Sentinel.language.get("cooldown") + fpReportCooldown.getCooldown(p.getUniqueId())));
                 } else {
-                    ReportFalsePositives.sendFalsePositiveReport(ReportFalsePositives.reports.get(args.get(1).toLong()));
+                    long id = args.get(1).toLong();
+                    Report send = ReportFalsePositives.reports.get(id);
+                    if (send == null) {
+                        p.sendMessage(Text.prefix(Sentinel.language.get("no-report")));
+                        return;
+                    }
+                    p.sendMessage(Text.prefix(Sentinel.language.get("reporting-false-positive")));
+                    ReportFalsePositives.sendFalsePositiveReport(send);
                     p.sendMessage(Text.prefix(Sentinel.language.get("false-positive-report-success")));
                 }
             }

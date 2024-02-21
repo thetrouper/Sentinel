@@ -1,6 +1,7 @@
 package io.github.thetrouper.sentinel.events;
 
 import io.github.itzispyder.pdk.events.CustomListener;
+import io.github.itzispyder.pdk.utils.ArrayUtils;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Report;
 import io.github.thetrouper.sentinel.server.functions.AdvancedBlockers;
@@ -25,6 +26,14 @@ public class ChatEvent implements CustomListener {
         Player p = e.getPlayer();
 
         Report report = ReportFalsePositives.initializeReport(e);
+
+        ServerUtils.sendDebugMessage("""
+        Creating a chat report...
+        ID %s
+        Player %s
+        Message %s
+        Fields %s
+        """.formatted(report.id(),report.event().getPlayer(),report.event().getMessage(), report.stepsTaken().toString()));
 
         handleEventIfNotBypassed(p,
                 "sentinel.chat.antiunicode.bypass",
@@ -52,16 +61,22 @@ public class ChatEvent implements CustomListener {
             ProfanityFilter.handleProfanityFilter(event,report);
                 });
 
+        ServerUtils.sendDebugMessage("""
+        Adding a report to the list...
+        ID %s
+        Fields %s
+        """.formatted(report.id(), report.stepsTaken().toString()));
         ReportFalsePositives.reports.put(report.id(),report);
+        AntiSpam.lastMessageMap.put(p, e.getMessage());
     }
 
     private static void handleEventIfNotBypassed(Player p, String permission, boolean isEnabled, String eventType, AsyncPlayerChatEvent e, Consumer<AsyncPlayerChatEvent> handler) {
         if (!Sentinel.isTrusted(p) || !p.hasPermission(permission)) {
             ServerUtils.sendDebugMessage("ChatEvent: Permission bypass failed, checking for " + eventType);
-            if (isEnabled) {
-                ServerUtils.sendDebugMessage("ChatEvent: " + eventType + " check enabled, continuing!");
-                handler.accept(e);
-            }
+            if (e.isCancelled()) return;
+            if (!isEnabled) return;
+            ServerUtils.sendDebugMessage("ChatEvent: " + eventType + " check enabled, continuing!");
+            handler.accept(e);
         }
     }
 }

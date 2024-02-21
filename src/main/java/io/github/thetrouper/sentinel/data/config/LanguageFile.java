@@ -50,6 +50,8 @@ public class LanguageFile implements JsonSerializable<LanguageFile> {
         put("unicode-notification", "§b§n%1$s§7 has triggered the anti-unicode.");
         put("unicode-notification-hover", "§8]==-- §d§lSentinel §8--==[\n§bMessage: §f%1$s");
         put("no-plugins-for-u", "§cThis server wishes to keep their plugins confidential.");
+        put("reporting-false-positive","Sending report to staff...");
+        put("no-report","§cThe report you requested either does not exist, or has expired!");
     }};
     public LanguageFile() {}
 
