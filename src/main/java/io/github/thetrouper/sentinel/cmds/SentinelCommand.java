@@ -6,6 +6,7 @@ import io.github.itzispyder.pdk.commands.CustomCommand;
 import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import io.github.thetrouper.sentinel.Sentinel;
+import io.github.thetrouper.sentinel.data.Report;
 import io.github.thetrouper.sentinel.data.cmdblocks.WhitelistedBlock;
 import io.github.thetrouper.sentinel.events.ChatEvent;
 import io.github.thetrouper.sentinel.server.functions.*;
@@ -84,9 +85,9 @@ public class SentinelCommand implements CustomCommand {
             }
             case "chat" -> {
                 AsyncPlayerChatEvent message = new AsyncPlayerChatEvent(true,p,args.getAll(2).toString(), Set.of(p));
-                AdvancedBlockers.handleAdvanced(message);
-                AntiSpam.handleAntiSpam(message);
-                ProfanityFilter.handleProfanityFilter(message);
+                AdvancedBlockers.handleAdvanced(message, ReportFalsePositives.initializeReport(message));
+                AntiSpam.handleAntiSpam(message,ReportFalsePositives.initializeReport(message));
+                ProfanityFilter.handleProfanityFilter(message,ReportFalsePositives.initializeReport(message));
                 if (!message.isCancelled()) p.sendMessage(Text.prefix("Message did not get flagged."));
             }
         }

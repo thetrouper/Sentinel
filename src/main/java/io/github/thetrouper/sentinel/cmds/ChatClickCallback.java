@@ -13,7 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
-@CommandRegistry(value = "sentinelcallback", permission = @Permission("sentinel.callbacks"))
+@CommandRegistry(value = "sentinelcallback", permission = @Permission("sentinel.callbacks"), printStackTrace = true)
 public class ChatClickCallback implements CustomCommand {
     Cooldown<UUID> fpReportCooldown = new Cooldown<>();
     @Override
@@ -24,7 +24,7 @@ public class ChatClickCallback implements CustomCommand {
                 if (fpReportCooldown.isOnCooldown(p.getUniqueId()) && !p.isOp()) {
                     p.sendMessage(Text.prefix(Sentinel.language.get("cooldown") + fpReportCooldown.getCooldown(p.getUniqueId())));
                 } else {
-                    ReportFalsePositives.sendFalsePositiveReport(args.get(1).toString());
+                    ReportFalsePositives.sendFalsePositiveReport(ReportFalsePositives.reports.get(args.get(1).toLong()));
                     p.sendMessage(Text.prefix(Sentinel.language.get("false-positive-report-success")));
                 }
             }

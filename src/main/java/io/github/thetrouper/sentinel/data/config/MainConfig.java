@@ -36,20 +36,25 @@ public class MainConfig implements JsonSerializable<MainConfig> {
         public boolean preventCmdCartPlace = true;
         public boolean preventCmdCartUse = true;
         public boolean cmdBlockOpCheck = true;
-        public List<String> dangerous = new ArrayList<>() {{
-            add("op");
-            add("deop");
-            add("stop");
-            add("restart");
-            add("execute");
-            add("sudo");
-            add("esudo");
-            add("fill");
-            add("setblock");
-            add("data");
-            add("whitelist");
-            add("lp")
-        }};
+        public List<String> dangerous = List.of(
+                "op",
+                "deop",
+                "stop",
+                "restart",
+                "execute",
+                "sudo",
+                "esudo",
+                "fill",
+                "setblock",
+                "data",
+                "whitelist",
+                "lp",
+                "luckperms",
+                "perms",
+                "perm",
+                "permission",
+                "permissions"
+        );
         public boolean logDangerous = true;
         public boolean logCmdBlocks = true;
         public boolean logNBT = true;

@@ -5,6 +5,7 @@ import io.github.itzispyder.pdk.utils.SchedulerUtils;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.cmds.SocialSpyCommand;
 import io.github.thetrouper.sentinel.data.ActionType;
+import io.github.thetrouper.sentinel.data.Report;
 import io.github.thetrouper.sentinel.events.CommandEvent;
 import io.github.thetrouper.sentinel.server.Action;
 import org.bukkit.Bukkit;
@@ -129,17 +130,18 @@ public class SystemCheck {
 
     public static void chatCheck(Player p) {
         SocialSpyCommand.spyMap.put(p.getUniqueId(),true);
+
         AsyncPlayerChatEvent swear = new AsyncPlayerChatEvent(true,p,"Sentinel AntiSwear check > Fvck", Set.of(p));
         AsyncPlayerChatEvent spam = new AsyncPlayerChatEvent(true,p,"Sentinel AntiSpam check", Set.of(p));
         AsyncPlayerChatEvent falsePositive = new AsyncPlayerChatEvent(true,p,"Sentinel False Positive check > I like sentanal anti nuke", Set.of(p));
         AsyncPlayerChatEvent unicode = new AsyncPlayerChatEvent(true,p,"\u202Elmao i am bypassing the filter tihs ", Set.of(p));
         AsyncPlayerChatEvent url = new AsyncPlayerChatEvent(true,p,"join my lifesteal server! play.cringsteal.net", Set.of(p));
-        ProfanityFilter.handleProfanityFilter(swear);
-        AdvancedBlockers.handleAntiUnicode(unicode);
-        AdvancedBlockers.handleAntiURL(url);
+        ProfanityFilter.handleProfanityFilter(swear,ReportFalsePositives.initializeReport(swear));
+        AdvancedBlockers.handleAntiUnicode(unicode,ReportFalsePositives.initializeReport(unicode));
+        AdvancedBlockers.handleAntiURL(url,ReportFalsePositives.initializeReport(url));
         SchedulerUtils.loop(5,4, (loop)->{
             AntiSpam.lastMessageMap.put(p,"Sentinel AntiSpam Check");
-            AntiSpam.handleAntiSpam(spam);
+            AntiSpam.handleAntiSpam(spam,ReportFalsePositives.initializeReport(spam));
         });
 
         String report = ReportFalsePositives.generateReport(falsePositive);

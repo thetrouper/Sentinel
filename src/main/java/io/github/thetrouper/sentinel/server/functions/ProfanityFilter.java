@@ -3,6 +3,7 @@ package io.github.thetrouper.sentinel.server.functions;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.FAT;
 import io.github.thetrouper.sentinel.data.FilterSeverity;
+import io.github.thetrouper.sentinel.data.Report;
 import io.github.thetrouper.sentinel.server.FilterAction;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
@@ -23,67 +24,58 @@ public class ProfanityFilter {
         scoreMap = new HashMap<>();
     }
 
-    public static void handleProfanityFilter(AsyncPlayerChatEvent e) {
-        Player p = e.getPlayer();
-        String message = Text.removeFirstColor(e.getMessage());
-        FilterSeverity severity = ProfanityFilter.checkSeverity(message);
+    public static void handleProfanityFilter(AsyncPlayerChatEvent event, Report report) {
+        Player player = event.getPlayer();
+        String message = Text.removeFirstColor(event.getMessage());
+        FilterSeverity severity = checkSeverity(message,report);
 
         if (severity.equals(FilterSeverity.SAFE)) return;
 
-        if (!scoreMap.containsKey(p)) scoreMap.put(p, 0);
+        scoreMap.putIfAbsent(player, 0);
+        int previousScore = scoreMap.get(player);
+        ServerUtils.sendDebugMessage(String.format("AntiSwear Flag, Message: %s Concentrated: %s Severity: %s Previous Score: %d Adding Score: %d",
+                message, fullSimplify(message), severity, previousScore, severity.getScore()));
+        event.setCancelled(true);
 
-        ServerUtils.sendDebugMessage("AntiSwear Flag, Message: " + message + " Concentrated: " + fullSimplify(message) +  " Severity: " + severity + " Previous Score: " + scoreMap.get(p) +" Adding Score: " + severity.getScore());
-        e.setCancelled(true);
+        int newScore = previousScore + severity.getScore();
+        scoreMap.put(player, newScore);
 
-        if (scoreMap.get(p) + severity.getScore() > Sentinel.mainConfig.chat.antiSwear.punishScore) {
-            scoreMap.put(p,scoreMap.get(p)+severity.getScore());
-            FilterAction.filterPunish(e,FAT.SWEAR_PUNISH,null,severity);
+        if (newScore > Sentinel.mainConfig.chat.antiSwear.punishScore) {
+            FilterAction.filterPunish(event, FAT.SWEAR_PUNISH, null, severity);
             return;
         }
 
-        scoreMap.put(p,scoreMap.get(p)+severity.getScore());
-
-        FilterAction.filterPunish(e,getFAT(severity),null,severity);
+        FilterAction.filterPunish(event, getFAT(severity), null, severity);
     }
 
+
     private static FAT getFAT(FilterSeverity severity) {
-        switch (severity) {
-            case SAFE -> {
-                return FAT.SAFE;
-            }
-            case LOW, MEDIUM_LOW, MEDIUM, MEDIUM_HIGH, HIGH -> {
-                return FAT.BLOCK_SWEAR;
-            }
-            case SLUR -> {
-                return FAT.SLUR_PUNISH;
-            }
-            default -> throw new IllegalArgumentException("Warning! This severity doesn't exist! " + severity);
-        }
+        return switch (severity) {
+            case SAFE -> FAT.SAFE;
+            case LOW, MEDIUM_LOW, MEDIUM, MEDIUM_HIGH, HIGH -> FAT.BLOCK_SWEAR;
+            case SLUR -> FAT.SLUR_PUNISH;
+        };
     }
 
     public static String highlightProfanity(String text) {
-        String highlightedSwears = highlightSwears(fullSimplify(text),  "&e",  "&f");
-        String highlightedText = highlightSlurs(highlightedSwears,  "&c",  "&f");
-        return Text.color(highlightedText);
+        return highlightProfanity(text, "&e", "&f");
     }
+
     public static String highlightProfanity(String text, String start, String end) {
         String highlightedSwears = highlightSwears(fullSimplify(text), start, end);
-        String highlightedText = highlightSlurs(highlightedSwears, start, end);
-        return Text.color(highlightedText);
+        return Text.color(highlightSlurs(highlightedSwears, start, end));
     }
 
     private static String highlightSwears(String text, String start, String end) {
         for (String swear : swearBlacklist) {
-            if (text.contains(swear)) {text = text.replace(swear, start + swear + end);}
+            text = text.replace(swear, start + swear + end);
         }
         return text;
     }
 
     private static String highlightSlurs(String text, String start, String end) {
         for (String slur : slurs) {
-            if (text.contains(slur)) {
-                text = text.replace(slur, start + slur + end);
-            }
+            text = text.replace(slur, start + slur + end);
         }
         return text;
     }
@@ -112,13 +104,15 @@ public class ProfanityFilter {
         String simplifiedText = simplifyRepeatingLetters(strippedText);
         return removePeriodsAndSpaces(simplifiedText);
     }
-    public static FilterSeverity checkSeverity(String text) {
+    public static FilterSeverity checkSeverity(String text, Report report) {
         // 1:
         String lowercasedText = text.toLowerCase();
+        report.stepsTaken().put("Lowercased", lowercasedText);
         ServerUtils.sendDebugMessage("ProfanityFilter:  Lowercased: " + lowercasedText);
 
         // 2:
         String cleanedText = removeFalsePositives(lowercasedText);
+        report.stepsTaken().put("Remove False Positives", cleanedText);
         ServerUtils.sendDebugMessage(("ProfanityFilter: Removed False positives: " + cleanedText));
 
         // 3:
@@ -127,6 +121,7 @@ public class ProfanityFilter {
 
         // 4:
         String convertedText = convertLeetSpeakCharacters(cleanedText);
+        report.stepsTaken().put("Convert LeetSpeak", convertedText);
         ServerUtils.sendDebugMessage(("ProfanityFilter: Leet Converted: " + convertedText));
 
         // 5:
@@ -135,6 +130,7 @@ public class ProfanityFilter {
 
         // 6:
         String strippedText = stripSpecialCharacters(convertedText);
+        report.stepsTaken().put("Remove Special Characters", strippedText);
         ServerUtils.sendDebugMessage(("ProfanityFilter: Specials Removed: " + strippedText));
 
         // 7:
@@ -143,6 +139,7 @@ public class ProfanityFilter {
 
         // 8:
         String simplifiedText = simplifyRepeatingLetters(strippedText);
+        report.stepsTaken().put("Remove Repeats", simplifiedText);
         ServerUtils.sendDebugMessage(("ProfanityFilter: Removed Repeating: " + simplifiedText));
 
         // 9:
@@ -151,6 +148,7 @@ public class ProfanityFilter {
 
         // 10:
         String finalText = removePeriodsAndSpaces(simplifiedText);
+        report.stepsTaken().put("Remove Punctuation", finalText);
         ServerUtils.sendDebugMessage(("ProfanityFilter: Remove Punctuation: " + finalText));
 
         // 11:

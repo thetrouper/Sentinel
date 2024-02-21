@@ -1,7 +1,9 @@
 package io.github.thetrouper.sentinel.server.functions;
 
 import io.github.thetrouper.sentinel.Sentinel;
+import io.github.thetrouper.sentinel.data.Emojis;
 import io.github.thetrouper.sentinel.data.FAT;
+import io.github.thetrouper.sentinel.data.Report;
 import io.github.thetrouper.sentinel.server.FilterAction;
 import io.github.thetrouper.sentinel.server.util.GPTUtils;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
@@ -21,10 +23,9 @@ public class AntiSpam {
         lastMessageMap = new HashMap<>();
     }
 
-    public static void handleAntiSpam(AsyncPlayerChatEvent e) {
+    public static void handleAntiSpam(AsyncPlayerChatEvent e, Report report) {
         Player p = e.getPlayer();
         String message = Text.removeFirstColor(e.getMessage());
-
         if (!lastMessageMap.containsKey(p)) {
             lastMessageMap.put(p,"/* Placeholder Message from Sentinel */");
             ServerUtils.sendDebugMessage("AntiSpam: " + p.getName() + " did not have a previous message, setting to placeholder!");
@@ -51,16 +52,20 @@ public class AntiSpam {
             }
         }
 
+        report.stepsTaken().put("Anti-Spam", "Heat: %s\nMessage: `%s`".formatted(heatMap.get(p),message));
+
         lastMessageMap.put(p, message);
 
         if (heatMap.get(p) > Sentinel.mainConfig.chat.antiSpam.punishHeat) {
             e.setCancelled(true);
+            report.stepsTaken().replace("Anti-Spam", "Heat: %s\nMessage: `%s` %s".formatted(heatMap.get(p),message, Emojis.alarm));
             FilterAction.filterPunish(e,FAT.SPAM_PUNISH,GPTUtils.calcSim(e.getMessage(),lastMessageMap.get(p)), null);
             return;
         }
 
         if (heatMap.get(p) > Sentinel.mainConfig.chat.antiSpam.blockHeat) {
             e.setCancelled(true);
+            report.stepsTaken().replace("Anti-Spam", "Heat: %s\nMessage: `%s` %s".formatted(heatMap.get(p),message, Emojis.alarm));
             FilterAction.filterPunish(e,FAT.BLOCK_SPAM, GPTUtils.calcSim(e.getMessage(),lastMessageMap.get(p)), null);
             heatMap.put(p, heatMap.get(p) + Sentinel.mainConfig.chat.antiSpam.highGain);
             return;

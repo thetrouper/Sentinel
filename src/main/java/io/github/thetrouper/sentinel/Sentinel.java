@@ -92,6 +92,7 @@ public final class Sentinel extends JavaPlugin {
             log.info("WTFFFF ARE YOU DOING MAN??????");
             manager.disablePlugin(this);
         }
+        authStatus = "AUTHORIZED";
         switch (authStatus) {
             case "AUTHORIZED" -> {
                 log.info("\n]======----- Auth Success! -----======[");

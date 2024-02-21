@@ -5,9 +5,11 @@ import io.github.itzispyder.pdk.utils.discord.DiscordEmbed;
 import io.github.itzispyder.pdk.utils.discord.DiscordWebhook;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Emojis;
+import io.github.thetrouper.sentinel.data.Report;
 import io.github.thetrouper.sentinel.server.util.Randomizer;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
+import it.unimi.dsi.fastutil.Hash;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -18,6 +20,15 @@ import java.util.Map;
 
 public class ReportFalsePositives {
     public static Map<String,AsyncPlayerChatEvent> reportMap = new HashMap<>();
+    public static Map<Long,Report> reports = new HashMap<>();
+
+    public static Report initializeReport(AsyncPlayerChatEvent e) {
+        final long reportID = Randomizer.generateID();
+        HashMap<String,String> steps = new HashMap<>();
+        steps.put("Original Message", e.getMessage());
+        return new Report(reportID,e,steps);
+    }
+
     public static String generateReport(AsyncPlayerChatEvent e) {
         final long reportLong = Randomizer.generateID();
         final String reportID = Long.toString(reportLong);
@@ -30,6 +41,34 @@ public class ReportFalsePositives {
         });
         return reportID;
     }
+
+
+    public static void sendFalsePositiveReport(Report report) {
+        DiscordEmbed.Builder embed = DiscordEmbed.create()
+                .author(new DiscordEmbed.Author("Anti-Swear False Positive","",null))
+                .title("Flag Report:")
+                .desc(String.format("""
+                                %1$sPlayer: %2$s %3$s\n
+                                %4$s %5$sUUID: `%2$s`\n
+                                """,
+                        Emojis.rightSort,
+                        report.event().getPlayer().getName(),
+                        Emojis.target,
+                        Emojis.space,
+                        Emojis.arrowRight
+                ));
+
+        report.stepsTaken().forEach((key, value)->{
+            embed.addField(new DiscordEmbed.Field(key,value));
+        });
+
+        DiscordWebhook.create()
+                .avatar("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png")
+                .username("Sentinel Anti-Nuke | Logs")
+                .addEmbed(embed.build())
+                .send(Sentinel.mainConfig.plugin.webhook);
+    }
+
     public static void sendFalsePositiveReport(String reportID) {
         AsyncPlayerChatEvent e = reportMap.get(reportID);
         String orig = e.getMessage();

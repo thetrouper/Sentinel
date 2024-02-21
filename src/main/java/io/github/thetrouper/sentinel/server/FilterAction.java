@@ -178,75 +178,74 @@ public class FilterAction {
     }
 
     private static void sendDiscordLog(Player offender, AsyncPlayerChatEvent e, FAT type) {
-        String supertitle = type.getTitle();
-        String title = offender.getName() + " has triggered the " + type.getName() + "!";
+        CompletableFuture.runAsync(()->{
+            String supertitle = type.getTitle();
+            String title = offender.getName() + " has triggered the " + type.getName() + "!";
 
-        String executed = type.getExecutedCommand() != null ? type.getExecutedCommand() : "Nothing, its a standard flag. You shouldn't be seeing this, please report it.";
-        StringBuilder description = new StringBuilder();
+            String executed = type.getExecutedCommand() != null ? type.getExecutedCommand() : "Nothing, its a standard flag. You shouldn't be seeing this, please report it.";
+            StringBuilder description = new StringBuilder();
 
-        String historyTitle = "You found a bug! :D";
-        String historyValue = "Congratulations.";
+            String historyTitle = "You found a bug! :D";
+            String historyValue = "Congratulations.";
 
-        String currentTitle = "Now go report it!";
-        String currentValue = ">:(";
+            String currentTitle = "Now go report it!";
+            String currentValue = ">:(";
 
-        description.append(String.format("%1$sPlayer: `%2$s` %3$s",Emojis.rightSort,offender.getName(),Emojis.target));
-        switch (type) {
-            case SPAM_PUNISH -> {
-                description.append(String.format("\n%1$s%2$sHeat: `%3$s/%4$s`",
-                        Emojis.space,
-                        Emojis.arrowRight,
-                        heatMap.get(offender),
-                        Sentinel.mainConfig.chat.antiSpam.punishHeat
-                ));
-                historyTitle = "Previous: ";
-                historyValue = lastMessageMap.get(offender);
+            description.append(String.format("%1$sPlayer: `%2$s` %3$s",Emojis.rightSort,offender.getName(),Emojis.target));
+            switch (type) {
+                case SPAM_PUNISH -> {
+                    description.append(String.format("\n%1$s%2$sHeat: `%3$s/%4$s`",
+                            Emojis.space,
+                            Emojis.arrowRight,
+                            heatMap.get(offender),
+                            Sentinel.mainConfig.chat.antiSpam.punishHeat
+                    ));
+                    historyTitle = "Previous: ";
+                    historyValue = lastMessageMap.get(offender);
 
-                currentTitle = "Current: ";
-                currentValue = e.getMessage();
+                    currentTitle = "Current: ";
+                    currentValue = e.getMessage();
+                }
+                case SWEAR_PUNISH, SLUR_PUNISH -> {
+                    description.append(String.format("\n%1$s%2$sScore: `%3$s/%4$s`",
+                            Emojis.space,
+                            Emojis.arrowRight,
+                            scoreMap.get(offender),
+                            Sentinel.mainConfig.chat.antiSwear.punishScore
+                    ));
+                    historyTitle = "Message: ";
+                    historyValue = e.getMessage();
+
+                    currentTitle = "Reduced: ";
+                    currentValue = highlightProfanity(e.getMessage(),"||", "||");
+                }
             }
-            case SWEAR_PUNISH, SLUR_PUNISH -> {
-                description.append(String.format("\n%1$s%2$sScore: `%3$s/%4$s`",
-                        Emojis.space,
-                        Emojis.arrowRight,
-                        scoreMap.get(offender),
-                        Sentinel.mainConfig.chat.antiSwear.punishScore
-                ));
-                historyTitle = "Message: ";
-                historyValue = e.getMessage();
 
-                currentTitle = "Reduced: ";
-                currentValue = highlightProfanity(e.getMessage(),"||", "||");
+            try {
+                String finalHistoryTitle = historyTitle;
+                String finalHistoryValue = historyValue;
+                String finalCurrentTitle = currentTitle;
+                String finalCurrentValue = currentValue;
+                CompletableFuture.runAsync(()->{
+                    ServerUtils.sendDebugMessage("Executing webhook...");
+                    DiscordWebhook.create()
+                            .username("Sentinel Anti-Nuke | Logs")
+                            .avatar("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png")
+                            .addEmbed(DiscordEmbed.create()
+                                    .author(new DiscordEmbed.Author(supertitle,"https://builtbybit.com/resources/sentinel-anti-nuke.30130/",null))
+                                    .title(title)
+                                    .desc(String.valueOf(description))
+                                    .addField(new DiscordEmbed.Field(finalHistoryTitle, finalHistoryValue,true))
+                                    .addField(new DiscordEmbed.Field(finalCurrentTitle, finalCurrentValue,true))
+                                    .addField(new DiscordEmbed.Field("Executed: ", executed.replaceAll("%player%",offender.getName()),false))
+                                    .thumbnail("https://crafatar.com/avatars/" + offender.getUniqueId() + "?size=64&&overlay")
+                                    .color(type.getColor())
+                                    .build()).send(Sentinel.mainConfig.plugin.webhook);
+                });
+            } catch (Exception ex) {
+                ServerUtils.sendDebugMessage("Filter Actions: Epic webhook failure!!!");
+                Sentinel.log.info(ex.toString());
             }
-        }
-
-        try {
-            String finalHistoryTitle = historyTitle;
-            String finalHistoryValue = historyValue;
-            String finalCurrentTitle = currentTitle;
-            String finalCurrentValue = currentValue;
-            CompletableFuture.runAsync(()->{
-                ServerUtils.sendDebugMessage("Executing webhook...");
-                DiscordWebhook.create()
-                        .username("Sentinel Anti-Nuke | Logs")
-                        .avatar("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png")
-                        .addEmbed(DiscordEmbed.create()
-                                .author(new DiscordEmbed.Author(supertitle,"https://builtbybit.com/resources/sentinel-anti-nuke.30130/",null))
-                                .title(title)
-                                .desc(String.valueOf(description))
-                                .addField(new DiscordEmbed.Field(finalHistoryTitle, finalHistoryValue,true))
-                                .addField(new DiscordEmbed.Field(finalCurrentTitle, finalCurrentValue,true))
-                                .addField(new DiscordEmbed.Field("Executed: ", executed.replaceAll("%player%",offender.getName()),false))
-                                .thumbnail("https://crafatar.com/avatars/" + offender.getUniqueId() + "?size=64&&overlay")
-                                .color(type.getColor())
-                                .build()).send(Sentinel.mainConfig.plugin.webhook);
-            });
-        } catch (Exception ex) {
-            ServerUtils.sendDebugMessage("Filter Actions: Epic webhook failure!!!");
-            Sentinel.log.info(ex.toString());
-        }
-
-
-
+        });
     }
 }
