@@ -23,19 +23,19 @@ public class ReplyCommand implements CustomCommand {
         Player p = sender.getServer().getPlayer(name);
         UUID senderID = p.getUniqueId();
         if (replyMap.get(senderID) == null) {
-            p.sendMessage(Text.prefix(Sentinel.language.get("no-user-reply")));
+            p.sendMessage(Text.prefix(Sentinel.lang.playerInteraction.noReply));
         }
         Player r = sender.getServer().getPlayer(replyMap.get(senderID));
         UUID reciverID = r.getUniqueId();
         if (args.get(0).toString() == null) {
-            p.sendMessage(Text.prefix(Sentinel.language.get("no-message-provided")));
+            p.sendMessage(Text.prefix(Sentinel.lang.playerInteraction.noMessageProvided));
         }
         String msg = args.getAll().toString();
         if (p.hasPermission("sentinel.message")) {
             Message.messagePlayer(p,r,msg);
             replyMap.put(senderID,reciverID);
         } else {
-            sender.sendMessage(Text.prefix(Sentinel.language.get("no-permission")));
+            sender.sendMessage(Text.prefix(Sentinel.lang.permissions.noPermission));
         }
     }
 

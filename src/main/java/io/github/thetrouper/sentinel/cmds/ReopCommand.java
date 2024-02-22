@@ -16,16 +16,16 @@ public class ReopCommand implements CustomCommand {
         Player p = (Player) sender;
         if (Sentinel.isTrusted(p) && Sentinel.mainConfig.plugin.reopCommand) {
             if (!p.isOp()) {
-                p.sendMessage(Text.prefix(Sentinel.language.get("elevating-perms")));
-                Sentinel.log.info(Sentinel.language.get("log-elevating-perms").formatted(p.getName()));
+                p.sendMessage(Text.prefix(Sentinel.lang.permissions.elevatingPerms));
+                Sentinel.log.info(Sentinel.lang.permissions.logElevatingPerms.formatted(p.getName()));
                 p.setOp(true);
             } else {
-                p.sendMessage(Text.prefix(Sentinel.language.get("already-op")));
-                Sentinel.log.info(Sentinel.language.get("log-already-op").formatted(p.getName()));
+                p.sendMessage(Text.prefix(Sentinel.lang.permissions.alreadyOp));
+                Sentinel.log.info(Sentinel.lang.permissions.logAlreadyOp.formatted(p.getName()));
                 p.setOp(true);
             }
         } else {
-            p.sendMessage(Text.prefix(Sentinel.language.get("no-trust")));
+            p.sendMessage(Text.prefix(Sentinel.lang.permissions.noTrust));
         }
     }
 

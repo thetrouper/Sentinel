@@ -37,7 +37,7 @@ public final class Sentinel extends JavaPlugin {
     public static StrictConfig strictConfig = JsonSerializable.load(strctcfg, StrictConfig.class, new StrictConfig());
     public static NBTConfig nbtConfig = JsonSerializable.load(nbtcfg, NBTConfig.class, new NBTConfig());
     public static AdvancedConfig advConfig = JsonSerializable.load(advcfg, AdvancedConfig.class, new AdvancedConfig());
-    public static LanguageFile language;
+    public static LanguageFile lang;
     public static ProtocolManager protocolManager;
     public static final PluginManager manager = Bukkit.getPluginManager();
 
@@ -72,7 +72,7 @@ public final class Sentinel extends JavaPlugin {
             log.warning("Sentinel: ProtocolLib not found. Sentinel will not attempt to hide your plugins.");
         }
 
-        log.info("Language Status: (%s)".formatted(language.get("if-you-see-this-lang-is-broken")));
+        log.info("Language Status: (%s)".formatted(lang.brokenLang));
 
         log.info("Initializing Server ID...");
         serverID = Authenticator.getServerID();
@@ -200,8 +200,8 @@ public final class Sentinel extends JavaPlugin {
 
         log.info("Loading Dictionary (%s)...".formatted(Sentinel.mainConfig.plugin.lang));
 
-        language = JsonSerializable.load(LanguageFile.PATH,LanguageFile.class,new LanguageFile());
-        language.save();
+        lang = JsonSerializable.load(LanguageFile.PATH,LanguageFile.class,new LanguageFile());
+        lang.save();
     }
 
 

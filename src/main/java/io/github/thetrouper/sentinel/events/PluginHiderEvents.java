@@ -7,8 +7,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
-import java.util.Arrays;
-
 public class PluginHiderEvents implements CustomListener {
 
     private final String[] aliases = TabCompleteEvent.VERSION_ALIASES;
@@ -26,7 +24,7 @@ public class PluginHiderEvents implements CustomListener {
         for (String alias : aliases) {
             if (!message.startsWith(alias)) continue;
             e.setCancelled(true);
-            p.sendMessage(Text.color(Sentinel.language.get("no-plugins-for-u")));
+            p.sendMessage(Text.color(Sentinel.lang.permissions.noPlugins));
         }
     }
 }

@@ -1,9 +1,8 @@
 package io.github.thetrouper.sentinel.server.functions;
 
-import io.github.itzispyder.pdk.utils.SchedulerUtils;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Emojis;
-import io.github.thetrouper.sentinel.data.FAT;
+import io.github.thetrouper.sentinel.data.FilterActionType;
 import io.github.thetrouper.sentinel.data.Report;
 import io.github.thetrouper.sentinel.server.FilterAction;
 import io.github.thetrouper.sentinel.server.util.GPTUtils;
@@ -14,16 +13,17 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class AntiSpam {
-    public static Map<Player, Integer> heatMap = new HashMap<>();
-    public static Map<Player, String> lastMessageMap = new HashMap<>();
+    public static Map<UUID, Integer> heatMap = new HashMap<>();
+    public static Map<UUID, String> lastMessageMap = new HashMap<>();
 
     public static void handleAntiSpam(AsyncPlayerChatEvent e, Report report) {
         Player p = e.getPlayer();
         String message = Text.removeFirstColor(e.getMessage());
-        String lastMessage = lastMessageMap.getOrDefault(p,"/* Placeholder Message from Sentinel */");
-        int currentHeat = heatMap.getOrDefault(p,0);
+        String lastMessage = lastMessageMap.getOrDefault(p.getUniqueId(),"/* Placeholder Message from Sentinel */");
+        int currentHeat = heatMap.getOrDefault(p.getUniqueId(),0);
         double similarity = GPTUtils.calcSim(message, lastMessage);
 
         int addHeat = Sentinel.mainConfig.chat.antiSpam.defaultGain;
@@ -45,22 +45,24 @@ public class AntiSpam {
         if (currentHeat > Sentinel.mainConfig.chat.antiSpam.punishHeat) {
             e.setCancelled(true);
             report.stepsTaken().replace("Anti-Spam", "Heat: %s\nMessage: `%s` %s".formatted(currentHeat,message, Emojis.alarm));
-            FilterAction.filterPunish(e,FAT.SPAM_PUNISH,GPTUtils.calcSim(e.getMessage(),lastMessage), null,report.id());
+            //FilterAction.filterPunish(e,FAT.SPAM_PUNISH,GPTUtils.calcSim(e.getMessage(),lastMessage), null,report.id());
+            FilterAction.takeAction(e, FilterActionType.SPAM_PUNISH,report,similarity,null);
             return;
         }
 
         if (currentHeat > Sentinel.mainConfig.chat.antiSpam.blockHeat) {
             e.setCancelled(true);
             report.stepsTaken().replace("Anti-Spam", "Heat: %s\nMessage: `%s` %s".formatted(currentHeat,message, Emojis.alarm));
-            FilterAction.filterPunish(e,FAT.BLOCK_SPAM, GPTUtils.calcSim(e.getMessage(),lastMessage), null,report.id());
-            heatMap.put(p, currentHeat + Sentinel.mainConfig.chat.antiSpam.highGain);
+            //FilterAction.filterPunish(e,FAT.BLOCK_SPAM, GPTUtils.calcSim(e.getMessage(),lastMessage), null,report.id());
+            FilterAction.takeAction(e,FilterActionType.SPAM_BLOCK,report,similarity,null);
+            heatMap.put(p.getUniqueId(), currentHeat + Sentinel.mainConfig.chat.antiSpam.highGain);
             return;
         }
 
-        heatMap.put(p,currentHeat + addHeat);
+        heatMap.put(p.getUniqueId(),currentHeat + addHeat);
     }
     public static void decayHeat() {
-        for (Player p : heatMap.keySet()) {
+        for (UUID p : heatMap.keySet()) {
             int heat = heatMap.getOrDefault(p,0);
             if (heat > 0) {
                 heat = heat - Sentinel.mainConfig.chat.antiSpam.heatDecay;

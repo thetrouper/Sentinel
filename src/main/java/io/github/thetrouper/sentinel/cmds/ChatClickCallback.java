@@ -24,17 +24,17 @@ public class ChatClickCallback implements CustomCommand {
         switch (args.get(0).toString()) {
             case "fpreport" -> {
                 if (fpReportCooldown.isOnCooldown(p.getUniqueId()) && !p.isOp()) {
-                    p.sendMessage(Text.prefix(Sentinel.language.get("cooldown") + fpReportCooldown.getCooldown(p.getUniqueId())));
+                    p.sendMessage(Text.prefix(Sentinel.lang.cooldown.onCooldown + fpReportCooldown.getCooldown(p.getUniqueId())));
                 } else {
                     long id = args.get(1).toLong();
                     Report send = ReportFalsePositives.reports.get(id);
                     if (send == null) {
-                        p.sendMessage(Text.prefix(Sentinel.language.get("no-report")));
+                        p.sendMessage(Text.prefix(Sentinel.lang.reports.noReport));
                         return;
                     }
-                    p.sendMessage(Text.prefix(Sentinel.language.get("reporting-false-positive")));
+                    p.sendMessage(Text.prefix(Sentinel.lang.reports.reportingFalsePositive));
                     ReportFalsePositives.sendFalsePositiveReport(send);
-                    p.sendMessage(Text.prefix(Sentinel.language.get("false-positive-report-success")));
+                    p.sendMessage(Text.prefix(Sentinel.lang.reports.falsePositiveSuccess));
                 }
             }
         }

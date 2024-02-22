@@ -107,7 +107,7 @@ public class Text {
         return msg;
     }
 
-    public static String blockName(String type) {
+    public static String cleanName(String type) {
         return type.replaceAll("_"," ").toLowerCase();
     }
 }

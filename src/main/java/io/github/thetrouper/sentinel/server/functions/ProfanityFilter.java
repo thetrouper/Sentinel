@@ -1,10 +1,7 @@
 package io.github.thetrouper.sentinel.server.functions;
 
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.data.Emojis;
-import io.github.thetrouper.sentinel.data.FAT;
-import io.github.thetrouper.sentinel.data.FilterSeverity;
-import io.github.thetrouper.sentinel.data.Report;
+import io.github.thetrouper.sentinel.data.*;
 import io.github.thetrouper.sentinel.server.FilterAction;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
@@ -14,9 +11,10 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class ProfanityFilter {
-    public static Map<Player, Integer> scoreMap = new HashMap<>();
+    public static Map<UUID, Integer> scoreMap = new HashMap<>();
     private static final List<String> swearBlacklist = Sentinel.swearConfig.swears;
     private static final List<String> swearWhitelist = Sentinel.fpConfig.swearWhitelist;
     private static final List<String> slurs = Sentinel.strictConfig.strict;
@@ -28,23 +26,30 @@ public class ProfanityFilter {
 
         if (severity.equals(FilterSeverity.SAFE)) return;
 
-        scoreMap.putIfAbsent(player, 0);
-        int previousScore = scoreMap.get(player);
+        scoreMap.putIfAbsent(player.getUniqueId(), 0);
+        int previousScore = scoreMap.get(player.getUniqueId());
         ServerUtils.sendDebugMessage(String.format("AntiSwear Flag, Message: %s Concentrated: %s Severity: %s Previous Score: %d Adding Score: %d",
                 message, fullSimplify(message), severity, previousScore, severity.getScore()));
         event.setCancelled(true);
 
         int newScore = previousScore + severity.getScore();
-        scoreMap.put(player, newScore);
+        scoreMap.put(player.getUniqueId(), newScore);
 
         if (newScore > Sentinel.mainConfig.chat.antiSwear.punishScore) {
-            FilterAction.filterPunish(event, FAT.SWEAR_PUNISH, null, severity,report.id());
+            FilterAction.takeAction(event,FilterActionType.SWEAR_PUNISH,report,0,severity);
             return;
         }
-
-        FilterAction.filterPunish(event, getFAT(severity), null, severity,report.id());
+        FilterAction.takeAction(event,getFilterActionType(severity),report,0,severity);
+        //FilterAction.filterPunish(event, getFAT(severity), null, severity,report.id());
     }
 
+    public static FilterActionType getFilterActionType(FilterSeverity severity) {
+        return switch (severity) {
+            case SLUR -> FilterActionType.SLUR_PUNISH;
+            case LOW,MEDIUM_LOW,MEDIUM,MEDIUM_HIGH,HIGH -> FilterActionType.SWEAR_BLOCK;
+            case SAFE -> FilterActionType.SAFE;
+        };
+    }
 
     private static FAT getFAT(FilterSeverity severity) {
         return switch (severity) {
@@ -224,11 +229,11 @@ public class ProfanityFilter {
         return text.replaceAll("[^A-Za-z0-9]", "").replace(" ", "");
     }
     public static void decayScore() {
-        for (Player p : scoreMap.keySet()) {
-            int score = scoreMap.get(p);
+        for (UUID uuid : scoreMap.keySet()) {
+            int score = scoreMap.get(uuid);
             if (score > 0) {
                 score = score - Sentinel.mainConfig.chat.antiSwear.scoreDecay;
-                scoreMap.put(p, Math.max(0, score));
+                scoreMap.put(uuid, Math.max(0, score));
             }
         }
     }

@@ -1,10 +1,7 @@
 package io.github.thetrouper.sentinel.server.functions;
 
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.data.Emojis;
-import io.github.thetrouper.sentinel.data.FAT;
-import io.github.thetrouper.sentinel.data.FilterSeverity;
-import io.github.thetrouper.sentinel.data.Report;
+import io.github.thetrouper.sentinel.data.*;
 import io.github.thetrouper.sentinel.server.FilterAction;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.Text;
@@ -34,7 +31,8 @@ public class AdvancedBlockers {
             ServerUtils.sendDebugMessage("AdvBlocker: Caught Unicode: " + nonAllowed);
             e.setCancelled(true);
             report.stepsTaken().replace("Anti-Unicode", "`%s` %s".formatted(message, Emojis.alarm));
-            FilterAction.filterPunish(e,FAT.BLOCK_UNICODE,null,null,report.id());
+            //FilterAction.filterPunish(e,FAT.BLOCK_UNICODE,null,null,report.id());
+            FilterAction.takeAction(e, FilterActionType.UNICODE_BLOCK,report,0,null);
         }
     }
 
@@ -51,7 +49,8 @@ public class AdvancedBlockers {
             e.setCancelled(true);
             String highlighted = Text.regexHighlighter(swearRegex,e.getMessage()," > "," < ");
             report.stepsTaken().replace("Anti-Swear Regex", "`%s` %s".formatted(highlighted, Emojis.alarm));
-            FilterAction.filterPunish(e,FAT.SWEAR_PUNISH,null,FilterSeverity.HIGH,report.id());
+            //FilterAction.filterPunish(e,FAT.SWEAR_PUNISH,null,FilterSeverity.HIGH,report.id());
+            FilterAction.takeAction(e,FilterActionType.SWEAR_PUNISH,report,0,FilterSeverity.MEDIUM);
         }
     }
 
@@ -70,7 +69,8 @@ public class AdvancedBlockers {
             e.setCancelled(true);
             String highlighted = Text.regexHighlighter(strictRegex,e.getMessage()," > "," < ");
             report.stepsTaken().replace("Strict Regex", "`%s` %s".formatted(highlighted, Emojis.alarm));
-            FilterAction.filterPunish(e, FAT.SLUR_PUNISH,null, FilterSeverity.SLUR,report.id());
+            //FilterAction.filterPunish(e, FAT.SLUR_PUNISH,null, FilterSeverity.SLUR,report.id());
+            FilterAction.takeAction(e,FilterActionType.SLUR_PUNISH,report,0,FilterSeverity.HIGH);
         }
     }
 
@@ -80,7 +80,7 @@ public class AdvancedBlockers {
 
         Pattern pattern = Pattern.compile(urlRegex, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(e.getMessage());
-        ServerUtils.sendDebugMessage("AdvBlocker: Checking for URLs against regex `%1$s`:%2$s".formatted(urlRegex, e.getMessage()));
+        //ServerUtils.sendDebugMessage("AdvBlocker: Checking for URLs against regex `%1$s`:%2$s".formatted(urlRegex, e.getMessage()));
 
         report.stepsTaken().put("Anti-URL", "`%s`".formatted(
                 e.getMessage()
@@ -92,7 +92,8 @@ public class AdvancedBlockers {
             ServerUtils.sendDebugMessage("AdvBlocker: Caught URL: " + highlighted);
             report.stepsTaken().replace("Anti-URL", "`%s` %s".formatted(highlighted, Emojis.alarm));
 
-            FilterAction.filterPunish(e,FAT.BLOCK_URL,null,null,report.id());
+            //FilterAction.filterPunish(e,FAT.BLOCK_URL,null,null,report.id());
+            FilterAction.takeAction(e,FilterActionType.URL_BLOCK,report,0,null);
         }
     }
 }

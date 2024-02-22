@@ -3,7 +3,6 @@ package io.github.thetrouper.sentinel.data.config;
 import io.github.itzispyder.pdk.utils.misc.JsonSerializable;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainConfig implements JsonSerializable<MainConfig> {
@@ -84,10 +83,13 @@ public class MainConfig implements JsonSerializable<MainConfig> {
     public class Chat {
         public AntiSwear antiSwear = new AntiSwear();
         public AntiSpam antiSpam = new AntiSpam();
-        public boolean useAntiURL = false;
+        public boolean useAntiURL = true;
         public boolean useSwearRegex = false;
         public boolean useStrictRegex = false;
         public boolean useAntiUnicode = true;
+        public boolean logURL = true;
+        public boolean logUnicode = true;
+
 
         public class AntiSpam {
             public boolean antiSpamEnabled = true;
@@ -101,7 +103,8 @@ public class MainConfig implements JsonSerializable<MainConfig> {
             public boolean clearChat = true;
             public String chatClearCommand = "cc";
             public String spamPunishCommand = "mute %player% 1m Please refrain from spamming!";
-            public boolean logSpam = true;
+            public boolean logAllSpam = false;
+            public boolean logSpamPunishments = true;
         }
 
         public class AntiSwear {
@@ -115,7 +118,8 @@ public class MainConfig implements JsonSerializable<MainConfig> {
             public int punishScore = 20;
             public String swearPunishCommand = "mute %player% 15m Do not attempt to bypass the Profanity Filter";
             public String strictPunishCommand = "mute %player% 1h Discriminatory speech is not tolerated on this server!";
-            public boolean logSwears = true;
+            public boolean logAllSwears = false;
+            public boolean logSwearPunishments = true;
         }
 
     }

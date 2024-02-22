@@ -140,7 +140,7 @@ public class SystemCheck {
         AdvancedBlockers.handleAntiUnicode(unicode,ReportFalsePositives.initializeReport(unicode));
         AdvancedBlockers.handleAntiURL(url,ReportFalsePositives.initializeReport(url));
         SchedulerUtils.loop(5,4, (loop)->{
-            AntiSpam.lastMessageMap.put(p,"Sentinel AntiSpam Check");
+            AntiSpam.lastMessageMap.put(p.getUniqueId(),"Sentinel AntiSpam Check");
             AntiSpam.handleAntiSpam(spam,ReportFalsePositives.initializeReport(spam));
         });
 

@@ -67,7 +67,7 @@ public class ChatEvent implements CustomListener {
         Fields %s
         """.formatted(report.id(), report.stepsTaken().toString()));
         ReportFalsePositives.reports.put(report.id(),report);
-        AntiSpam.lastMessageMap.put(p, e.getMessage());
+        AntiSpam.lastMessageMap.put(p.getUniqueId(), e.getMessage());
     }
 
     private static void handleEventIfNotBypassed(Player p, String permission, boolean isEnabled, String eventType, AsyncPlayerChatEvent e, Consumer<AsyncPlayerChatEvent> handler) {
