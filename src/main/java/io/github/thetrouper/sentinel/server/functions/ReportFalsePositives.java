@@ -24,7 +24,7 @@ public class ReportFalsePositives {
         final long reportID = Randomizer.generateID();
         LinkedHashMap<String,String> steps = new LinkedHashMap<>();
         steps.put("Original Message", "`%s`".formatted(event.getMessage()));
-        SchedulerUtils.later(60000,()->{
+        SchedulerUtils.later(1200,()->{
             reports.remove(reportID);
         });
         return new Report(reportID,event,steps);
