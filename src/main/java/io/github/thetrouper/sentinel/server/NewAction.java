@@ -21,9 +21,9 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class Action {
+public class NewAction {
 
-    private Action(Cancellable event, ActionType action, Player player, String command, String loggedCommand, ItemStack item, Block block, boolean denied, boolean deoped, boolean punished, boolean revertedGM, boolean notifyDiscord, boolean notifyTrusted, boolean notifyConsole) {
+    private NewAction(Cancellable event, ActionType action, Player player, String command, String loggedCommand, ItemStack item, Block block, boolean denied, boolean deoped, boolean punished, boolean revertedGM, boolean notifyDiscord, boolean notifyTrusted, boolean notifyConsole) {
     }
 
     public static class Builder {
@@ -97,7 +97,7 @@ public class Action {
             this.notifyConsole = notifyConsole;
             return this;
         }
-        public Action execute() {
+        public NewAction execute() {
             String actionTop = action.getMessageTop();
             String actionTitle = action.getMessageTitle();
             String itemLog = (item != null && item.hasItemMeta() && item.getItemMeta().getAsString() != null) ? FileUtils.createNBTLog(item) : "";
@@ -193,7 +193,7 @@ public class Action {
                 }
             }
 
-            return new Action(event, action, player, command, loggedCommand, item, block, denied, deoped, punished, revertGM, notifyDiscord, notifyTrusted, notifyConsole);
+            return new NewAction(event, action, player, command, loggedCommand, item, block, denied, deoped, punished, revertGM, notifyDiscord, notifyTrusted, notifyConsole);
         }
     }
 }

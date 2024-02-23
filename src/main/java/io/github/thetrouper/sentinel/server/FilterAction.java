@@ -111,7 +111,7 @@ public class FilterAction {
             String title = "%s has triggered the %s!".formatted(offender.getName(),type.logName());
             boolean isSwear = type.equals(FilterActionType.SWEAR_BLOCK) || type.equals(FilterActionType.SWEAR_PUNISH) || type.equals(FilterActionType.SLUR_PUNISH);
             boolean isSpam = type.equals(FilterActionType.SPAM_BLOCK) || type.equals(FilterActionType.SPAM_PUNISH);
-            String description = """
+            String description = """ 
                     %1$sUUID: `%5$s` %6$s
                     %2$s%3$sHeat: `%7$s/%8$s` %12$s
                     %2$s%3$sScore: `%9$s/%10$s` %13$s
