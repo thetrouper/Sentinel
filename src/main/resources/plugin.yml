@@ -24,6 +24,9 @@ permissions:
   sentinel.chat.antiswear.bypass:
     description: Bypass the antiSwear
     default: op
+  sentinel.chat.antiswear.edit:
+    description: Add a false positive to the config
+    default: op
   sentinel.chat.antispam.flags:
     description: See antispam flags
     default: op

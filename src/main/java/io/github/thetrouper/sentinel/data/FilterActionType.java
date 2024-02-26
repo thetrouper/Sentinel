@@ -2,7 +2,7 @@ package io.github.thetrouper.sentinel.data;
 
 import io.github.thetrouper.sentinel.Sentinel;
 
-public record FilterActionType(String logTitle, String logName, String chatWarning, String chatWarningHover, String chatNotification, String chatNotificationHover, String punishmentCommand, int embedColor, boolean isLogged) {
+public record FilterActionType(String logSuper, String logName, String chatWarning, String chatWarningHover, String chatNotification, String chatNotificationHover, String punishmentCommand, int embedColor, boolean isLogged) {
 
     public static final FilterActionType UNICODE_BLOCK = new FilterActionType("Sentinel Anti-Unicode Log", "Anti-Unicode", Sentinel.lang.unicodeFilter.unicodeWarn, Sentinel.lang.automatedActions.actionAutomaticReportable, Sentinel.lang.unicodeFilter.unicodeNotification, Sentinel.lang.unicodeFilter.unicodeNotificationHover, null, 0xAAAAFF, Sentinel.mainConfig.chat.logUnicode);
     public static final FilterActionType URL_BLOCK = new FilterActionType("Sentinel Anti-URL Log", "Anti-URL", Sentinel.lang.urlFilter.urlWarn, Sentinel.lang.automatedActions.actionAutomaticReportable, Sentinel.lang.urlFilter.urlNotification, Sentinel.lang.urlFilter.urlNotificationHover, null, 0xAAAAFF, Sentinel.mainConfig.chat.logURL);

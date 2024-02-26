@@ -107,7 +107,7 @@ public class FilterAction {
     public static void sendDiscordLog(FilterActionType type, Player offender, String message) {
         CompletableFuture.runAsync(()->{
 
-            String superTitle = type.logTitle();
+            String superTitle = type.logSuper();
             String title = "%s has triggered the %s!".formatted(offender.getName(),type.logName());
             boolean isSwear = type.equals(FilterActionType.SWEAR_BLOCK) || type.equals(FilterActionType.SWEAR_PUNISH) || type.equals(FilterActionType.SLUR_PUNISH);
             boolean isSpam = type.equals(FilterActionType.SPAM_BLOCK) || type.equals(FilterActionType.SPAM_PUNISH);
@@ -156,7 +156,7 @@ public class FilterAction {
     public static void sendConsoleLog(FilterActionType type, Player offender, String message) {
         StringBuilder log = new StringBuilder();
 
-        String superTitle = "\n]=- " + type.logTitle() + " -=[";
+        String superTitle = "\n]=- " + type.logSuper() + " -=[";
         String title = "\n%s has triggered the %s!\n".formatted(offender.getName(),type.logName());
         boolean isSwear = type.equals(FilterActionType.SWEAR_BLOCK) || type.equals(FilterActionType.SWEAR_PUNISH) || type.equals(FilterActionType.SLUR_PUNISH);
         boolean isSpam = type.equals(FilterActionType.SPAM_BLOCK) || type.equals(FilterActionType.SPAM_PUNISH);
