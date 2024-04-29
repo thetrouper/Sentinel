@@ -4,13 +4,11 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import io.github.itzispyder.pdk.PDK;
 import io.github.itzispyder.pdk.utils.misc.JsonSerializable;
-import io.github.thetrouper.sentinel.auth.Auth;
-import io.github.thetrouper.sentinel.cmds.*;
 import io.github.thetrouper.sentinel.data.cmdblocks.WhitelistStorage;
 import io.github.thetrouper.sentinel.data.config.*;
-import io.github.thetrouper.sentinel.events.*;
-import io.github.thetrouper.sentinel.server.functions.*;
-import io.github.thetrouper.sentinel.server.util.ServerUtils;
+import io.github.thetrouper.sentinel.server.functions.Authenticator;
+import io.github.thetrouper.sentinel.server.functions.Load;
+import io.github.thetrouper.sentinel.server.functions.Telemetry;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -48,6 +46,8 @@ public final class Sentinel extends JavaPlugin {
     public static String IP;
     public static boolean doNoPlugins = false;
 
+    Load load = new Load();
+
     /**
      * Plugin startup logic
      */
@@ -80,100 +80,8 @@ public final class Sentinel extends JavaPlugin {
         license = mainConfig.plugin.license;
 
         log.info("Pre-load finished!\n]====---- Requesting Authentication ----====[ \n- License Key: %s\n- Server ID: %s".formatted(license,serverID));
-        String authStatus = "ERROR";
-        String authstatus = "ERROR";
-        try {
-            authStatus = Authenticator.authorize(license, serverID);
-            authstatus = Auth.authorize(license, serverID);
-            IP = Authenticator.getPublicIPAddress();
-            log.info("Auth Requested...");
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.info("WTFFFF ARE YOU DOING MAN??????");
-            manager.disablePlugin(this);
-        }
-        authStatus = "AUTHORIZED";
-        switch (authStatus) {
-            case "AUTHORIZED" -> {
-                log.info("\n]======----- Auth Success! -----======[");
-                startup();
-            }
-            case "MINEHUT" -> {
-                usesDynamicIP = true;
-                Telemetry.initTelemetryHook();
-                boolean minehutStatus = Telemetry.sendStartupLog();
-                if (minehutStatus) {
-                    authstatus = authstatus.replaceAll("ur a skid lmao", "get out of here kiddo");
-                    ServerUtils.sendDebugMessage(authstatus);
-                    log.info("Dynamic IP auth Success! ");
-                    startup();
-                } else {
-                    log.info("Dynamic IP Failure. Webhook Error possible? Please contact obvWolf to fix this.");
-                    manager.disablePlugin(this);
-                }
-            }
-            case "INVALID-ID" -> {
-                log.info("Authentication Failure, You have not whitelisted this server ID yet.");
-                manager.disablePlugin(this);
-            }
-            case "UNREGISTERED" -> {
-                log.warning("Authentication Failure, YOU SHALL NOT PASS! License: %s Server ID: %s".formatted(license,serverID));
-                manager.disablePlugin(this);
-            }
-            case "ERROR" -> {
-                log.warning("Hmmmmmm thats not right... License: %s Server ID: %s\nPlease report the above stacktrace.".formatted(license,serverID));
-                manager.disablePlugin(this);
-            }
-            default -> {
-                log.warning("Achievement unlocked: How did we get here? License: %s Server ID: %s\nPlease report the above stacktrace.".formatted(license,serverID));
-                manager.disablePlugin(this);
-            }
-        }
-    }
 
-    public void startup() {
-        log.info("\n]======----- Loading Sentinel! -----======[");
-
-        // Plugin startup logic
-        log.info("Starting Up! (%s)...".formatted(getDescription().getVersion()));
-
-        // Commands
-        new SentinelCommand().register();
-        new MessageCommand().register();
-        new ReplyCommand().register();
-        new ReopCommand().register();
-        new SocialSpyCommand().register();
-        new ChatClickCallback().register();
-
-        // Events
-        new ChatEvent().register();
-        new CommandEvent().register();
-        new CMDBlockExecute().register();
-        new CMDBlockPlace().register();
-        new CMDBlockUse().register();
-        new CMDMinecartPlace().register();
-        new CMDMinecartUse().register();
-        new NBTEvents().register();
-        new MiscEvents().register();
-        if (doNoPlugins) {
-            new TrapCommand().register();
-            new PluginHiderEvents().register();
-            TabCompleteEvent.registerEvent(this);
-        }
-
-        // Scheduled timers
-        Bukkit.getScheduler().runTaskTimer(this, AntiSpam::decayHeat,0, 20);
-        Bukkit.getScheduler().runTaskTimer(this, ProfanityFilter::decayScore,0,1200);
-        log.info("""
-                Finished!
-                 ____                   __                        ___     \s
-                /\\  _`\\                /\\ \\__  __                /\\_ \\    \s
-                \\ \\,\\L\\_\\     __    ___\\ \\ ,_\\/\\_\\    ___      __\\//\\ \\   \s
-                 \\/_\\__ \\   /'__`\\/' _ `\\ \\ \\/\\/\\ \\ /' _ `\\  /'__`\\\\ \\ \\  \s
-                   /\\ \\L\\ \\/\\  __//\\ \\/\\ \\ \\ \\_\\ \\ \\/\\ \\/\\ \\/\\  __/ \\_\\ \\_\s
-                   \\ `\\____\\ \\____\\ \\_\\ \\_\\ \\__\\\\ \\_\\ \\_\\ \\_\\ \\____\\/\\____\\
-                    \\/_____/\\/____/\\/_/\\/_/\\/__/ \\/_/\\/_/\\/_/\\/____/\\/____/
-                     ]====---- Advanced Anti-Grief & Chat Filter ----====[""");
+        load.load(license,serverID);
     }
 
     public void loadConfig() {
@@ -217,11 +125,6 @@ public final class Sentinel extends JavaPlugin {
         }
     }
 
-    /**
-     * Checks if a player is trusted.
-     * @param player the player to check
-     * @return true if the player is trusted, false otherwise
-     */
     public static boolean isTrusted(Player player) {
         return Sentinel.mainConfig.plugin.trustedPlayers.contains(player.getUniqueId().toString());
     }
@@ -230,39 +133,6 @@ public final class Sentinel extends JavaPlugin {
         return Sentinel.mainConfig.plugin.trustedPlayers.contains(uuid);
     }
 
-    /**
-     * Checks if a command is a logged command.
-     * @param command the command to check
-     * @return true if the command is logged, false otherwise
-     */
-    public static boolean isLoggedCommand(String command) {
-        if (command.startsWith("/")) {
-            command = command.substring(1);
-        }
-        for (String logged : Sentinel.mainConfig.plugin.logged) {
-            if (command.contains(logged)) return true;
-        }
-        return false;
-    }
-
-    /**
-     * Checks if a command is dangerous.
-     * @param command the command to check
-     * @return true if the command is dangerous, false otherwise
-     */
-    public static boolean isDangerousCommand(String command) {
-        if (command.startsWith("/")) {
-            command = command.substring(1);
-        }
-        for (String blocked : Sentinel.mainConfig.plugin.dangerous) {
-            if (command.startsWith(blocked)) return true;
-        }
-        return false;
-    }
-    /**
-     * Returns an instance of this plugin
-     * @return an instance of this plugin
-     */
     public static Sentinel getInstance() {
         return instance;
     }

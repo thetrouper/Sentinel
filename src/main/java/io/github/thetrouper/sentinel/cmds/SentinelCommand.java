@@ -39,9 +39,7 @@ public class SentinelCommand implements CustomCommand {
                 SystemCheck.fullCheck(p);
             }
             case "debug" -> handleDebugCommand(p,args);
-            case "false-positive" -> {
-
-            }
+            case "false-positive" -> handleFalsePositive(p,args);
         }
     }
     private void handleFalsePositive(Player p, Args args) {

@@ -5,7 +5,6 @@ import io.github.itzispyder.pdk.utils.SchedulerUtils;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.cmds.SocialSpyCommand;
 import io.github.thetrouper.sentinel.data.ActionType;
-import io.github.thetrouper.sentinel.data.Report;
 import io.github.thetrouper.sentinel.events.CommandEvent;
 import io.github.thetrouper.sentinel.server.Action;
 import org.bukkit.Bukkit;
@@ -72,6 +71,7 @@ public class SystemCheck {
 
     public static void cmdBlockUseCheck(Player p) {
         Block placed = p.getLocation().clone().add(0,-2,0).getBlock();
+        Material before = placed.getType();
         placed.setType(Material.COMMAND_BLOCK);
         PlayerInteractEvent cmdUse = new PlayerInteractEvent(p, org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK,ItemBuilder.create().material(Material.AIR).build(),placed, BlockFace.UP);
         Action a = new Action.Builder()
@@ -87,6 +87,7 @@ public class SystemCheck {
                 .setNotifyConsole(true)
                 .execute();
         p.setOp(true);
+        placed.setType(before);
     }
 
     public static void commandCheck(Player p) {

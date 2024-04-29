@@ -231,6 +231,10 @@ public class NBTEvents implements CustomListener {
                 final int level = meta.getEnchantLevel(Enchantment.FROST_WALKER);
                 return level > Sentinel.nbtConfig.maxFrostWalker || level > Sentinel.nbtConfig.globalMaxEnchant;
             }
+            if (meta.hasEnchant(Enchantment.SWIFT_SNEAK)) {
+                final int level = meta.getEnchantLevel(Enchantment.SWIFT_SNEAK);
+                return level > Sentinel.nbtConfig.maxSwiftSneak || level > Sentinel.nbtConfig.globalMaxEnchant;
+            }
 
             // MELEE WEAPONS
             if (meta.hasEnchant(Enchantment.DAMAGE_ARTHROPODS)) {

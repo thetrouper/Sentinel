@@ -3,8 +3,6 @@ package io.github.thetrouper.sentinel.data.cmdblocks;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 
-import java.util.UUID;
-
 public record WhitelistedBlock(String owner, Location loc, String type, boolean active, String command) {
 
     public static org.bukkit.Location fromSerialized(Location loc) {

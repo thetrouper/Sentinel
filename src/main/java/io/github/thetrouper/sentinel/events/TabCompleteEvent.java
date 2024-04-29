@@ -28,7 +28,7 @@ public class TabCompleteEvent {
                     return;
                 }
                 for (String ver : VERSION_ALIASES) {
-                    if (!input.startsWith(ver)) continue;
+                    if (!input.startsWith(ver + " ")) continue;
                     String modifiedInput = input.replaceFirst(ver, "sentineltab");
                     event.getPacket().getStrings().write(0, modifiedInput);
                     ServerUtils.sendDebugMessage("Successfully Blocked ver command: " + input);

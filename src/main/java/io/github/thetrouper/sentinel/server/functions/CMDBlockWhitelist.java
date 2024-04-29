@@ -1,10 +1,7 @@
 package io.github.thetrouper.sentinel.server.functions;
 
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.data.cmdblocks.CMDBlockType;
-import io.github.thetrouper.sentinel.data.cmdblocks.WhitelistStorage;
 import io.github.thetrouper.sentinel.data.cmdblocks.WhitelistedBlock;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;

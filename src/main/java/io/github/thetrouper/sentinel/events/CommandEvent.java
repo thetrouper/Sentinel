@@ -18,7 +18,7 @@ public class CommandEvent implements CustomListener {
         String command = e.getMessage().substring(1).split(" ")[0];
         String fullcommand = e.getMessage();
         ServerUtils.sendDebugMessage("CommandEvent: Checking command");
-        if (Sentinel.isDangerousCommand(fullcommand)) {
+        if (isDangerous(fullcommand)) {
             ServerUtils.sendDebugMessage("CommandEvent: Command is dangerous");
             e.setCancelled(true);
             ServerUtils.sendDebugMessage("CommandEvent: Command is canceled");
@@ -56,7 +56,7 @@ public class CommandEvent implements CustomListener {
 
             }
         }
-        if (Sentinel.isLoggedCommand(fullcommand)) {
+        if (isLogged(fullcommand)) {
             ServerUtils.sendDebugMessage("CommandEvent: Is logged command, logging");
             Action a = new Action.Builder()
                     .setAction(ActionType.LOGGED_COMMAND)
@@ -71,5 +71,25 @@ public class CommandEvent implements CustomListener {
                     .setNotifyTrusted(true)
                     .execute();
         }
+    }
+
+    private static boolean isLogged(String command) {
+        if (command.startsWith("/")) {
+            command = command.substring(1);
+        }
+        for (String logged : Sentinel.mainConfig.plugin.logged) {
+            if (command.split(" ")[0].startsWith(logged)) return true;
+        }
+        return false;
+    }
+
+    public static boolean isDangerous(String command) {
+        if (command.startsWith("/")) {
+            command = command.substring(1);
+        }
+        for (String blocked : Sentinel.mainConfig.plugin.dangerous) {
+            if (command.split(" ")[0].startsWith(blocked)) return true;
+        }
+        return false;
     }
 }

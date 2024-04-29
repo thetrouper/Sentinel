@@ -51,7 +51,7 @@ public class Authenticator {
                 }
             }
 
-            if (authStatus.isEmpty()) {
+            if (authStatus.isBlank()) {
                 authStatus = "UNREGISTERED";
                 return authStatus;
             }

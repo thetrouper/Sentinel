@@ -70,6 +70,9 @@ public class FPConfig implements JsonSerializable<FPConfig> {
             "sexist",
             "shoe",
             "stitch",
-            "therapist"
+            "therapist",
+            "but its",
+            "whoever",
+            " again"
     ));
 }

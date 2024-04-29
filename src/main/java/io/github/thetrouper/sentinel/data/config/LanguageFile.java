@@ -4,9 +4,6 @@ import io.github.itzispyder.pdk.utils.misc.JsonSerializable;
 import io.github.thetrouper.sentinel.Sentinel;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Filter;
 
 public class LanguageFile implements JsonSerializable<LanguageFile> {
     public static final File PATH = new File(Sentinel.getInstance().getDataFolder(), "/lang/" + Sentinel.mainConfig.plugin.lang);

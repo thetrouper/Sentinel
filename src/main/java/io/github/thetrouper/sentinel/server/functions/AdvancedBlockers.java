@@ -1,7 +1,10 @@
 package io.github.thetrouper.sentinel.server.functions;
 
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.data.*;
+import io.github.thetrouper.sentinel.data.Emojis;
+import io.github.thetrouper.sentinel.data.FilterActionType;
+import io.github.thetrouper.sentinel.data.FilterSeverity;
+import io.github.thetrouper.sentinel.data.Report;
 import io.github.thetrouper.sentinel.server.FilterAction;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import io.github.thetrouper.sentinel.server.util.Text;

@@ -3,7 +3,10 @@ package io.github.thetrouper.sentinel.data.config;
 import io.github.itzispyder.pdk.utils.misc.JsonSerializable;
 
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AdvancedConfig implements JsonSerializable<AdvancedConfig> {
 

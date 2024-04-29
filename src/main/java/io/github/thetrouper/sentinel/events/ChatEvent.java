@@ -1,7 +1,6 @@
 package io.github.thetrouper.sentinel.events;
 
 import io.github.itzispyder.pdk.events.CustomListener;
-import io.github.itzispyder.pdk.utils.ArrayUtils;
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.Report;
 import io.github.thetrouper.sentinel.server.functions.AdvancedBlockers;
