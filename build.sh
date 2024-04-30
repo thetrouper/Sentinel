@@ -8,9 +8,8 @@ if [ $? -eq 0 ]; then
     echo "Gradle build successful."
 
     # SFTP upload
-    SFTP_HOST="192.168.1.199"
+    SFTP_HOST="server"
     SFTP_USER="trouper"
-    SFTP_PASSWORD="Trouper12()1"
     SFTP_REMOTE_DIR="/home/trouper/docker/data/plugins/"
 
     # Create a temporary file with a unique name
@@ -24,9 +23,7 @@ if [ $? -eq 0 ]; then
     echo "bye" >> "$TEMP_FILE"
 
     # Use sftp non-interactively with the specified commands
-    sftp -oStrictHostKeyChecking=no -oBatchMode=no -b "$TEMP_FILE" "$SFTP_USER@$SFTP_HOST" <<EOF
-    $SFTP_PASSWORD
-EOF
+    sftp -oStrictHostKeyChecking=no -oBatchMode=no -b "$TEMP_FILE" "$SFTP_USER@$SFTP_HOST"
 
     # Remove the temporary file
     rm -f "$TEMP_FILE"

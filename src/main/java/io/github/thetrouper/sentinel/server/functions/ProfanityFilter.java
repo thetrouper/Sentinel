@@ -51,14 +51,6 @@ public class ProfanityFilter {
         };
     }
 
-    private static FAT getFAT(FilterSeverity severity) {
-        return switch (severity) {
-            case SAFE -> FAT.SAFE;
-            case LOW, MEDIUM_LOW, MEDIUM, MEDIUM_HIGH, HIGH -> FAT.BLOCK_SWEAR;
-            case SLUR -> FAT.SLUR_PUNISH;
-        };
-    }
-
     public static String highlightProfanity(String text) {
         return highlightProfanity(text, "&e", "&f");
     }
