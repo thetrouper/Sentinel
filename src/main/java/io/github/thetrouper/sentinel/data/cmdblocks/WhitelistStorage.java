@@ -5,6 +5,7 @@ import io.github.itzispyder.pdk.utils.misc.JsonSerializable;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class WhitelistStorage implements JsonSerializable<WhitelistStorage> {
     @Override
@@ -14,6 +15,6 @@ public class WhitelistStorage implements JsonSerializable<WhitelistStorage> {
         return file;
     }
 
-    public List<WhitelistedBlock> whitelistedCMDBlocks = new ArrayList<>();
+    public ConcurrentLinkedQueue<WhitelistedBlock> whitelistedCMDBlocks = new ConcurrentLinkedQueue<>();
 
 }

@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 public class PluginHiderEvents implements CustomListener {
 
     private final String[] aliases = TabCompleteEvent.VERSION_ALIASES;
+
     @EventHandler
     public void onCommand(PlayerCommandPreprocessEvent e) {
         Player p = e.getPlayer();

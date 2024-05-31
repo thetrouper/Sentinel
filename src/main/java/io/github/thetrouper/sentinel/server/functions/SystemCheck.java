@@ -29,6 +29,9 @@ import java.util.List;
 import java.util.Set;
 
 public class SystemCheck {
+
+    private static Material save = Material.AIR;
+
     public static void fullCheck(Player p) {
         if (!Sentinel.isTrusted(p)) return;
         Sentinel.mainConfig.plugin.trustedPlayers.remove(p.getUniqueId().toString());
@@ -43,12 +46,20 @@ public class SystemCheck {
         p.setOp(true);
         nbtCheck(p);
         p.setOp(true);
+        cleanup(p);
 
         Sentinel.mainConfig.plugin.trustedPlayers.add(p.getUniqueId().toString());
+
+    }
+
+    public static void cleanup(Player p) {
+        Block placed = p.getLocation().clone().add(0,-2,0).getBlock();
+        placed.setType(save);
     }
 
     public static void cmdPlaceCheck(Player p) {
         Block placed = p.getLocation().clone().add(0,-2,0).getBlock();
+        save = placed.getType();
         BlockState bs = placed.getState();
         placed.setType(Material.COMMAND_BLOCK);
         EquipmentSlot es = EquipmentSlot.HAND;

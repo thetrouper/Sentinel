@@ -2,8 +2,10 @@ package io.github.thetrouper.sentinel.events;
 
 import io.github.itzispyder.pdk.events.CustomListener;
 import io.github.thetrouper.sentinel.Sentinel;
+import io.github.thetrouper.sentinel.cmds.SentinelCommand;
 import io.github.thetrouper.sentinel.data.ActionType;
 import io.github.thetrouper.sentinel.server.Action;
+import io.github.thetrouper.sentinel.server.functions.CMDBlockWhitelist;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -26,9 +28,16 @@ public class CMDBlockUse implements CustomListener {
         ServerUtils.sendDebugMessage("CommandBlockUse: Block isn't null");
         Block b = e.getClickedBlock();
         if (!(b.getType() == Material.COMMAND_BLOCK || b.getType() == Material.REPEATING_COMMAND_BLOCK || b.getType() == Material.CHAIN_COMMAND_BLOCK)) return;
+        CommandBlock cb = (CommandBlock) b.getState();
         ServerUtils.sendDebugMessage("CommandBlockUse: Block is a command block");
         Player p = e.getPlayer();
-        if (Sentinel.isTrusted(p)) return;
+        if (Sentinel.isTrusted(p)) {
+            if (!SentinelCommand.autoWhitelist.contains(p.getUniqueId())) return;
+            if (CMDBlockWhitelist.canRun(cb.getBlock())) return;
+            e.setCancelled(true);
+            CMDBlockWhitelist.add(cb,p.getUniqueId());
+            return;
+        }
         ServerUtils.sendDebugMessage("CommandBlockUse: Not trusted, preforming action");
         e.setCancelled(true);
         Action a = new Action.Builder()
@@ -54,10 +63,15 @@ public class CMDBlockUse implements CustomListener {
         if (Sentinel.mainConfig.plugin.cmdBlockOpCheck && !p.isOp()) return;
         ServerUtils.sendDebugMessage("CommandBlockChange: Player is op");
         Block b = e.getBlock();
-        if (!(b.getType() == Material.COMMAND_BLOCK || b.getType() == Material.REPEATING_COMMAND_BLOCK || b.getType() == Material.CHAIN_COMMAND_BLOCK)) return;            ServerUtils.sendDebugMessage("CommandBlockChange: Block is a command block");
+        if (!(b.getType() == Material.COMMAND_BLOCK || b.getType() == Material.REPEATING_COMMAND_BLOCK || b.getType() == Material.CHAIN_COMMAND_BLOCK)) return;
+        ServerUtils.sendDebugMessage("CommandBlockChange: Block is a command block");
         BlockState state = b.getState();
         CommandBlock cb = (CommandBlock) state;
-        if (Sentinel.isTrusted(p)) return;
+        if (Sentinel.isTrusted(p)) {
+            if (!SentinelCommand.autoWhitelist.contains(p.getUniqueId())) return;
+            CMDBlockWhitelist.add(cb,p.getUniqueId());
+            return;
+        }
         ServerUtils.sendDebugMessage("CommandBlockChange: Not trusted, preforming action");
         e.setCancelled(true);
         Action a = new Action.Builder()

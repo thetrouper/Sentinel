@@ -2,7 +2,11 @@ package io.github.thetrouper.sentinel.server.functions;
 
 import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.cmdblocks.WhitelistedBlock;
+import io.github.thetrouper.sentinel.server.util.ServerUtils;
+import io.github.thetrouper.sentinel.server.util.Text;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.CommandBlock;
@@ -11,21 +15,20 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.UUID;
 
 public class CMDBlockWhitelist {
+
     public static void add(CommandBlock cb, UUID owner) {
+        ServerUtils.sendDebugMessage("Adding a command block to the whitelist.");
         boolean alwaysActive = getNBTBoolean(cb, "auto");
         WhitelistedBlock wb = new WhitelistedBlock(owner.toString(),WhitelistedBlock.serialize(cb.getLocation()),getType(cb),alwaysActive,cb.getCommand());
 
-        Location wbl = WhitelistedBlock.fromSerialized(wb.loc());
+        Location wbloc = WhitelistedBlock.fromSerialized(wb.loc());
 
-        for (WhitelistedBlock wl : Sentinel.whitelist.whitelistedCMDBlocks) {
-            Location wll = WhitelistedBlock.fromSerialized(wl.loc());
-            if (wll.distance(wbl) < 0.5) {
-                Sentinel.whitelist.whitelistedCMDBlocks.remove(wb);
-            }
-        }
+        remove(wbloc);
 
         Sentinel.whitelist.whitelistedCMDBlocks.add(wb);
         Sentinel.whitelist.save();
+        if (Bukkit.getPlayer(owner) != null && !Bukkit.getPlayer(owner).isOnline()) return;
+        Bukkit.getPlayer(owner).sendMessage(Text.prefix("Successfully whitelisted a &b" + Text.cleanName(cb.getType().toString()) + "&7 with the command &a" + cb.getCommand() + "&7."));
     }
 
     public static void remove(Location where) {
@@ -33,7 +36,6 @@ public class CMDBlockWhitelist {
             Location cbl = WhitelistedBlock.fromSerialized(cb.loc());
             if (cbl.distance(where) < 0.5) {
                 Sentinel.whitelist.whitelistedCMDBlocks.remove(cb);
-                break;
             }
         }
 
@@ -65,6 +67,71 @@ public class CMDBlockWhitelist {
         return null;
     }
 
+    public static int clearAll() {
+        int total = 0;
+        for (WhitelistedBlock cb : Sentinel.whitelist.whitelistedCMDBlocks) {
+            Location remove = WhitelistedBlock.fromSerialized(cb.loc());
+            remove(remove);
+            remove.getBlock().setType(Material.AIR);
+            total++;
+        }
+        return total;
+    }
+
+    public static int clearAll(UUID who) {
+        int total = 0;
+        for (WhitelistedBlock cb : Sentinel.whitelist.whitelistedCMDBlocks) {
+            if (!cb.owner().equals(who.toString())) continue;
+            Location remove = WhitelistedBlock.fromSerialized(cb.loc());
+            remove(remove);
+            remove.getBlock().setType(Material.AIR);
+            total++;
+        }
+        return total;
+    }
+
+    public static int restoreAll() {
+        int total = 0;
+        for (WhitelistedBlock cb : Sentinel.whitelist.whitelistedCMDBlocks) {
+            if (restore(WhitelistedBlock.fromSerialized(cb.loc()))) total++;
+        }
+        return total;
+    }
+
+    public static int restoreAll(UUID who) {
+        int total = 0;
+        for (WhitelistedBlock cb : Sentinel.whitelist.whitelistedCMDBlocks) {
+            if (!cb.owner().equals(who.toString())) continue;
+            if (restore(WhitelistedBlock.fromSerialized(cb.loc()))) total++;
+        }
+        return total;
+    }
+
+
+    public static boolean restore(Location where) {
+        WhitelistedBlock wb = get(where);
+        if (wb == null) {
+            ServerUtils.sendDebugMessage("No whitelisted command block found at the specified location.");
+            return false;
+        }
+
+        Block block = where.getBlock();
+        block.setType(getBlockType(wb.type()));
+        if (!(block.getState() instanceof CommandBlock)) {
+            ServerUtils.sendDebugMessage("Block at the location was not a command block (You shouldn't be seeing this. Report it).");
+            return false;
+        }
+
+        CommandBlock cb = (CommandBlock) block.getState();
+        cb.setCommand(wb.command());
+        cb.setType(getBlockType(wb.type()));
+        setNBTBoolean(cb, "auto", wb.active());
+
+        cb.update();
+        ServerUtils.sendDebugMessage("Command block at " + where.toString() + " has been restored.");
+        return true;
+    }
+
     public static String getType(CommandBlock cb) {
         switch (cb.getType()) {
             case COMMAND_BLOCK -> {
@@ -79,6 +146,24 @@ public class CMDBlockWhitelist {
         }
         return null;
     }
+
+    private static Material getBlockType(String type) {
+        return switch (type) {
+            case "impulse" -> Material.COMMAND_BLOCK;
+            case "repeat" -> Material.REPEATING_COMMAND_BLOCK;
+            case "chain" -> Material.CHAIN_COMMAND_BLOCK;
+            default -> throw new IllegalArgumentException("Unknown command block type: " + type);
+        };
+    }
+
+    private static void setNBTBoolean(CommandBlock cmdBlock, String key, boolean value) {
+        cmdBlock.getPersistentDataContainer().set(
+                getKey(key),
+                PersistentDataType.BYTE,
+                value ? (byte) 1 : (byte) 0
+        );
+    }
+
 
     private static boolean getNBTBoolean(CommandBlock cmdBlock, String key) {
         return cmdBlock.getPersistentDataContainer().has(

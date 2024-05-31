@@ -9,6 +9,7 @@ import io.github.thetrouper.sentinel.Sentinel;
 import io.github.thetrouper.sentinel.data.cmdblocks.WhitelistedBlock;
 import io.github.thetrouper.sentinel.server.functions.*;
 import io.github.thetrouper.sentinel.server.util.Text;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.CommandBlock;
@@ -16,11 +17,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @CommandRegistry(value = "sentinel",permission = @Permission("sentinel.staff"),printStackTrace = true)
 public class SentinelCommand implements CustomCommand {
     public static boolean debugMode;
+    public static List<UUID> autoWhitelist = new ArrayList<>();
     @Override
     public void dispatchCommand(CommandSender commandSender, Args args) {
         Player p = (Player) commandSender;
@@ -64,7 +69,6 @@ public class SentinelCommand implements CustomCommand {
                 if (target.getType().equals(Material.COMMAND_BLOCK) || target.getType().equals(Material.REPEATING_COMMAND_BLOCK) || target.getType().equals(Material.CHAIN_COMMAND_BLOCK)) {
                     CommandBlock cb = (CommandBlock) target.getState();
                     CMDBlockWhitelist.add(cb,p.getUniqueId());
-                    p.sendMessage(Text.prefix("Successfully whitelisted a &b" + Text.cleanName(cb.getType().toString()) + "&7 with the command &a" + cb.getCommand() + "&7."));
                     return;
                 }
                 p.sendMessage(Text.prefix("Could not whitelist the &b" + Text.cleanName(target.getType().toString()) + "&7 it is not a command block!"));
@@ -77,6 +81,37 @@ public class SentinelCommand implements CustomCommand {
                     return;
                 }
                 p.sendMessage(Text.prefix("Could not un-whitelist the &b" + Text.cleanName(target.getType().toString()) + "&7 it wasn't whitelisted in the first place!"));
+            }
+            case "auto" -> {
+                if (autoWhitelist.contains(p.getUniqueId())) {
+                    autoWhitelist.remove(p.getUniqueId());
+                    p.sendMessage(Text.prefix("Successfully toggled &bauto whitelist&7 off for you."));
+                } else {
+                    autoWhitelist.add(p.getUniqueId());
+                    p.sendMessage(Text.prefix("Successfully toggled &bauto whitelist&7 on for you."));
+                }
+            }
+            case "restore" -> {
+                if (args.get(2).toString().equals("all")) {
+                    int result = CMDBlockWhitelist.restoreAll();
+                    p.sendMessage(Text.prefix("Successfully restored &b%s&7 command blocks.".formatted(result)));
+                    return;
+                }
+                String who = args.get(2).toString();
+                UUID id = Bukkit.getOfflinePlayer(who).getUniqueId();
+                int result = CMDBlockWhitelist.restoreAll(id);
+                p.sendMessage(Text.prefix("Successfully restored &b%s&7 command blocks from &e%s&7.".formatted(result,who)));
+            }
+            case "clear" -> {
+                if (args.get(2).toString().equals("all")) {
+                    int result = CMDBlockWhitelist.clearAll();
+                    p.sendMessage(Text.prefix("Successfully cleared &b%s&7 command blocks.".formatted(result)));
+                    return;
+                }
+                String who = args.get(2).toString();
+                UUID id = Bukkit.getOfflinePlayer(who).getUniqueId();
+                int result = CMDBlockWhitelist.clearAll(id);
+                p.sendMessage(Text.prefix("Successfully cleared &b%s&7 command blocks from &e%s&7.".formatted(result,who)));
             }
         }
     }
@@ -107,6 +142,10 @@ public class SentinelCommand implements CustomCommand {
         b.then(b.arg("false-positive").then(b.arg("add","remove")));
         b.then(b.arg("debug").then(
                 b.arg("lang","toggle","chat")));
-        b.then(b.arg("commandblock"));
+        b.then(b.arg("commandblock").then(b.arg("add","remove","auto"))
+                .then(b.arg("restore")
+                        .then(b.arg("<player>","all")))
+                .then(b.arg("clear")
+                        .then(b.arg("<player>","all"))));
     }
 }
