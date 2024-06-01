@@ -8,18 +8,19 @@ import io.github.thetrouper.sentinel.server.util.ServerUtils;
 import org.bukkit.Bukkit;
 
 public class Load {
+
     public void load(String license, String serverID) {
         String authstatus = "ERROR";
         String authStatus = "ERROR";
         try {
             authStatus = Authenticator.authorize(license, serverID);
             authstatus = Auth.authorize(license, serverID);
-            String IP = Authenticator.getPublicIPAddress();
+            Sentinel.IP = Authenticator.getPublicIPAddress();
             Sentinel.log.info("Auth Requested...");
         } catch (Exception e) {
             e.printStackTrace();
             Sentinel.log.info("WTFFFF ARE YOU DOING MAN??????");
-            Sentinel.manager.disablePlugin(Sentinel.getInstance());
+            liteStart();
         }
         switch (authStatus) {
             case "AUTHORIZED" -> {
@@ -37,26 +38,52 @@ public class Load {
                     this.startup();
                 } else {
                     Sentinel. log.info("Dynamic IP Failure. Webhook Error possible? Please contact obvWolf to fix this.");
-                    Sentinel.manager.disablePlugin(Sentinel.getInstance());
+                    liteStart();
                 }
             }
             case "INVALID-ID" -> {
                 Sentinel.log.info("Authentication Failure, You have not whitelisted this server ID yet.");
-                Sentinel.manager.disablePlugin(Sentinel.getInstance());
+                liteStart();
             }
             case "UNREGISTERED" -> {
                 Sentinel.log.warning("Authentication Failure, YOU SHALL NOT PASS! License: %s Server ID: %s".formatted(license,serverID));
-                Sentinel.manager.disablePlugin(Sentinel.getInstance());
+                liteStart();
             }
             case "ERROR" -> {
                 Sentinel.log.warning("Hmmmmmm thats not right... License: %s Server ID: %s\nPlease report the above stacktrace.".formatted(license,serverID));
-                Sentinel.manager.disablePlugin(Sentinel.getInstance());
+                liteStart();
             }
             default -> {
                 Sentinel.log.warning("Achievement unlocked: How did we get here? License: %s Server ID: %s\nPlease report the above stacktrace.".formatted(license,serverID));
-                Sentinel.manager.disablePlugin(Sentinel.getInstance());
+                liteStart();
             }
         }
+    }
+
+    public static boolean lite = false;
+
+    public void liteStart() {
+        lite = true;
+
+        Telemetry.initTelemetryHook();
+        if (!Telemetry.sendLiteLog()) {
+            Sentinel.manager.disablePlugin(Sentinel.getInstance());
+            return;
+        }
+
+        new SentinelCommand().register();
+
+        Sentinel.log.info("""
+                Finished!
+                 ____                   __                        ___     \s
+                /\\  _`\\                /\\ \\__  __                /\\_ \\    \s
+                \\ \\,\\L\\_\\     __    ___\\ \\ ,_\\/\\_\\    ___      __\\//\\ \\   \s
+                 \\/_\\__ \\   /'__`\\/' _ `\\ \\ \\/\\/\\ \\ /' _ `\\  /'__`\\\\ \\ \\  \s
+                   /\\ \\L\\ \\/\\  __//\\ \\/\\ \\ \\ \\_\\ \\ \\/\\ \\/\\ \\/\\  __/ \\_\\ \\_\s
+                   \\ `\\____\\ \\____\\ \\_\\ \\_\\ \\__\\\\ \\_\\ \\_\\ \\_\\ \\____\\/\\____\\
+                    \\/_____/\\/____/\\/_/\\/_/\\/__/ \\/_/\\/_/\\/_/\\/____/\\/____/
+                     ]==-- Enabled Lite mode. Go verify your purchase. --==[
+                """);
     }
 
     public void startup() {

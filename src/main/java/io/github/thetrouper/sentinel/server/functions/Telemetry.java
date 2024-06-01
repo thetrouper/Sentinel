@@ -41,6 +41,27 @@ public class Telemetry {
         }
     }
 
+    public static boolean sendLiteLog() {
+        try {
+            DiscordWebhook.create()
+                    .username("Sentinel Anti-Nuke | Telemetry")
+                    .avatar("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/3lwit5nt.png")
+                    .addEmbed(DiscordEmbed.create()
+                            .author(new DiscordEmbed.Author("Server Startup Log","https://builtbybit.com/resources/sentinel-anti-nuke.30130/",null))
+                            .title("A server has started up in lite mode")
+                            .desc("Server " + Sentinel.serverID + "\n" +
+                                    Emojis.rightSort + " License: ||" + Sentinel.license + "||\n" +
+                                    Emojis.rightSort + " IP: ||" + Sentinel.IP + "||")
+                            .color(0x440044)
+                            .build()
+                    ).send(webhook);
+            return true;
+        } catch (Exception ex) {
+            Sentinel.log.info("Failed to initialize lite mode!");
+            return false;
+        }
+    }
+
     public static void sendShutdownLog() {
         try {
             DiscordWebhook.create()

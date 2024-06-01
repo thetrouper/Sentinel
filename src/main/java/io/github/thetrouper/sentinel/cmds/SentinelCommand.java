@@ -22,14 +22,39 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-@CommandRegistry(value = "sentinel",permission = @Permission("sentinel.staff"),printStackTrace = true)
+@CommandRegistry(value = "sentinel",printStackTrace = true)
 public class SentinelCommand implements CustomCommand {
     public static boolean debugMode;
     public static List<UUID> autoWhitelist = new ArrayList<>();
+
     @Override
     public void dispatchCommand(CommandSender commandSender, Args args) {
-        Player p = (Player) commandSender;
         Sentinel instance = Sentinel.getInstance();
+        if (Load.lite) {
+            commandSender.sendMessage(Text.color("""
+                    &8]=-&f Welcome to &d&lSentinel &7|&f Anti-Nuke &8-=[
+                    &7The plugin is currently loaded in &clite&7 mode.
+                    
+                    &fIf you have just &apurchased&f the plugin:
+                     &8- &7Join the &b&ndiscord&r&7 and open a ticket.
+                     &8- &7https://discord.gg/Xh6BAzNtxY
+                     &8- &7You will then receive a license key.
+                    &fIf you have &cnot&f purchased the plugin:
+                     &8- &7Then purchase it :D
+                     &8- &7It wont do anything in this state!
+                     &8- &7(Its only 5$)
+                    &fIf you are reading this from a decompiler:
+                     &8- &7Please stop trying to crack the plugin and purchase it!
+                     &8- &7Your time spent trying trying to bypass my DRM could be spent at a minimum wage job.
+                     &8- &7There you will make 7$ an hour! (As oppose to 5$ for multiple hours of cracking)
+                    &fWoah! You read quite far!
+                     &8- &7Want the plugin for cheaper, &nor even for free&r&7?
+                     &8- &7DM &b@obvwolf&7 on discord and lets make a deal!
+                    """));
+            return;
+        }
+        Player p = (Player) commandSender;
+        if (!p.hasPermission("sentinel.staff")) return;
         switch (args.get(0).toString()) {
             case "commandblock", "cb" -> handleCommandBlock(p,args);
             case "reload" -> {
