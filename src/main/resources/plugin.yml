@@ -5,6 +5,7 @@ api-version: 1.19
 authors: [ TheTrouper ]
 description: Detect Block and Ban players who attempt to grief your server.
 website: https://thetrouper.github.io/
+softdepend: [ ProtocolLib ]
 permissions:
   sentinel.message:
     description: Access to the direct messages
@@ -23,6 +24,9 @@ permissions:
   sentinel.chat.antiswear.bypass:
     description: Bypass the antiSwear
     default: op
+  sentinel.chat.antiswear.edit:
+    description: Add a false positive to the config
+    default: op
   sentinel.chat.antispam.flags:
     description: See antispam flags
     default: op
@@ -38,6 +42,9 @@ permissions:
       sentinel.chat.antispam.flags: true
       sentinel.chat.antispam.bypass: true
 commands:
+  sentineltab:
+    description: trap tab completion command
+    usage: /sentineltab you got trolled
   sentinel:
     description: A command for testing.
     usage: /sentinel

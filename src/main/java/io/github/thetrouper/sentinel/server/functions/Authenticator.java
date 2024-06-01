@@ -1,124 +1,101 @@
 package io.github.thetrouper.sentinel.server.functions;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
+import io.github.thetrouper.sentinel.server.util.MathUtils;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Authenticator {
 
-    public Authenticator() throws UnknownHostException {
-    }
-    private static final String ENCRYPTION_KEY = "lllIIlllIlSentinelAuthIllIllllII";
-    private static final String ENCRYPTION_ALGORITHM = "AES";
-    private static final String ENCRYPTION_MODE_PADDING = "AES/ECB/PKCS5Padding";
-    static InetAddress IP;
-
-    static {
-        try {
-            IP = InetAddress.getLocalHost();
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static String authorize(String licenseKey, String serverID) {
-        String authStatus = "";
+        Map<String,List<String>> licenses = getLicenseList();
 
-        try {
-            URL url = new URL("https://trouper.me/auth/sentinel");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            List<String> lines = readLines(reader);
-
-            for (String line : lines) {
-                if (line.contains("data-key")) {
-                    String key = extractValue(line, "data-key");
-                    String allowedIDs = extractValue(line, "data-allowed");
-                    String[] allowedArr = allowedIDs.split(":");
-
-                    if (key.equals(licenseKey)) {
-                        if (Arrays.asList(allowedArr).contains(serverID)) {
-                            authStatus = "AUTHOReIZED";
-                            return authStatus;
-                        } else {
-                            if (Arrays.asList(allowedArr).contains("minehut")) {
-                                authStatus = "MINEHUT";
-                                return authStatus;
-                            }
-                            authStatus = "INVALID-ID";
-                            return authStatus;
-                        }
-                    }
-                }
+        if (licenses.containsKey(licenseKey)) {
+            List<String> allowedIDs = licenses.get(licenseKey);
+            if (allowedIDs.contains(serverID)) {
+                return "AUTHORIZED";
+            } else if (allowedIDs.contains("minehut")) {
+                return "MINEHUT";
+            } else {
+                return "INVALID-ID";
             }
-
-            if (authStatus.isEmpty()) {
-                authStatus = "UNREGISTERED";
-                return authStatus;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
-        return authStatus;
+        return "UNREGISTERED";
     }
-
-    public static List<String> readLines(BufferedReader reader) {
-        try {
-            List<String> lines = new ArrayList<>();
-            String line = reader.readLine();
-            while (line != null) {
-                lines.add(line);
-                line = reader.readLine();
-            }
-            reader.close();
-            return lines;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return new ArrayList<>();
-    }
-
-    public static String extractValue(String line, String attribute) {
-        int start = line.indexOf(attribute + "=\"") + attribute.length() + 2;
-        int end = line.indexOf("\"", start);
-        return line.substring(start, end);
-    }
-
-
 
     public static String getServerID() {
-        return encrypt(IP.getHostAddress());
-    }
-
-
-    public static String encrypt(String text) {
         try {
-            SecretKeySpec secretKey = new SecretKeySpec(ENCRYPTION_KEY.getBytes(), ENCRYPTION_ALGORITHM);
-            Cipher cipher = Cipher.getInstance(ENCRYPTION_MODE_PADDING);
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-
-            byte[] encryptedBytes = cipher.doFinal(text.getBytes());
-            String encryptedText = bytesToHex(encryptedBytes);
-            return encryptedText;
+            return MathUtils.SHA512(getPublicIPAddress());
         } catch (Exception e) {
-            e.printStackTrace();
+            return "NULL";
         }
-        return "ERR";
     }
 
-    private static String bytesToHex(byte[] bytes) {
-        StringBuilder result = new StringBuilder();
-        for (byte b : bytes) {
-            result.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
+    public static Map<String, List<String>> getLicenseList() {
+        try {
+            String urlString = "http://api.trouper.me:8080/sentinel";
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK) {
+                throw new IOException("Failed to get response from server, response code: " + responseCode);
+            }
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuilder content = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine);
+            }
+            in.close();
+            conn.disconnect();
+
+            Gson gson = new Gson();
+
+            return gson.fromJson(content.toString(), new TypeToken<HashMap<String, List<String>>>() {}.getType());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
         }
-        return result.toString();
+    }
+
+    public static String getPublicIPAddress() throws IOException {
+        String apiUrl = "http://checkip.amazonaws.com";
+
+        URL url = new URL(apiUrl);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+        try {
+            connection.setRequestMethod("GET");
+
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String line;
+                StringBuilder response = new StringBuilder();
+
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+
+                reader.close();
+
+                return response.toString().trim();
+            } else {
+                throw new IOException("Failed to get public IP address. HTTP error code: " + responseCode);
+            }
+        } finally {
+            connection.disconnect();
+        }
     }
 }

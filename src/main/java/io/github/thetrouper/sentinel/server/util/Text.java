@@ -2,19 +2,42 @@ package io.github.thetrouper.sentinel.server.util;
 
 
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.data.Config;
 
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class Text {
+
+    public static String regexHighlighter(String input, String regex, String startString, String endString) {
+        // Create a Pattern object
+        Pattern pattern = Pattern.compile(regex);
+
+        // Create a Matcher object
+        Matcher matcher = pattern.matcher(input);
+
+        // StringBuffer to store the result
+        StringBuffer result = new StringBuffer();
+
+        // Find and append matches
+        while (matcher.find()) {
+            matcher.appendReplacement(result, startString + matcher.group() + endString);
+        }
+
+        // Append the remainder of the input
+        matcher.appendTail(result);
+
+        return result.toString();
+    }
+
     public static final char SECTION_SYMBOL = (char)167;
 
     public static String color(String msg) {
         return msg.replace('&', SECTION_SYMBOL);
     }
     public static String prefix(String text) {
-        String prefix = Sentinel.prefix;
+        String prefix = Sentinel.mainConfig.plugin.prefix;
         return color(prefix + text);
     }
     public static String removeFirstColor(String input) {
@@ -28,27 +51,42 @@ public class Text {
             return input;
         }
     }
-    public static String replaceRepeatingLetters(String message) {
-        StringBuilder result = new StringBuilder();
-        char prevChar = '\0';
-        int count = 0;
+    public static String replaceRepeatingLetters(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
 
-        for (char c : message.toCharArray()) {
-            if (c == prevChar) {
+        StringBuilder simplifiedText = new StringBuilder();
+        char currentChar = input.charAt(0);
+        int count = 1;
+
+        for (int i = 1; i < input.length(); i++) {
+            char nextChar = input.charAt(i);
+
+            if (Character.toLowerCase(nextChar) == Character.toLowerCase(currentChar)) {
                 count++;
-                if (count <= 3) {
-                    result.append(c);
-                }
             } else {
-                prevChar = c;
+                simplifiedText.append(currentChar);
+
+                if (count > 1) {
+                    simplifiedText.append(currentChar);
+                }
+
+                currentChar = nextChar;
                 count = 1;
-                result.append(c);
             }
         }
-        return result.toString();
+
+        simplifiedText.append(currentChar);
+
+        if (count > 1) {
+            simplifiedText.append(currentChar);
+        }
+
+        return simplifiedText.toString();
     }
     public static String fromLeetString(String s) {
-        Map<String, String> dictionary = Config.leetPatterns;
+        Map<String, String> dictionary = Sentinel.advConfig.leetPatterns;
         String msg = s;
 
         for (String key : dictionary.keySet()) {
@@ -67,5 +105,9 @@ public class Text {
             }
         }
         return msg;
+    }
+
+    public static String cleanName(String type) {
+        return type.replaceAll("_"," ").toLowerCase();
     }
 }

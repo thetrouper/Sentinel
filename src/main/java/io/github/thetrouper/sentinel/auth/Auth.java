@@ -20,7 +20,7 @@ final
 String 
 ENCRYPTION_KEY 
 = 
-"If I am reading this and I am not a verified developer for Sentinel AntiNuke, I solely swear that my attempts to de-obfuscate this plugin are purely for virus investigation, and have malicious intentions such as cracking, leaking, or ratting this plugin.";
+"If I am reading this and I am not a verified developer for Sentinel AntiNuke, I solely swear that my attempts to de-obfuscate this plugin are purely for investigation, and have no malicious intentions such as cracking, leaking, or ratting this plugin.";
 private
 static 
 final 

@@ -1,79 +1,95 @@
 package io.github.thetrouper.sentinel.events;
 
+import io.github.itzispyder.pdk.events.CustomListener;
 import io.github.thetrouper.sentinel.Sentinel;
-import io.github.thetrouper.sentinel.data.Config;
-import io.github.thetrouper.sentinel.data.Action;
 import io.github.thetrouper.sentinel.data.ActionType;
+import io.github.thetrouper.sentinel.server.Action;
 import io.github.thetrouper.sentinel.server.util.ServerUtils;
-import io.github.thetrouper.sentinel.server.util.Text;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
-public class CommandEvent implements Listener {
-    private String trusted;
+public class CommandEvent implements CustomListener {
+
     @EventHandler
-    private void onCommand(PlayerCommandPreprocessEvent e) {
+    public void onCommand(PlayerCommandPreprocessEvent e) {
         Player p = e.getPlayer();
+        if (Sentinel.isTrusted(p)) return;
         String command = e.getMessage().substring(1).split(" ")[0];
         String fullcommand = e.getMessage();
         ServerUtils.sendDebugMessage("CommandEvent: Checking command");
-        if (Sentinel.isDangerousCommand(command)) {
+        if (isDangerous(fullcommand)) {
             ServerUtils.sendDebugMessage("CommandEvent: Command is dangerous");
-            if (!Sentinel.isTrusted(p)) {
+            e.setCancelled(true);
+            ServerUtils.sendDebugMessage("CommandEvent: Command is canceled");
+            Action a = new Action.Builder()
+                    .setAction(ActionType.DANGEROUS_COMMAND)
+                    .setEvent(e)
+                    .setPlayer(p)
+                    .setCommand(fullcommand)
+                    .setDenied(true)
+                    .setDeoped(Sentinel.mainConfig.plugin.deop)
+                    .setPunished(Sentinel.mainConfig.plugin.commandPunish)
+                    .setNotifyDiscord(Sentinel.mainConfig.plugin.logDangerous)
+                    .setNotifyConsole(true)
+                    .setNotifyTrusted(true)
+                    .execute();
+        }
+        if (Sentinel.mainConfig.plugin.blockSpecific) {
+            ServerUtils.sendDebugMessage("CommandEvent: Checking command for specific");
+            if (command.contains(":")) {
+                ServerUtils.sendDebugMessage("CommandEvent: Failed check");
                 e.setCancelled(true);
-                ServerUtils.sendDebugMessage("CommandEvent: Command is canceled");
+                ServerUtils.sendDebugMessage(("CommandEvent: Not trusted, preforming action"));
                 Action a = new Action.Builder()
-                        .setAction(ActionType.DANGEROUS_COMMAND)
+                        .setAction(ActionType.SPECIFIC_COMMAND)
                         .setEvent(e)
                         .setPlayer(p)
                         .setCommand(fullcommand)
                         .setDenied(true)
-                        .setDeoped(Config.deop)
-                        .setPunished(Config.commandPunish)
-                        .setnotifyDiscord(Config.logDangerous)
+                        .setDeoped(Sentinel.mainConfig.plugin.deop)
+                        .setPunished(Sentinel.mainConfig.plugin.specificPunish)
+                        .setNotifyDiscord(Sentinel.mainConfig.plugin.logSpecific)
                         .setNotifyConsole(true)
                         .setNotifyTrusted(true)
                         .execute();
+
             }
         }
-        if (Config.blockSpecific) {
-            ServerUtils.sendDebugMessage("CommandEvent: Checking command for specific");
-            if (command.contains(":")) {
-                ServerUtils.sendDebugMessage("CommandEvent: Failed check");
-                if (!Sentinel.isTrusted(p)) {
-                    e.setCancelled(true);
-                    ServerUtils.sendDebugMessage(("CommandEvent: Not trusted, preforming action"));
-                    Action a = new Action.Builder()
-                            .setAction(ActionType.SPECIFIC_COMMAND)
-                            .setEvent(e)
-                            .setPlayer(p)
-                            .setCommand(command)
-                            .setDenied(true)
-                            .setDeoped(Config.deop)
-                            .setPunished(Config.specificPunish)
-                            .setnotifyDiscord(Config.logSpecific)
-                            .setNotifyConsole(true)
-                            .setNotifyTrusted(true)
-                            .execute();
-                }
-            }
-        }
-        if (Sentinel.isLoggedCommand(command)) {
+        if (isLogged(fullcommand)) {
             ServerUtils.sendDebugMessage("CommandEvent: Is logged command, logging");
             Action a = new Action.Builder()
                     .setAction(ActionType.LOGGED_COMMAND)
                     .setEvent(e)
                     .setPlayer(p)
-                    .setCommand(command)
+                    .setCommand(fullcommand)
                     .setDenied(false)
                     .setDeoped(false)
                     .setPunished(false)
-                    .setnotifyDiscord(true)
+                    .setNotifyDiscord(true)
                     .setNotifyConsole(true)
                     .setNotifyTrusted(true)
                     .execute();
         }
+    }
+
+    private static boolean isLogged(String command) {
+        if (command.startsWith("/")) {
+            command = command.substring(1);
+        }
+        for (String logged : Sentinel.mainConfig.plugin.logged) {
+            if (command.split(" ")[0].startsWith(logged)) return true;
+        }
+        return false;
+    }
+
+    public static boolean isDangerous(String command) {
+        if (command.startsWith("/")) {
+            command = command.substring(1);
+        }
+        for (String blocked : Sentinel.mainConfig.plugin.dangerous) {
+            if (command.split(" ")[0].startsWith(blocked)) return true;
+        }
+        return false;
     }
 }
