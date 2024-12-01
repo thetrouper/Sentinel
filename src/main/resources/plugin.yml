@@ -1,11 +1,12 @@
-name: Sentinel
+name: SentinelAntiNuke
 version: '${version}'
-main: io.github.thetrouper.sentinel.Sentinel
-api-version: 1.19
+main: me.trouper.sentinel.Sentinel
+api-version: 1.20
 authors: [ TheTrouper ]
-description: Detect Block and Ban players who attempt to grief your server.
+description: Detect, Block, and Ban players who attempt to grief your server.
 website: https://thetrouper.github.io/
 softdepend: [ ProtocolLib ]
+load: STARTUP
 permissions:
   sentinel.message:
     description: Access to the direct messages

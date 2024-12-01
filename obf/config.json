@@ -1,75 +1,88 @@
 {
   "Settings": {
-    "Input": "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libs/Sentinel-0.2.6.jar",
-    "Output": "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libs/Sentinel-0.2.6-beta-reobf.jar",
+    "Input": "../build/libs/CleanSentinel-0.2.9.jar",
+    "Output": "/run/media/wolf/253ae3a6-b319-4c80-b1ea-dd39b51b8f27/home/wolf/Servers/Testing/plugins/Sentinel-0.2.9-gamma.jar",
     "Libraries": [
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/gson-2.10.1.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/ProtocolLib-5.1.0.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/adventure-api-4.15.0.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/adventure-key-4.15.0.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/adventure-text-logger-slf4j-4.15.0.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/adventure-text-minimessage-4.15.0.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/adventure-text-serializer-gson-4.15.0.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/adventure-text-serializer-json-4.15.0.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/adventure-text-serializer-legacy-4.15.0.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/adventure-text-serializer-plain-4.15.0.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/annotations-24.1.0.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/bungeecord-chat-1.20-R0.1.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/checker-qual-3.33.0.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/error_prone_annotations-2.18.0.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/examination-api-1.3.0.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/examination-string-1.3.0.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/failureaccess-1.0.1.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/fastutil-8.5.6.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/gson-2.10.1.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/guava-32.1.2-jre.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/j2objc-annotations-2.8.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/javax.inject-1.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/joml-1.10.5.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/json-simple-1.1.1.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/jsr305-3.0.2.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/org.eclipse.sisu.inject-0.9.0.M2.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/PDK-1.3.4.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/plexus-interpolation-1.26.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/plexus-utils-3.5.1.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/snakeyaml-2.2.jar",
-      "/run/media/trouper/1TB drive/IJ/IdeaProjects/Sentinel/build/libraries/spigot-api-1.20.2-R0.1-SNAPSHOT.jar"
+      "../deps/adventure-api-4.17.0.jar",
+      "../deps/adventure-key-4.17.0.jar",
+      "../deps/adventure-text-logger-slf4j-4.17.0.jar",
+      "../deps/adventure-text-minimessage-4.17.0.jar",
+      "../deps/adventure-text-serializer-gson-4.17.0.jar",
+      "../deps/adventure-text-serializer-json-4.17.0.jar",
+      "../deps/adventure-text-serializer-legacy-4.17.0.jar",
+      "../deps/adventure-text-serializer-plain-4.17.0.jar",
+      "../deps/annotations-24.1.0.jar",
+      "../deps/auto-service-annotations-1.1.1.jar",
+      "../deps/brigadier-1.2.9.jar",
+      "../deps/bungeecord-chat-1.20-R0.2-deprecated+build.18.jar",
+      "../deps/error_prone_annotations-2.18.0.jar",
+      "../deps/examination-api-1.3.0.jar",
+      "../deps/examination-string-1.3.0.jar",
+      "../deps/failureaccess-1.0.1.jar",
+      "../deps/fastutil-8.5.6.jar",
+      "../deps/gson-2.10.1.jar",
+      "../deps/guava-32.1.2-jre.jar",
+      "../deps/j2objc-annotations-2.8.jar",
+      "../deps/javax.inject-1.jar",
+      "../deps/joml-1.10.5.jar",
+      "../deps/json-simple-1.1.1.jar",
+      "../deps/jsr305-3.0.2.jar",
+      "../deps/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+      "../deps/option-1.0.0.jar",
+      "../deps/paper-api-1.20.6-R0.1-SNAPSHOT.jar",
+      "../deps/ProtocolLib-5.1.0.jar",
+      "../deps/slf4j-api-2.0.9.jar",
+      "../deps/snakeyaml-2.2.jar"
     ],
     "Exclusions": [
       "com/google/gson/",
-      "io/github/itzispyder/"
+      "io/github/itzispyder/",
+      "me/trouper/sentinel/data/"
     ],
-    "GenerateRemap": true,
-    "RemapOutput": "mappings.json",
-    "ParallelProcessing": true,
+    "MixinPackage": [
+      "net/spartanb312/client/mixins/"
+    ],
+    "DumpMappings": true,
+    "Multithreading": false,
+    "PrintTimeUsage": true,
+    "ForceUseComputeMax": false,
+    "LibsMissingCheck": true,
     "CustomDictionary": [],
     "DictionaryStartIndex": 0,
     "CorruptOutput": false,
     "FileRemovePrefix": [],
     "FileRemoveSuffix": []
   },
-  "AntiDebug": {
+  "UI": {
+    "DarkTheme": true
+  },
+  "SourceDebugRemove": {
     "Enabled": true,
     "SourceDebug": true,
     "LineDebug": true,
     "RenameSourceDebug": true,
     "SourceNames": [
-      "protected-by-redactor.java",
-      "COPYRIGHT_SENTINEL_ANTINUKE_2024"
-    ]
+      "AhAhAhYouDidntSayTheMagicWord.java",
+      "SentinelIsClosedSource.java",
+      "YourHonor-FreeBirdWasPlaying.kt",
+      "Officer-IDropKickedThatChildInSelfDefense.kt",
+      "NotTheBees.java",
+      "Youve-been-trolled.java",
+      "tuco-get-out.mp3.kt"
+    ],
+    "Exclusion": []
   },
   "Shrinking": {
     "Enabled": true,
     "RemoveInnerClass": true,
     "RemoveUnusedLabel": true,
     "RemoveNOP": false,
-    "Exclusions": []
+    "Exclusion": []
   },
   "KotlinOptimizer": {
     "Enabled": false,
-    "RemoveMetadata": true,
-    "RemoveIntrinsics": true,
+    "Annotations": true,
+    "Intrinsics": true,
     "IntrinsicsRemoval": [
       "checkExpressionValueIsNotNull",
       "checkNotNullExpressionValue",
@@ -78,113 +91,267 @@
       "checkParameterIsNotNull",
       "checkNotNullParameter"
     ],
-    "IntrinsicsExclusions": [],
-    "MetadataExclusions": []
+    "ReplaceLdc": true,
+    "IntrinsicsExclusion": [],
+    "MetadataExclusion": []
+  },
+  "EnumOptimize": {
+    "Enabled": false,
+    "Exclusion": []
+  },
+  "DeadCodeRemove": {
+    "Enabled": false,
+    "Exclusion": []
+  },
+  "ClonedClass": {
+    "Enabled": true,
+    "Count": 2048,
+    "Suffix": "-on-top",
+    "RemoveAnnotations": true,
+    "Exclusion": []
+  },
+  "TrashClass": {
+    "Enabled": true,
+    "Package": "sentinel/",
+    "Prefix": "NUKE_",
+    "Count": 2048
+  },
+  "HWIDAuthentication": {
+    "Enabled": false,
+    "OnlineMode": true,
+    "OfflineHWID": [
+      "Put HWID here (For offline mode only)"
+    ],
+    "OnlineURL": "https://pastebin.com/XXXXX",
+    "EncryptKey": "1186118611861186",
+    "CachePools": 5,
+    "ShowHWIDWhenFailed": true,
+    "EncryptConst": true,
+    "Exclusion": []
+  },
+  "ReflectionSupport": {
+    "Enabled": false,
+    "PrintLog": true,
+    "Class": true,
+    "Method": true,
+    "Field": true
   },
   "StringEncrypt": {
     "Enabled": true,
-    "Intensity": 6,
-    "Exclusions": [
-      "io/github/thetrouper/sentinel/data/config/",
-      "io/github/thetrouper/sentinel/data/cmdblocks/"
-    ]
+    "Intensity": 1,
+    "Exclusion": []
   },
   "NumberEncrypt": {
     "Enabled": true,
+    "Intensity": 1,
     "FloatingPoint": true,
-    "Intensity": 2,
-    "Exclusions": [
-      "io/github/thetrouper/sentinel/data/config/",
-      "io/github/thetrouper/sentinel/data/cmdblocks/"
-    ]
+    "Arrayed": false,
+    "MaxInsnSize": 16384,
+    "Exclusion": []
   },
-  "ScrambleTransformer": {
+  "ArithmeticEncrypt": {
     "Enabled": true,
     "Intensity": 1,
-    "RandomName": true,
-    "RedirectGetStatic": true,
-    "RedirectSetStatic": true,
-    "RedirectGetValue": true,
-    "RedirectSetField": true,
+    "MaxInsnSize": 16384,
+    "Exclusion": []
+  },
+  "Controlflow": {
+    "Enabled": false,
+    "Intensity": 1,
+    "ExecuteBeforeEncrypt": false,
+    "BogusConditionJump": true,
+    "GotoReplaceRate": 80,
+    "MangledCompareJump": true,
+    "IfReplaceRate": 50,
+    "IfICompareReplaceRate": 100,
+    "SwitchProtect": true,
+    "TableSwitchJump": true,
+    "SwitchReplaceRate": 30,
+    "MaxSwitchCase": 5,
+    "ReverseExistedIf": true,
+    "ReverseChance": 50,
+    "TrappedSwitchCase": true,
+    "TrapChance": 50,
+    "ArithmeticExprBuilder": true,
+    "BuilderIntensity": 1,
+    "JunkBuilderParameter": true,
+    "BuilderNativeAnnotation": false,
+    "UseLocalVar": true,
+    "JunkCode": true,
+    "MaxJunkCode": 2,
+    "ExpandedJunkCode": true,
+    "Exclusion": []
+  },
+  "ConstPollEncrypt": {
+    "Enabled": false,
+    "Integer": true,
+    "Long": true,
+    "Float": true,
+    "Double": true,
+    "String": true,
+    "HeavyEncrypt": false,
+    "DontScramble": true,
+    "NativeAnnotation": false,
+    "Exclusion": []
+  },
+  "RedirectStringEquals": {
+    "Enabled": true,
+    "IgnoreCase": true,
+    "Exclusion": []
+  },
+  "FieldScramble": {
+    "Enabled": false,
+    "Intensity": 1,
+    "RandomName": false,
+    "GetStatic": true,
+    "tSetStatic": true,
+    "GetValue": true,
+    "SetField": true,
     "GenerateOuterClass": false,
-    "ExcludedClasses": [
-      "io/github/thetrouper/sentinel/data/config/",
-      "io/github/thetrouper/sentinel/data/cmdblocks/"
-    ],
-    "ExcludedFieldName": [],
-    "NativeDownCalls": true,
-    "NativeUpCalls": false
+    "NativeAnnotation": false,
+    "ExcludedClasses": [],
+    "ExcludedFieldName": []
+  },
+  "MethodScramble": {
+    "Enabled": false,
+    "GenerateOuterClass": true,
+    "RandomCall": true,
+    "NativeAnnotation": false,
+    "ExcludedClasses": [],
+    "ExcludedMethodName": []
   },
   "NativeCandidate": {
     "Enabled": false,
     "NativeAnnotation": "Lnet/spartanb312/example/Native;",
+    "SearchCandidate": true,
     "UpCallLimit": 0,
-    "Exclusions": []
+    "Exclusion": [],
+    "AnnotationGroups": [
+      "{ \"annotation\": \"Lnet/spartanb312/grunt/Native;\", \"includeRegexes\": [\"^(?:[^./\\\\[;]+/)*[^./\\\\[;]+$\"], \"excludeRegexes\": [] }",
+      "{ \"annotation\": \"Lnet/spartanb312/grunt/VMProtect;\", \"includeRegexes\": [\"^(?:[^./\\\\[;]+\\\\/)*(?:[^./\\\\[;])+\\\\.(?:[^./\\\\[;()\\\\/])+(?:\\\\(((\\\\[*L[^./\\\\[;]([^./\\\\[;]*[^.\\\\[;][^./\\\\[;])*;)|(\\\\[*[ZBCSIJFD]+))*\\\\))((\\\\[*L[^./\\\\[;]([^./\\\\[;]*[^.\\\\[;][^./\\\\[;])*;)|V|(\\\\[*[ZBCSIJFD]))$\"], \"excludeRegexes\": [] }"
+    ]
+  },
+  "SyntheticBridge": {
+    "Enabled": false,
+    "Exclusion": []
   },
   "LocalVariableRename": {
     "Enabled": true,
     "Dictionary": "Alphabet",
-    "ThisReference": false
+    "ThisReference": false,
+    "Exclusion": []
   },
   "MethodRename": {
     "Enabled": true,
+    "Enums": true,
+    "Interfaces": false,
     "Dictionary": "Alphabet",
-    "HeavyOverloads": true,
-    "RandomKeywordPrefix": true,
-    "Prefix": "INEL_",
-    "Exclusion": [
-      "io/github/thetrouper/sentinel/data/config/",
-      "io/github/thetrouper/sentinel/data/cmdblocks/"
-    ],
+    "HeavyOverloads": false,
+    "RandomKeywordPrefix": false,
+    "Prefix": "ANTI_",
+    "Reversed": false,
+    "Exclusion": [],
     "ExcludedName": []
   },
   "FieldRename": {
     "Enabled": true,
     "Dictionary": "Alphabet",
-    "RandomKeywordPrefix": true,
-    "Prefix": "SENT_",
-    "Exclusion": [
-      "io/github/thetrouper/sentinel/data/config/",
-      "io/github/thetrouper/sentinel/data/cmdblocks/"
-    ],
-    "ExcludedName": []
+    "RandomKeywordPrefix": false,
+    "Prefix": "INEL_",
+    "Reversed": false,
+    "Exclusion": [],
+    "ExcludedName": [
+      "INSTANCE",
+      "Companion"
+    ]
   },
   "ClassRename": {
     "Enabled": true,
     "Dictionary": "Alphabet",
     "Parent": "sentinel/",
-    "Prefix": "SENTINEL_",
+    "Prefix": "SENT_",
+    "Reversed": false,
+    "Shuffled": true,
     "CorruptedName": false,
-    "CorruptedNameExclusions": [
-      "io/github/thetrouper/sentinel/data/config/",
-      "io/github/thetrouper/sentinel/data/cmdblocks/",
-      "io/github/thetrouper/sentinel/Sentinel"
-    ],
-    "ManifestReplace": [
-      "Main-Class"
-    ],
-    "PluginMainReplace": false,
-    "BungeeMainReplace": false,
-    "Exclusion": [
-      "io/github/thetrouper/sentinel/Sentinel",
-      "io/github/thetrouper/sentinel/data/config/",
-      "io/github/thetrouper/sentinel/data/cmdblocks/"
-    ],
-    "MixinSupport": false,
-    "MixinDictionary": "Alphabet",
-    "MixinPackage": "net/spartanb312/client/mixins/",
+    "CorruptedNameExclusion": [],
+    "Exclusion": []
+  },
+  "MixinFieldRename": {
+    "Enabled": false,
+    "Dictionary": "Alphabet",
+    "Prefix": "",
+    "Exclusion": [],
+    "ExcludedName": [
+      "INSTANCE",
+      "Companion"
+    ]
+  },
+  "MixinClassRename": {
+    "Enabled": false,
+    "Dictionary": "Alphabet",
     "TargetMixinPackage": "net/spartanb312/obf/mixins/",
     "MixinFile": "mixins.example.json",
-    "RefmapFile": "mixins.example.refmap.json"
+    "RefmapFile": "mixins.example.refmap.json",
+    "Exclusion": []
+  },
+  "InvokeDynamic": {
+    "Enabled": false,
+    "ReplacePercentage": 10,
+    "HeavyProtection": false,
+    "MetadataClass": "net/spartanb312/grunt/GruntMetadata",
+    "MassiveRandomBlank": true,
+    "Reobfuscate": true,
+    "EnhancedFlowReobf": false,
+    "BSMNativeAnnotation": false,
+    "Exclusion": []
   },
   "ShuffleMembers": {
     "Enabled": true,
     "Methods": true,
     "Fields": true,
-    "Annotations": false
+    "Annotations": true,
+    "Exceptions": true,
+    "Exclusion": []
+  },
+  "Crasher": {
+    "Enabled": false,
+    "Random": false,
+    "Exclusion": []
   },
   "Watermark": {
-    "Enabled": false,
-    "Watermark Message": "COPYRIGHT_C_SENTINEL_2024"
+    "Enabled": true,
+    "Names": [
+      "Copyright_SentinelAntiNuke2024",
+      "obvWolf",
+      "thetrouper"
+    ],
+    "Messages": [
+      "Ah_Ah_Ah_You_Didnt_Say_The_Magic_Word",
+      "%%__USERNAME__%%",
+      "%%__USER__%%"
+    ],
+    "FieldMark": true,
+    "MethodMark": true,
+    "AnnotationMark": false,
+    "Annotations": [
+      "ProtectedByGrunt",
+      "JvavMetadata"
+    ],
+    "Versions": [
+      "1984"
+    ],
+    "InterfaceMark": false,
+    "FatherOfJava": "linus/torvalds/thegoat/",
+    "Exclusion": []
+  },
+  "PostProcess": {
+    "Enabled": true,
+    "Manifest": true,
+    "Plugin YML": true,
+    "Bungee YML": true,
+    "Fabric JSON": true,
+    "ManifestPrefix": [
+      "Main-Class:"
+    ]
   }
 }
