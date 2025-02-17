@@ -2,7 +2,6 @@ package me.trouper.sentinel.server.functions.chatfilter.unicode;
 
 import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.server.functions.chatfilter.AbstractActionHandler;
-import me.trouper.sentinel.server.functions.chatfilter.profanity.ProfanityFilter;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
 import me.trouper.sentinel.utils.trees.HoverFormatter;
@@ -26,13 +25,15 @@ public class UnicodeAction extends AbstractActionHandler<UnicodeResponse> {
         ));
         String hoverText = HoverFormatter.format(tree);
 
-        ServerUtils.forEachStaff(player -> player.sendMessage(Component.text(messageText).hoverEvent(Component.text(hoverText).asHoverEvent())));
+        ServerUtils.forEachPlayer(player -> {
+            if (player.hasPermission("sentinel.chatfilter.unicode.view")) player.sendMessage(Component.text(messageText).hoverEvent(Component.text(hoverText).asHoverEvent()));
+        });
     }
 
     @Override
     protected void playerWarning(UnicodeResponse response) {
         String message = Text.prefix(response.isPunished() ? Sentinel.lang.violations.chat.unicode.autoPunishWarning : Sentinel.lang.violations.chat.unicode.preventWarning);
-        String hoverText = Sentinel.lang.automatedActions.actionAutomaticReportable;
+        String hoverText = Sentinel.lang.automatedActions.reportable;
         String command = "/sentinelcallback fpreport %s".formatted(response.getReport().getId());
         response.getPlayer().sendMessage(Component.text(message)
                 .hoverEvent(Component.text(hoverText).asHoverEvent())

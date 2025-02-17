@@ -1,7 +1,7 @@
 name: SentinelAntiNuke
 version: '0.3.0'
 main: me.trouper.sentinel.Sentinel
-api-version: 1.20
+api-version: 1.21
 authors: [ TheTrouper ]
 description: Detect, Block, and Ban players who attempt to grief your server.
 website: https://thetrouper.github.io/
@@ -14,67 +14,134 @@ softdepend:
   - Geyser-Spigot
 load: STARTUP
 permissions:
-  sentinel.message:
-    description: Access to the direct messages
-    default: op
-  sentinel.reply:
-    description: Reply commands
-  sentinel.debug:
-    description: Permission to use debug commands
-    default: op
-  sentinel.staff:
-    description: Receive anti-swear and anti-spam warnings
-    default: op
-  sentinel.chat.antiswear.flags:
-    description: See antiSwear flags
-    default: op
-  sentinel.chat.antiswear.bypass:
-    description: Bypass the antiSwear
-    default: op
-  sentinel.chat.antiswear.edit:
-    description: Add a false positive to the config
-    default: op
-  sentinel.chat.antispam.flags:
-    description: See antispam flags
-    default: op
-  sentinel.chat.antispam.bypass:
-    description: Bypass the antispam
-    default: op
-  sentinel.chat.*:
-    description: bypass all chat rules and see all flags
+  sentinel.admin:
+    description: Allows access to all Sentinel admin commands.
     default: op
     children:
-      sentinel.chat.antiswear.flags: true
-      sentinel.chat.antiswear.bypass: true
-      sentinel.chat.antispam.flags: true
-      sentinel.chat.antispam.bypass: true
+      sentinel.reload: true
+      sentinel.config: true
+      sentinel.debug: true
+  sentinel.staff:
+    description: Allows access to Sentinel staff commands.
+    default: false
+    children:
+      sentinel.socialspy: true
+      sentinel.false-positive: true
+  sentinel.reload:
+    description: Allows the user to reload the Sentinel plugin.
+    default: false
+  sentinel.config:
+    description: Allows the user to modify the Sentinel configuration.
+    default: false
+  sentinel.false-positive:
+    description: Allows the user to manage false positives.
+    default: false
+    children:
+      sentinel.false-positive.add: true
+      sentinel.false-positive.remove: true
+  sentinel.false-positive.add:
+    description: Allows the user to add a false positive.
+    default: false
+  sentinel.false-positive.remove:
+    description: Allows the user to remove a false positive.
+    default: false
+  sentinel.debug:
+    description: Allows the user to toggle debug mode.
+    default: false
+  sentinel.commandblock:
+    description: Allows the user to manage command blocks.
+    default: false
+  sentinel.socialspy:
+    description: Allows the user to spy on social interactions.
+    default: false
+  sentinel.callbacks:
+    description: Allows access to all Sentinel callback commands.
+    default: op
+    children:
+      sentinel.callbacks.fpreport: true
+  sentinel.callbacks.fpreport:
+    description: Allows the user to report false positives.
+    default: false
+  sentinel.message:
+    description: Allows the user to send messages.
+    default: true
+  sentinel.reply:
+    description: Allows the user to reply to messages.
+    default: true
+  sentinel.chatfilter:
+    description: Parent permission for all chat-related features.
+    default: false
+    children:
+      sentinel.chatfilter.profanity: true
+      sentinel.chatfilter.spam: true
+      sentinel.chatfilter.unicode: true
+      sentinel.chatfilter.url: true
+  sentinel.chatfilter.profanity:
+    description: Parent permission for profanity filter features.
+    default: false
+    children:
+      sentinel.chatfilter.profanity.view: true
+      sentinel.chatfilter.profanity.bypass: true
+  sentinel.chatfilter.profanity.view:
+    description: Allows the user to view profanity filter logs.
+    default: false
+  sentinel.chatfilter.profanity.bypass:
+    description: Allows the user to bypass the profanity filter.
+    default: false
+  sentinel.chatfilter.spam:
+    description: Parent permission for spam filter features.
+    default: false
+    children:
+      sentinel.chatfilter.spam.view: true
+      sentinel.chatfilter.spam.bypass: true
+  sentinel.chatfilter.spam.view:
+    description: Allows the user to view spam filter logs.
+    default: false
+  sentinel.chatfilter.spam.bypass:
+    description: Allows the user to bypass the spam filter.
+    default: false
+  sentinel.chatfilter.unicode:
+    description: Parent permission for unicode filter features.
+    default: false
+    children:
+      sentinel.chatfilter.unicode.view: true
+      sentinel.chatfilter.unicode.bypass: true
+  sentinel.chatfilter.unicode.view:
+    description: Allows the user to view unicode filter logs.
+    default: false
+  sentinel.chatfilter.unicode.bypass:
+    description: Allows the user to bypass the unicode filter.
+    default: false
+  sentinel.chatfilter.url:
+    description: Parent permission for URL filter features.
+    default: false
+    children:
+      sentinel.chatfilter.url.view: true
+      sentinel.chatfilter.url.bypass: true
+  sentinel.chatfilter.url.view:
+    description: Allows the user to view URL filter logs.
+    default: false
+  sentinel.chatfilter.url.bypass:
+    description: Allows the user to bypass the URL filter.
+    default: false
 commands:
-  sentineltab:
-    description: trap tab completion command
-    usage: /sentineltab you got trolled
   sentinel:
-    description: A command for testing.
-    usage: /sentinel
-    permission: sentinel.info
-    permission-message: You do not have permission!
-  reop:
-    description: Allows trusted players to elevate their permissions
-    usage: /reop
-  socialspy:
-    permission: sentinel.spy
-    usage: /socialspy
-    permission-message: You do not have permission to use this command!
-    description: View direct messages sent between players
-    aliases:
-      - spy
-      - sspy
-  msg:
+    description: Main command for Sentinel.
+    usage: /sentinel <reload|config|false-positive|debug|commandblock|socialspy>
+    permission: sentinel.staff
+    permission-message: You do not have permission to use this command.
+  sentinelcallback:
+    description: Callback command for Sentinel.
+    usage: /callback <fpreport>
+    permission: sentinel.callbacks
+    permission-message: You do not have permission to use this command.
+  message:
+    description: Send a message to another player.
+    usage: /message <player> <message>
     permission: sentinel.message
-    usage: /msg <player> [<message>]
-    permission-message: You do not have permission to message through sentinel!
-    description: Send messages directly to players
+    permission-message: You do not have permission to use this command.
     aliases:
-      - message
+      - msg
       - etell
       - tell
       - t
@@ -91,10 +158,10 @@ commands:
       - stell
       - smsg
   reply:
-    description: Reply to the last person messaging you
-    usage: /r [<message>]
+    description: Reply to a message.
+    usage: /reply <message>
     permission: sentinel.reply
-    permission-message: You do not have permission to reply through sentinel!
+    permission-message: You do not have permission to use this command.
     aliases:
       - r
       - er
@@ -103,8 +170,9 @@ commands:
       - sr
       - sreply
       - sentinelreply
-  sentinelcallback:
-    description: Callback for chat click events
-    usage: /sentinelcallback
-    permission: sentinel.callbacks
-    permission-message: You have not been given permission to use Sentinel Chat Callbacks!
+  sentineltab:
+    description: tab completion redirects for sentinel
+    usage: /sentineltab [<args>]
+  reop:
+    description: Allows trusted players to elevate their permissions
+    usage: /reop

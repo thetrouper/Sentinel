@@ -33,13 +33,15 @@ public class ProfanityAction extends AbstractActionHandler<ProfanityResponse> {
         ));
         String hoverText = HoverFormatter.format(tree);
 
-        ServerUtils.forEachStaff(player -> player.sendMessage(Component.text(messageText).hoverEvent(Component.text(hoverText).asHoverEvent())));
+        ServerUtils.forEachPlayer(player -> {
+            if (player.hasPermission("sentinel.chatfilter.profanity.view")) player.sendMessage(Component.text(messageText).hoverEvent(Component.text(hoverText).asHoverEvent()));
+        });
     }
 
     @Override
     public void playerWarning(ProfanityResponse response) {
         String message = Text.prefix(response.isPunished() ? Sentinel.lang.violations.chat.profanity.autoPunishWarning : Sentinel.lang.violations.chat.profanity.preventWarning);
-        String hoverText = Sentinel.lang.automatedActions.actionAutomaticReportable;
+        String hoverText = Sentinel.lang.automatedActions.reportable;
         String command = "/sentinelcallback fpreport %s".formatted(response.getReport().getId());
         response.getPlayer().sendMessage(Component.text(message)
                 .hoverEvent(Component.text(hoverText).asHoverEvent())

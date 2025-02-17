@@ -28,13 +28,15 @@ public class SpamAction extends AbstractActionHandler<SpamResponse> {
         ));
         String hoverText = HoverFormatter.format(tree);
 
-        ServerUtils.forEachStaff(player -> player.sendMessage(Component.text(messageText).hoverEvent(Component.text(hoverText).asHoverEvent())));
+        ServerUtils.forEachPlayer(player -> {
+            if (player.hasPermission("sentinel.chatfilter.spam.view")) player.sendMessage(Component.text(messageText).hoverEvent(Component.text(hoverText).asHoverEvent()));
+        });
     }
 
     @Override
     public void playerWarning(SpamResponse response) {
         String message = Text.prefix(response.isPunished() ? Sentinel.lang.violations.chat.spam.autoPunishWarning : Sentinel.lang.violations.chat.spam.preventWarning) ;
-        String hoverText = Sentinel.lang.automatedActions.actionAutomaticReportable;
+        String hoverText = Sentinel.lang.automatedActions.reportable;
         String command = "/sentinelcallback fpreport %s".formatted(response.getReport().getId());
         response.getEvent().getPlayer().sendMessage(Component.text(message)
                         .hoverEvent(Component.text(hoverText).asHoverEvent())

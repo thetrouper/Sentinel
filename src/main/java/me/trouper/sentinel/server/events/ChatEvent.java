@@ -39,24 +39,23 @@ public class ChatEvent implements CustomListener {
                 ServerUtils.verbose("Attempting to cancel events for callback!");
                 e.setCancelled(true);
                 MainGUI.awaitingCallback.remove(e.getPlayer().getUniqueId());
+                ServerUtils.verbose("Handling Chat Event for callbacks");
+                SchedulerUtils.later(0,()->{
+                    UnicodeFilterGUI.updater.invokeCallbacks(e);
+                    UrlFilterGUI.updater.invokeCallbacks(e);
+                    ProfanityFilterGUI.updater.invokeCallbacks(e);
+                    SpamFilterGUI.updater.invokeCallbacks(e);
+                    DangerousCMDGUI.updater.invokeCallbacks(e);
+                    LoggedCMDGUI.updater.invokeCallbacks(e);
+                    SpecificCMDGUI.updater.invokeCallbacks(e);
+                    CBEditGUI.updater.invokeCallbacks(e);
+                    CBMCPlaceGUI.updater.invokeCallbacks(e);
+                    CBMCUseGUI.updater.invokeCallbacks(e);
+                    CBPlaceGUI.updater.invokeCallbacks(e);
+                    CBUseGUI.updater.invokeCallbacks(e);
+                    HotbarActionGUI.updater.invokeCallbacks(e);
+                });
             }
-
-            ServerUtils.verbose("Handling Chat Event for callbacks");
-            SchedulerUtils.later(0,()->{
-                UnicodeFilterGUI.updater.invokeCallbacks(e);
-                UrlFilterGUI.updater.invokeCallbacks(e);
-                ProfanityFilterGUI.updater.invokeCallbacks(e);
-                SpamFilterGUI.updater.invokeCallbacks(e);
-                DangerousCMDGUI.updater.invokeCallbacks(e);
-                LoggedCMDGUI.updater.invokeCallbacks(e);
-                SpecificCMDGUI.updater.invokeCallbacks(e);
-                CBEditGUI.updater.invokeCallbacks(e);
-                CBMCPlaceGUI.updater.invokeCallbacks(e);
-                CBMCUseGUI.updater.invokeCallbacks(e);
-                CBPlaceGUI.updater.invokeCallbacks(e);
-                CBUseGUI.updater.invokeCallbacks(e);
-                HotbarActionGUI.updater.invokeCallbacks(e);
-            });
             return;
         }
 
@@ -65,7 +64,7 @@ public class ChatEvent implements CustomListener {
         ServerUtils.verbose("Chat event start after trust check:\n Canceled %s".formatted(e.isCancelled()));
 
         handle(p,
-                "sentinel.chat.regex.bypass",
+                "sentinel.chatfilter.unicode.bypass",
                 Sentinel.mainConfig.chat.unicodeFilter.enabled, "unicode",
                 e,
                 UnicodeFilter::handleUnicodeFilter);
@@ -73,15 +72,15 @@ public class ChatEvent implements CustomListener {
         ServerUtils.verbose("Chat event middle after unicode:\n Canceled %s".formatted(e.isCancelled()));
 
         handle(p,
-                "sentinel.chat.regex.bypass",
-                Sentinel.mainConfig.chat.unicodeFilter.enabled, "url",
+                "sentinel.chatfilter.url.bypass",
+                Sentinel.mainConfig.chat.urlFilter.enabled, "url",
                 e,
                 UrlFilter::handleUrlFilter);
 
-        ServerUtils.verbose("Chat event middle after unicode:\n Canceled %s".formatted(e.isCancelled()));
+        ServerUtils.verbose("Chat event middle after URL:\n Canceled %s".formatted(e.isCancelled()));
 
         handle(p,
-                "sentinel.chat.spam.bypass",
+                "sentinel.chatfilter.spam.bypass",
                 Sentinel.mainConfig.chat.spamFilter.enabled,
                 "spam",
                 e,
@@ -90,7 +89,7 @@ public class ChatEvent implements CustomListener {
         ServerUtils.verbose("Chat event middle after spam:\n Canceled %s".formatted(e.isCancelled()));
 
         handle(p,
-                "sentinel.chat.swear.bypass",
+                "sentinel.chatfilter.swear.bypass",
                 Sentinel.mainConfig.chat.profanityFilter.enabled,
                 "swear",
                 e,

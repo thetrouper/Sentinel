@@ -25,13 +25,15 @@ public class UrlAction extends AbstractActionHandler<UrlResponse> {
         ));
         String hoverText = HoverFormatter.format(tree);
 
-        ServerUtils.forEachStaff(player -> player.sendMessage(Component.text(messageText).hoverEvent(Component.text(hoverText).asHoverEvent())));
+        ServerUtils.forEachPlayer(player -> {
+            if (player.hasPermission("sentinel.chatfilter.url.view")) player.sendMessage(Component.text(messageText).hoverEvent(Component.text(hoverText).asHoverEvent()));
+        });
     }
 
     @Override
     protected void playerWarning(UrlResponse response) {
         String message = Text.prefix(response.isPunished() ? Sentinel.lang.violations.chat.url.autoPunishWarning : Sentinel.lang.violations.chat.url.preventWarning);
-        String hoverText = Sentinel.lang.automatedActions.actionAutomaticReportable;
+        String hoverText = Sentinel.lang.automatedActions.reportable;
         String command = "/sentinelcallback fpreport %s".formatted(response.getReport().getId());
         response.getPlayer().sendMessage(Component.text(message)
                 .hoverEvent(Component.text(hoverText).asHoverEvent())

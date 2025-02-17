@@ -2,6 +2,7 @@ package me.trouper.sentinel.data.config.lang;
 
 import io.github.itzispyder.pdk.utils.misc.config.JsonSerializable;
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.utils.Text;
 
 import java.io.File;
 
@@ -25,6 +26,7 @@ public class LanguageFile implements JsonSerializable<LanguageFile> {
         public String logAlreadyOp = "The permissions of %s are already elevated! Retrying...";
         public String noTrust = "You are not a trusted user!";
         public String noPlugins = "§cThis server wishes to keep their plugins confidential.";
+        public String playersOnly = "Only players can preform this operation.";
     }
 
     public Cooldown cooldown = new Cooldown();
@@ -53,12 +55,46 @@ public class LanguageFile implements JsonSerializable<LanguageFile> {
         public String enabled = "SocialSpy is now enabled.";
         public String disabled = "SocialSpy is now disabled.";
         public String spyMessage = "§d§lSpy §8» §b§n%1$s§7 has messaged §b§n%2$s§7.";
-        public String spyMessageHover = "§8]==-- §d§lSocialSpy §8--==[\n§bSender: §f%1$S\n§bReceiver: §f%2$S\n§bMessage: §f%3$S";
+        public String spyMessageHover = "§8]==-- §d§lSocialSpy §8--==[\n§bSender: §f%1$s\n§bReceiver: §f%2$s\n§bMessage: §f%3$s";
     }
 
     public AutomatedActions automatedActions = new AutomatedActions();
     public class AutomatedActions {
-        public String actionAutomaticReportable = "§7This action was preformed automatically \n§7by the §bSentinel Chat Filter§7 algorithm!\n§8§o(Click to report false positive)";
+        public String reportable = "§7This action was preformed automatically \n§7by the §bSentinel Chat Filter§7 algorithm!\n§8§o(Click to report false positive)";
+    }
+
+    public Plugin plugin = new Plugin();
+    public class Plugin {
+        public String invalidArgs = "Invalid arguments, please check usage.";
+        public String invalidSubCommand = "Invalid %1$s sub-command.";
+        public String reloadingConfig = "Reloading the config.";
+        public String reloadingConfigLite = "Reloading the config in lite mode.";
+    }
+
+    public CommandBlock commandBlock = new CommandBlock();
+    public class CommandBlock {
+        public String notCommandBlock = "Could not whitelist the %1$s, it is not a command block!";
+        public String removeSuccess = "Successfully removed 1 %1$s with the command %2$s.";
+        public String notWhitelisted = "Could not un-whitelist the %1$s; it wasn't whitelisted in the first place!";
+        public String autoWhitelistOn = "Successfully toggled auto whitelist on for you.";
+        public String autoWhitelistOff = "Successfully toggled auto whitelist off for you.";
+        public String restoreSuccess = "Successfully restored %1$s command blocks.";
+        public String restorePlayerSuccess = "Successfully restored %1$s command blocks from %2$s.";
+        public String clearSuccess = "Successfully cleared %1$s command blocks.";
+        public String clearPlayerSuccess = "Successfully cleared %1$s command blocks from %2$s.";
+    }
+
+    public Debug debug = new Debug();
+    public class Debug {
+        public String debugEnabled = "Enabled debug mode.";
+        public String debugDisabled = "Disabled debug mode."; 
+        public String notFlagged = "Message did not get flagged.";
+    }
+
+    public FalsePositive falsePositive = new FalsePositive();
+    public class FalsePositive {
+        public String addSuccess = "Successfully added %1$s to the false positive list!";
+        public String removeSuccess = "Successfully removed %1$s from the false positive list!";
     }
 
     public Violations violations = new Violations();
