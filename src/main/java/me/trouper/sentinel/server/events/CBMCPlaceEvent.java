@@ -2,10 +2,10 @@ package me.trouper.sentinel.server.events;
 
 import io.github.itzispyder.pdk.events.CustomListener;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.utils.trees.Node;
+import me.trouper.sentinel.server.functions.ViolationController;
 import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.ServerUtils;
-import me.trouper.sentinel.server.functions.ViolationController;
+import me.trouper.sentinel.utils.trees.Node;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -18,9 +18,9 @@ public class CBMCPlaceEvent implements CustomListener {
     private void onCMDMinecartPlace(PlayerInteractEvent e) {
         //ServerUtils.verbose("MinecartCommandPlace: Detected interaction");
         if (!Sentinel.violationConfig.commandBlockMinecartPlace.enabled) return;
-        ServerUtils.verbose("MinecartCommandPlace: Check is enabled");
+        //ServerUtils.verbose("MinecartCommandPlace: Check is enabled");
         if (!e.getPlayer().isOp()) return;
-        ServerUtils.verbose("MinecartCommandPlace: Player is op");
+        //ServerUtils.verbose("MinecartCommandPlace: Player is op");
         if (e.getItem() == null) return;
         ServerUtils.verbose("MinecartCommandPlace: Item isn't null");
         if (e.getClickedBlock() == null) return;

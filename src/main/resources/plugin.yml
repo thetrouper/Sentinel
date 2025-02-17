@@ -5,7 +5,13 @@ api-version: 1.20
 authors: [ TheTrouper ]
 description: Detect, Block, and Ban players who attempt to grief your server.
 website: https://thetrouper.github.io/
-softdepend: [ ProtocolLib ]
+softdepend:
+  - ProtocolLib
+  - ProtocolSupport
+  - ViaVersion
+  - ViaBackwards
+  - ViaRewind
+  - Geyser-Spigot
 load: STARTUP
 permissions:
   sentinel.message:

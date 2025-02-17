@@ -3,11 +3,11 @@ package me.trouper.sentinel.server.events;
 import io.github.itzispyder.pdk.events.CustomListener;
 import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.server.functions.CBWhitelistManager;
-import me.trouper.sentinel.utils.trees.Node;
+import me.trouper.sentinel.server.functions.ViolationController;
 import me.trouper.sentinel.utils.FileUtils;
 import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.ServerUtils;
-import me.trouper.sentinel.server.functions.ViolationController;
+import me.trouper.sentinel.utils.trees.Node;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.CommandBlock;
@@ -21,9 +21,9 @@ public class CBPlaceEvent implements CustomListener {
     private void onCMDBlockPlace(BlockPlaceEvent e) {
         //ServerUtils.verbose("CommandBlockPlace: Detected block place");
         if (!Sentinel.violationConfig.commandBlockPlace.enabled) return;
-        ServerUtils.verbose("CommandBlockPlace: Enabled");
+        //ServerUtils.verbose("CommandBlockPlace: Enabled");
         if (!e.getPlayer().isOp()) return;
-        ServerUtils.verbose("CommandBlockPlace: Player is operator");
+        //ServerUtils.verbose("CommandBlockPlace: Player is operator");
         Block b = e.getBlockPlaced();
         if (!(b.getType().equals(Material.COMMAND_BLOCK) ||
                 b.getType().equals(Material.REPEATING_COMMAND_BLOCK) ||

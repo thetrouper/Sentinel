@@ -130,7 +130,7 @@ public class ItemUtils {
         } else if (enchantment.equals(Enchantment.UNBREAKING)) {
             maxLevel = Sentinel.nbtConfig.maxUnbreaking;
         } else if (enchantment.equals(Enchantment.VANISHING_CURSE)) {
-            maxLevel = Sentinel.nbtConfig.maxVanishing;
+            maxLevel = Sentinel.nbtConfig.maxCurseOfVanishing;
         } else if (enchantment.equals(Enchantment.BINDING_CURSE)) {
             maxLevel = Sentinel.nbtConfig.maxCurseOfBinding;
         } else if (enchantment.equals(Enchantment.AQUA_AFFINITY)) {

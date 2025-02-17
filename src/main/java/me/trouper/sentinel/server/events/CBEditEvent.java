@@ -3,10 +3,10 @@ package me.trouper.sentinel.server.events;
 import io.github.itzispyder.pdk.events.CustomListener;
 import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.server.functions.CBWhitelistManager;
-import me.trouper.sentinel.utils.trees.Node;
+import me.trouper.sentinel.server.functions.ViolationController;
 import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.ServerUtils;
-import me.trouper.sentinel.server.functions.ViolationController;
+import me.trouper.sentinel.utils.trees.Node;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -19,11 +19,11 @@ public class CBEditEvent implements CustomListener {
 
     @EventHandler
     private void onCMDBlockChange(EntityChangeBlockEvent e) {
-        ServerUtils.verbose("CommandBlockChange: Detected the event");
+        //ServerUtils.verbose("CommandBlockChange: Detected the event");
         if (!Sentinel.violationConfig.commandBlockEdit.enabled) return;
-        ServerUtils.verbose("CommandBlockChange: Enabled");
+        //ServerUtils.verbose("CommandBlockChange: Enabled");
         if (!(e.getEntity() instanceof Player p)) return;
-        ServerUtils.verbose("CommandBlockChange: Changer is a player");
+        //ServerUtils.verbose("CommandBlockChange: Changer is a player");
         Block b = e.getBlock();
         if (!(b.getType() == Material.COMMAND_BLOCK || b.getType() == Material.REPEATING_COMMAND_BLOCK || b.getType() == Material.CHAIN_COMMAND_BLOCK))
             return;

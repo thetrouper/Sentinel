@@ -1,9 +1,13 @@
 package me.trouper.sentinel.server.functions.chatfilter;
 
+import io.papermc.paper.event.player.AsyncChatEvent;
 import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.server.functions.chatfilter.profanity.Severity;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FilterHelpers {
 
@@ -18,7 +22,11 @@ public class FilterHelpers {
         for (String swear : Sentinel.swearConfig.swears) {
             if (text.contains(swear)) return true;
         }
-        return false;
+
+        Pattern pattern = Pattern.compile(Sentinel.swearConfig.regexSwears, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(text);
+
+        return matcher.find() && Sentinel.swearConfig.useRegex;
     }
 
     public static boolean containsSlurs(String text) {
@@ -26,14 +34,18 @@ public class FilterHelpers {
         for (String slur : Sentinel.strictConfig.strict) {
             if (text.contains(slur)) return true;
         }
-        return false;
+
+        Pattern pattern = Pattern.compile(Sentinel.strictConfig.regexStrict, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(text);
+
+        return matcher.find() && Sentinel.strictConfig.useRegex;
     }
 
     public static String removeFalsePositives(String text) {
         for (String falsePositive : Sentinel.fpConfig.swearWhitelist) {
             text = text.replace(falsePositive, "");
         }
-        text = text.replaceAll(Sentinel.advConfig.falsePosRegex,"");
+        text = text.replaceAll(Sentinel.fpConfig.regexWhitelist,"");
         return text;
     }
 
@@ -84,4 +96,12 @@ public class FilterHelpers {
         return FilterHelpers.removePeriodsAndSpaces(simplifiedText);
     }
 
+    public static void restrictMessage(AsyncChatEvent event, boolean silent) {
+        if (silent) {
+            event.viewers().clear();
+            event.viewers().add(event.getPlayer());
+        } else {
+            event.setCancelled(true);
+        }
+    }
 }

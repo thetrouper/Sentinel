@@ -1,14 +1,15 @@
 package me.trouper.sentinel;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
+import com.github.retrooper.packetevents.PacketEvents;
 import io.github.itzispyder.pdk.PDK;
 import io.github.itzispyder.pdk.utils.misc.config.JsonSerializable;
+import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import me.trouper.sentinel.data.WhitelistStorage;
 import me.trouper.sentinel.data.config.*;
 import me.trouper.sentinel.data.config.lang.LanguageFile;
+import me.trouper.sentinel.server.events.PluginCloakingPacket;
 import me.trouper.sentinel.startup.Auth;
-import me.trouper.sentinel.startup.Load;
+import me.trouper.sentinel.startup.IndirectLaunch;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -17,9 +18,12 @@ import java.util.logging.Logger;
 
 public final class Sentinel extends JavaPlugin {
 
-    private static final File dataFolder = new File("plugins/SentinelAntiNuke");
     public static final Logger log = Bukkit.getLogger();
     private static Sentinel instance;
+    public static LanguageFile lang;
+    public static File us;
+
+    private static final File dataFolder = new File("plugins/SentinelAntiNuke");
     private static final File violationcfg = new File(Sentinel .dataFolder(),"/violation-config.json");
     private static final File cfgfile = new File(Sentinel.dataFolder(),"/main-config.json");
     private static final File nbtcfg = new File(Sentinel.dataFolder(), "/nbt-config.json");
@@ -37,51 +41,46 @@ public final class Sentinel extends JavaPlugin {
     public static StrictConfig strictConfig = JsonSerializable.load(strctcfg, StrictConfig.class, new StrictConfig());
     public static NBTConfig nbtConfig = JsonSerializable.load(nbtcfg, NBTConfig.class, new NBTConfig());
     public static AdvancedConfig advConfig = JsonSerializable.load(advcfg, AdvancedConfig.class, new AdvancedConfig());
-    public static LanguageFile lang;
-    public static File us;
 
-    public static ProtocolManager protocolManager;
-    public static boolean doNoPlugins = false;
+    public String identifier;
+    public String license;
+    public String nonce;
+    public String ip;
+    public int port;
 
+    @Override
+    public void onLoad() {
+        Sentinel.log.info("\n]======------ Pre-load started ------======[");
+
+        Sentinel.log.info("Setting PacketEvents API");
+        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
+
+        Sentinel.log.info("Loading PacketEvents");
+        PacketEvents.getAPI().load();
+
+        Sentinel.log.info("Registering PacketEvents");
+        PacketEvents.getAPI().getEventManager().registerListener(new PluginCloakingPacket());
+    }
 
     @Override
     public void onEnable() {
-        log.info("\n]======------ Pre-load started! ------======[");
+        log.info("\n]======------ Loading Sentinel ------======[");
 
+        log.info("Initializing PacketEvents");
+
+        PacketEvents.getAPI().init();
+
+        log.info("Initializing PDK");
         PDK.init(this);
+
+        log.info("Instantiating plugin");
         instance = this;
         us = getFile();
 
-        log.info("Loading Config...");
-
-        loadConfig();
-
-        log.info("Loading ProtocolLib");
-
-        if (Bukkit.getServer().getPluginManager().isPluginEnabled("ProtocolLib") && mainConfig.plugin.pluginHider) {
-            doNoPlugins = true;
-            protocolManager = ProtocolLibrary.getProtocolManager();
-        } else {
-            doNoPlugins = false;
-            log.warning("Sentinel: ProtocolLib not found. Sentinel will attempt to hide your plugins through Bukkit's systems, although it may not catch everything.");
-        }
-
-        log.info("Language Status: (%s)".formatted(lang.brokenLang));
-
-        log.info("Initializing Server ID...");
-
-        String serverID = Auth.getServerID();
-        String license = Sentinel.mainConfig.plugin.license;
-        String nonce = Auth.getNonce();
-        int port = Auth.getPort();
-
-        log.info("Pre-load finished!\n]====---- Requesting Authentication ----====[ \n- License Key: %s\n- Server ID: %s\n- Nonce: %s\n".formatted(license,serverID,nonce));
-
-        Load.load(license,serverID);
+        IndirectLaunch.launch();
     }
 
-    public static void loadConfig() {
-
+    public void loadConfig() {
         // Init
         mainConfig = JsonSerializable.load(cfgfile,MainConfig.class,new MainConfig());
         advConfig = JsonSerializable.load(advcfg,AdvancedConfig.class,new AdvancedConfig());
@@ -90,7 +89,6 @@ public final class Sentinel extends JavaPlugin {
         swearConfig = JsonSerializable.load(swrcfg,SwearsConfig.class,new SwearsConfig());
         nbtConfig = JsonSerializable.load(nbtcfg,NBTConfig.class,new NBTConfig());
         violationConfig = JsonSerializable.load(violationcfg,ViolationConfig.class,new ViolationConfig());
-
 
         // Save
         mainConfig.save();
@@ -108,11 +106,15 @@ public final class Sentinel extends JavaPlugin {
 
         lang = JsonSerializable.load(LanguageFile.PATH,LanguageFile.class,new LanguageFile());
         lang.save();
+
+        log.info("Setting License Key");
+        license = Auth.getLicenseKey();
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        PacketEvents.getAPI().terminate();
         log.info("Sentinel has disabled! (%s) Your server is now no longer protected!".formatted(getDescription().getVersion()));
     }
 
@@ -123,5 +125,4 @@ public final class Sentinel extends JavaPlugin {
     public static File dataFolder() {
         return dataFolder;
     }
-
 }

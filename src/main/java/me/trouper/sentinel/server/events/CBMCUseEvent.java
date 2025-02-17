@@ -2,10 +2,10 @@ package me.trouper.sentinel.server.events;
 
 import io.github.itzispyder.pdk.events.CustomListener;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.utils.trees.Node;
+import me.trouper.sentinel.server.functions.ViolationController;
 import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.ServerUtils;
-import me.trouper.sentinel.server.functions.ViolationController;
+import me.trouper.sentinel.utils.trees.Node;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -18,7 +18,7 @@ public class CBMCUseEvent implements CustomListener {
     private void onCMDBlockMinecartUse(PlayerInteractEntityEvent e) {
         //ServerUtils.verbose("MinecartCommandUse: Detected Interaction with entity");
         if (!Sentinel.violationConfig.commandBlockMinecartUse.enabled) return;
-        ServerUtils.verbose("MinecartCommandUse: Enabled");
+        //ServerUtils.verbose("MinecartCommandUse: Enabled");
         if (!e.getPlayer().isOp()) return;
         ServerUtils.verbose("MinecartCommandUse: Player op");
         if (e.getRightClicked().getType() != EntityType.COMMAND_BLOCK_MINECART) return;

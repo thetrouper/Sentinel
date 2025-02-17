@@ -1,13 +1,13 @@
 package me.trouper.sentinel.server.functions;
 
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.utils.PlayerUtils;
+import me.trouper.sentinel.utils.ServerUtils;
+import me.trouper.sentinel.utils.Text;
 import me.trouper.sentinel.utils.trees.ConsoleFormatter;
 import me.trouper.sentinel.utils.trees.EmbedFormatter;
 import me.trouper.sentinel.utils.trees.HoverFormatter;
 import me.trouper.sentinel.utils.trees.Node;
-import me.trouper.sentinel.utils.PlayerUtils;
-import me.trouper.sentinel.utils.ServerUtils;
-import me.trouper.sentinel.utils.Text;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 

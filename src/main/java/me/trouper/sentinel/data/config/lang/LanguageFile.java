@@ -66,9 +66,13 @@ public class LanguageFile implements JsonSerializable<LanguageFile> {
         public Chat chat = new Chat();
         public class Chat {
             public Profanity profanity = new Profanity();
+            public Spam spam = new Spam();
+            public Unicode unicode = new Unicode();
+            public URL url = new URL();
+
             public class Profanity {
-                public String prevent = "has been prevented from swearing.";
-                public String autoPunish = "has been auto-punished for swearing.";
+                public String preventNotification = "has been prevented from swearing.";
+                public String autoPunishNotification = "has been auto-punished for swearing.";
                 public String preventWarning = "Do not use profanity in chat. Any attempt to bypass this filter will be detected, and you will be punished.";
                 public String autoPunishWarning = "&cYou have been auto-punished for attempting to bypass the profanity filter!";
 
@@ -77,7 +81,7 @@ public class LanguageFile implements JsonSerializable<LanguageFile> {
                 public String uuid = "UUID";
                 public String score = "Score";
 
-                public String reportInfoTitle = "Anti-Swear Detection";
+                public String reportInfoTitle = "Profanity Filter Detection";
                 public String originalMessage = "Original Message";
                 public String processedMessage =  "Processed Message";
                 public String severity = "Severity";
@@ -87,41 +91,9 @@ public class LanguageFile implements JsonSerializable<LanguageFile> {
                 public String commandAction = "Executed Punishment Commands";
             }
 
-            public Regex regex = new Regex();
-            public class Regex {
-                public String autoPunish = "has been auto-punished for slurs. (Regex)";
-                public String regexTrigger = "has triggered a regex blocker.";
-
-                public String urlBlockName = "URL Regex Blocker";
-                public String urlBlockMessage = "Your message has been withheld. Do not link to websites.";
-
-                public String unicodeBlockName = "Unicode Regex Blocker";
-                public String unicodeBlockMessage = "Your message has been withheld. Please only use characters found on your keyboard.";
-
-                public String swearBlockName = "Swear Regex Blocker";
-                public String swearBlockMessage = "Your message has been withheld for containing blocked words.";
-
-                public String strictBlockName = "Strict Regex Blocker";
-                public String strictBlockMessage = "Your message has been withheld for containing slurs.";
-
-                public String treeTitle = "A Regex Filter has been triggered.";
-                public String playerInfoTitle = "Player: %s";
-                public String uuid = "UUID";
-                public String score = "Score";
-
-                public String reportInfoTitle = "%s Detection";
-                public String originalMessage = "Original Message";
-                public String flaggedMessage = "Flagged Message";
-
-                public String actionTitle = "Actions";
-                public String blockAction = "Blocked the message";
-                public String commandAction = "Executed Punishment Commands";
-            }
-
-            public Spam spam = new Spam();
             public class Spam {
-                public String autoPunish = "has been auto-punished for spamming.";
-                public String spamWarning = "might be spamming!";
+                public String autoPunishNotification = "has been auto-punished for spamming.";
+                public String preventNotification = "might be spamming!";
                 public String preventWarning = "Do not spam in chat! Please wait before sending another message.";
                 public String autoPunishWarning = "&cYou have been auto-punished for violating the anti-spam repetitively!";
 
@@ -130,10 +102,48 @@ public class LanguageFile implements JsonSerializable<LanguageFile> {
                 public String uuid = "UUID";
                 public String heat = "Heat";
 
-                public String reportInfoTitle = "Anti-Spam Detection";
+                public String reportInfoTitle = "Spam Filter Detection";
                 public String previousMessage = "Previous Message";
                 public String currentMessage = "Current Message";
                 public String similarity = "Similarity";
+
+                public String actionTitle = "Actions";
+                public String blockAction = "Blocked the message";
+                public String commandAction = "Executed Punishment Commands";
+            }
+
+            public class Unicode {
+                public String autoPunishNotification = "has been punished for triggering the Unicode filter.";
+                public String preventNotification = "has been prevented from using invalid Unicode characters.";
+                public String autoPunishWarning = "You have been punished for triggered the Unicode filter.";
+                public String preventWarning = "You may only use unicode from the QWERTY keyboard.";
+
+                public String treeTitle = "The Unicode Filter has been triggered.";
+                public String playerInfoTitle = "Player: %s";
+                public String uuid = "UUID";
+
+                public String reportInfoTitle = "Unicode Filter Detection";
+                public String originalMessage = "Original Message";
+                public String highlightedMessage =  "Highlighted Message";
+
+                public String actionTitle = "Actions";
+                public String blockAction = "Blocked the message";
+                public String commandAction = "Executed Punishment Commands";
+            }
+
+            public class URL {
+                public String autoPunishNotification = "has been punished for triggering the URL filter.";
+                public String preventNotification = "has been prevented from sending a URL.";
+                public String autoPunishWarning = "You have been punished for triggered the URL filter.";
+                public String preventWarning = "You may not send links in chat.";
+
+                public String treeTitle = "The URL Filter has been triggered.";
+                public String playerInfoTitle = "Player: %s";
+                public String uuid = "UUID";
+
+                public String reportInfoTitle = "URL Filter Detection";
+                public String originalMessage = "Original Message";
+                public String highlightedMessage =  "Highlighted Message";
 
                 public String actionTitle = "Actions";
                 public String blockAction = "Blocked the message";
@@ -224,9 +234,7 @@ public class LanguageFile implements JsonSerializable<LanguageFile> {
 
         public CommandExecute commandExecute = new CommandExecute();
         public class CommandExecute {
-            public String specificCommandDetection = "A player has attempted to run a specific command.";
-            public String dangerousCommandDetection = "A player has attempted to run a dangerous command.";
-            public String loggedCommandDetection = "A player has ran a logged command.";
+            public String specificCommandDetection = "A player has attempted to run a %s command.";
             public String playerInfoTitle = "Player: %s";
             public String uuid = "UUID";
             public String location = "Location";

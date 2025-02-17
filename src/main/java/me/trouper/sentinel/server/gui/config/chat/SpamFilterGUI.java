@@ -3,6 +3,7 @@ package me.trouper.sentinel.server.gui.config.chat;
 import io.github.itzispyder.pdk.commands.Args;
 import io.github.itzispyder.pdk.plugin.gui.CustomGui;
 import io.github.itzispyder.pdk.utils.misc.config.ConfigUpdater;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.data.config.MainConfig;
 import me.trouper.sentinel.server.gui.Items;
@@ -12,6 +13,7 @@ import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -50,7 +52,8 @@ public class SpamFilterGUI {
         }
 
         inv.setItem(53,Items.BACK);
-        inv.setItem(4,Items.booleanItem(Sentinel.mainConfig.chat.spamFilter.enabled, Items.configItem("Spam Filter Toggle", Material.CLOCK, "Enable or disable the whole Spam Filter")));
+        inv.setItem(3,Items.booleanItem(Sentinel.mainConfig.chat.spamFilter.enabled, Items.configItem("Spam Filter Toggle", Material.CLOCK, "Enable or disable the whole Spam Filter")));
+        inv.setItem(5,Items.booleanItem(Sentinel.mainConfig.chat.spamFilter.silent, Items.configItem("Silent Toggle", Material.FEATHER, "Whether to notify players that their messages \nwere blocked. Enabling could help deter bypassing.")));
         inv.setItem(10,Items.intItem(Sentinel.mainConfig.chat.spamFilter.defaultGain, Items.configItem("Default Heat Gain", Material.BUCKET, "How much heat will be added to each message.")));
         inv.setItem(19,Items.intItem(Sentinel.mainConfig.chat.spamFilter.lowGain, Items.configItem("Low Heat Gain", Material.WATER_BUCKET, "Extra heat to be added if the \nmessage is greater than 25% similar \nto their previous message.")));
         inv.setItem(28,Items.intItem(Sentinel.mainConfig.chat.spamFilter.mediumGain, Items.configItem("Medium Heat Gain", Material.COD_BUCKET, "Extra heat to be added if the \nmessage is greater than 50% similar \nto their previous message.")));
@@ -60,6 +63,7 @@ public class SpamFilterGUI {
         inv.setItem(23,Items.intItem(Sentinel.mainConfig.chat.spamFilter.punishHeat, Items.configItem("Punish Heat", Material.IRON_BARS, "If the player's heat is above this \nthe punishment commands will be ran.")));
         inv.setItem(25,Items.intItem(Sentinel.mainConfig.chat.spamFilter.heatDecay, Items.configItem("Heat Decay", Material.DEAD_BUBBLE_CORAL_BLOCK, "How much heat players will loose each second.")));
         inv.setItem(32,Items.stringListItem(Sentinel.mainConfig.chat.spamFilter.punishCommands,Material.DIAMOND_AXE, "Punishment Commands", "%player% will be replaced with the offender's name"));
+        inv.setItem(34,Items.stringListItem(Sentinel.mainConfig.chat.spamFilter.whitelist,Material.PAPER, "Message Whitelist", "Messages which will be ignored by the spam filter"));
     }
 
     private void mainClick(InventoryClickEvent e) {
@@ -68,10 +72,15 @@ public class SpamFilterGUI {
         blankPage(e.getInventory());
 
         switch (e.getSlot()) {
-            case 4 -> {
+            case 3 -> {
                 Sentinel.mainConfig.chat.spamFilter.enabled = !Sentinel.mainConfig.chat.spamFilter.enabled;
-                blankPage(e.getInventory());
                 Sentinel.mainConfig.save();
+                blankPage(e.getInventory());
+            }
+            case 5 -> {
+                Sentinel.mainConfig.chat.spamFilter.silent = !Sentinel.mainConfig.chat.spamFilter.silent;
+                Sentinel.mainConfig.save();
+                blankPage(e.getInventory());
             }
 
             case 10 -> queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> cfg.chat.spamFilter.defaultGain = args.getAll().toInt(),"" + Sentinel.mainConfig.chat.spamFilter.defaultGain);
@@ -97,15 +106,14 @@ public class SpamFilterGUI {
         }
     }
 
-    public static ConfigUpdater<AsyncPlayerChatEvent, MainConfig> updater = new ConfigUpdater<>(Sentinel.mainConfig);
+    public static ConfigUpdater<AsyncChatEvent, MainConfig> updater = new ConfigUpdater<>(Sentinel.mainConfig);
 
     private void queuePlayer(Player player, BiConsumer<MainConfig, Args> action, String currentValue) {
         MainGUI.awaitingCallback.add(player.getUniqueId());
         player.closeInventory();
         updater.queuePlayer(player, 20*60, (e)->{
             e.setCancelled(true);
-            ServerUtils.verbose("Supplying the message: \"%s\". Canceled? %s".formatted(e.getMessage(),e.isCancelled()));
-            return e.getMessage();
+            return LegacyComponentSerializer.legacySection().serialize(e.message());
         }, (cfg, newValue) -> {
             action.accept(cfg,new Args(newValue.split("\\s+")));
             cfg.save();

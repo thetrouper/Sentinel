@@ -4,6 +4,7 @@ import io.github.itzispyder.pdk.utils.misc.config.JsonSerializable;
 import me.trouper.sentinel.Sentinel;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 public class SwearsConfig implements JsonSerializable<SwearsConfig> {
@@ -14,7 +15,9 @@ public class SwearsConfig implements JsonSerializable<SwearsConfig> {
         return file;
     }
 
-    public List<String> swears = List.of(
+    public String regexSwears = "";
+    public boolean useRegex = false;
+    public List<String> swears = Arrays.asList(
             "anal",
                     "anus",
                     "arse",
@@ -76,7 +79,6 @@ public class SwearsConfig implements JsonSerializable<SwearsConfig> {
                     "queer",
                     "rape",
                     "rapist",
-                    "retard",
                     "rimjob",
                     "scrotum",
                     "sex",

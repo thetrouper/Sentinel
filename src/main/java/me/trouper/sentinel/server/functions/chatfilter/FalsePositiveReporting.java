@@ -3,8 +3,8 @@ package me.trouper.sentinel.server.functions.chatfilter;
 import io.github.itzispyder.pdk.utils.SchedulerUtils;
 import io.github.itzispyder.pdk.utils.discord.DiscordEmbed;
 import me.trouper.sentinel.data.Emojis;
-import me.trouper.sentinel.utils.trees.EmbedFormatter;
 import me.trouper.sentinel.server.functions.Randomizer;
+import me.trouper.sentinel.utils.trees.EmbedFormatter;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;

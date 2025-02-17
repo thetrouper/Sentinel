@@ -17,7 +17,10 @@ public class FPConfig implements JsonSerializable<FPConfig> {
         return file;
     }
 
-    public List<String> swearWhitelist = new ArrayList<>(Arrays.asList(
+
+    public String regexWhitelist = "";
+    public boolean useRegex = false;
+    public List<String> swearWhitelist = Arrays.asList(
             "but then",
             "was scamming",
             "an alt",
@@ -75,5 +78,5 @@ public class FPConfig implements JsonSerializable<FPConfig> {
             "but its",
             "whoever",
             " again"
-    ));
+    );
 }

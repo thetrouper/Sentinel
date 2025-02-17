@@ -2,10 +2,10 @@ package me.trouper.sentinel.server.events;
 
 import io.github.itzispyder.pdk.events.CustomListener;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.utils.trees.Node;
+import me.trouper.sentinel.server.functions.ViolationController;
 import me.trouper.sentinel.utils.FileUtils;
 import me.trouper.sentinel.utils.PlayerUtils;
-import me.trouper.sentinel.server.functions.ViolationController;
+import me.trouper.sentinel.utils.trees.Node;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
