@@ -6,7 +6,8 @@ import io.github.itzispyder.pdk.commands.CustomCommand;
 import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.server.functions.Message;
+import me.trouper.sentinel.server.functions.helpers.Message;
+import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -16,7 +17,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-@CommandRegistry(value = "sentinelmessage",permission = @Permission("sentinel.message"))
+@CommandRegistry(value = "sentinelmessage",permission = @Permission("sentinel.message"),printStackTrace = true)
 public class MessageCommand implements CustomCommand {
     @Override
     public void dispatchCommand(CommandSender sender, Command command, String s, Args args) {
@@ -34,10 +35,9 @@ public class MessageCommand implements CustomCommand {
 
         String msg = args.getAll(1).toString().trim();
 
-        if (p.hasPermission("sentinel.message") && r != null) {
+        if (PlayerUtils.checkPermission(sender,"sentinel.message") && r != null) {
             Message.messagePlayer(p,r,msg);
         } else if (r == null) p.sendMessage(Text.prefix((Sentinel.lang.playerInteraction.noOnlinePlayer)));
-        else sender.sendMessage(Text.prefix(Sentinel.lang.permissions.noPermission));
     }
 
     @Override

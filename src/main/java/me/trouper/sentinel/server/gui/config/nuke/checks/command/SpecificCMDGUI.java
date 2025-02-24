@@ -3,6 +3,7 @@ package me.trouper.sentinel.server.gui.config.nuke.checks.command;
 import io.github.itzispyder.pdk.commands.Args;
 import io.github.itzispyder.pdk.plugin.gui.CustomGui;
 import io.github.itzispyder.pdk.utils.misc.config.ConfigUpdater;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.data.config.ViolationConfig;
 import me.trouper.sentinel.server.gui.Items;
@@ -12,6 +13,7 @@ import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -88,15 +90,14 @@ public class SpecificCMDGUI {
     }
 
 
-    public static ConfigUpdater<AsyncPlayerChatEvent, ViolationConfig> updater = new ConfigUpdater<>(Sentinel.violationConfig);
+    public static ConfigUpdater<AsyncChatEvent, ViolationConfig> updater = new ConfigUpdater<>(Sentinel.violationConfig);
 
     private void queuePlayer(Player player, BiConsumer<ViolationConfig, Args> action, String currentValue) {
         MainGUI.awaitingCallback.add(player.getUniqueId());
         player.closeInventory();
         updater.queuePlayer(player, 20*60, (e)->{
             e.setCancelled(true);
-            ServerUtils.verbose("Supplying the message: \"%s\". Canceled? %s".formatted(e.getMessage(),e.isCancelled()));
-            return e.getMessage();
+            return LegacyComponentSerializer.legacySection().serialize(e.message());
         }, (cfg, newValue) -> {
             action.accept(cfg,new Args(newValue.split("\\s+")));
             cfg.save();

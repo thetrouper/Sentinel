@@ -12,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 public class Items {
@@ -43,7 +42,7 @@ public class Items {
             .name(Text.color("&6&lSentinel &8&l|&f Anti-Nuke"))
             .lore(" ")
             .lore(Text.color("&bVersion&7: &f%s".formatted(Sentinel.getInstance().getDescription().getVersion())))
-            .lore(Text.color("&bLicensed to&7: &f%s".formatted(Auth.getNonce())))
+            .lore(Text.color("&bLicensed to&7: &f%s".formatted(Sentinel.getInstance().nonce)))
             .lore(" ")
             .lore(Text.color("&e&nAuthor(s)&r&e: &e%s").formatted(Sentinel.getInstance().getDescription().getAuthors()))
             .enchant(Enchantment.PROTECTION,64)

@@ -2,7 +2,6 @@ package me.trouper.sentinel.utils;
 
 import io.github.itzispyder.pdk.utils.FileValidationUtils;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.server.functions.Randomizer;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.BufferedWriter;
@@ -11,6 +10,30 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 public class FileUtils {
+
+    public static String whoAmI() {
+        String classPath = System.getProperty("java.class.path");
+        String[] parts = classPath.split(File.pathSeparator);
+        for (String part : parts) {
+            if (part.endsWith(".jar")) {
+                return new File(part).getName();
+            }
+        }
+        return "Unknown.jar";
+    }
+
+    public static boolean fileExists(File file) {
+        try {
+            if (!file.getParentFile().exists()) {
+                return false;
+            } else {
+                return file.exists();
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public static boolean folderExists(String folderName) {
         File folder = new File(Sentinel.dataFolder(), folderName);
         return folder.exists() && folder.isDirectory();

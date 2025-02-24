@@ -12,8 +12,6 @@ import net.kyori.adventure.text.event.ClickEvent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import java.util.List;
-
 @CommandRegistry(value = "sentineltab")
 public class TrapCommand implements CustomCommand {
 

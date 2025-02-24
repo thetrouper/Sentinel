@@ -7,8 +7,9 @@ import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import io.github.itzispyder.pdk.utils.misc.Cooldown;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.server.functions.chatfilter.FalsePositiveReporting;
-import me.trouper.sentinel.server.functions.chatfilter.Report;
+import me.trouper.sentinel.server.functions.helpers.FalsePositiveReporting;
+import me.trouper.sentinel.server.functions.helpers.Report;
+import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -26,19 +27,20 @@ public class CallbackCommand implements CustomCommand {
         Player p = (Player) sender;
         switch (args.get(0).toString()) {
             case "fpreport" -> {
+                if (!PlayerUtils.checkPermission(sender,"sentinel.callbacks.fpreport")) return;
                 if (fpReportCooldown.isOnCooldown(p.getUniqueId()) && !p.isOp()) {
                     p.sendMessage(Text.prefix(Sentinel.lang.cooldown.onCooldown + fpReportCooldown.getCooldown(p.getUniqueId())));
-                } else {
-                    long id = args.get(1).toLong();
-                    Report report = FalsePositiveReporting.reports.get(id);
-                    if (report == null) {
-                        p.sendMessage(Text.prefix(Sentinel.lang.reports.noReport));
-                        return;
-                    }
-                    p.sendMessage(Text.prefix(Sentinel.lang.reports.reportingFalsePositive));
-                    FalsePositiveReporting.sendReport(p,report);
-                    p.sendMessage(Text.prefix(Sentinel.lang.reports.falsePositiveSuccess));
+                    return;
                 }
+                long id = args.get(1).toLong();
+                Report report = FalsePositiveReporting.reports.get(id);
+                if (report == null) {
+                    p.sendMessage(Text.prefix(Sentinel.lang.reports.noReport));
+                    return;
+                }
+                p.sendMessage(Text.prefix(Sentinel.lang.reports.reportingFalsePositive));
+                FalsePositiveReporting.sendReport(p,report);
+                p.sendMessage(Text.prefix(Sentinel.lang.reports.falsePositiveSuccess));
             }
         }
     }

@@ -1,44 +1,51 @@
 package me.trouper.sentinel.server.functions.chatfilter.spam;
 
+import io.github.retrooper.packetevents.adventure.serializer.legacy.LegacyComponentSerializer;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.server.functions.chatfilter.FalsePositiveReporting;
-import me.trouper.sentinel.server.functions.chatfilter.Report;
+import me.trouper.sentinel.server.functions.helpers.FalsePositiveReporting;
+import me.trouper.sentinel.server.functions.chatfilter.FilterResponse;
+import me.trouper.sentinel.server.functions.helpers.Report;
 import me.trouper.sentinel.utils.MathUtils;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.entity.Player;
 
-import static me.trouper.sentinel.server.functions.chatfilter.spam.AntiSpam.lastMessageMap;
+import static me.trouper.sentinel.server.functions.chatfilter.spam.SpamFilter.lastMessageMap;
 
-public class SpamResponse {
-    private AsyncPlayerChatEvent event;
+public class SpamResponse implements FilterResponse {
+    private AsyncChatEvent event;
     private String currentMessage;
     private String previousMessage;
     private double similarity;
     private int heatAdded;
     private Report report;
+    private boolean blocked;
     private boolean punished;
 
-    public SpamResponse(AsyncPlayerChatEvent event, String currentMessage, String previousMessage, double similarity, int heatAdded, Report report, boolean punished) {
+    public SpamResponse(AsyncChatEvent event, String currentMessage, String previousMessage, double similarity, int heatAdded, Report report, boolean blocked, boolean punished) {
         this.event = event;
         this.currentMessage = currentMessage;
         this.previousMessage = previousMessage;
         this.similarity = similarity;
         this.heatAdded = heatAdded;
         this.report = report;
+        this.blocked = blocked;
         this.punished = punished;
     }
 
-    public static SpamResponse generate(AsyncPlayerChatEvent e) {
+    public static SpamResponse generate(AsyncChatEvent e) {
         if (e.isCancelled()) {
             ServerUtils.verbose("Spam response opening: Event is canceled.");
         }
-        Report report = FalsePositiveReporting.initializeReport(e.getMessage());
 
-        String message = Text.removeFirstColor(e.getMessage());
+        String message = LegacyComponentSerializer.legacySection().serialize(e.message());
+        Report report = FalsePositiveReporting.initializeReport(message);
+
+        message = Text.removeFirstColor(message);
         String previousMessage = lastMessageMap.getOrDefault(e.getPlayer().getUniqueId(),"/* Placeholder Message from Sentinel */");
 
-        SpamResponse response = new SpamResponse(e,e.getMessage(),previousMessage,0,0,report,false);
+        SpamResponse response = new SpamResponse(e,message,previousMessage,0,0,report,false,false);
 
 
         double similarity = MathUtils.calcSim(message, previousMessage);
@@ -76,11 +83,11 @@ public class SpamResponse {
         return response;
     }
 
-    public AsyncPlayerChatEvent getEvent() {
+    public AsyncChatEvent getEvent() {
         return event;
     }
 
-    public void setEvent(AsyncPlayerChatEvent event) {
+    public void setEvent(AsyncChatEvent event) {
         this.event = event;
     }
 
@@ -116,12 +123,25 @@ public class SpamResponse {
         this.heatAdded = heatAdded;
     }
 
+    @Override
+    public Player getPlayer() {
+        return event.getPlayer();
+    }
+
     public Report getReport() {
         return report;
     }
 
     public void setReport(Report report) {
         this.report = report;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
     }
 
     public boolean isPunished() {

@@ -2,10 +2,9 @@ package me.trouper.sentinel.data.config;
 
 import io.github.itzispyder.pdk.utils.misc.config.JsonSerializable;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.startup.Load;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ViolationConfig implements JsonSerializable<SwearsConfig> {
@@ -31,7 +30,7 @@ public class ViolationConfig implements JsonSerializable<SwearsConfig> {
         public boolean deop = true;
         public boolean logToDiscord = true;
         public boolean punish = false;
-        public List<String> punishmentCommands = List.of(
+        public List<String> punishmentCommands = Arrays.asList(
                 "ban %player% ]=- Sentinel -=[ \nYou have been banned for attempting a dangerous action. \nIf you believe this to be a mistake, please contact the server owner."
         );
     }
@@ -41,7 +40,7 @@ public class ViolationConfig implements JsonSerializable<SwearsConfig> {
         public boolean deop = true;
         public boolean logToDiscord = true;
         public boolean punish = false;
-        public List<String> punishmentCommands = List.of(
+        public List<String> punishmentCommands = Arrays.asList(
                 "ban %player% ]=- Sentinel -=[ \nYou have been banned for attempting a dangerous action. \nIf you believe this to be a mistake, please contact the server owner."
         );
     }
@@ -51,7 +50,7 @@ public class ViolationConfig implements JsonSerializable<SwearsConfig> {
         public boolean deop = true;
         public boolean logToDiscord = true;
         public boolean punish = false;
-        public List<String> punishmentCommands = List.of(
+        public List<String> punishmentCommands = Arrays.asList(
                 "ban %player% ]=- Sentinel -=[ \nYou have been banned for attempting a dangerous action. \nIf you believe this to be a mistake, please contact the server owner."
         );
     }
@@ -61,7 +60,7 @@ public class ViolationConfig implements JsonSerializable<SwearsConfig> {
         public boolean deop = true;
         public boolean logToDiscord = true;
         public boolean punish = false;
-        public List<String> punishmentCommands = List.of(
+        public List<String> punishmentCommands = Arrays.asList(
                 "ban %player% ]=- Sentinel -=[ \nYou have been banned for attempting a dangerous action. \nIf you believe this to be a mistake, please contact the server owner."
         );
     }
@@ -71,7 +70,7 @@ public class ViolationConfig implements JsonSerializable<SwearsConfig> {
         public boolean deop = true;
         public boolean logToDiscord = true;
         public boolean punish = false;
-        public List<String> punishmentCommands = List.of(
+        public List<String> punishmentCommands = Arrays.asList(
                 "ban %player% ]=- Sentinel -=[ \nYou have been banned for attempting a dangerous action. \nIf you believe this to be a mistake, please contact the server owner."
         );
     }
@@ -81,7 +80,7 @@ public class ViolationConfig implements JsonSerializable<SwearsConfig> {
         public boolean deop = true;
         public boolean logToDiscord = true;
         public boolean punish = false;
-        public List<String> punishmentCommands = List.of(
+        public List<String> punishmentCommands = Arrays.asList(
                 "ban %player% ]=- Sentinel -=[ \nYou have been banned for attempting a dangerous action. \nIf you believe this to be a mistake, please contact the server owner."
         );
     }
@@ -92,7 +91,7 @@ public class ViolationConfig implements JsonSerializable<SwearsConfig> {
         public Specific specific = new Specific();
         public class Dangerous {
             public boolean enabled = true;
-            public List<String> commands = List.of(
+            public List<String> commands = Arrays.asList(
                     "op",
                     "deop",
                     "stop",
@@ -119,13 +118,13 @@ public class ViolationConfig implements JsonSerializable<SwearsConfig> {
             public boolean deop = true;
             public boolean logToDiscord = true;
             public boolean punish = false;
-            public List<String> punishmentCommands = List.of(
+            public List<String> punishmentCommands = Arrays.asList(
                     "ban %player% ]=- Sentinel -=[ \nYou have been banned for attempting a dangerous action. \nIf you believe this to be a mistake, please contact the server owner."
             );
         }
         public class Logged {
             public boolean enabled = true;
-            public List<String> commands = List.of(
+            public List<String> commands = Arrays.asList(
                     "give",
                     "item"
             );
@@ -135,7 +134,7 @@ public class ViolationConfig implements JsonSerializable<SwearsConfig> {
             public boolean enabled = true;
             public boolean logToDiscord = false;
             public boolean punish = false;
-            public List<String> punishmentCommands = List.of(
+            public List<String> punishmentCommands = Arrays.asList(
                     "ban %player% ]=- Sentinel -=[ \nYou have been banned for attempting a dangerous action. \nIf you believe this to be a mistake, please contact the server owner."
             );
         }

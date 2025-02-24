@@ -8,6 +8,11 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -101,5 +106,42 @@ public class ServerUtils {
 
     public static String[] unVanishedPlayers() {
         return io.github.itzispyder.pdk.utils.ServerUtils.players(ServerUtils::isVanished).stream().map(Player::getName).toArray(String[]::new);
+    }
+
+    public static String getPublicIPAddress() {
+        try {
+            String apiUrl = "http://checkip.amazonaws.com";
+
+            URL url = new URL(apiUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+
+            connection.setRequestMethod("GET");
+
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String line;
+                StringBuilder response = new StringBuilder();
+
+                while ((line = reader.readLine()) != null) {
+                    response.append(line);
+                }
+
+                reader.close();
+
+                return response.toString().trim();
+            }
+            connection.disconnect();
+            return null;
+        } catch (Exception e) {
+            Sentinel.log.warning(e.getMessage());
+            return null;
+        }
+    }
+
+    public static int getPort() {
+        return Bukkit.getPort();
     }
 }

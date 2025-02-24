@@ -1,5 +1,9 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+
 plugins {
     id 'java'
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = project.group
@@ -24,19 +28,27 @@ repositories {
         url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
     }
     maven {
+        name = "papermc"
         url = uri("https://repo.papermc.io/repository/maven-public/")
     }
     maven {
         name = 'sonatype'
         url = 'https://oss.sonatype.org/content/groups/public/'
     }
+    maven {
+        url = uri("https://repo.codemc.io/repository/maven-releases/")
+    }
+    maven {
+        url = uri("https://repo.codemc.io/repository/maven-snapshots/")
+    }
 }
 
 dependencies {
-    compileOnly 'io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT'
-    compileOnly 'com.comphenix.protocol:ProtocolLib:5.1.0'
+    compileOnly "io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT"
     implementation 'com.google.code.gson:gson:2.10.1'
-    implementation files("libs/PDK-1.4.0.jar")
+    implementation 'org.ow2.asm:asm-commons:9.5'
+    implementation files("deps/PDK-1.4.0.jar")
+    implementation "com.github.retrooper:packetevents-spigot:2.7.0"
 }
 
 def targetJavaVersion = 21
@@ -76,4 +88,61 @@ compileJava.options.encoding("UTF-8")
 
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
+}
+
+tasks.shadowJar {
+    relocate("com.github.retrooper.packetevents", "me.trouper.sentinel.packetevents.api")
+    relocate("io.github.retrooper.packetevents", "me.trouper.sentinel.packetevents.impl")
+}
+
+task obfuscate(type: JavaExec) {
+    // Specify the main class in the obfuscator JAR (if required)
+
+    // Path to the obfuscator JAR
+    classpath = files('obf/grunt-main.jar')
+
+    // Arguments to pass to the obfuscator (e.g., input and output directories)
+    args = [
+            '--config', '.\\obf\\config.json'
+    ]
+}
+
+task copyLibs {
+    doLast {
+        // Define the source directory (Gradle cache) and the target directory
+        def sourceDir = Paths.get("C:/Users/crvic/.gradle/caches/modules-2/files-2.1")
+        def targetDir = Paths.get("${buildDir}/../deps") // Output directory
+
+        // Create the target directory if it doesn't exist
+        if (!Files.exists(targetDir)) {
+            Files.createDirectories(targetDir)
+        }
+
+        // Recursively traverse the source directory and copy JAR files
+        Files.walk(sourceDir)
+                .filter { Files.isRegularFile(it) && it.toString().endsWith(".jar") }
+                .forEach { jarFile ->
+                    // Extract the file name (without the directory structure)
+                    def fileName = jarFile.fileName.toString()
+
+                    // Define the target file path (flat structure)
+                    def targetFile = targetDir.resolve(fileName)
+
+                    // Handle duplicate file names (if any)
+                    if (Files.exists(targetFile)) {
+                        println "Skipping duplicate file: ${fileName}"
+                        return
+                    }
+
+                    // Copy the JAR file to the target directory
+                    Files.copy(jarFile, targetFile)
+                    println "Copied: ${jarFile} -> ${targetFile}"
+                }
+
+        println "All JAR files have been extracted to: ${targetDir}"
+    }
+}
+
+test {
+    useJUnitPlatform()
 }

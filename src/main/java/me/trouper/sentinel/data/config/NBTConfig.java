@@ -20,7 +20,7 @@ public class NBTConfig implements JsonSerializable<NBTConfig> {
     public int globalMaxEnchant = 5;
     public int maxMending = 1;
     public int maxUnbreaking = 3;
-    public int maxVanishing = 1;
+    public int maxCurseOfVanishing = 1;
     public int maxAquaAffinity = 1;
     public int maxBlastProtection = 4;
     public int maxCurseOfBinding = 1;
@@ -57,4 +57,7 @@ public class NBTConfig implements JsonSerializable<NBTConfig> {
     public int maxLuckOfTheSea = 3;
     public int maxLure = 3;
     public int maxSilkTouch = 1;
+    public int maxBreach = 4;
+    public int maxDensity = 5;
+    public int maxWindBurst = 3;
 }

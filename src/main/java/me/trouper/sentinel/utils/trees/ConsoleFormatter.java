@@ -1,5 +1,7 @@
 package me.trouper.sentinel.utils.trees;
 
+import me.trouper.sentinel.utils.Text;
+
 import java.util.Map;
 
 public class ConsoleFormatter {
@@ -17,7 +19,9 @@ public class ConsoleFormatter {
             sb.append(node.title).append("\n");
         }
 
+        node.texts = node.texts.reversed();
         for (String text : node.texts) {
+            text = Text.removeColors(text);
             text = text.replace("<hs>"," > ");
             text = text.replace("<he>"," < ");
             if (level == 0) {
@@ -30,6 +34,8 @@ public class ConsoleFormatter {
         for (Map.Entry<String, String> entry : node.values.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
+            key = Text.removeColors(key);
+            value = Text.removeColors(value);
             key = key.replace("<hs>"," > ");
             key = key.replace("<he>"," < ");
             value = value.replace("<hs>"," > ");
@@ -44,6 +50,8 @@ public class ConsoleFormatter {
         for (Map.Entry<String, String> entry : node.fields.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
+            key = Text.removeColors(key);
+            value = Text.removeColors(value);
             key = key.replace("<hs>"," > ");
             key = key.replace("<he>"," < ");
             value = value.replace("<hs>"," > ");

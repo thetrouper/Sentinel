@@ -6,7 +6,8 @@ import io.github.itzispyder.pdk.commands.CustomCommand;
 import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.server.functions.Message;
+import me.trouper.sentinel.server.functions.helpers.Message;
+import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -15,7 +16,7 @@ import org.bukkit.entity.Player;
 import java.util.Map;
 import java.util.UUID;
 
-@CommandRegistry(value = "reply", permission = @Permission("sentinel.reply"))
+@CommandRegistry(value = "reply", permission = @Permission("sentinel.reply"),printStackTrace = true)
 public class ReplyCommand implements CustomCommand {
 
     public static Map<UUID, UUID> replyMap = Message.replyMap;
@@ -34,11 +35,9 @@ public class ReplyCommand implements CustomCommand {
             p.sendMessage(Text.prefix(Sentinel.lang.playerInteraction.noMessageProvided));
         }
         String msg = args.getAll().toString();
-        if (p.hasPermission("sentinel.message")) {
+        if (PlayerUtils.checkPermission(sender,"sentinel.message")) {
             Message.messagePlayer(p,r,msg);
             replyMap.put(senderID,reciverID);
-        } else {
-            sender.sendMessage(Text.prefix(Sentinel.lang.permissions.noPermission));
         }
     }
 

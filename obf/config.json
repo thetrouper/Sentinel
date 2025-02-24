@@ -1,53 +1,27 @@
 {
   "Settings": {
-    "Input": "../build/libs/CleanSentinel-0.2.9.jar",
-    "Output": "/run/media/wolf/253ae3a6-b319-4c80-b1ea-dd39b51b8f27/home/wolf/Servers/Testing/plugins/Sentinel-0.2.9-gamma.jar",
+    "Input": "./build/libs/Sentinel-0.3.0.jar",
+    "Output": "./build/libs/Sentinel-0.3.0-obf.jar",
     "Libraries": [
-      "../deps/adventure-api-4.17.0.jar",
-      "../deps/adventure-key-4.17.0.jar",
-      "../deps/adventure-text-logger-slf4j-4.17.0.jar",
-      "../deps/adventure-text-minimessage-4.17.0.jar",
-      "../deps/adventure-text-serializer-gson-4.17.0.jar",
-      "../deps/adventure-text-serializer-json-4.17.0.jar",
-      "../deps/adventure-text-serializer-legacy-4.17.0.jar",
-      "../deps/adventure-text-serializer-plain-4.17.0.jar",
-      "../deps/annotations-24.1.0.jar",
-      "../deps/auto-service-annotations-1.1.1.jar",
-      "../deps/brigadier-1.2.9.jar",
-      "../deps/bungeecord-chat-1.20-R0.2-deprecated+build.18.jar",
-      "../deps/error_prone_annotations-2.18.0.jar",
-      "../deps/examination-api-1.3.0.jar",
-      "../deps/examination-string-1.3.0.jar",
-      "../deps/failureaccess-1.0.1.jar",
-      "../deps/fastutil-8.5.6.jar",
-      "../deps/gson-2.10.1.jar",
-      "../deps/guava-32.1.2-jre.jar",
-      "../deps/j2objc-annotations-2.8.jar",
-      "../deps/javax.inject-1.jar",
-      "../deps/joml-1.10.5.jar",
-      "../deps/json-simple-1.1.1.jar",
-      "../deps/jsr305-3.0.2.jar",
-      "../deps/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
-      "../deps/option-1.0.0.jar",
-      "../deps/paper-api-1.20.6-R0.1-SNAPSHOT.jar",
-      "../deps/ProtocolLib-5.1.0.jar",
-      "../deps/slf4j-api-2.0.9.jar",
-      "../deps/snakeyaml-2.2.jar"
+      "./deps"
     ],
     "Exclusions": [
-      "com/google/gson/",
-      "io/github/itzispyder/",
-      "me/trouper/sentinel/data/"
+      "com/",
+      "io/",
+      "me/trouper/sentinel/data/",
+      "org/",
+      "net/",
+      "module-info"
     ],
     "MixinPackage": [
       "net/spartanb312/client/mixins/"
     ],
-    "DumpMappings": true,
-    "Multithreading": false,
+    "DumpMappings": false,
+    "Multithreading": true,
     "PrintTimeUsage": true,
     "ForceUseComputeMax": false,
     "LibsMissingCheck": true,
-    "CustomDictionary": [],
+    "CustomDictionaryFile": "./obf/dictionary.txt",
     "DictionaryStartIndex": 0,
     "CorruptOutput": false,
     "FileRemovePrefix": [],
@@ -77,6 +51,9 @@
     "RemoveInnerClass": true,
     "RemoveUnusedLabel": true,
     "RemoveNOP": false,
+    "AnnotationRemovals": [
+      "Ljava/lang/Override;"
+    ],
     "Exclusion": []
   },
   "KotlinOptimizer": {
@@ -104,14 +81,14 @@
     "Exclusion": []
   },
   "ClonedClass": {
-    "Enabled": true,
+    "Enabled": false,
     "Count": 2048,
     "Suffix": "-on-top",
     "RemoveAnnotations": true,
     "Exclusion": []
   },
   "TrashClass": {
-    "Enabled": true,
+    "Enabled": false,
     "Package": "sentinel/",
     "Prefix": "NUKE_",
     "Count": 2048
@@ -129,6 +106,10 @@
     "EncryptConst": true,
     "Exclusion": []
   },
+  "HideDeclaredFields": {
+    "Enabled": false,
+    "Exclusion": []
+  },
   "ReflectionSupport": {
     "Enabled": false,
     "PrintLog": true,
@@ -138,7 +119,8 @@
   },
   "StringEncrypt": {
     "Enabled": true,
-    "Intensity": 1,
+    "Arrayed": false,
+    "ReplaceInvokeDynamics": true,
     "Exclusion": []
   },
   "NumberEncrypt": {
@@ -156,16 +138,21 @@
     "Exclusion": []
   },
   "Controlflow": {
-    "Enabled": false,
+    "Enabled": true,
     "Intensity": 1,
     "ExecuteBeforeEncrypt": false,
+    "SwitchExtractor": true,
+    "ExtractRate": 30,
     "BogusConditionJump": true,
     "GotoReplaceRate": 80,
     "MangledCompareJump": true,
     "IfReplaceRate": 50,
     "IfICompareReplaceRate": 100,
     "SwitchProtect": true,
+    "ProtectRate": 30,
     "TableSwitchJump": true,
+    "MutateJumps": true,
+    "MutateRate": 10,
     "SwitchReplaceRate": 30,
     "MaxSwitchCase": 5,
     "ReverseExistedIf": true,
@@ -180,6 +167,16 @@
     "JunkCode": true,
     "MaxJunkCode": 2,
     "ExpandedJunkCode": true,
+    "Exclusion": []
+  },
+  "ConstBuilder": {
+    "Enabled": true,
+    "NumberSwitchBuilder": true,
+    "SplitLong": true,
+    "HeavyEncrypt": false,
+    "SkipControlFlow": true,
+    "ReplacePercentage": 25,
+    "MaxCases": 5,
     "Exclusion": []
   },
   "ConstPollEncrypt": {
@@ -202,9 +199,10 @@
   "FieldScramble": {
     "Enabled": false,
     "Intensity": 1,
+    "ReplacePercentage": 25,
     "RandomName": false,
     "GetStatic": true,
-    "tSetStatic": true,
+    "SetStatic": true,
     "GetValue": true,
     "SetField": true,
     "GenerateOuterClass": false,
@@ -214,6 +212,7 @@
   },
   "MethodScramble": {
     "Enabled": false,
+    "ReplacePercentage": 25,
     "GenerateOuterClass": true,
     "RandomCall": true,
     "NativeAnnotation": false,
@@ -233,31 +232,35 @@
   },
   "SyntheticBridge": {
     "Enabled": false,
-    "Exclusion": []
+    "Exclusion": [
+      "do not use this! (All Events will break)"
+    ]
   },
   "LocalVariableRename": {
     "Enabled": true,
-    "Dictionary": "Alphabet",
+    "Dictionary": "Custom",
     "ThisReference": false,
+    "DeleteLocalVars": false,
+    "DeleteParameters": false,
     "Exclusion": []
   },
   "MethodRename": {
     "Enabled": true,
     "Enums": true,
     "Interfaces": false,
-    "Dictionary": "Alphabet",
+    "Dictionary": "Custom",
     "HeavyOverloads": false,
     "RandomKeywordPrefix": false,
-    "Prefix": "ANTI_",
+    "Prefix": "",
     "Reversed": false,
     "Exclusion": [],
     "ExcludedName": []
   },
   "FieldRename": {
     "Enabled": true,
-    "Dictionary": "Alphabet",
+    "Dictionary": "Custom",
     "RandomKeywordPrefix": false,
-    "Prefix": "INEL_",
+    "Prefix": "",
     "Reversed": false,
     "Exclusion": [],
     "ExcludedName": [
@@ -267,14 +270,16 @@
   },
   "ClassRename": {
     "Enabled": true,
-    "Dictionary": "Alphabet",
-    "Parent": "sentinel/",
-    "Prefix": "SENT_",
+    "Dictionary": "Custom",
+    "Parent": "this/is/a/dying/meme/",
+    "Prefix": "",
     "Reversed": false,
-    "Shuffled": true,
+    "Shuffled": false,
     "CorruptedName": false,
     "CorruptedNameExclusion": [],
-    "Exclusion": []
+    "Exclusion": [
+      "me/trouper/sentinel/Sentinel"
+    ]
   },
   "MixinFieldRename": {
     "Enabled": false,
@@ -295,12 +300,12 @@
     "Exclusion": []
   },
   "InvokeDynamic": {
-    "Enabled": false,
-    "ReplacePercentage": 10,
+    "Enabled": true,
+    "ReplacePercentage": 25,
     "HeavyProtection": false,
-    "MetadataClass": "net/spartanb312/grunt/GruntMetadata",
+    "MetadataClass": "me/trouper/tuco/getOutMetadata",
     "MassiveRandomBlank": true,
-    "Reobfuscate": true,
+    "Reobfuscate": false,
     "EnhancedFlowReobf": false,
     "BSMNativeAnnotation": false,
     "Exclusion": []
@@ -342,14 +347,18 @@
     ],
     "InterfaceMark": false,
     "FatherOfJava": "linus/torvalds/thegoat/",
+    "CustomTrashMethod": false,
+    "CustomMethodName": "protected by YuShengJun",
+    "CustomMethodCode": "public static String method() {\n    return \"Protected by YuShengJun\";\n}",
     "Exclusion": []
   },
   "PostProcess": {
     "Enabled": true,
     "Manifest": true,
     "Plugin YML": true,
-    "Bungee YML": true,
-    "Fabric JSON": true,
+    "Bungee YML": false,
+    "Fabric JSON": false,
+    "Velocity JSON": false,
     "ManifestPrefix": [
       "Main-Class:"
     ]

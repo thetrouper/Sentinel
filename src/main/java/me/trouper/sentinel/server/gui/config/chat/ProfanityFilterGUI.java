@@ -3,6 +3,7 @@ package me.trouper.sentinel.server.gui.config.chat;
 import io.github.itzispyder.pdk.commands.Args;
 import io.github.itzispyder.pdk.plugin.gui.CustomGui;
 import io.github.itzispyder.pdk.utils.misc.config.ConfigUpdater;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.data.config.MainConfig;
 import me.trouper.sentinel.server.gui.Items;
@@ -12,6 +13,7 @@ import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -42,7 +44,7 @@ public class ProfanityFilterGUI {
             }
             ServerUtils.verbose("ProfanityFilterGUI#blankPage Page now blank");
             ItemStack top = Items.RED;
-            if (Sentinel.mainConfig.chat.swearFilter.enabled) {
+            if (Sentinel.mainConfig.chat.profanityFilter.enabled) {
                 top = Items.GREEN;
             }
 
@@ -52,17 +54,18 @@ public class ProfanityFilterGUI {
             ServerUtils.verbose("ProfanityFilterGUI#blankPage Adding GUI Items");
 
             inv.setItem(53,Items.BACK);
-            inv.setItem(4,Items.booleanItem(Sentinel.mainConfig.chat.swearFilter.enabled, Items.configItem("Profanity Filter Toggle",Material.CLOCK,"Enable or Disable the whole Profanity filter")));
-            inv.setItem(10,Items.intItem(Sentinel.mainConfig.chat.swearFilter.lowScore, Items.configItem("Low Score Gain", Material.WHITE_WOOL, "How much score will be added if the player \ndid not attempt to bypass the filter.")));
-            inv.setItem(19,Items.intItem(Sentinel.mainConfig.chat.swearFilter.mediumLowScore, Items.configItem("Medium-Low Score Gain", Material.LIME_WOOL, "How much score will be added if the player \nused l33t speak to attempt a bypass")));
-            inv.setItem(28,Items.intItem(Sentinel.mainConfig.chat.swearFilter.mediumScore, Items.configItem("Medium Score Gain", Material.YELLOW_WOOL, "How much score will be added if the player \nused sp/ecia|l characters to attempt a bypass")));
-            inv.setItem(37,Items.intItem(Sentinel.mainConfig.chat.swearFilter.mediumHighScore, Items.configItem("Medium-High Score Gain", Material.ORANGE_WOOL, "How much score will be added if the player \nused reeeeeeepeating letters to attempt a bypass")));
-            inv.setItem(46,Items.intItem(Sentinel.mainConfig.chat.swearFilter.highScore, Items.configItem("High Score Gain", Material.RED_WOOL, "How much score will be added if the player \nused pun. ctua, tion or spaces to attempt a bypass")));
-            inv.setItem(29,Items.intItem(Sentinel.mainConfig.chat.swearFilter.regexScore, Items.configItem("Regex Score Gain", Material.DISPENSER, "How much score will be added if the player \nmatched the regex setting throughout \nthe processing of the message")));
-            inv.setItem(22,Items.intItem(Sentinel.mainConfig.chat.swearFilter.punishScore, Items.configItem("Punish Score", Material.IRON_BARS, "If the player's score is above this \nthe punishment commands will be ran.")));
-            inv.setItem(33,Items.intItem(Sentinel.mainConfig.chat.swearFilter.scoreDecay, Items.configItem("Score Decay", Material.DEAD_BUBBLE_CORAL_BLOCK, "How much score players will loose each minute.")));
-            inv.setItem(31,Items.stringListItem(Sentinel.mainConfig.chat.swearFilter.swearPunishCommands,Material.WOODEN_AXE, "Default Punishment Commands", "%player% will be replaced with the offender's name"));
-            inv.setItem(40,Items.stringListItem(Sentinel.mainConfig.chat.swearFilter.strictPunishCommands,Material.DIAMOND_AXE, "Strict Punishment Commands", "If words from the strict words list are flagged, \nthis list will be ran instead \n%player% will be replaced with the offender's name"));
+            inv.setItem(3,Items.booleanItem(Sentinel.mainConfig.chat.profanityFilter.enabled, Items.configItem("Profanity Filter Toggle",Material.CLOCK,"Enable or Disable the whole Profanity filter")));
+            inv.setItem(5,Items.booleanItem(Sentinel.mainConfig.chat.profanityFilter.silent, Items.configItem("Silent Mode",Material.FEATHER,"Whether to notify players that their messages \nwere blocked. Enabling could help deter bypassing.")));
+            inv.setItem(10,Items.intItem(Sentinel.mainConfig.chat.profanityFilter.lowScore, Items.configItem("Low Score Gain", Material.WHITE_WOOL, "How much score will be added if the player \ndid not attempt to bypass the filter.")));
+            inv.setItem(19,Items.intItem(Sentinel.mainConfig.chat.profanityFilter.mediumLowScore, Items.configItem("Medium-Low Score Gain", Material.LIME_WOOL, "How much score will be added if the player \nused l33t speak to attempt a bypass")));
+            inv.setItem(28,Items.intItem(Sentinel.mainConfig.chat.profanityFilter.mediumScore, Items.configItem("Medium Score Gain", Material.YELLOW_WOOL, "How much score will be added if the player \nused sp/ecia|l characters to attempt a bypass")));
+            inv.setItem(37,Items.intItem(Sentinel.mainConfig.chat.profanityFilter.mediumHighScore, Items.configItem("Medium-High Score Gain", Material.ORANGE_WOOL, "How much score will be added if the player \nused reeeeeeepeating letters to attempt a bypass")));
+            inv.setItem(46,Items.intItem(Sentinel.mainConfig.chat.profanityFilter.highScore, Items.configItem("High Score Gain", Material.RED_WOOL, "How much score will be added if the player \nused pun. ctua, tion or spaces to attempt a bypass")));
+            inv.setItem(29,Items.intItem(Sentinel.mainConfig.chat.profanityFilter.regexScore, Items.configItem("Regex Score Gain", Material.DISPENSER, "How much score will be added if the player \nmatched the regex setting throughout \nthe processing of the message")));
+            inv.setItem(22,Items.intItem(Sentinel.mainConfig.chat.profanityFilter.punishScore, Items.configItem("Punish Score", Material.IRON_BARS, "If the player's score is above this \nthe punishment commands will be ran.")));
+            inv.setItem(33,Items.intItem(Sentinel.mainConfig.chat.profanityFilter.scoreDecay, Items.configItem("Score Decay", Material.DEAD_BUBBLE_CORAL_BLOCK, "How much score players will loose each minute.")));
+            inv.setItem(31,Items.stringListItem(Sentinel.mainConfig.chat.profanityFilter.profanityPunishCommands,Material.WOODEN_AXE, "Default Punishment Commands", "%player% will be replaced with the offender's name"));
+            inv.setItem(40,Items.stringListItem(Sentinel.mainConfig.chat.profanityFilter.strictPunishCommands,Material.DIAMOND_AXE, "Strict Punishment Commands", "If words from the strict words list are flagged, \nthis list will be ran instead \n%player% will be replaced with the offender's name"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -72,56 +75,61 @@ public class ProfanityFilterGUI {
         e.setCancelled(true);
         if (!MainGUI.verify((Player) e.getWhoClicked())) return;
         switch (e.getSlot()) {
-            case 4 -> {
-                Sentinel.mainConfig.chat.swearFilter.enabled = !Sentinel.mainConfig.chat.swearFilter.enabled;
-                blankPage(e.getInventory());
+            case 3 -> {
+                Sentinel.mainConfig.chat.profanityFilter.enabled = !Sentinel.mainConfig.chat.profanityFilter.enabled;
                 Sentinel.mainConfig.save();
+                blankPage(e.getInventory());
             }
 
-            case 10 -> queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> cfg.chat.swearFilter.lowScore = args.getAll().toInt(),"" + Sentinel.mainConfig.chat.swearFilter.lowScore);
-            case 19 -> queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> cfg.chat.swearFilter.mediumLowScore = args.getAll().toInt(),"" + Sentinel.mainConfig.chat.swearFilter.mediumLowScore);
-            case 28 -> queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> cfg.chat.swearFilter.mediumScore = args.getAll().toInt(),"" + Sentinel.mainConfig.chat.swearFilter.mediumScore);
-            case 37 -> queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> cfg.chat.swearFilter.mediumHighScore = args.getAll().toInt(),"" + Sentinel.mainConfig.chat.swearFilter.mediumHighScore);
-            case 46 -> queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> cfg.chat.swearFilter.highScore = args.getAll().toInt(),"" + Sentinel.mainConfig.chat.swearFilter.highScore);
-            case 29 -> queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> cfg.chat.swearFilter.regexScore = args.getAll().toInt(),"" + Sentinel.mainConfig.chat.swearFilter.regexScore);
-            case 22 -> queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> cfg.chat.swearFilter.punishScore = args.getAll().toInt(),"" + Sentinel.mainConfig.chat.swearFilter.punishScore);
-            case 33 -> queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> cfg.chat.swearFilter.scoreDecay = args.getAll().toInt(),"" + Sentinel.mainConfig.chat.swearFilter.scoreDecay);
+            case 5 -> {
+                Sentinel.mainConfig.chat.profanityFilter.silent = !Sentinel.mainConfig.chat.profanityFilter.silent;
+                Sentinel.mainConfig.save();
+                blankPage(e.getInventory());
+            }
+
+            case 10 -> queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> cfg.chat.profanityFilter.lowScore = args.getAll().toInt(),"" + Sentinel.mainConfig.chat.profanityFilter.lowScore);
+            case 19 -> queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> cfg.chat.profanityFilter.mediumLowScore = args.getAll().toInt(),"" + Sentinel.mainConfig.chat.profanityFilter.mediumLowScore);
+            case 28 -> queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> cfg.chat.profanityFilter.mediumScore = args.getAll().toInt(),"" + Sentinel.mainConfig.chat.profanityFilter.mediumScore);
+            case 37 -> queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> cfg.chat.profanityFilter.mediumHighScore = args.getAll().toInt(),"" + Sentinel.mainConfig.chat.profanityFilter.mediumHighScore);
+            case 46 -> queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> cfg.chat.profanityFilter.highScore = args.getAll().toInt(),"" + Sentinel.mainConfig.chat.profanityFilter.highScore);
+            case 29 -> queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> cfg.chat.profanityFilter.regexScore = args.getAll().toInt(),"" + Sentinel.mainConfig.chat.profanityFilter.regexScore);
+            case 22 -> queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> cfg.chat.profanityFilter.punishScore = args.getAll().toInt(),"" + Sentinel.mainConfig.chat.profanityFilter.punishScore);
+            case 33 -> queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> cfg.chat.profanityFilter.scoreDecay = args.getAll().toInt(),"" + Sentinel.mainConfig.chat.profanityFilter.scoreDecay);
 
             case 31 -> {
                 if (e.isLeftClick()) {
                     queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> {
-                        cfg.chat.swearFilter.swearPunishCommands.add(args.getAll().toString());
-                    },"" + Sentinel.mainConfig.chat.swearFilter.swearPunishCommands);
+                        cfg.chat.profanityFilter.profanityPunishCommands.add(args.getAll().toString());
+                    },"" + Sentinel.mainConfig.chat.profanityFilter.profanityPunishCommands);
                     return;
                 }
-                Sentinel.mainConfig.chat.swearFilter.swearPunishCommands.clear();
-                blankPage(e.getInventory());
+                Sentinel.mainConfig.chat.profanityFilter.profanityPunishCommands.clear();
                 Sentinel.mainConfig.save();
+                blankPage(e.getInventory());
 
             }
             case 40 -> {
                 if (e.isLeftClick()) {
                     queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> {
-                        cfg.chat.swearFilter.strictPunishCommands.add(args.getAll().toString());
-                    },"" + Sentinel.mainConfig.chat.swearFilter.strictPunishCommands);
+                        cfg.chat.profanityFilter.strictPunishCommands.add(args.getAll().toString());
+                    },"" + Sentinel.mainConfig.chat.profanityFilter.strictPunishCommands);
                     return;
                 }
-                Sentinel.mainConfig.chat.swearFilter.strictPunishCommands.clear();
-                blankPage(e.getInventory());
+                Sentinel.mainConfig.chat.profanityFilter.strictPunishCommands.clear();
                 Sentinel.mainConfig.save();
+                blankPage(e.getInventory());
             }
         }
     }
 
-    public static ConfigUpdater<AsyncPlayerChatEvent, MainConfig> updater = new ConfigUpdater<>(Sentinel.mainConfig);
+    public static ConfigUpdater<AsyncChatEvent, MainConfig> updater = new ConfigUpdater<>(Sentinel.mainConfig);
 
     private void queuePlayer(Player player, BiConsumer<MainConfig, Args> action, String currentValue) {
         MainGUI.awaitingCallback.add(player.getUniqueId());
         player.closeInventory();
         updater.queuePlayer(player, 20*60, (e)->{
             e.setCancelled(true);
-            ServerUtils.verbose("Supplying the message: \"%s\". Canceled? %s".formatted(e.getMessage(),e.isCancelled()));
-            return e.getMessage();
+            return LegacyComponentSerializer.legacySection().serialize(e.message());
         }, (cfg, newValue) -> {
             action.accept(cfg,new Args(newValue.split("\\s+")));
             cfg.save();

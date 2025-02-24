@@ -1,36 +1,46 @@
 package me.trouper.sentinel.server.functions.chatfilter.profanity;
 
-import me.trouper.sentinel.server.functions.chatfilter.FalsePositiveReporting;
-import me.trouper.sentinel.server.functions.chatfilter.FilterHelpers;
-import me.trouper.sentinel.server.functions.chatfilter.Report;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import me.trouper.sentinel.data.Emojis;
+import me.trouper.sentinel.server.functions.helpers.FalsePositiveReporting;
+import me.trouper.sentinel.server.functions.helpers.FilterHelpers;
+import me.trouper.sentinel.server.functions.chatfilter.FilterResponse;
+import me.trouper.sentinel.server.functions.helpers.Report;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.entity.Player;
 
-public class ProfanityResponse {
+public class ProfanityResponse implements FilterResponse {
 
-    private AsyncPlayerChatEvent event;
+    private AsyncChatEvent event;
     private String originalMessage;
     private String processedMessage;
     private Report report;
     private Severity severity;
+    private boolean blocked;
     private boolean punished;
 
-    public ProfanityResponse(AsyncPlayerChatEvent event, String originalMessage, String processedMessage, Report report, Severity severity, boolean punished) {
+    public ProfanityResponse(AsyncChatEvent event, String originalMessage, String processedMessage, Report report, Severity severity, boolean blocked, boolean punished) {
         this.event = event;
         this.originalMessage = originalMessage;
         this.processedMessage = processedMessage;
         this.report = report;
         this.severity = severity;
+        this.blocked = blocked;
         this.punished = punished;
     }
+
+    @Override
+    public Player getPlayer() {
+        return event.getPlayer();
+    }
     
-    public AsyncPlayerChatEvent getEvent() {
+    public AsyncChatEvent getEvent() {
         return event;
     }
 
-    public void setEvent(AsyncPlayerChatEvent event) {
+    public void setEvent(AsyncChatEvent event) {
         this.event = event;
     }
 
@@ -66,6 +76,14 @@ public class ProfanityResponse {
         this.severity = severity;
     }
 
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
+    }
+
     public boolean isPunished() {
         return punished;
     }
@@ -74,16 +92,18 @@ public class ProfanityResponse {
         this.punished = punished;
     }
 
-    public static ProfanityResponse generate(AsyncPlayerChatEvent e) {
+    public static ProfanityResponse generate(AsyncChatEvent e) {
         if (e.isCancelled()) {
-            ServerUtils.verbose("Profanity response opening Event is canceled.");
+            ServerUtils.verbose("Profanity response opening: Event is canceled.");
         }
-        Report report = FalsePositiveReporting.initializeReport(e.getMessage());
+
+        String message = LegacyComponentSerializer.legacySection().serialize(e.message());
+        Report report = FalsePositiveReporting.initializeReport(message);
         Severity severity = Severity.SAFE;
 
-        ProfanityResponse response = new ProfanityResponse(e,e.getMessage(),null,report,severity,false);
+        ProfanityResponse response = new ProfanityResponse(e,message,null,report,severity,false,false);
 
-        String text = Text.removeFirstColor(e.getMessage());
+        String text = Text.removeFirstColor(message);
         response.setOriginalMessage(text);
 
         // 1:
