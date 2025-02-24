@@ -53,20 +53,20 @@ public class ProfanityAction extends AbstractActionHandler<ProfanityResponse> {
         Node root = new Node("Sentinel");
         root.addTextLine(Sentinel.lang.violations.chat.profanity.treeTitle);
 
-        Node playerInfo = new Node(Sentinel.lang.violations.chat.profanity.playerInfoTitle.formatted(response.getPlayer().getName()));
-        playerInfo.addKeyValue(Sentinel.lang.violations.chat.profanity.uuid, response.getPlayer().getUniqueId().toString());
+        Node playerInfo = new Node(Sentinel.lang.violations.protections.infoNode.playerInfo.formatted(response.getPlayer().getName()));
+        playerInfo.addKeyValue(Sentinel.lang.violations.protections.infoNode.uuid, response.getPlayer().getUniqueId().toString());
         playerInfo.addKeyValue(Sentinel.lang.violations.chat.profanity.score, "%s/%s".formatted(ProfanityFilter.scoreMap.getOrDefault(response.getPlayer().getUniqueId(),0),Sentinel.mainConfig.chat.profanityFilter.punishScore));
         root.addChild(playerInfo);
 
         Node reportInfo = new Node(Sentinel.lang.violations.chat.profanity.reportInfoTitle);
-        reportInfo.addField(Sentinel.lang.violations.chat.profanity.originalMessage, response.getOriginalMessage());
+        reportInfo.addField(Sentinel.lang.violations.chat.originalMessage, response.getOriginalMessage());
         reportInfo.addField(Sentinel.lang.violations.chat.profanity.processedMessage, response.getProcessedMessage());
         reportInfo.addKeyValue(Sentinel.lang.violations.chat.profanity.severity, response.getSeverity().toString());
         root.addChild(reportInfo);
 
-        Node actions = new Node(Sentinel.lang.violations.chat.profanity.actionTitle);
-        actions.addTextLine(Sentinel.lang.violations.chat.profanity.blockAction);
-        if (response.isPunished()) actions.addTextLine(Sentinel.lang.violations.chat.profanity.commandAction);
+        Node actions = new Node(Sentinel.lang.violations.protections.actionNode.actionNodeTitle);
+        actions.addTextLine(Sentinel.lang.violations.chat.denyMessage);
+        if (response.isPunished()) actions.addTextLine(Sentinel.lang.violations.protections.actionNode.punishmentCommandsExecuted);
         root.addChild(actions);
 
         return root;

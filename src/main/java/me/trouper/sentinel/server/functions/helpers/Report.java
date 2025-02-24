@@ -1,4 +1,4 @@
-package me.trouper.sentinel.server.functions.chatfilter;
+package me.trouper.sentinel.server.functions.helpers;
 
 import java.util.LinkedHashMap;
 

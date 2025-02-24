@@ -1,4 +1,4 @@
-package me.trouper.sentinel.server.functions;
+package me.trouper.sentinel.server.functions.helpers;
 
 import io.github.itzispyder.pdk.utils.ServerUtils;
 import io.papermc.paper.chat.ChatRenderer;
@@ -6,14 +6,12 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.server.commands.SentinelCommand;
 import me.trouper.sentinel.server.events.ChatEvent;
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.chat.SignedMessage;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.entity.Player;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Message {
     public static final Map<UUID,UUID> replyMap = new HashMap<>();

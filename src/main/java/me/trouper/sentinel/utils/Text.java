@@ -11,7 +11,7 @@ import java.util.regex.PatternSyntaxException;
 public class Text {
 
     public static String removeColors(String input) {
-        return input.replaceAll("§[0-9a-frn]", "");
+        return input.replaceAll("((§|&)[0-9a-fklmnor])|((§|&)#(?:[0-9a-fA-F]{3}){1,2})", "");
     }
 
     public static String regexHighlighter(String input, String regex, String startString, String endString) {

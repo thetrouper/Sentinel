@@ -8,9 +8,8 @@ import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import io.papermc.paper.chat.ChatRenderer;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.config.MainConfig;
 import me.trouper.sentinel.data.types.WhitelistedBlock;
-import me.trouper.sentinel.server.functions.CBWhitelistManager;
+import me.trouper.sentinel.server.functions.helpers.CBWhitelistManager;
 import me.trouper.sentinel.server.functions.chatfilter.profanity.ProfanityFilter;
 import me.trouper.sentinel.server.functions.chatfilter.spam.SpamFilter;
 import me.trouper.sentinel.server.functions.chatfilter.unicode.UnicodeFilter;
@@ -208,7 +207,6 @@ public class SentinelCommand implements CustomCommand {
         switch (sub) {
             case "lang" -> sender.sendMessage(Sentinel.lang.brokenLang);
             case "toggle" -> {
-                Sentinel.mainConfig.debugMode = !Sentinel.mainConfig.debugMode;
                 Sentinel.mainConfig.debugMode = !Sentinel.mainConfig.debugMode;
                 String message = Sentinel.mainConfig.debugMode
                         ? Sentinel.lang.debug.debugEnabled

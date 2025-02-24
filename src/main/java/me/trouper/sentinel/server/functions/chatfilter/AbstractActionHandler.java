@@ -2,6 +2,8 @@ package me.trouper.sentinel.server.functions.chatfilter;
 
 import io.github.itzispyder.pdk.utils.discord.DiscordEmbed;
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.server.functions.helpers.FalsePositiveReporting;
+import me.trouper.sentinel.server.functions.helpers.FilterHelpers;
 import me.trouper.sentinel.utils.trees.ConsoleFormatter;
 import me.trouper.sentinel.utils.trees.EmbedFormatter;
 import me.trouper.sentinel.utils.trees.Node;
@@ -19,10 +21,11 @@ public abstract class AbstractActionHandler<T extends FilterResponse> {
             punish(response);
             discordNotification(tree);
         }
-        staffWarning(response, tree);
         if (shouldWarnPlayer(response)) {
             playerWarning(response);
         }
+
+        staffWarning(response, tree);
         consoleLog(tree);
     }
 

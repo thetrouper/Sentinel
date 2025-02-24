@@ -4,10 +4,9 @@ import io.github.retrooper.packetevents.adventure.serializer.legacy.LegacyCompon
 import io.papermc.paper.event.player.AsyncChatEvent;
 import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.data.Emojis;
-import me.trouper.sentinel.server.functions.chatfilter.FalsePositiveReporting;
+import me.trouper.sentinel.server.functions.helpers.FalsePositiveReporting;
 import me.trouper.sentinel.server.functions.chatfilter.FilterResponse;
-import me.trouper.sentinel.server.functions.chatfilter.Report;
-import me.trouper.sentinel.server.functions.chatfilter.unicode.UnicodeResponse;
+import me.trouper.sentinel.server.functions.helpers.Report;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.entity.Player;

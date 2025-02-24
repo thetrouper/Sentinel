@@ -2,7 +2,6 @@ package me.trouper.sentinel.utils;
 
 import io.github.itzispyder.pdk.utils.FileValidationUtils;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.server.functions.Randomizer;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.BufferedWriter;

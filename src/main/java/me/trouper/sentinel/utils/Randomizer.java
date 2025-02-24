@@ -1,4 +1,4 @@
-package me.trouper.sentinel.server.functions;
+package me.trouper.sentinel.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

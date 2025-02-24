@@ -45,18 +45,18 @@ public class UnicodeAction extends AbstractActionHandler<UnicodeResponse> {
         Node root = new Node("Sentinel");
         root.addTextLine(Sentinel.lang.violations.chat.unicode.treeTitle);
 
-        Node playerInfo = new Node(Sentinel.lang.violations.chat.unicode.playerInfoTitle.formatted(response.getPlayer().getName()));
-        playerInfo.addKeyValue(Sentinel.lang.violations.chat.unicode.uuid, response.getPlayer().getUniqueId().toString());
+        Node playerInfo = new Node(Sentinel.lang.violations.protections.infoNode.playerInfo.formatted(response.getPlayer().getName()));
+        playerInfo.addKeyValue(Sentinel.lang.violations.protections.infoNode.uuid, response.getPlayer().getUniqueId().toString());
         root.addChild(playerInfo);
 
         Node reportInfo = new Node(Sentinel.lang.violations.chat.unicode.reportInfoTitle);
-        reportInfo.addField(Sentinel.lang.violations.chat.unicode.originalMessage, response.getOriginalMessage());
-        reportInfo.addField(Sentinel.lang.violations.chat.unicode.highlightedMessage, response.getHighlightedMessage());
+        reportInfo.addField(Sentinel.lang.violations.chat.originalMessage, response.getOriginalMessage());
+        reportInfo.addField(Sentinel.lang.violations.chat.highlightedMessage, response.getHighlightedMessage());
         root.addChild(reportInfo);
 
-        Node actions = new Node(Sentinel.lang.violations.chat.unicode.actionTitle);
-        actions.addTextLine(Sentinel.lang.violations.chat.unicode.blockAction);
-        if (response.isPunished()) actions.addTextLine(Sentinel.lang.violations.chat.unicode.commandAction);
+        Node actions = new Node(Sentinel.lang.violations.protections.actionNode.actionNodeTitle);
+        actions.addTextLine(Sentinel.lang.violations.chat.denyMessage);
+        if (response.isPunished()) actions.addTextLine(Sentinel.lang.violations.protections.actionNode.punishmentCommandsExecuted);
         root.addChild(actions);
 
         return root;

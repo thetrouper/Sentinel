@@ -2,15 +2,14 @@ package me.trouper.sentinel.server.functions.chatfilter.profanity;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import me.trouper.sentinel.data.Emojis;
-import me.trouper.sentinel.server.functions.chatfilter.FalsePositiveReporting;
-import me.trouper.sentinel.server.functions.chatfilter.FilterHelpers;
+import me.trouper.sentinel.server.functions.helpers.FalsePositiveReporting;
+import me.trouper.sentinel.server.functions.helpers.FilterHelpers;
 import me.trouper.sentinel.server.functions.chatfilter.FilterResponse;
-import me.trouper.sentinel.server.functions.chatfilter.Report;
+import me.trouper.sentinel.server.functions.helpers.Report;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class ProfanityResponse implements FilterResponse {
 

@@ -126,15 +126,15 @@ public class Load {
         new CallbackCommand().register();
 
         // Events
-        new CBEditEvent().register();
-        new CBExecuteEvent().register();
-        new CBMCPlaceEvent().register();
-        new CBMCUseEvent().register();
-        new CBPlaceEvent().register();
-        new CBUseEvent().register();
+        new CommandBlockEdit().register();
+        new CommandBlockExecute().register();
+        new CommandBlockMinecartPlace().register();
+        new CommandBlockMinecartUse().register();
+        new CommandBlockPlace().register();
+        new CommandBlockUse().register();
         new ChatEvent().register();
-        new CommandExecuteEvent().register();
-        new CreativeHotbarEvent().register();
+        new CommandExecute().register();
+        new CreativeHotbar().register();
         new TrapCommand().register();
         new PluginCloakingEvent().register();
 

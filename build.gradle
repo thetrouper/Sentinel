@@ -142,3 +142,7 @@ task copyLibs {
         println "All JAR files have been extracted to: ${targetDir}"
     }
 }
+
+test {
+    useJUnitPlatform()
+}

@@ -48,8 +48,8 @@ public class SpamAction extends AbstractActionHandler<SpamResponse> {
         Node root = new Node("Sentinel");
         root.addTextLine(Sentinel.lang.violations.chat.spam.treeTitle);
 
-        Node playerInfo = new Node(Sentinel.lang.violations.chat.spam.playerInfoTitle.formatted(response.getEvent().getPlayer().getName()));
-        playerInfo.addKeyValue(Sentinel.lang.violations.chat.spam.uuid, response.getEvent().getPlayer().getUniqueId().toString());
+        Node playerInfo = new Node(Sentinel.lang.violations.protections.infoNode.playerInfo.formatted(response.getEvent().getPlayer().getName()));
+        playerInfo.addKeyValue(Sentinel.lang.violations.protections.infoNode.uuid, response.getEvent().getPlayer().getUniqueId().toString());
         playerInfo.addKeyValue(Sentinel.lang.violations.chat.spam.heat, "%s/%s".formatted(SpamFilter.heatMap.get(response.getEvent().getPlayer().getUniqueId()),Sentinel.mainConfig.chat.spamFilter.punishHeat));
         root.addChild(playerInfo);
 
@@ -59,9 +59,9 @@ public class SpamAction extends AbstractActionHandler<SpamResponse> {
         reportInfo.addKeyValue(Sentinel.lang.violations.chat.spam.similarity, "%s/%s".formatted((int) Math.round(response.getSimilarity()),Sentinel.mainConfig.chat.spamFilter.blockSimilarity));
         root.addChild(reportInfo);
 
-        Node actions = new Node(Sentinel.lang.violations.chat.spam.actionTitle);
-        actions.addTextLine(Sentinel.lang.violations.chat.spam.blockAction);
-        if (response.isPunished()) actions.addTextLine(Sentinel.lang.violations.chat.spam.commandAction);
+        Node actions = new Node(Sentinel.lang.violations.protections.actionNode.actionNodeTitle);
+        actions.addTextLine(Sentinel.lang.violations.chat.denyMessage);
+        if (response.isPunished()) actions.addTextLine(Sentinel.lang.violations.protections.actionNode.punishmentCommandsExecuted);
         root.addChild(actions);
 
         return root;

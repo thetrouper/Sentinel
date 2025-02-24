@@ -1,4 +1,4 @@
-package me.trouper.sentinel.server.functions;
+package me.trouper.sentinel.server.functions.helpers;
 
 import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.data.types.WhitelistedBlock;

@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 public class Node {
-    String title;
-    List<String> texts;
-    Map<String, String> values;
-    Map<String, String> fields;
-    List<Node> children;
+    public String title;
+    public List<String> texts;
+    public Map<String, String> values;
+    public Map<String, String> fields;
+    public List<Node> children;
 
     public Node(String title) {
         this.title = title;

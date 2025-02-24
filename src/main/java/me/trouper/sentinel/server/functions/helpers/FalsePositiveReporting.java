@@ -1,9 +1,9 @@
-package me.trouper.sentinel.server.functions.chatfilter;
+package me.trouper.sentinel.server.functions.helpers;
 
 import io.github.itzispyder.pdk.utils.SchedulerUtils;
 import io.github.itzispyder.pdk.utils.discord.DiscordEmbed;
 import me.trouper.sentinel.data.Emojis;
-import me.trouper.sentinel.server.functions.Randomizer;
+import me.trouper.sentinel.utils.Randomizer;
 import me.trouper.sentinel.utils.trees.EmbedFormatter;
 import org.bukkit.entity.Player;
 
