@@ -1,7 +1,7 @@
 {
   "Settings": {
-    "Input": "./build/libs/Sentinel-0.3.0.jar",
-    "Output": "./build/libs/Sentinel-0.3.0-obf.jar",
+    "Input": "./build/libs/Sentinel-0.3.1.jar",
+    "Output": "./build/libs/Sentinel-0.3.1-obf.jar",
     "Libraries": [
       "./deps"
     ],
@@ -9,6 +9,8 @@
       "com/",
       "io/",
       "me/trouper/sentinel/data/",
+      "me/trouper/sentinel/packetevents/",
+      "me/trouper/sentinel/nbtapi/",
       "org/",
       "net/",
       "module-info"

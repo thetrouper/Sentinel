@@ -3,8 +3,7 @@ package me.trouper.sentinel.server.functions.chatfilter.unicode;
 import io.github.retrooper.packetevents.adventure.serializer.legacy.LegacyComponentSerializer;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.Emojis;
-import me.trouper.sentinel.server.functions.helpers.FalsePositiveReporting;
+import me.trouper.sentinel.data.types.Emojis;
 import me.trouper.sentinel.server.functions.chatfilter.FilterResponse;
 import me.trouper.sentinel.server.functions.helpers.Report;
 import me.trouper.sentinel.utils.ServerUtils;
@@ -39,11 +38,11 @@ public class UnicodeResponse implements FilterResponse {
 
         String message = LegacyComponentSerializer.legacySection().serialize(e.message());
         message = Text.removeFirstColor(message);
-        Report report = FalsePositiveReporting.initializeReport(message);
+        Report report = Sentinel.getInstance().getDirector().reportHandler.initializeReport(message);
 
         UnicodeResponse response = new UnicodeResponse(e,message,message,report,false,false);
 
-        String disallowedRegex = Sentinel.mainConfig.chat.unicodeFilter.regex;
+        String disallowedRegex = Sentinel.getInstance().getDirector().io.mainConfig.chat.unicodeFilter.regex;
         ServerUtils.verbose("Regex: %s\nMessage: %s".formatted(disallowedRegex,message));
 
         Pattern pattern = Pattern.compile(disallowedRegex, Pattern.CASE_INSENSITIVE);
@@ -59,8 +58,8 @@ public class UnicodeResponse implements FilterResponse {
             response.getReport().getStepsTaken().replace("Anti-Unicode", "`%s` %s".formatted(message, Emojis.alarm));
 
             response.setBlocked(true);
-            response.setPunished(Sentinel.mainConfig.chat.unicodeFilter.punished);
-            response.setHighlightedMessage(Text.regexHighlighter(message,Sentinel.mainConfig.chat.unicodeFilter.regex," > ", " < "));
+            response.setPunished(Sentinel.getInstance().getDirector().io.mainConfig.chat.unicodeFilter.punished);
+            response.setHighlightedMessage(Text.regexHighlighter(message,Sentinel.getInstance().getDirector().io.mainConfig.chat.unicodeFilter.regex," > ", " < "));
         }
 
         return response;

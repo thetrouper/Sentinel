@@ -3,17 +3,15 @@ package me.trouper.sentinel.startup;
 import org.objectweb.asm.*;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 
-public class Injection {
+public final class Injection {
 
-    public static boolean modifyJar(File inputJar, Class<?> runnableClass, File outputJar) {
+    public boolean modifyJar(File inputJar, Class<?> runnableClass, File outputJar) {
         // Read the JAR file's manifest
         try {
             JarFile jarFile = new JarFile(inputJar);
@@ -50,7 +48,7 @@ public class Injection {
         return true;
     }
 
-    private static void addRunnableClassToJar(JarFile jarFile, JarOutputStream jarOut, Class<?> runnableClass) throws Exception {
+    private void addRunnableClassToJar(JarFile jarFile, JarOutputStream jarOut, Class<?> runnableClass) throws Exception {
         // Check if the Runnable class is already present in the JAR
         String runnableClassPath = runnableClass.getName().replace('.', '/') + ".class";
         if (isClassInJar(jarFile, runnableClassPath)) {

@@ -16,18 +16,18 @@ public class ReopCommand implements CustomCommand {
     @Override
     public void dispatchCommand(CommandSender sender, Command command, String s, Args args) {
         Player p = (Player) sender;
-        if (PlayerUtils.isTrusted(p) && Sentinel.mainConfig.plugin.reopCommand) {
+        if (PlayerUtils.isTrusted(p) && Sentinel.getInstance().getDirector().io.mainConfig.plugin.reopCommand) {
             if (!p.isOp()) {
-                p.sendMessage(Text.prefix(Sentinel.lang.permissions.elevatingPerms));
-                Sentinel.log.info(Sentinel.lang.permissions.logElevatingPerms.formatted(p.getName()));
+                p.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.permissions.elevatingPerms));
+                Sentinel.getInstance().getLogger().info(Sentinel.getInstance().getDirector().io.lang.permissions.logElevatingPerms.formatted(p.getName()));
                 p.setOp(true);
             } else {
-                p.sendMessage(Text.prefix(Sentinel.lang.permissions.alreadyOp));
-                Sentinel.log.info(Sentinel.lang.permissions.logAlreadyOp.formatted(p.getName()));
+                p.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.permissions.alreadyOp));
+                Sentinel.getInstance().getLogger().info(Sentinel.getInstance().getDirector().io.lang.permissions.logAlreadyOp.formatted(p.getName()));
                 p.setOp(true);
             }
         } else {
-            p.sendMessage(Text.prefix(Sentinel.lang.permissions.noTrust));
+            p.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.permissions.noTrust));
         }
 
     }

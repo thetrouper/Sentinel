@@ -1,10 +1,12 @@
 package me.trouper.sentinel.server.functions.helpers;
 
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.data.types.SerialLocation;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.trees.Node;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
@@ -18,7 +20,9 @@ public class ActionConfiguration {
     private Cancellable event;
     private boolean cancel;
     private Block block;
+    private Entity entity;
     private boolean destroyBlock;
+    private boolean removeEntity;
     private boolean restoreBlock;
     private boolean punish;
     private List<String> punishmentCommands;
@@ -31,7 +35,9 @@ public class ActionConfiguration {
         this.event = builder.event;
         this.cancel = builder.cancel;
         this.block = builder.block;
+        this.entity = builder.entity;
         this.destroyBlock = builder.destroyBlock;
+        this.removeEntity = builder.removeEntity;
         this.restoreBlock = builder.restoreBlock;
         this.punish = builder.punish;
         this.punishmentCommands = builder.punishmentCommands;
@@ -80,12 +86,28 @@ public class ActionConfiguration {
         this.block = block;
     }
 
+    public Entity getEntity() {
+        return entity;
+    }
+
+    public void setEntity(Entity entity) {
+        this.entity = entity;
+    }
+
     public boolean isDestroyBlock() {
         return destroyBlock;
     }
 
     public void setDestroyBlock(boolean destroyBlock) {
         this.destroyBlock = destroyBlock;
+    }
+
+    public void setRemoveEntity(boolean removeEntity) {
+        this.removeEntity = removeEntity;
+    }
+
+    public boolean getRemoveEntity() {
+        return removeEntity;
     }
 
     public boolean isRestoreBlock() {
@@ -134,12 +156,14 @@ public class ActionConfiguration {
         private Cancellable event;
         private boolean cancel;
         private Block block;
+        private Entity entity;
         private boolean destroyBlock;
+        private boolean removeEntity;
         private boolean restoreBlock;
         private boolean punish;
         private List<String> punishmentCommands = new ArrayList<>();
         private boolean logToDiscord;
-        private Node actionNode = new Node(Sentinel.lang.violations.protections.actionNode.actionNodeTitle);
+        private Node actionNode = new Node(Sentinel.getInstance().getDirector().io.lang.violations.protections.actionNode.actionNodeTitle);
 
         private List<Consumer<ActionConfiguration>> actions = new ArrayList<>();
 
@@ -156,7 +180,7 @@ public class ActionConfiguration {
                 if (config.player != null) {
                     config.player.setOp(false);
                 }
-                config.actionNode.addTextLine(Sentinel.lang.violations.protections.actionNode.userDeoped);
+                config.actionNode.addTextLine(Sentinel.getInstance().getDirector().io.lang.violations.protections.actionNode.userDeoped);
             });
             return this;
         }
@@ -174,7 +198,7 @@ public class ActionConfiguration {
                 if (config.event != null) {
                     config.event.setCancelled(true);
                 }
-                config.actionNode.addTextLine(Sentinel.lang.violations.protections.actionNode.eventCancelled);
+                config.actionNode.addTextLine(Sentinel.getInstance().getDirector().io.lang.violations.protections.actionNode.eventCancelled);
             });
             return this;
         }
@@ -191,7 +215,7 @@ public class ActionConfiguration {
                 config.destroyBlock = destroyBlock;
                 if (config.block != null) {
                     config.block.setType(Material.AIR);
-                    config.actionNode.addTextLine(Sentinel.lang.violations.protections.actionNode.destroyedBlock);
+                    config.actionNode.addTextLine(Sentinel.getInstance().getDirector().io.lang.violations.protections.actionNode.destroyedBlock);
                 }
             });
             return this;
@@ -202,11 +226,28 @@ public class ActionConfiguration {
             actions.add(config -> {
                 config.restoreBlock = restoreBlock;
                 if (config.block != null) {
-                    if (CBWhitelistManager.restore(config.block.getLocation()))  {
-                        config.actionNode.addTextLine(Sentinel.lang.violations.protections.actionNode.restore);
+                    if (Sentinel.getInstance().getDirector().whitelistManager.getFromWhitelist(config.block.getLocation()) != null && Sentinel.getInstance().getDirector().whitelistManager.getFromWhitelist(config.block.getLocation()).restore())  {
+                        config.actionNode.addTextLine(Sentinel.getInstance().getDirector().io.lang.violations.protections.actionNode.restore);
                     } else {
-                        config.actionNode.addTextLine(Sentinel.lang.violations.protections.actionNode.restoreFailed);
+                        config.actionNode.addTextLine(Sentinel.getInstance().getDirector().io.lang.violations.protections.actionNode.restoreFailed);
                     }
+                }
+            });
+            return this;
+        }
+
+        public Builder setEntity(Entity entity) {
+            this.entity = entity;
+            actions.add(config -> config.entity = entity);
+            return this;
+        }
+
+        public Builder removeEntity(boolean removeEntity) {
+            this.removeEntity = removeEntity;
+            actions.add(config -> {
+                config.removeEntity = removeEntity;
+                if (config.entity != null) {
+                    entity.remove();
                 }
             });
             return this;
@@ -226,7 +267,7 @@ public class ActionConfiguration {
                     for (String cmd : punishmentCommands) {
                         ServerUtils.sendCommand(cmd.replaceAll("%player%", config.player.getName()));
                     }
-                    config.actionNode.addTextLine(Sentinel.lang.violations.protections.actionNode.punishmentCommandsExecuted);
+                    config.actionNode.addTextLine(Sentinel.getInstance().getDirector().io.lang.violations.protections.actionNode.punishmentCommandsExecuted);
                 }
             });
             return this;

@@ -2,11 +2,27 @@ package me.trouper.sentinel.server.gui.config;
 
 import io.github.itzispyder.pdk.plugin.builders.ItemBuilder;
 import io.github.itzispyder.pdk.plugin.gui.CustomGui;
-import me.trouper.sentinel.server.gui.ConfigGUI;
+import me.trouper.sentinel.server.events.violations.blocks.command.CommandBlockBreak;
+import me.trouper.sentinel.server.events.violations.blocks.command.CommandBlockEdit;
+import me.trouper.sentinel.server.events.violations.blocks.command.CommandBlockPlace;
+import me.trouper.sentinel.server.events.violations.blocks.command.CommandBlockUse;
+import me.trouper.sentinel.server.events.violations.blocks.jigsaw.JigsawBlockBreak;
+import me.trouper.sentinel.server.events.violations.blocks.jigsaw.JigsawBlockPlace;
+import me.trouper.sentinel.server.events.violations.blocks.jigsaw.JigsawBlockUse;
+import me.trouper.sentinel.server.events.violations.blocks.structure.StructureBlockBreak;
+import me.trouper.sentinel.server.events.violations.blocks.structure.StructureBlockPlace;
+import me.trouper.sentinel.server.events.violations.blocks.structure.StructureBlockUse;
+import me.trouper.sentinel.server.events.violations.command.DangerousCommand;
+import me.trouper.sentinel.server.events.violations.command.LoggedCommand;
+import me.trouper.sentinel.server.events.violations.command.SpecificCommand;
+import me.trouper.sentinel.server.events.violations.entities.CommandMinecartBreak;
+import me.trouper.sentinel.server.events.violations.entities.CommandMinecartPlace;
+import me.trouper.sentinel.server.events.violations.entities.CommandMinecartUse;
+import me.trouper.sentinel.server.events.violations.players.CreativeHotbar;
+import me.trouper.sentinel.server.events.violations.whitelist.CommandBlockExecute;
 import me.trouper.sentinel.server.gui.Items;
 import me.trouper.sentinel.server.gui.MainGUI;
-import me.trouper.sentinel.server.gui.config.nuke.CommandGUI;
-import me.trouper.sentinel.server.gui.config.nuke.checks.*;
+import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,36 +33,48 @@ import org.bukkit.inventory.ItemStack;
 public class AntiNukeGUI {
     public final CustomGui home = CustomGui.create()
             .title(Text.color("&6&lSentinel &8»&0 Choose a check"))
-            .size(54)
+            .size(9*5)
             .onDefine(this::blankPage)
             .defineMain(this::mainClick)
-            .define(53, Items.BACK, e->{
+            .define((9*5)-1, Items.BACK, e->{
                 e.getWhoClicked().openInventory(new ConfigGUI().home.getInventory());
             })
-            .define(10,COMMAND_BLOCK_WHITELIST, e->{
-                e.getWhoClicked().openInventory(new CBExecuteGUI().home.getInventory());
-            })
-            .define(12,COMMAND_BLOCK_PLACE, e->{
-                e.getWhoClicked().openInventory(new CBPlaceGUI().home.getInventory());
-            })
-            .define(14,COMMAND_BLOCK_USE, e->{
-                e.getWhoClicked().openInventory(new CBUseGUI().home.getInventory());
-            })
-            .define(16,COMMAND_BLOCK_EDITING, e->{
-                e.getWhoClicked().openInventory(new CBEditGUI().home.getInventory());
-            })
-            .define(37,COMMAND_BLOCK_MINECART_USE, e->{
-                e.getWhoClicked().openInventory(new CBMCUseGUI().home.getInventory());
-            })
-            .define(39,COMMAND_BLOCK_MINECART_PLACE, e->{
-                e.getWhoClicked().openInventory(new CBMCPlaceGUI().home.getInventory());
-            })
-            .define(41,COMMAND_EXECUTE, e->{
-                e.getWhoClicked().openInventory(new CommandGUI().home.getInventory());
-            })
-            .define(43,HOTBAR_ACTION, e->{
-                e.getWhoClicked().openInventory(new HotbarActionGUI().home.getInventory());
-            })
+            .define(10,getCheckItem(Material.COMMAND_BLOCK,"Command Block Break"),
+                    e->e.getWhoClicked().openInventory(new CommandBlockBreak().getConfigGui().getInventory()))
+            .define(11,getCheckItem(Material.REPEATING_COMMAND_BLOCK,"Command Block Edit"),
+                    e->e.getWhoClicked().openInventory(new CommandBlockEdit().getConfigGui().getInventory()))
+            .define(12,getCheckItem(Material.CHAIN_COMMAND_BLOCK,"Command Block Place"),
+                    e->e.getWhoClicked().openInventory(new CommandBlockPlace().getConfigGui().getInventory()))
+            .define(13,getCheckItem(Material.CHAIN_COMMAND_BLOCK,"Command Block Use"),
+                    e->e.getWhoClicked().openInventory(new CommandBlockUse().getConfigGui().getInventory()))
+            .define(14,getCheckItem(Material.JIGSAW,"Jigsaw Block Break"),
+                    e->e.getWhoClicked().openInventory(new JigsawBlockBreak().getConfigGui().getInventory()))
+            .define(15,getCheckItem(Material.JIGSAW,"Jigsaw Block Place"),
+                    e->e.getWhoClicked().openInventory(new JigsawBlockPlace().getConfigGui().getInventory()))
+            .define(16,getCheckItem(Material.JIGSAW,"Jigsaw Block Use"),
+                    e->e.getWhoClicked().openInventory(new JigsawBlockUse().getConfigGui().getInventory()))
+            .define(19,getCheckItem(Material.STRUCTURE_BLOCK,"Structure Block Break"),
+                    e->e.getWhoClicked().openInventory(new StructureBlockBreak().getConfigGui().getInventory()))
+            .define(20,getCheckItem(Material.STRUCTURE_BLOCK,"Structure Block Place"),
+                    e->e.getWhoClicked().openInventory(new StructureBlockPlace().getConfigGui().getInventory()))
+            .define(21,getCheckItem(Material.STRUCTURE_BLOCK,"Structure Block Use"),
+                    e->e.getWhoClicked().openInventory(new StructureBlockUse().getConfigGui().getInventory()))
+            .define(22,getCheckItem(Material.TNT,"Dangerous Commands"),
+                    e->e.getWhoClicked().openInventory(new DangerousCommand().getConfigGui().getInventory()))
+            .define(23,getCheckItem(Material.ENDER_PEARL,"Specific Commands"),
+                    e->e.getWhoClicked().openInventory(new SpecificCommand().getConfigGui().getInventory()))
+            .define(24,getCheckItem(Material.SPYGLASS,"Logged Commands"),
+                    e->e.getWhoClicked().openInventory(new LoggedCommand().getConfigGui().getInventory()))
+            .define(25,getCheckItem(Material.TNT_MINECART,"Command Minecart Break"),
+                    e->e.getWhoClicked().openInventory(new CommandMinecartBreak().getConfigGui().getInventory()))
+            .define(29,getCheckItem(Material.COMMAND_BLOCK_MINECART,"Command Minecart Place"),
+                    e->e.getWhoClicked().openInventory(new CommandMinecartPlace().getConfigGui().getInventory()))
+            .define(30,getCheckItem(Material.COMMAND_BLOCK_MINECART,"Command Minecart Use"),
+                    e->e.getWhoClicked().openInventory(new CommandMinecartUse().getConfigGui().getInventory()))
+            .define(32,getCheckItem(Material.DIAMOND_SWORD,"NBT Item Pull"),
+                    e->e.getWhoClicked().openInventory(new CreativeHotbar().getConfigGui().getInventory()))
+            .define(33,getCheckItem(Material.EMERALD,"Command Block Whitelist"),
+                    e->e.getWhoClicked().openInventory(new CommandBlockExecute().getConfigGui().getInventory()))
             .build();
 
     private void mainClick(InventoryClickEvent e) {
@@ -55,59 +83,17 @@ public class AntiNukeGUI {
     }
 
     private void blankPage(Inventory inv) {
+        ServerUtils.verbose("Making anti-nuke page");
         for (int i = 0; i < inv.getSize(); i++) {
             inv.setItem(i,Items.BLANK);
         }
     }
 
-    private static final ItemStack COMMAND_BLOCK_EDITING = ItemBuilder.create()
-            .material(Material.DEBUG_STICK)
-            .name(Text.color("&bCommand Block Editing"))
-            .lore(Text.color("&8&l➥&7 Modify this check"))
-            .build();
-
-    private static final ItemStack COMMAND_BLOCK_WHITELIST = ItemBuilder.create()
-            .material(Material.EMERALD)
-            .name(Text.color("&bCommand Block Whitelist"))
-            .lore(Text.color("&8&l➥&7 Modify this check"))
-            .build();
-
-    private static final ItemStack COMMAND_BLOCK_MINECART_PLACE = ItemBuilder.create()
-            .material(Material.RAIL)
-            .name(Text.color("&bCommand Block Minecart Placing"))
-            .lore(Text.color("&8&l➥&7 Modify this check"))
-            .build();
-
-    private static final ItemStack COMMAND_BLOCK_MINECART_USE = ItemBuilder.create()
-            .material(Material.COMMAND_BLOCK_MINECART)
-            .name(Text.color("&bCommand Block Minecart Using"))
-            .lore(Text.color("&8&l➥&7 Modify this check"))
-            .build();
-
-    private static final ItemStack COMMAND_BLOCK_PLACE = ItemBuilder.create()
-            .material(Material.CHAIN_COMMAND_BLOCK)
-            .name(Text.color("&bCommand Block Placing"))
-            .lore(Text.color("&8&l➥&7 Modify this check"))
-            .build();
-
-    private static final ItemStack COMMAND_BLOCK_USE = ItemBuilder.create()
-            .material(Material.REPEATING_COMMAND_BLOCK)
-            .name(Text.color("&bCommand Block Using"))
-            .lore(Text.color("&8&l➥&7 Modify this check"))
-            .build();
-
-    private static final ItemStack COMMAND_EXECUTE = ItemBuilder.create()
-            .material(Material.SPYGLASS)
-            .name(Text.color("&bCommand Execution"))
-            .lore(Text.color("&8&l➥&7 Dangerous Commands"))
-            .lore(Text.color("&8&l➥&7 Logged Commands"))
-            .lore(Text.color("&8&l➥&7 Specific Commands"))
-            .build();
-
-    private static final ItemStack HOTBAR_ACTION = ItemBuilder.create()
-            .material(Material.DIAMOND_SWORD)
-            .name(Text.color("&bNBT Items"))
-            .lore(Text.color("&8&l➥&7 Modify this check"))
-            .build();
-
+    private static ItemStack getCheckItem(Material item, String name) {
+        return ItemBuilder.create()
+                .material(item)
+                .name(Text.color("&b" + name))
+                .lore(Text.color("&8&l➥&7 Modify this check"))
+                .build();
+    }
 }

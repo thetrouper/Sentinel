@@ -7,7 +7,7 @@ import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import io.github.itzispyder.pdk.utils.misc.Cooldown;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.server.functions.helpers.FalsePositiveReporting;
+import me.trouper.sentinel.server.functions.helpers.ReportHandler;
 import me.trouper.sentinel.server.functions.helpers.Report;
 import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.Text;
@@ -29,18 +29,18 @@ public class CallbackCommand implements CustomCommand {
             case "fpreport" -> {
                 if (!PlayerUtils.checkPermission(sender,"sentinel.callbacks.fpreport")) return;
                 if (fpReportCooldown.isOnCooldown(p.getUniqueId()) && !p.isOp()) {
-                    p.sendMessage(Text.prefix(Sentinel.lang.cooldown.onCooldown + fpReportCooldown.getCooldown(p.getUniqueId())));
+                    p.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.cooldown.onCooldown + fpReportCooldown.getCooldown(p.getUniqueId())));
                     return;
                 }
                 long id = args.get(1).toLong();
-                Report report = FalsePositiveReporting.reports.get(id);
+                Report report = Sentinel.getInstance().getDirector().reportHandler.reports.get(id);
                 if (report == null) {
-                    p.sendMessage(Text.prefix(Sentinel.lang.reports.noReport));
+                    p.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.reports.noReport));
                     return;
                 }
-                p.sendMessage(Text.prefix(Sentinel.lang.reports.reportingFalsePositive));
-                FalsePositiveReporting.sendReport(p,report);
-                p.sendMessage(Text.prefix(Sentinel.lang.reports.falsePositiveSuccess));
+                p.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.reports.reportingFalsePositive));
+                Sentinel.getInstance().getDirector().reportHandler.sendReport(p,report);
+                p.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.reports.falsePositiveSuccess));
             }
         }
     }

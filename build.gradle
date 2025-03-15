@@ -3,18 +3,20 @@ import java.nio.file.Paths
 
 plugins {
     id 'java'
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id 'com.gradleup.shadow' version '9.0.0-beta10'
 }
 
 group = project.group
 version = project.version
 
-jar {
-    from {
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        configurations.runtimeClasspath.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
+def targetJavaVersion = 21
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
 }
 
@@ -36,76 +38,91 @@ repositories {
         url = 'https://oss.sonatype.org/content/groups/public/'
     }
     maven {
-        url = uri("https://repo.codemc.io/repository/maven-releases/")
-    }
-    maven {
-        url = uri("https://repo.codemc.io/repository/maven-snapshots/")
+        name = "CodeMC"
+        url = uri("https://repo.codemc.io/repository/maven-public/")
     }
 }
 
 dependencies {
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.0")
     compileOnly "io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT"
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'org.ow2.asm:asm-commons:9.5'
     implementation files("deps/PDK-1.4.0.jar")
     implementation "com.github.retrooper:packetevents-spigot:2.7.0"
+    implementation("de.tr7zw:item-nbt-api:2.14.1")
 }
-
-def targetJavaVersion = 21
-java {
-    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    sourceCompatibility = javaVersion
-    targetCompatibility = javaVersion
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-    }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-        options.release = targetJavaVersion
-    }
-}
-
-tasks.register('copyDeps', Copy) {
-    from configurations.runtimeClasspath
-    into 'build/deps'
-    include '*.jar'
-}
-
 
 processResources {
-    def props = [version: version]
-    inputs.properties props
-    filteringCharset 'UTF-8'
     filesMatching('plugin.yml') {
-        expand props
+        expand(version: project.version)
     }
 }
 
-compileJava.options.encoding("UTF-8")
+task cleanPluginYml {
+    doLast {
+        def jarFile = shadowJar.archiveFile.get().asFile
+        def tempDir = file("$buildDir/tmpCleanJar")
+        tempDir.mkdirs()
 
-tasks.withType(JavaCompile) {
-    options.encoding = "UTF-8"
+        // Unpack the jar into a temporary directory
+        copy {
+            from zipTree(jarFile)
+            into tempDir
+        }
+
+        // Delete any plugin.yml files from anywhere in the unpacked directory
+        fileTree(tempDir).matching {
+            include '**/plugin.yml'
+        }.each { file ->
+            file.delete()
+        }
+
+        // Repackage the jar without the plugin.yml files
+        ant.zip(destfile: jarFile, basedir: tempDir)
+        delete tempDir
+    }
 }
 
-tasks.shadowJar {
+task injectPluginYml {
+    doLast {
+        def jarFile = shadowJar.archiveFile.get().asFile
+        def tempDir = file("$buildDir/tmpJar")
+        tempDir.mkdirs()
+
+        // Unpack the jar that has been cleaned
+        copy {
+            from zipTree(jarFile)
+            into tempDir
+        }
+
+        // Copy the already filtered plugin.yml from processed resources
+        copy {
+            from file("$buildDir/resources/main/plugin.yml")
+            into tempDir
+        }
+
+        // Repackage the jar with the updated contents
+        ant.zip(destfile: jarFile, basedir: tempDir)
+        delete tempDir
+    }
+}
+
+shadowJar {
+    archiveClassifier.set('')
+    minimize()
+
+    mergeServiceFiles()
+
+    exclude 'plugin.yml'
+
     relocate("com.github.retrooper.packetevents", "me.trouper.sentinel.packetevents.api")
     relocate("io.github.retrooper.packetevents", "me.trouper.sentinel.packetevents.impl")
+    relocate("de.tr7zw.changeme.nbtapi", "me.trouper.sentinel.nbtapi.api")
+    
 }
 
-task obfuscate(type: JavaExec) {
-    // Specify the main class in the obfuscator JAR (if required)
-
-    // Path to the obfuscator JAR
-    classpath = files('obf/grunt-main.jar')
-
-    // Arguments to pass to the obfuscator (e.g., input and output directories)
-    args = [
-            '--config', '.\\obf\\config.json'
-    ]
-}
 
 task copyLibs {
     doLast {
@@ -143,6 +160,33 @@ task copyLibs {
     }
 }
 
+task obfuscate(type: JavaExec) {
+    // Path to the obfuscator JAR
+    classpath = files('obf/grunt-main.jar')
+
+    // Arguments to pass to the obfuscator (e.g., input and output directories)
+    args = [
+            '--config', '.\\obf\\config.json'
+    ]
+}
+
+tasks.withType(JavaCompile).configureEach {
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release = targetJavaVersion
+    }
+}
+
+compileJava.options.encoding("UTF-8")
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
 test {
     useJUnitPlatform()
+}
+
+build {
+    dependsOn(shadowJar)
+    dependsOn injectPluginYml
 }

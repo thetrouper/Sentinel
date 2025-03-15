@@ -1,35 +1,76 @@
 package me.trouper.sentinel.utils;
 
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
-public class MathUtils {
+public final class MathUtils {
 
-    public static double avg(Integer... ints) {
-        final List<Integer> list = Arrays.stream(ints).filter(Objects::nonNull).toList();
-        return avg(list);
+    public static double[] uuidToDoubles(UUID uuid) {
+        byte[] bytes = uuidToBytes(uuid);
+        BigInteger bigInt = new BigInteger(1, bytes);
+
+        // Split into 43, 43, 42 bits
+        BigInteger mask43 = BigInteger.ONE.shiftLeft(43).subtract(BigInteger.ONE);
+        BigInteger mask42 = BigInteger.ONE.shiftLeft(42).subtract(BigInteger.ONE);
+
+        BigInteger part1 = bigInt.shiftRight(85).and(mask43);
+        BigInteger part2 = bigInt.shiftRight(42).and(mask43);
+        BigInteger part3 = bigInt.and(mask42);
+
+        return new double[] {
+                part1.doubleValue(),
+                part2.doubleValue(),
+                part3.doubleValue()
+        };
     }
 
-    public static double avg(List<Integer> ints) {
-        double sum = 0.0;
-        for (Integer i : ints) sum += i;
-        return sum / ints.size();
-    }
-
-    public static double round(double value, int nthPlace) {
-        return Math.floor(value * nthPlace) / nthPlace;
-    }
-
-    public static String bytesToHex(byte[] bytes) {
-        StringBuilder result = new StringBuilder();
-        for (byte b : bytes) {
-            result.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
+    public static UUID doublesToUuid(double[] doubles) {
+        if (doubles.length != 3) {
+            throw new IllegalArgumentException("Exactly 3 doubles required");
         }
-        return result.toString();
+
+        BigInteger part1 = BigInteger.valueOf((long) doubles[0]);
+        BigInteger part2 = BigInteger.valueOf((long) doubles[1]);
+        BigInteger part3 = BigInteger.valueOf((long) doubles[2]);
+
+        BigInteger reconstructed = part1.shiftLeft(85)
+                .or(part2.shiftLeft(42))
+                .or(part3);
+
+        byte[] bytes = reconstructed.toByteArray();
+        
+        byte[] uuidBytes = new byte[16];
+        if (bytes.length > 16) {
+            System.arraycopy(bytes, bytes.length - 16, uuidBytes, 0, 16);
+        } else {
+            System.arraycopy(bytes, 0, uuidBytes, 16 - bytes.length, bytes.length);
+        }
+
+        return bytesToUuid(uuidBytes);
+    }
+
+    private static byte[] uuidToBytes(UUID uuid) {
+        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+        bb.putLong(uuid.getMostSignificantBits());
+        bb.putLong(uuid.getLeastSignificantBits());
+        return bb.array();
+    }
+
+    private static UUID bytesToUuid(byte[] bytes) {
+        if (bytes.length != 16) {
+            throw new IllegalArgumentException("Invalid UUID byte array");
+        }
+        ByteBuffer bb = ByteBuffer.wrap(bytes);
+        return new UUID(bb.getLong(), bb.getLong());
     }
 
     public static double calcSim(String s1, String s2) {

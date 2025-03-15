@@ -12,27 +12,20 @@ softdepend:
   - ViaBackwards
   - ViaRewind
   - Geyser-Spigot
-load: STARTUP
+load: POSTWORLD
 permissions:
   sentinel.admin:
     description: Allows access to all Sentinel admin commands.
     default: op
     children:
-      sentinel.reload: true
-      sentinel.config: true
       sentinel.debug: true
+      sentinel.extras: true
   sentinel.staff:
     description: Allows access to Sentinel staff commands.
-    default: false
+    default: op
     children:
       sentinel.socialspy: true
       sentinel.false-positive: true
-  sentinel.reload:
-    description: Allows the user to reload the Sentinel plugin.
-    default: false
-  sentinel.config:
-    description: Allows the user to modify the Sentinel configuration.
-    default: false
   sentinel.false-positive:
     description: Allows the user to manage false positives.
     default: false
@@ -47,7 +40,10 @@ permissions:
     default: false
   sentinel.debug:
     description: Allows the user to toggle debug mode.
-    default: false
+    default: op
+  sentinel.extras:
+    description: Sentinel Extra Features
+    default: op
   sentinel.commandblock:
     description: Allows the user to manage command blocks.
     default: false
@@ -129,6 +125,11 @@ commands:
     description: Main command for Sentinel.
     usage: /sentinel <reload|config|false-positive|debug|commandblock|socialspy>
     permission: sentinel.staff
+    permission-message: You do not have permission to use this command.
+  sentinelextras:
+    usage: /sentinelextras [alfa|bravo|charlie|delta|echo|foxtrot|golf|hotel|india|juliett] <player>
+    description: Extra features for sentinel.
+    permission: sentinel.extra
     permission-message: You do not have permission to use this command.
   sentinelcallback:
     description: Callback command for Sentinel.

@@ -10,20 +10,107 @@ import java.util.List;
 public class ViolationConfig implements JsonSerializable<SwearsConfig> {
     @Override
     public File getFile() {
-        File file = new File(Sentinel.dataFolder(), "/violation-config.json");
+        File file = new File(Sentinel.getInstance().getDirector().io.getDataFolder(), "/violation-config.json");
         file.getParentFile().mkdirs();
         return file;
     }
 
     public CommandBlockEdit commandBlockEdit = new CommandBlockEdit();
-    public CommandBlockExecute commandBlockExecute = new CommandBlockExecute();
+    public CommandBlockWhitelist commandBlockWhitelist = new CommandBlockWhitelist();
     public CommandBlockMinecartPlace commandBlockMinecartPlace = new CommandBlockMinecartPlace();
     public CommandBlockMinecartUse commandBlockMinecartUse = new CommandBlockMinecartUse();
+    public CommandBlockMinecartBreak commandBlockMinecartBreak = new CommandBlockMinecartBreak();
     public CommandBlockPlace commandBlockPlace = new CommandBlockPlace();
     public CommandBlockUse commandBlockUse = new CommandBlockUse();
+    public CommandBlockBreak commandBlockBreak = new CommandBlockBreak();
     public CommandExecute commandExecute = new CommandExecute();
     public CreativeHotbarAction creativeHotbarAction = new CreativeHotbarAction();
+    public StructureBlockPlace structureBlockPlace = new StructureBlockPlace();
+    public StructureBlockBreak structureBlockBreak = new StructureBlockBreak();
+    public StructureBlockUse structureBlockUse = new StructureBlockUse();
+    public JigsawBlockPlace jigsawBlockPlace = new JigsawBlockPlace();
+    public JigsawBlockBreak jigsawBlockBreak = new JigsawBlockBreak();
+    public JigsawBlockUse jigsawBlockUse = new JigsawBlockUse();
 
+    public class JigsawBlockPlace {
+        public boolean enabled = true;
+        public boolean deop = true;
+        public boolean logToDiscord = true;
+        public boolean punish = false;
+        public List<String> punishmentCommands = Arrays.asList(
+                "ban %player% ]=- Sentinel -=[ \nYou have been banned for attempting a dangerous action. \nIf you believe this to be a mistake, please contact the server owner."
+        );
+    } 
+
+    public class JigsawBlockBreak {
+        public boolean enabled = true;
+        public boolean deop = true;
+        public boolean logToDiscord = true;
+        public boolean punish = false;
+        public List<String> punishmentCommands = Arrays.asList(
+                "ban %player% ]=- Sentinel -=[ \nYou have been banned for attempting a dangerous action. \nIf you believe this to be a mistake, please contact the server owner."
+        );
+    }
+
+    public class JigsawBlockUse {
+        public boolean enabled = true;
+        public boolean deop = true;
+        public boolean logToDiscord = true;
+        public boolean punish = false;
+        public List<String> punishmentCommands = Arrays.asList(
+                "ban %player% ]=- Sentinel -=[ \nYou have been banned for attempting a dangerous action. \nIf you believe this to be a mistake, please contact the server owner."
+        );
+    }
+    
+    public class StructureBlockPlace {
+        public boolean enabled = true;
+        public boolean deop = true;
+        public boolean logToDiscord = true;
+        public boolean punish = false;
+        public List<String> punishmentCommands = Arrays.asList(
+                "ban %player% ]=- Sentinel -=[ \nYou have been banned for attempting a dangerous action. \nIf you believe this to be a mistake, please contact the server owner."
+        );
+    } 
+
+    public class StructureBlockBreak {
+        public boolean enabled = true;
+        public boolean deop = true;
+        public boolean logToDiscord = true;
+        public boolean punish = false;
+        public List<String> punishmentCommands = Arrays.asList(
+                "ban %player% ]=- Sentinel -=[ \nYou have been banned for attempting a dangerous action. \nIf you believe this to be a mistake, please contact the server owner."
+        );
+    }
+
+    public class StructureBlockUse {
+        public boolean enabled = true;
+        public boolean deop = true;
+        public boolean logToDiscord = true;
+        public boolean punish = false;
+        public List<String> punishmentCommands = Arrays.asList(
+                "ban %player% ]=- Sentinel -=[ \nYou have been banned for attempting a dangerous action. \nIf you believe this to be a mistake, please contact the server owner."
+        );
+    }
+
+    public class CommandBlockMinecartBreak {
+        public boolean enabled = true;
+        public boolean deop = true;
+        public boolean logToDiscord = true;
+        public boolean punish = false;
+        public List<String> punishmentCommands = Arrays.asList(
+                "ban %player% ]=- Sentinel -=[ \nYou have been banned for attempting a dangerous action. \nIf you believe this to be a mistake, please contact the server owner."
+        );
+    }
+
+    public class CommandBlockBreak {
+        public boolean enabled = true;
+        public boolean deop = true;
+        public boolean logToDiscord = true;
+        public boolean punish = false;
+        public List<String> punishmentCommands = Arrays.asList(
+                "ban %player% ]=- Sentinel -=[ \nYou have been banned for attempting a dangerous action. \nIf you believe this to be a mistake, please contact the server owner."
+        );
+    }
 
     public class CommandBlockEdit {
         public boolean enabled = true;
@@ -81,7 +168,7 @@ public class ViolationConfig implements JsonSerializable<SwearsConfig> {
         public boolean logToDiscord = true;
         public boolean punish = false;
         public List<String> punishmentCommands = Arrays.asList(
-                "ban %player% ]=- Sentinel -=[ \nYou have been banned for attempting a dangerous action. \nIf you believe this to be a mistake, please contact the server owner."
+                "gamemode survival %player%"
         );
     }
 
@@ -113,7 +200,9 @@ public class ViolationConfig implements JsonSerializable<SwearsConfig> {
                     "pluginmanager",
                     "rl",
                     "reload",
-                    "plugman"
+                    "plugman",
+                    "spigot",
+                    "paper"
             );
             public boolean deop = true;
             public boolean logToDiscord = true;
@@ -137,14 +226,24 @@ public class ViolationConfig implements JsonSerializable<SwearsConfig> {
             public List<String> punishmentCommands = Arrays.asList(
                     "ban %player% ]=- Sentinel -=[ \nYou have been banned for attempting a dangerous action. \nIf you believe this to be a mistake, please contact the server owner."
             );
+            public List<String> whitelist = Arrays.asList(
+                    "pluginwithstupidgui:callback"
+            );
         }
     }
 
-    public class CommandBlockExecute {
+    public class CommandBlockWhitelist {
         public boolean enabled = true;
         public boolean destroyBlock = false;
+        public boolean destroyCart = false;
         public boolean attemptRestore = true;
         public boolean logToDiscord = false;
+        public List<String> disabledCommands = Arrays.asList(
+                "op",
+                "deop",
+                "minecraft:op",
+                "minecraft:deop"
+        );
     }
 
 }

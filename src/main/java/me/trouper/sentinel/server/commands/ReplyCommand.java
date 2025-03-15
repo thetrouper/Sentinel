@@ -6,7 +6,7 @@ import io.github.itzispyder.pdk.commands.CustomCommand;
 import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.server.functions.helpers.Message;
+import me.trouper.sentinel.server.functions.helpers.MessageHandler;
 import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.command.Command;
@@ -19,7 +19,7 @@ import java.util.UUID;
 @CommandRegistry(value = "reply", permission = @Permission("sentinel.reply"),printStackTrace = true)
 public class ReplyCommand implements CustomCommand {
 
-    public static Map<UUID, UUID> replyMap = Message.replyMap;
+    public static Map<UUID, UUID> replyMap = Sentinel.getInstance().getDirector().messageHandler.replyMap;
 
     @Override
     public void dispatchCommand(CommandSender sender, Command command, String s, Args args) {
@@ -27,16 +27,16 @@ public class ReplyCommand implements CustomCommand {
         Player p = sender.getServer().getPlayer(name);
         UUID senderID = p.getUniqueId();
         if (replyMap.get(senderID) == null) {
-            p.sendMessage(Text.prefix(Sentinel.lang.playerInteraction.noReply));
+            p.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.playerInteraction.noReply));
         }
         Player r = sender.getServer().getPlayer(replyMap.get(senderID));
         UUID reciverID = r.getUniqueId();
         if (args.get(0).toString() == null) {
-            p.sendMessage(Text.prefix(Sentinel.lang.playerInteraction.noMessageProvided));
+            p.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.playerInteraction.noMessageProvided));
         }
         String msg = args.getAll().toString();
         if (PlayerUtils.checkPermission(sender,"sentinel.message")) {
-            Message.messagePlayer(p,r,msg);
+            Sentinel.getInstance().getDirector().messageHandler.messagePlayer(p,r,msg);
             replyMap.put(senderID,reciverID);
         }
     }

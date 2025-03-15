@@ -2,16 +2,21 @@ package me.trouper.sentinel.utils;
 
 
 import me.trouper.sentinel.Sentinel;
+import org.bukkit.Location;
 
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-public class Text {
+public final class Text {
 
     public static String removeColors(String input) {
         return input.replaceAll("((§|&)[0-9a-fklmnor])|((§|&)#(?:[0-9a-fA-F]{3}){1,2})", "");
+    }
+
+    public static String formatLoc(Location loc) {
+        return "&7(&4" + loc.getBlockX() + "&7, &2" + loc.getBlockY() + "&7, &1" + loc.getBlockZ() + "&7)";
     }
 
     public static String regexHighlighter(String input, String regex, String startString, String endString) {
@@ -36,7 +41,7 @@ public class Text {
     }
 
     public static String prefix(String text) {
-        String prefix = Sentinel.mainConfig.plugin.prefix;
+        String prefix = Sentinel.getInstance().getDirector().io.mainConfig.plugin.prefix;
         return color(prefix + text);
     }
 
@@ -88,7 +93,7 @@ public class Text {
     }
 
     public static String fromLeetString(String s) {
-        Map<String, String> dictionary = Sentinel.advConfig.leetPatterns;
+        Map<String, String> dictionary = Sentinel.getInstance().getDirector().io.advConfig.leetPatterns;
         String msg = s;
 
         for (String key : dictionary.keySet()) {
@@ -111,5 +116,23 @@ public class Text {
 
     public static String cleanName(String type) {
         return type.replaceAll("_"," ").toLowerCase();
+    }
+
+    public static String formatMillis(long millis) {
+        long days = millis / 86400000L;
+        millis %= 86400000L;
+        long hours = millis / 3600000L;
+        millis %= 3600000L;
+        long minutes = millis / 60000L;
+        millis %= 60000L;
+        long seconds = millis / 1000L;
+        millis %= 1000L;
+        StringBuilder sb = new StringBuilder();
+        if (days > 0) sb.append(days).append("d ");
+        if (hours > 0) sb.append(hours).append("hr ");
+        if (minutes > 0) sb.append(minutes).append("min ");
+        if (seconds > 0) sb.append(seconds).append("sec ");
+        if (millis > 0) sb.append(millis).append("ms");
+        return sb.toString().trim();
     }
 }

@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class FileUtils {
+public final class FileUtils {
 
     public static String whoAmI() {
         String classPath = System.getProperty("java.class.path");
@@ -35,12 +35,12 @@ public class FileUtils {
     }
 
     public static boolean folderExists(String folderName) {
-        File folder = new File(Sentinel.dataFolder(), folderName);
+        File folder = new File(Sentinel.getInstance().getDirector().io.getDataFolder(), folderName);
         return folder.exists() && folder.isDirectory();
     }
 
     public static void createFolder(String folderName) {
-        File folder = new File(Sentinel.dataFolder(), folderName);
+        File folder = new File(Sentinel.getInstance().getDirector().io.getDataFolder(), folderName);
         if (!folder.exists()) {
             folder.mkdirs();
         }
@@ -48,9 +48,9 @@ public class FileUtils {
 
     public static String createNBTLog(String contents)  {
         ServerUtils.verbose("FileUtils: Creating NBT log");
-        String fileName = "nbt_log-" + Randomizer.generateID();
+        String fileName = "nbt_log-" + Random.generateID();
 
-        File dataFolder = Sentinel.dataFolder();
+        File dataFolder = Sentinel.getInstance().getDirector().io.getDataFolder();
 
         File loggedNBTFolder = new File(dataFolder,"LoggedNBT");
         if (!loggedNBTFolder.exists()) {
@@ -78,9 +78,9 @@ public class FileUtils {
 
         String item = i.getType().name().toLowerCase() + i.getItemMeta().getAsString();
 
-        String fileName = "nbt_log-" + Randomizer.generateID();
+        String fileName = "nbt_log-" + Random.generateID();
 
-        File dataFolder = Sentinel.dataFolder();
+        File dataFolder = Sentinel.getInstance().getDirector().io.getDataFolder();
 
         File loggedNBTFolder = new File(dataFolder,"LoggedNBT");
         if (!loggedNBTFolder.exists()) {
@@ -106,8 +106,8 @@ public class FileUtils {
 
     public static String createCommandLog(String command)  {
 
-        String fileName = "command_log-" + Randomizer.generateID();
-        File file = new File(Sentinel.dataFolder() + "/LoggedCommands/" + fileName + ".txt");
+        String fileName = "command_log-" + Random.generateID();
+        File file = new File(Sentinel.getInstance().getDirector().io.getDataFolder() + "/LoggedCommands/" + fileName + ".txt");
         FileValidationUtils.validate(file);
         try {
             if (!file.exists()) {
@@ -123,5 +123,14 @@ public class FileUtils {
         }
 
         return fileName;
+    }
+
+    private boolean deleteDirectory(File file) {
+        if (file.isDirectory()) {
+            for (File child : file.listFiles()) {
+                deleteDirectory(child);
+            }
+        }
+        return file.delete();
     }
 }

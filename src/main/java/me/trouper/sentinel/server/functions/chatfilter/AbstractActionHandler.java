@@ -1,9 +1,8 @@
 package me.trouper.sentinel.server.functions.chatfilter;
 
 import io.github.itzispyder.pdk.utils.discord.DiscordEmbed;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.server.functions.helpers.FalsePositiveReporting;
-import me.trouper.sentinel.server.functions.helpers.FilterHelpers;
 import me.trouper.sentinel.utils.trees.ConsoleFormatter;
 import me.trouper.sentinel.utils.trees.EmbedFormatter;
 import me.trouper.sentinel.utils.trees.Node;
@@ -11,11 +10,11 @@ import me.trouper.sentinel.utils.trees.Node;
 public abstract class AbstractActionHandler<T extends FilterResponse> {
 
     public void run(T response) {
-        FalsePositiveReporting.reports.put(response.getReport().getId(), response.getReport());
+        Sentinel.getInstance().getDirector().reportHandler.reports.put(response.getReport().getId(), response.getReport());
         Node tree = buildTree(response);
 
         if (response.isBlocked()) {
-            FilterHelpers.restrictMessage(response.getEvent(),!shouldWarnPlayer(response));
+            restrictMessage(response.getEvent(),!shouldWarnPlayer(response));
         }
         if (response.isPunished()) {
             punish(response);
@@ -36,11 +35,20 @@ public abstract class AbstractActionHandler<T extends FilterResponse> {
     protected abstract boolean shouldWarnPlayer(T response);
 
     protected void consoleLog(Node tree) {
-        Sentinel.log.info(ConsoleFormatter.format(tree));
+        Sentinel.getInstance().getLogger().info(ConsoleFormatter.format(tree));
     }
 
     protected void discordNotification(Node tree) {
         DiscordEmbed embed = EmbedFormatter.format(tree);
         EmbedFormatter.sendEmbed(embed);
+    }
+
+    protected void restrictMessage(AsyncChatEvent event, boolean silent) {
+        if (silent) {
+            event.viewers().clear();
+            event.viewers().add(event.getPlayer());
+        } else {
+            event.setCancelled(true);
+        }
     }
 }

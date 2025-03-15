@@ -4,7 +4,7 @@ import io.github.itzispyder.pdk.utils.SchedulerUtils;
 import io.github.itzispyder.pdk.utils.discord.DiscordEmbed;
 import io.github.itzispyder.pdk.utils.discord.DiscordWebhook;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.Emojis;
+import me.trouper.sentinel.data.types.Emojis;
 import me.trouper.sentinel.utils.Text;
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class EmbedFormatter {
 
     public static boolean sendEmbed(DiscordEmbed embed) {
-        return sendEmbed(embed,Sentinel.mainConfig.plugin.webhook);
+        return sendEmbed(embed,Sentinel.getInstance().getDirector().io.mainConfig.plugin.webhook);
     }
 
     public static boolean sendEmbed(DiscordEmbed embed, String spec) {
@@ -24,7 +24,7 @@ public class EmbedFormatter {
             try {
                 webhook.send(spec);
             } catch (IOException e) {
-                Sentinel.log.warning(e.getMessage());
+                Sentinel.getInstance().getLogger().warning(e.getMessage());
                 success.set(false);
                 return;
             }
@@ -46,7 +46,7 @@ public class EmbedFormatter {
         eb.author("Sentinel | Anti-Nuke","https://trouper.me/sentinel",null);
         eb.thumbnail("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/v5rxlx0d.png");
         if (level == 0) {
-            eb.title("Incoming from server: %s".formatted(Sentinel.mainConfig.plugin.identifier));
+            eb.title("Incoming from server: %s".formatted(Sentinel.getInstance().getDirector().io.mainConfig.plugin.identifier));
         } else {
             desc.repeat(Emojis.space,level - 1).append("**").append(Text.removeColors(node.title)).append("**\n");
         }

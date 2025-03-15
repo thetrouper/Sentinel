@@ -23,7 +23,6 @@ public class TrapCommand implements CustomCommand {
 
     @Override
     public void dispatchCompletions(CommandSender commandSender, Command command, String s, CompletionBuilder b) {
-        ServerUtils.verbose("Listing the fake plugins: %s".formatted(Sentinel.advConfig.fakePlugins));
-        b.then(b.arg(Sentinel.advConfig.fakePlugins));
+        b.then(b.arg(Sentinel.getInstance().getDirector().io.advConfig.fakePlugins));
     }
 }

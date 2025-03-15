@@ -8,7 +8,6 @@ import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.data.config.MainConfig;
 import me.trouper.sentinel.server.gui.Items;
 import me.trouper.sentinel.server.gui.MainGUI;
-import me.trouper.sentinel.server.gui.config.ChatGUI;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
 import net.kyori.adventure.text.Component;
@@ -41,7 +40,7 @@ public class UnicodeFilterGUI {
         }
         ServerUtils.verbose("Unicode Filter GUI blank!");
         ItemStack top = Items.RED;
-        if (Sentinel.mainConfig.chat.unicodeFilter.enabled) {
+        if (Sentinel.getInstance().getDirector().io.mainConfig.chat.unicodeFilter.enabled) {
             top = Items.GREEN;
         }
 
@@ -49,11 +48,11 @@ public class UnicodeFilterGUI {
             inv.setItem(i,top);
         }
 
-        inv.setItem(3,Items.booleanItem(Sentinel.mainConfig.chat.unicodeFilter.enabled, Items.configItem("Unicode Filter Toggle", Material.CLOCK,"Enable or Disable the whole Unicode filter")));
-        inv.setItem(5,Items.booleanItem(Sentinel.mainConfig.chat.unicodeFilter.silent, Items.configItem("Silent Mode",Material.FEATHER,"Whether to notify players that their messages \nwere blocked. Enabling could help deter bypassing.")));
-        inv.setItem(20,Items.booleanItem(Sentinel.mainConfig.chat.unicodeFilter.punished,Items.configItem("Punished",Material.IRON_BARS,"Toggles execution of punishment commands.")));
-        inv.setItem(22,Items.stringItem(Sentinel.mainConfig.chat.unicodeFilter.regex,Items.configItem("Allowed Char Regex",Material.DISPENSER,"Toggles execution of punishment commands.")));
-        inv.setItem(24,Items.stringListItem(Sentinel.mainConfig.chat.unicodeFilter.punishCommands,Material.DIAMOND_AXE,"Punishment Commands","Commands which will be executed if punishment is enabled."));
+        inv.setItem(3,Items.booleanItem(Sentinel.getInstance().getDirector().io.mainConfig.chat.unicodeFilter.enabled, Items.configItem("Unicode Filter Toggle", Material.CLOCK,"Enable or Disable the whole Unicode filter")));
+        inv.setItem(5,Items.booleanItem(Sentinel.getInstance().getDirector().io.mainConfig.chat.unicodeFilter.silent, Items.configItem("Silent Mode",Material.FEATHER,"Whether to notify players that their messages \nwere blocked. Enabling could help deter bypassing.")));
+        inv.setItem(20,Items.booleanItem(Sentinel.getInstance().getDirector().io.mainConfig.chat.unicodeFilter.punished,Items.configItem("Punished",Material.IRON_BARS,"Toggles execution of punishment commands.")));
+        inv.setItem(22,Items.stringItem(Sentinel.getInstance().getDirector().io.mainConfig.chat.unicodeFilter.regex,Items.configItem("Allowed Char Regex",Material.DISPENSER,"Toggles execution of punishment commands.")));
+        inv.setItem(24,Items.stringListItem(Sentinel.getInstance().getDirector().io.mainConfig.chat.unicodeFilter.punishCommands,Material.DIAMOND_AXE,"Punishment Commands","Commands which will be executed if punishment is enabled."));
 
     }
 
@@ -63,41 +62,41 @@ public class UnicodeFilterGUI {
 
         switch (e.getSlot()) {
             case 3 -> {
-                Sentinel.mainConfig.chat.unicodeFilter.enabled = !Sentinel.mainConfig.chat.unicodeFilter.enabled;
-                Sentinel.mainConfig.save();
+                Sentinel.getInstance().getDirector().io.mainConfig.chat.unicodeFilter.enabled = !Sentinel.getInstance().getDirector().io.mainConfig.chat.unicodeFilter.enabled;
+                Sentinel.getInstance().getDirector().io.mainConfig.save();
                 blankPage(e.getInventory());
             }
 
             case 5 -> {
-                Sentinel.mainConfig.chat.unicodeFilter.silent = !Sentinel.mainConfig.chat.unicodeFilter.silent;
-                Sentinel.mainConfig.save();
+                Sentinel.getInstance().getDirector().io.mainConfig.chat.unicodeFilter.silent = !Sentinel.getInstance().getDirector().io.mainConfig.chat.unicodeFilter.silent;
+                Sentinel.getInstance().getDirector().io.mainConfig.save();
                 blankPage(e.getInventory());
             }
 
             case 20 -> {
-                Sentinel.mainConfig.chat.unicodeFilter.punished = !Sentinel.mainConfig.chat.unicodeFilter.punished;
-                Sentinel.mainConfig.save();
+                Sentinel.getInstance().getDirector().io.mainConfig.chat.unicodeFilter.punished = !Sentinel.getInstance().getDirector().io.mainConfig.chat.unicodeFilter.punished;
+                Sentinel.getInstance().getDirector().io.mainConfig.save();
                 blankPage(e.getInventory());
             }
 
-            case 22 -> queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> cfg.chat.unicodeFilter.regex = args.getAll().toString(),Sentinel.mainConfig.chat.unicodeFilter.regex);
+            case 22 -> queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> cfg.chat.unicodeFilter.regex = args.getAll().toString(),Sentinel.getInstance().getDirector().io.mainConfig.chat.unicodeFilter.regex);
 
             case 24 -> {
                 if (e.isLeftClick()) {
                     queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> {
                         cfg.chat.unicodeFilter.punishCommands.add(args.getAll().toString());
-                    },"" + Sentinel.mainConfig.chat.unicodeFilter.punishCommands);
+                    },"" + Sentinel.getInstance().getDirector().io.mainConfig.chat.unicodeFilter.punishCommands);
                     return;
                 }
-                Sentinel.mainConfig.chat.unicodeFilter.punishCommands.clear();
+                Sentinel.getInstance().getDirector().io.mainConfig.chat.unicodeFilter.punishCommands.clear();
                 blankPage(e.getInventory());
-                Sentinel.mainConfig.save();
+                Sentinel.getInstance().getDirector().io.mainConfig.save();
 
             }
         }
     }
 
-    public static ConfigUpdater<AsyncChatEvent, MainConfig> updater = new ConfigUpdater<>(Sentinel.mainConfig);
+    public static ConfigUpdater<AsyncChatEvent, MainConfig> updater = new ConfigUpdater<>(Sentinel.getInstance().getDirector().io.mainConfig);
 
     private void queuePlayer(Player player, BiConsumer<MainConfig, Args> action, String currentValue) {
         MainGUI.awaitingCallback.add(player.getUniqueId());

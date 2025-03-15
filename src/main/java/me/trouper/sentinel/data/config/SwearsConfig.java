@@ -10,7 +10,7 @@ import java.util.List;
 public class SwearsConfig implements JsonSerializable<SwearsConfig> {
     @Override
     public File getFile() {
-        File file = new File(Sentinel.dataFolder(), "/swears.json");
+        File file = new File(Sentinel.getInstance().getDirector().io.getDataFolder(), "/swears.json");
         file.getParentFile().mkdirs();
         return file;
     }

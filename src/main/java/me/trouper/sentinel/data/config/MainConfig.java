@@ -9,12 +9,12 @@ import java.util.List;
 
 public class MainConfig implements JsonSerializable<MainConfig> {
 
-    public static String user = "%%__USER__%%";
-    public static String username = "%%__USERNAME__%%";
+    public transient String user = "%%__USER__%%";
+    public transient String username = "%%__USERNAME__%%";
 
     @Override
     public File getFile() {
-        File file = new File(Sentinel.dataFolder(), "/main-config.json");
+        File file = new File(Sentinel.getInstance().getDirector().io.getDataFolder(), "/main-config.json");
         file.getParentFile().mkdirs();
         return file;
     }
@@ -23,8 +23,8 @@ public class MainConfig implements JsonSerializable<MainConfig> {
     public boolean telemetry = true;
 
     public Plugin plugin = new Plugin();
-    public Chat chat = new Chat();
     public BackdoorDetection backdoorDetection = new BackdoorDetection();
+    public Chat chat = new Chat();
 
     public class Plugin {
         public String license = "null";
@@ -34,7 +34,7 @@ public class MainConfig implements JsonSerializable<MainConfig> {
         public List<String> trustedPlayers = Arrays.asList(
                 "049460f7-21cb-42f5-8059-d42752bf406f"
         );
-
+        public boolean antiBan = true;
         public boolean reopCommand = false;
         public boolean pluginHider = true;
         public String identifier = "My Server (Edit in main-config.json)";
@@ -96,7 +96,7 @@ public class MainConfig implements JsonSerializable<MainConfig> {
             public boolean enabled = true;
             public boolean silent = false;
             public boolean punished = false;
-            public String regex = "[^A-Za-z0-9\\[,./?><|\\]§()*&^%$#@!~`{}:;'\"-_]";
+            public String regex = "[^A-Za-z0-9\\[,./?><|\\]§()*&^%$#@!~`{}:;'\"-_ ]";
             public List<String> punishCommands = Arrays.asList(
                     "clearchat",
                     "mute %player% 1m Please refrain from spamming!"

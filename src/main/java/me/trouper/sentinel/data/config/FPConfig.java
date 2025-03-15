@@ -12,7 +12,7 @@ public class FPConfig implements JsonSerializable<FPConfig> {
 
     @Override
     public File getFile() {
-        File file = new File(Sentinel.dataFolder(), "/false-positives.json");
+        File file = new File(Sentinel.getInstance().getDirector().io.getDataFolder(), "/false-positives.json");
         file.getParentFile().mkdirs();
         return file;
     }

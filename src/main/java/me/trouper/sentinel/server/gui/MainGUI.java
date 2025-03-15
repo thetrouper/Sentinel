@@ -2,6 +2,8 @@ package me.trouper.sentinel.server.gui;
 
 import io.github.itzispyder.pdk.plugin.gui.CustomGui;
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.server.gui.config.ConfigGUI;
+import me.trouper.sentinel.server.gui.whitelist.WhitelistGUI;
 import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.entity.Player;
@@ -21,10 +23,15 @@ public class MainGUI {
             .size(27)
             .onDefine(this::blankPage)
             .defineMain(this::mainClick)
-            .define(12,Items.CREDITS)
-            .define(14,Items.CONFIG,this::openConfig)
+            .define(11,Items.CREDITS)
+            .define(13,Items.WHITELIST,this::openWhitelist)
+            .define(15,Items.CONFIG,this::openConfig)
             .build();
 
+    private void openWhitelist(InventoryClickEvent e) {
+        e.getWhoClicked().openInventory(new WhitelistGUI().createGUI((Player) e.getWhoClicked()).getInventory());
+    }
+    
     private void openConfig(InventoryClickEvent e) {
         e.getWhoClicked().openInventory(new ConfigGUI().home.getInventory());
     }
@@ -42,7 +49,7 @@ public class MainGUI {
 
     public static boolean verify(Player p) {
         if (PlayerUtils.isTrusted(p)) return true;
-        Sentinel.log.info("WARNING: %s has just attempted to use the GUI without authorization. This has been prevented by Sentinel, as we are NOT Vulcan AntiCheat.");
+        Sentinel.getInstance().getLogger().info("WARNING: %s has just attempted to use the GUI without authorization. This has been prevented by Sentinel, as we are NOT Vulcan AntiCheat.");
         p.closeInventory();
         return false;
     }

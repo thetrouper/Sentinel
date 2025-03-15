@@ -8,7 +8,7 @@ import java.io.File;
 public class NBTConfig implements JsonSerializable<NBTConfig> {
     @Override
     public File getFile() {
-        File file = new File(Sentinel.dataFolder(), "/nbt-config.json");
+        File file = new File(Sentinel.getInstance().getDirector().io.getDataFolder(), "/nbt-config.json");
         file.getParentFile().mkdirs();
         return file;
     }
@@ -17,6 +17,10 @@ public class NBTConfig implements JsonSerializable<NBTConfig> {
     public boolean allowLore = true;
     public boolean allowAttributes = false;
     public boolean allowPotions = false;
+    public boolean allowCustomConsumables = false;
+    public boolean allowCustomTools = false;
+    public boolean allowBooks = false;
+    public boolean allowRecursion = true;
     public int globalMaxEnchant = 5;
     public int maxMending = 1;
     public int maxUnbreaking = 3;

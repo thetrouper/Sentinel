@@ -21,7 +21,7 @@ public class SpamFilter {
         }
         Player p = e.getPlayer();
         String message = Text.removeFirstColor(LegacyComponentSerializer.legacySection().serialize(e.message()));
-        for (String whitelistedMessage : Sentinel.mainConfig.chat.spamFilter.whitelist) {
+        for (String whitelistedMessage : Sentinel.getInstance().getDirector().io.mainConfig.chat.spamFilter.whitelist) {
             if (whitelistedMessage.equalsIgnoreCase(message)) return;
         }
         int currentHeat = heatMap.getOrDefault(p.getUniqueId(),0);
@@ -34,7 +34,7 @@ public class SpamFilter {
         ServerUtils.verbose("AntiSpam responded");
         response.getReport().getStepsTaken().put("Response came back", "Heat to add: %s".formatted(addHeat));
 
-        if (currentHeat > Sentinel.mainConfig.chat.spamFilter.punishHeat) {
+        if (currentHeat > Sentinel.getInstance().getDirector().io.mainConfig.chat.spamFilter.punishHeat) {
             response.setBlocked(true);
             response.getReport().getStepsTaken().put("Punished user", "Their final heat was %s".formatted(currentHeat));
             response.setPunished(true);
@@ -43,7 +43,7 @@ public class SpamFilter {
             return;
         }
 
-        if (currentHeat > Sentinel.mainConfig.chat.spamFilter.blockHeat) {
+        if (currentHeat > Sentinel.getInstance().getDirector().io.mainConfig.chat.spamFilter.blockHeat) {
             response.setBlocked(true);
             response.getReport().getStepsTaken().put("Blocked message", "Their heat is %s".formatted(currentHeat));
             new SpamAction().run(response);
@@ -51,7 +51,7 @@ public class SpamFilter {
             return;
         }
 
-        if (response.getSimilarity() > Sentinel.mainConfig.chat.spamFilter.blockSimilarity) {
+        if (response.getSimilarity() > Sentinel.getInstance().getDirector().io.mainConfig.chat.spamFilter.blockSimilarity) {
             response.setBlocked(true);
             response.getReport().getStepsTaken().put("Blocked message", "The similarity was too high! %s".formatted(response.getSimilarity()));
             new SpamAction().run(response);
@@ -69,7 +69,7 @@ public class SpamFilter {
         for (UUID p : heatMap.keySet()) {
             int heat = heatMap.getOrDefault(p,0);
             if (heat > 0) {
-                heat = heat - Sentinel.mainConfig.chat.spamFilter.heatDecay;
+                heat = heat - Sentinel.getInstance().getDirector().io.mainConfig.chat.spamFilter.heatDecay;
                 heatMap.put(p, Math.max(0, heat));
             }
         }

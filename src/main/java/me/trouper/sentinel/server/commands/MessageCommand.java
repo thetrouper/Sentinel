@@ -6,7 +6,7 @@ import io.github.itzispyder.pdk.commands.CustomCommand;
 import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.server.functions.helpers.Message;
+import me.trouper.sentinel.server.functions.helpers.MessageHandler;
 import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.Bukkit;
@@ -24,11 +24,11 @@ public class MessageCommand implements CustomCommand {
         Player p = (Player) sender;
         Player r = null;
         if (args.getSize() == 0) {
-            p.sendMessage(Text.prefix(Sentinel.lang.playerInteraction.noOnlinePlayer));
+            p.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.playerInteraction.noOnlinePlayer));
             return;
         }
         if (args.getSize() == 1) {
-            p.sendMessage(Text.prefix(Sentinel.lang.playerInteraction.noMessageProvided));
+            p.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.playerInteraction.noMessageProvided));
             return;
         }
         r = Bukkit.getPlayer(args.get(0).toString());
@@ -36,8 +36,8 @@ public class MessageCommand implements CustomCommand {
         String msg = args.getAll(1).toString().trim();
 
         if (PlayerUtils.checkPermission(sender,"sentinel.message") && r != null) {
-            Message.messagePlayer(p,r,msg);
-        } else if (r == null) p.sendMessage(Text.prefix((Sentinel.lang.playerInteraction.noOnlinePlayer)));
+            Sentinel.getInstance().getDirector().messageHandler.messagePlayer(p,r,msg);
+        } else if (r == null) p.sendMessage(Text.prefix((Sentinel.getInstance().getDirector().io.lang.playerInteraction.noOnlinePlayer)));
     }
 
     @Override

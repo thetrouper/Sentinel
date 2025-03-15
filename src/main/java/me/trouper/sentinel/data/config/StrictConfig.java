@@ -11,7 +11,7 @@ import java.util.List;
 public class StrictConfig implements JsonSerializable<StrictConfig> {
     @Override
     public File getFile() {
-        File file = new File(Sentinel.dataFolder(), "/strict.json");
+        File file = new File(Sentinel.getInstance().getDirector().io.getDataFolder(), "/strict.json");
         file.getParentFile().mkdirs();
         return file;
     }

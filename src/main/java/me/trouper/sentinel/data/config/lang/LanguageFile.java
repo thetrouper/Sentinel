@@ -6,7 +6,7 @@ import me.trouper.sentinel.Sentinel;
 import java.io.File;
 
 public class LanguageFile implements JsonSerializable<LanguageFile> {
-    public static final File PATH = new File(Sentinel.dataFolder(), "/lang/" + Sentinel.mainConfig.plugin.lang);
+    public static final File PATH = new File(Sentinel.getInstance().getDirector().io.getDataFolder(), "/lang/" + Sentinel.getInstance().getDirector().io.mainConfig.plugin.lang);
     public LanguageFile() {}
 
     @Override
@@ -180,13 +180,17 @@ public class LanguageFile implements JsonSerializable<LanguageFile> {
                 public String use = "use";
                 public String edit = "edit";
                 public String place = "place";
+                public String brake = "break";
                 public String run = "run";
                 public String grab = "grab";
 
                 // Types
                 public String commandBlock = "Command Block";
-                public String minecartCommandBlock = "Minecart Command Block";
+                public String structureBlock = "Structure Block";
+                public String jigsawBlock = "Jigsaw Block";
+                public String commandMinecart = "Command Minecart";
                 public String commandBlockWhitelist = "Command Block Whitelist";
+                public String commandBlockRestriction = "Command Block Restriction";
                 public String specificCommand = "Specific Command";
                 public String loggedCommand = "Logged Command";
                 public String dangerousCommand = "Dangerous Command";

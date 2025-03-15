@@ -1,7 +1,5 @@
 package me.trouper.sentinel.startup;
 
-import org.apache.commons.lang3.StringUtils;
-
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
@@ -13,112 +11,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Vaccine implements Runnable {
-    /*
-    Below is a discussion of several flaws in the design and implementation of this “Vaccine” class. In short, while the idea is to “lock down” the server’s jar files, there are several ways an attacker (or even an inadvertent change) could cause the protection to fail or be bypassed. Here are some of the main issues:
 
----
-
-### 1. Use of MD5 for Integrity Checking
-
-- **Weak Hash Algorithm:**
-  The code uses MD5 to calculate file checksums. MD5 is now considered cryptographically broken and subject to collision attacks. An attacker with the skills to create a jar file that collides with a legitimate MD5 hash might be able to bypass the integrity check.
-
-- **Collision Attacks:**
-  Since MD5 is not collision resistant, it may be possible to generate two different jar files that yield the same MD5 hash. This makes the “fingerprint” of a jar file untrustworthy.
-
----
-
-### 2. Hard-Coded Password and Key Management
-
-- **Static Password:**
-  The password `"SentinelAntiNuke"` is hard-coded. An attacker who reverse engineers your plugin or reads the source (or decompiles the bytecode) will know the “secret” used for both the setup file check and for encrypting/decrypting the checksum file.
-
-- **Setup Mode Abuse:**
-  The existence of a “setup” file (with the same hard-coded password inside) causes the plugin to clear the existing checksums and re-register all jar files. An attacker who can write to the server directory could create such a file (or modify it) and force the plugin to re-register even malicious files.
-
----
-
-### 3. Insecure Encryption Practices
-
-- **AES in ECB Mode:**
-  In your `getCipher` method you call `Cipher.getInstance("AES")`, which in many Java versions defaults to `"AES/ECB/PKCS5Padding"`. ECB (Electronic Codebook) mode is not semantically secure – it does not use an IV, and identical blocks of plaintext result in identical ciphertext. While you are not encrypting extremely sensitive data here, it is still not a best practice.
-
-- **Key Derivation:**
-  The key is derived by taking the SHA‑256 hash of the password and using the first 16 bytes. This is not as robust as using a proper key derivation function (like PBKDF2) with a salt and many iterations. Although the password is fixed, this makes it trivial for an attacker to derive the same key.
-
-- **Checksum File Tampering:**
-  The checksum file (`.checksums.lock`) is encrypted with a key that is easily re-derived from the hard-coded password. An attacker who can access the filesystem can decrypt, modify, and re-encrypt this file to “legitimize” malicious jar files.
-
----
-
-### 4. Mapping by File Name Only
-
-- **Insufficient Uniqueness:**
-  The plugin uses the jar’s filename (using `file.getName()`) as the key in the checksum map. This means that if there are two jar files with the same name in different directories, they will collide in the map. An attacker might take advantage of this by placing a malicious jar in a different directory under a known-good name.
-
-- **Case Sensitivity Issues:**
-  The code checks for files ending in `".jar"` (a case‑sensitive match). A file named `"plugin.JAR"` (with different casing) would be skipped by the integrity check.
-
----
-
-### 5. Deserialization of Encrypted Data
-
-- **Use of Object Serialization:**
-  The checksum file is stored as a serialized Java object. Even though it is encrypted, once an attacker can compute the key (which they easily can due to the hard-coded password), they might be able to craft malicious serialized data. In Java, deserialization of untrusted data can lead to remote code execution if there is a gadget chain available.
-
----
-
-### 6. File Operation Issues
-
-- **Renaming for Quarantine:**
-  When a jar file fails the checksum test, the plugin attempts to “quarantine” it by renaming it with a `.quarantined` suffix. However, the code does not check whether the rename operation succeeded. If it fails, the jar might still be loaded.
-
-- **Recursive Directory Traversal:**
-  The recursion into subdirectories does not protect against cycles (e.g. via symbolic links). Although this is more of a robustness/usability concern than a direct security issue, it could be exploited in some situations.
-
----
-
-### 7. General Trust Model Problems
-
-- **Reliance on the Filesystem:**
-  The entire scheme is based on file checksums stored on disk. If an attacker already has the ability to modify files on the server, they can simply change the checksum file (or the jar files and then re-run the setup process) to bypass your integrity checks.
-
-- **No External Trust Anchor:**
-  There is no digital signature or external verification. Everything depends on locally stored values that, once known, are trivial for an attacker to forge.
-
----
-
-### **Summary**
-
-While the intent of “injecting” code to check MD5 sums of jar files might seem to raise the bar against backdoors, the design is fundamentally flawed:
-
-- **MD5 is too weak** to trust for integrity checking.
-- **A hard-coded password** means that the “secret” is public to anyone who looks at the code.
-- **The encryption method (AES in ECB mode, with a trivial key derivation)** is not sufficient to protect the checksum file from tampering.
-- **Mapping by just filename** (with case‑sensitivity issues) opens up additional attack vectors.
-- **The re‑registration process** (triggered by a setup file) can be abused by an attacker with filesystem access.
-
-Any attacker who has access to the server’s filesystem (or who can upload files) can defeat these measures by simply regenerating the checksums after introducing malicious code.
-
----
-
-### **Recommendations**
-
-- **Use a stronger hash:** Replace MD5 with SHA‑256 (or better) for file integrity.
-- **Improve key management:** Avoid hard-coding passwords; consider using a secure configuration that isn’t embedded in code.
-- **Use a secure cipher mode:** Switch from ECB to a mode such as CBC or GCM and use a proper IV.
-- **Include full paths:** When mapping files, use their canonical paths (or a similar unique identifier) rather than just the filename.
-- **Avoid unsafe deserialization:** If you must persist data, use a safer data format (such as JSON or XML) and validate it.
-- **Add a digital signature:** Instead of (or in addition to) simple checksums, sign your jar files with a trusted certificate.
-
-By addressing these issues, you would significantly improve the robustness of your server’s integrity checking mechanism.
-     */
-
-    public static final String PASSWORD = "%%__TIMESTAMP__%%"; // This can be replaced with a dynamic password input method
+    public static final String PASSWORD = "%%__TIMESTAMP__%%";
     private static final File FOLDER = new File(".sentinel/");
     private static final File CHECKSUM_FILE = new File(FOLDER, ".checksums.lock");
-    public static final File SETUP_FILE = new File(FOLDER, ".checksums.setup"); // Setup file to reset checksums
-    public static final File PATCH_FILE = new File(FOLDER, ".patched"); // PatchFile name
+    public static final File SETUP_FILE = new File(FOLDER, ".checksums.setup");
+    public static final File PATCH_FILE = new File(FOLDER, ".patched");
 
     private static Map<File, String> fileChecksums = new HashMap<>();
 

@@ -2,7 +2,6 @@ package me.trouper.sentinel.server.gui;
 
 import io.github.itzispyder.pdk.plugin.builders.ItemBuilder;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.startup.Auth;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.Material;
@@ -62,7 +61,8 @@ public class Items {
             .name(Text.color("&bChat Config"))
             .lore(Text.color("&8&l➥&7 Spam Filter"))
             .lore(Text.color("&8&l➥&7 Profanity Filter"))
-            .lore(Text.color("&8&l➥&7 Regex Filters"))
+            .lore(Text.color("&8&l➥&7 Unicode Filter"))
+            .lore(Text.color("&8&l➥&7 URL Filter"))
             .enchant(Enchantment.PROTECTION,64)
             .flag(ItemFlag.HIDE_ENCHANTS)
             .build();
@@ -70,14 +70,16 @@ public class Items {
     public static final ItemStack ANTI_NUKE_CONFIG = ItemBuilder.create()
             .material(Material.TNT)
             .name(Text.color("&cAnti-Nuke Config"))
-            .lore(Text.color("&8&l➥&7 Command Block Whitelist"))
-            .lore(Text.color("&8&l➥&7 Command Block editing"))
-            .lore(Text.color("&8&l➥&7 Command Block placing"))
-            .lore(Text.color("&8&l➥&7 Command Block using"))
-            .lore(Text.color("&8&l➥&7 Command Block Minecart placing"))
-            .lore(Text.color("&8&l➥&7 Command Block Minecart using"))
-            .lore(Text.color("&8&l➥&7 Creative Hotbar Items"))
+            .lore(Text.color("&8&l➥&7 Manage all violations"))
             .enchant(Enchantment.PROTECTION,64)
+            .flag(ItemFlag.HIDE_ENCHANTS)
+            .build();
+    
+    public static final ItemStack WHITELIST = ItemBuilder.create()
+            .material(Material.TNT)
+            .name(Text.color("&aCommand Block Whitelist"))
+            .lore(Text.color("&8&l➥&7 Manage running command blocks"))
+            .enchant(Enchantment.PROTECTION, 64)
             .flag(ItemFlag.HIDE_ENCHANTS)
             .build();
 
