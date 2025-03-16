@@ -28,8 +28,6 @@ public class CommandBlockBreak extends AbstractViolation{
 
     @EventHandler
     public void onBreak(BlockBreakEvent e) {
-        //ServerUtils.verbose("CommandBlockBreak: Detected the event");
-        //ServerUtils.verbose("CommandBlockBreak: Changer is a player");
         Block b = e.getBlock();
         if (!(ServerUtils.isCommandBlock(b))) return;
         ServerUtils.verbose("CommandBlockBreak: Block is a command block");
@@ -38,13 +36,16 @@ public class CommandBlockBreak extends AbstractViolation{
         CommandBlockHolder holder = Sentinel.getInstance().getDirector().whitelistManager.generateHolder(p.getUniqueId(),cb);
         if (PlayerUtils.isTrusted(e.getPlayer())) {
             if (!Sentinel.getInstance().getDirector().whitelistManager.autoWhitelist.contains(p.getUniqueId())) {
-                
-                return;
+                holder.setWhitelisted(false);
+                holder.delete();
             }
             return;
         }
 
-        if (!Sentinel.getInstance().getDirector().io.violationConfig.commandBlockBreak.enabled) return;
+        if (!Sentinel.getInstance().getDirector().io.violationConfig.commandBlockBreak.enabled) {
+            holder.delete();
+            return;
+        }
 
         ServerUtils.verbose("CommandBlockBreak: is enabled, performing action");
 

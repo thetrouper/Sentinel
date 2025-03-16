@@ -117,7 +117,7 @@ public class CommandBlockHolder {
     public CommandBlockHolder addAndWhitelist() {
         return setWhitelisted(true).add();
     }
-
+    
     public BlockFace getDirection() {
         try {
             return BlockFace.valueOf(facing.toUpperCase());
@@ -193,6 +193,7 @@ public class CommandBlockHolder {
     }
 
     public void delete() {
+        SerialLocation.translate(this.loc).getBlock().setType(Material.AIR);
         Sentinel.getInstance().getDirector().io.commandBlocks.holders.removeIf(h->h.loc.isSameLocation(this.loc));
         Sentinel.getInstance().getDirector().io.commandBlocks.save();
     }

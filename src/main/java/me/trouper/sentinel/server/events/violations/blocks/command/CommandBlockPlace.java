@@ -33,13 +33,13 @@ public class CommandBlockPlace extends AbstractViolation {
         CommandBlock cb = (CommandBlock) b.getState();
         CommandBlockHolder holder = Sentinel.getInstance().getDirector().whitelistManager.generateHolder(p.getUniqueId(),cb);
         if (PlayerUtils.isTrusted(p)) {
-            holder.addToExisting();
-            if (Sentinel.getInstance().getDirector().whitelistManager.autoWhitelist.contains(p.getUniqueId())) holder.addToWhitelist();
+            if (Sentinel.getInstance().getDirector().whitelistManager.autoWhitelist.contains(p.getUniqueId())) holder.addAndWhitelist();
+            holder.add();
             return;
         }
 
         if (!Sentinel.getInstance().getDirector().io.violationConfig.commandBlockPlace.enabled) {
-            holder.addToExisting();
+            holder.add();
             return;
         }
 
