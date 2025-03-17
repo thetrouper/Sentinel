@@ -24,44 +24,45 @@ public class WhitelistGUI {
     private static final Map<UUID, Integer> currentPages = new HashMap<>();
     private static final Map<UUID, Set<Filter>> activeFilters = new HashMap<>();
     private static final Map<UUID, FilterOperator> chosenOperator = new HashMap<>();
+    private static final Map<UUID, String> chosenPlayer = new HashMap<>();
 
-    public CustomGui createGUI(Player player) {
-        ServerUtils.verbose("Creating GUI for player: %s", player.getName());
-        int page = currentPages.compute(player.getUniqueId(), (k,v) -> realizePage(player,realizePage(player,(v == null ? 0 : v))));
+    public CustomGui createGUI(Player p) {
+        ServerUtils.verbose("Creating GUI for player: %s", p.getName());
+        int page = currentPages.compute(p.getUniqueId(), (k,v) -> realizePage(p,realizePage(p,(v == null ? 0 : v))));
         return CustomGui.create()
-                .title(Text.color("&6&lCommand Blocks &7(" + getFilterCount(player) + " filters)"))
+                .title(Text.color("&6&lCommand Blocks &7(" + getFilterCount(p) + " filters)"))
                 .size(54)
-                .onDefine(inv -> setupPage(player, inv))
+                .onDefine(inv -> setupPage(p, inv))
                 .defineMain(e -> {
                     e.setCancelled(true);
-                    handleMainClick(player, e);
+                    handleMainClick(p, e);
                 })
                 .define(45, createNavigationItem("Previous",page - 1), e -> {
-                    player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_HAT,1,0.9F);
-                    changePage(player, -1);
+                    p.playSound(p.getLocation(),Sound.BLOCK_NOTE_BLOCK_HAT,1,0.9F);
+                    changePage(p, -1);
                 })
-                .define(49, createFilterItem(player), e -> {
+                .define(49, createFilterItem(p), e -> {
                     if (e.isShiftClick()) {
-                        FilterOperator op = chosenOperator.computeIfAbsent(player.getUniqueId(),v-> FilterOperator.AND);
+                        FilterOperator op = chosenOperator.computeIfAbsent(p.getUniqueId(),v-> FilterOperator.AND);
                         FilterOperator[] values = FilterOperator.values();
-                        chosenOperator.put(player.getUniqueId(),values[(op.ordinal() + 1) % values.length]);
-                        e.getClickedInventory().setItem(e.getSlot(),createFilterItem(player));
-                        player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_HAT,1,1.3F);
+                        chosenOperator.put(p.getUniqueId(),values[(op.ordinal() + 1) % values.length]);
+                        e.getClickedInventory().setItem(e.getSlot(),createFilterItem(p));
+                        p.playSound(p.getLocation(),Sound.BLOCK_NOTE_BLOCK_HAT,1,1.3F);
                         return;
                     }
-                    openFilterMenu(player);
+                    openFilterMenu(p);
                 })
                 .define(53, createNavigationItem("Next",page + 1), e -> {
-                    player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_HAT,1,1.1F);
-                    changePage(player, 1);
+                    p.playSound(p.getLocation(),Sound.BLOCK_NOTE_BLOCK_HAT,1,1.1F);
+                    changePage(p, 1);
                 })
                 .build();
     }
 
-    private void setupPage(Player player, Inventory inv) {
-        ServerUtils.verbose("Setting up page for player: %s", player.getName());
-        int page = currentPages.compute(player.getUniqueId(), (k,v) -> realizePage(player,realizePage(player,(v == null ? 0 : v))));
-        List<CommandBlockHolder> filtered = filterEntries(player,chosenOperator.computeIfAbsent(player.getUniqueId(),v->FilterOperator.AND));
+    private void setupPage(Player p, Inventory inv) {
+        ServerUtils.verbose("Setting up page for player: %s", p.getName());
+        int page = currentPages.compute(p.getUniqueId(), (k,v) -> realizePage(p,realizePage(p,(v == null ? 0 : v))));
+        List<CommandBlockHolder> filtered = filterEntries(p,chosenOperator.computeIfAbsent(p.getUniqueId(),v->FilterOperator.AND));
         ServerUtils.verbose("Current page: %d, Total entries: %d", page, filtered.size());
 
         // Clear previous items
@@ -76,24 +77,24 @@ public class WhitelistGUI {
         }
 
         // Add persistent bottom items
-        inv.setItem(45, createNavigationItem("Previous",realizePage(player, page - 1)));
-        inv.setItem(49, createFilterItem(player));
-        inv.setItem(53, createNavigationItem("Next", realizePage(player,page + 1)));
+        inv.setItem(45, createNavigationItem("Previous",realizePage(p, page - 1)));
+        inv.setItem(49, createFilterItem(p));
+        inv.setItem(53, createNavigationItem("Next", realizePage(p,page + 1)));
     }
 
-    private void handleMainClick(Player player, InventoryClickEvent e) {
+    private void handleMainClick(Player p, InventoryClickEvent e) {
         int slot = e.getSlot();
         if (slot >= 45) return;
         if (e.getInventory().getItem(slot) == null) return;
 
-        int page = currentPages.compute(player.getUniqueId(), (k,v) -> realizePage(player,realizePage(player,(v == null ? 0 : v))));
-        List<CommandBlockHolder> filtered = filterEntries(player,chosenOperator.computeIfAbsent(player.getUniqueId(),v->FilterOperator.AND));
+        int page = currentPages.compute(p.getUniqueId(), (k,v) -> realizePage(p,realizePage(p,(v == null ? 0 : v))));
+        List<CommandBlockHolder> filtered = filterEntries(p,chosenOperator.computeIfAbsent(p.getUniqueId(),v->FilterOperator.AND));
         int index = page * 45 + slot;
 
         if (index < filtered.size()) {
             CommandBlockHolder holder = filtered.get(index);
-            player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_CHIME,1,0.8F);
-            openManagementMenu(player, holder);
+            p.playSound(p.getLocation(),Sound.BLOCK_NOTE_BLOCK_CHIME,1,0.8F);
+            openManagementMenu(p, holder);
         }
     }
     
@@ -114,7 +115,7 @@ public class WhitelistGUI {
         //ServerUtils.verbose("Name is %s", name);
 
         List<String> lore = new ArrayList<>();
-        lore.add(Text.color("&7Owner: " + Bukkit.getOfflinePlayer(holder.owner()).getName()));
+        lore.add(Text.color("&7Owner: " + Bukkit.getOfflinePlayer(UUID.fromString(holder.owner())).getName()));
         //ServerUtils.verbose("Got owner");
         lore.add(Text.color("&7Command: &f" + holder.command()));
         //ServerUtils.verbose("Got command");
@@ -136,7 +137,7 @@ public class WhitelistGUI {
                 .build();
     }
 
-    private void openManagementMenu(Player player, CommandBlockHolder holder) {
+    private void openManagementMenu(Player p, CommandBlockHolder holder) {
         ServerUtils.verbose("Opening management menu for %s", holder.owner());
         boolean whitelisted = holder.isWhitelisted();
 
@@ -147,8 +148,8 @@ public class WhitelistGUI {
                 .define(0,createDisplayItem(holder))
                 .define(2, createActionItem(whitelisted ? "Un-Whitelist" : "Whitelist",  whitelisted ? Material.BARRIER : Material.PAPER), e -> {
                     holder.setWhitelisted(!whitelisted);
-                    player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_PLING,1,1F);
-                    openManagementMenu(player,holder);
+                    p.playSound(p.getLocation(),Sound.BLOCK_NOTE_BLOCK_PLING,1,1F);
+                    openManagementMenu(p,holder);
                 })
                 .define(3, createActionItem("Teleport", Material.ENDER_PEARL), e -> {
                     if (holder.loc().isUUID()) {
@@ -160,39 +161,39 @@ public class WhitelistGUI {
                                             .name("&cTeleport Unavailable")
                                             .lore("&7This entity is not loaded.")
                                     .build());
-                            player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS,1,1F);
+                            p.playSound(p.getLocation(),Sound.BLOCK_NOTE_BLOCK_BASS,1,1F);
                             return;
                         }
-                        player.teleport(entity.getLocation());
+                        p.teleport(entity.getLocation());
                     } else {
-                        player.teleport(holder.loc().translate());
+                        p.teleport(holder.loc().translate());
                     }
-                    player.playSound(player.getLocation(),Sound.ENTITY_ENDERMAN_TELEPORT,1,0.5F);
-                    player.closeInventory();
+                    p.playSound(p.getLocation(),Sound.ENTITY_ENDERMAN_TELEPORT,1,0.5F);
+                    p.closeInventory();
                 })
                 .define(4, createActionItem("Restore", Material.DISPENSER), e -> {
                     holder.restore();
-                    player.openInventory(createGUI(player).getInventory());
-                    player.playSound(player.getLocation(),Sound.BLOCK_AMETHYST_BLOCK_RESONATE,1,1F);
+                    p.openInventory(createGUI(p).getInventory());
+                    p.playSound(p.getLocation(),Sound.BLOCK_AMETHYST_BLOCK_RESONATE,1,1F);
                 })
                 .define(5, createActionItem("Destroy (Shift-Click)", Material.NETHERITE_PICKAXE), e -> {
                     if (!e.isShiftClick()) return;
                     holder.destroy();
-                    player.playSound(player.getLocation(),Sound.ENTITY_GENERIC_EXPLODE,1,2F);
-                    player.openInventory(createGUI(player).getInventory());
+                    p.playSound(p.getLocation(),Sound.ENTITY_GENERIC_EXPLODE,1,2F);
+                    p.openInventory(createGUI(p).getInventory());
                 })
                 .define(6,createActionItem("Take Ownership",Material.NAME_TAG), e -> {
-                    holder.setOwner(player.getUniqueId().toString());
-                    player.playSound(player.getLocation(),Sound.ENTITY_VILLAGER_TRADE,1,1F);
-                    openManagementMenu(player,holder);
+                    holder.setOwner(p.getUniqueId().toString());
+                    p.playSound(p.getLocation(),Sound.ENTITY_VILLAGER_TRADE,1,1F);
+                    openManagementMenu(p,holder);
                 })
                 .define(8,Items.BACK,e->{
-                    player.playSound(player.getLocation(),Sound.ITEM_BOOK_PAGE_TURN,1,0.8F);
-                    player.openInventory(createGUI(player).getInventory());
+                    p.playSound(p.getLocation(),Sound.ITEM_BOOK_PAGE_TURN,1,0.8F);
+                    p.openInventory(createGUI(p).getInventory());
                 })
                 .build();
 
-        player.openInventory(menu.getInventory());
+        p.openInventory(menu.getInventory());
     }
 
     private ItemStack createActionItem(String name, Material mat) {
@@ -207,7 +208,8 @@ public class WhitelistGUI {
     private enum Filter {
         OWNER, CURRENT_WORLD, OTHER_OWNERS,
         MINECART, REPEAT, CHAIN, IMPULSE,
-        WHITELISTED, NOT_WHITELISTED, NOT_PRESENT
+        WHITELISTED, NOT_WHITELISTED, NOT_PRESENT,
+        USER
     }
 
     public enum FilterOperator {
@@ -226,9 +228,9 @@ public class WhitelistGUI {
         }
     }
 
-    private List<CommandBlockHolder> filterEntries(Player player, FilterOperator operator) {
-        Set<Filter> filters = activeFilters.computeIfAbsent(player.getUniqueId(), v -> new HashSet<>());
-        ServerUtils.verbose("Filtering entries for %s. Current: ", player,filters.toString());
+    private List<CommandBlockHolder> filterEntries(Player p, FilterOperator operator) {
+        Set<Filter> filters = activeFilters.computeIfAbsent(p.getUniqueId(), v -> new HashSet<>());
+        ServerUtils.verbose("Filtering entries for %s. Current: ", p,filters.toString());
         return Sentinel.getInstance().getDirector().io.commandBlocks.holders.stream()
                 .filter(holder -> {
                     if (filters.isEmpty()) return true;
@@ -237,9 +239,9 @@ public class WhitelistGUI {
 
                     for (Filter filter : filters) {
                         boolean conditionMet = switch (filter) {
-                            case OWNER -> holder.owner().equals(player.getUniqueId().toString());
-                            case CURRENT_WORLD -> holder.loc().world().equals(player.getWorld().getName());
-                            case OTHER_OWNERS -> !holder.owner().equals(player.getUniqueId().toString());
+                            case OWNER -> holder.owner().equals(p.getUniqueId().toString());
+                            case CURRENT_WORLD -> holder.loc().world().equals(p.getWorld().getName());
+                            case OTHER_OWNERS -> !holder.owner().equals(p.getUniqueId().toString());
                             case MINECART -> holder.getType().equals(Material.COMMAND_BLOCK_MINECART);
                             case REPEAT -> holder.getType().equals(Material.REPEATING_COMMAND_BLOCK);
                             case CHAIN -> holder.getType().equals(Material.CHAIN_COMMAND_BLOCK);
@@ -247,6 +249,7 @@ public class WhitelistGUI {
                             case WHITELISTED -> holder.isWhitelisted();
                             case NOT_WHITELISTED -> !holder.isWhitelisted();
                             case NOT_PRESENT -> !holder.present();
+                            case USER -> holder.owner().equals(chosenPlayer.get(p.getUniqueId()));
                         };
 
                         result = operator.apply(result, conditionMet);
@@ -262,42 +265,49 @@ public class WhitelistGUI {
                 .collect(Collectors.toList());
     }
 
-    private void openFilterMenu(Player player) {
-        ServerUtils.verbose("Creating filter menu for %s", player);
-        Set<Filter> filters = activeFilters.computeIfAbsent(player.getUniqueId(), k -> new HashSet<>());
+    private void openFilterMenu(Player p) {
+        ServerUtils.verbose("Creating filter menu for %s", p);
+        Set<Filter> filters = activeFilters.computeIfAbsent(p.getUniqueId(), k -> new HashSet<>());
 
         CustomGui filterGui = CustomGui.create()
                 .title(Text.color("&6&lFilters"))
                 .size(27)
                 .defineMain(e -> e.setCancelled(true))
                 .define(0, createFilterToggleItem("Your Blocks", Material.PLAYER_HEAD, filters.contains(Filter.OWNER)),
-                        e -> toggleFilter(player, Filter.OWNER))
+                        e -> toggleFilter(p, Filter.OWNER))
                 .define(1, createFilterToggleItem("Other Owners", Material.SPYGLASS, filters.contains(Filter.OTHER_OWNERS)),
-                        e -> toggleFilter(player, Filter.OTHER_OWNERS))
+                        e -> toggleFilter(p, Filter.OTHER_OWNERS))
                 .define(2, createFilterToggleItem("Current World", Material.TARGET, filters.contains(Filter.CURRENT_WORLD)),
-                        e -> toggleFilter(player, Filter.CURRENT_WORLD))
+                        e -> toggleFilter(p, Filter.CURRENT_WORLD))
                 .define(3, createFilterToggleItem("Whitelisted Blocks", Material.PAPER, filters.contains(Filter.WHITELISTED)),
-                        e -> toggleFilter(player, Filter.WHITELISTED))
+                        e -> toggleFilter(p, Filter.WHITELISTED))
                 .define(4, createFilterToggleItem("Not Whitelisted Only", Material.BARRIER, filters.contains(Filter.NOT_WHITELISTED)),
-                        e -> toggleFilter(player, Filter.NOT_WHITELISTED))
+                        e -> toggleFilter(p, Filter.NOT_WHITELISTED))
                 .define(5, createFilterToggleItem("Missing Command Blocks", Material.GLASS, filters.contains(Filter.NOT_PRESENT)),
-                        e -> toggleFilter(player, Filter.NOT_PRESENT))
+                        e -> toggleFilter(p, Filter.NOT_PRESENT))
                 .define(6, createFilterToggleItem("Repeating Command Blocks", Material.REPEATING_COMMAND_BLOCK, filters.contains(Filter.REPEAT)),
-                        e -> toggleFilter(player, Filter.REPEAT))
+                        e -> toggleFilter(p, Filter.REPEAT))
                 .define(7, createFilterToggleItem("Chain Command Blocks", Material.CHAIN_COMMAND_BLOCK, filters.contains(Filter.CHAIN)),
-                        e -> toggleFilter(player, Filter.CHAIN))
+                        e -> toggleFilter(p, Filter.CHAIN))
                 .define(8, createFilterToggleItem("Impulse Command Blocks", Material.COMMAND_BLOCK, filters.contains(Filter.IMPULSE)),
-                        e -> toggleFilter(player, Filter.IMPULSE))
+                        e -> toggleFilter(p, Filter.IMPULSE))
                 .define(9, createFilterToggleItem("Minecart Commands", Material.COMMAND_BLOCK_MINECART, filters.contains(Filter.MINECART)),
-                        e -> toggleFilter(player, Filter.MINECART))
+                        e -> toggleFilter(p, Filter.MINECART))
+                .define(10, createFilterToggleItemValue("Specific Player",Material.BOW,filters.contains(Filter.USER),chosenPlayer.getOrDefault(p.getUniqueId(),"null")),
+                        e -> {
+                    if (e.isLeftClick()) toggleFilter(p,Filter.USER);
+                    else if (e.isRightClick()) {
+                        Callback
+                    }
+                        })
                 .define(26, Items.BACK,
                         e-> {
-                            player.playSound(player.getLocation(),Sound.ITEM_BOOK_PAGE_TURN,1,0.8F);
-                            player.openInventory(createGUI(player).getInventory());
+                            p.playSound(p.getLocation(),Sound.ITEM_BOOK_PAGE_TURN,1,0.8F);
+                            p.openInventory(createGUI(p).getInventory());
                 })
                 .build();
         
-        player.openInventory(filterGui.getInventory());
+        p.openInventory(filterGui.getInventory());
     }
 
     private ItemStack createFilterToggleItem(String name, Material mat, boolean active) {
@@ -308,30 +318,40 @@ public class WhitelistGUI {
                 .build();
     }
 
-    private void toggleFilter(Player player, Filter filter) {
-        Set<Filter> filters = activeFilters.computeIfAbsent(player.getUniqueId(), k -> new HashSet<>());
-        ServerUtils.verbose("%s is now toggling the %s filter. Current %s", player,filter,filters);
+    private ItemStack createFilterToggleItemValue(String name, Material mat, boolean active, String value) {
+        return new ItemBuilder()
+                .material(mat)
+                .name(Text.color((active ? "&a" : "&c") + name))
+                .lore(Text.color("&7Value&f: &b" + value))
+                .lore(Text.color("&7Left Click to " + (active ? "disable" : "enable")))
+                .lore(Text.color("&7Right Click to set value."))
+                .build();
+    }
+
+    private void toggleFilter(Player p, Filter filter) {
+        Set<Filter> filters = activeFilters.computeIfAbsent(p.getUniqueId(), k -> new HashSet<>());
+        ServerUtils.verbose("%s is now toggling the %s filter. Current %s", p,filter,filters);
         if (filters.contains(filter)) filters.remove(filter);
         else filters.add(filter);
-        ServerUtils.verbose("Current filters for %s: %s", player,filters);
-        openFilterMenu(player);
+        ServerUtils.verbose("Current filters for %s: %s", p,filters);
+        openFilterMenu(p);
     }
 
-    private int getFilterCount(Player player) {
-        return activeFilters.getOrDefault(player.getUniqueId(), new HashSet<>()).size();
+    private int getFilterCount(Player p) {
+        return activeFilters.getOrDefault(p.getUniqueId(), new HashSet<>()).size();
     }
 
-    private void changePage(Player player, int direction) {
-        int current = currentPages.getOrDefault(player.getUniqueId(), 0);
-        int newPage = realizePage(player, current + direction);
-        currentPages.put(player.getUniqueId(), newPage);
-        player.openInventory(createGUI(player).getInventory());
+    private void changePage(Player p, int direction) {
+        int current = currentPages.getOrDefault(p.getUniqueId(), 0);
+        int newPage = realizePage(p, current + direction);
+        currentPages.put(p.getUniqueId(), newPage);
+        p.openInventory(createGUI(p).getInventory());
     }
     
-    private int realizePage(Player player, int requested) {
+    private int realizePage(Player p, int requested) {
         int validRequested = Math.max(0, requested);
-        int totalEntries = filterEntries(player,
-                chosenOperator.computeIfAbsent(player.getUniqueId(), v -> FilterOperator.AND)).size();
+        int totalEntries = filterEntries(p,
+                chosenOperator.computeIfAbsent(p.getUniqueId(), v -> FilterOperator.AND)).size();
         int maxPages = Math.max(0, Math.ceilDiv(totalEntries, 45) - 1);
         return Math.min(validRequested, maxPages);
     }
@@ -344,9 +364,9 @@ public class WhitelistGUI {
                 .build();
     }
 
-    private ItemStack createFilterItem(Player player) {
+    private ItemStack createFilterItem(Player p) {
         List<String> operatorList = new ArrayList<>();
-        FilterOperator chosen = chosenOperator.computeIfAbsent(player.getUniqueId(),v->FilterOperator.AND);
+        FilterOperator chosen = chosenOperator.computeIfAbsent(p.getUniqueId(),v->FilterOperator.AND);
         for (FilterOperator value : FilterOperator.values()) {
             if (value.equals(chosen)) operatorList.add(Text.color("&b&n" + value.name()));
             else operatorList.add(Text.color("&b" + value.name()));
@@ -354,7 +374,7 @@ public class WhitelistGUI {
         return new ItemBuilder()
                 .material(Material.HOPPER)
                 .name(Text.color("&6&lFilters"))
-                .lore(Text.color("&7Filters Selected: &e" + getFilterCount(player)))
+                .lore(Text.color("&7Filters Selected: &e" + getFilterCount(p)))
                 .lore(Text.color("&7Shift-Click to cycle filter operator."))
                 .lore(Text.color("&7Operator: "))
                 .lore(operatorList)

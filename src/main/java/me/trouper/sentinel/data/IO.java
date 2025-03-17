@@ -6,6 +6,7 @@ import me.trouper.sentinel.data.config.*;
 import me.trouper.sentinel.data.config.lang.LanguageFile;
 import me.trouper.sentinel.data.storage.ExtraStorage;
 import me.trouper.sentinel.data.storage.CommandBlockStorage;
+import me.trouper.sentinel.data.storage.NBTStorage;
 
 import java.io.File;
 
@@ -20,6 +21,7 @@ public class IO {
     private final File advcfg = new File(dataFolder, "/advanced-config.json");
     private final File cmdWhitelist = new File(dataFolder, "/storage/whitelist.json");
     private final File extraFile = new File(dataFolder, "/storage/extra.json");
+    private final File nbtFile =  new File(dataFolder,"/storage/nbt.json");
 
     public LanguageFile lang;
     public ViolationConfig violationConfig = JsonSerializable.load(violationcfg, ViolationConfig.class, new ViolationConfig());
@@ -31,6 +33,7 @@ public class IO {
     public StrictConfig strictConfig = JsonSerializable.load(strctcfg, StrictConfig.class, new StrictConfig());
     public NBTConfig nbtConfig = JsonSerializable.load(nbtcfg, NBTConfig.class, new NBTConfig());
     public AdvancedConfig advConfig = JsonSerializable.load(advcfg, AdvancedConfig.class, new AdvancedConfig());
+    public NBTStorage nbtStorage = JsonSerializable.load(nbtFile, NBTStorage.class, new NBTStorage());
 
     public void loadConfig() {
         // Init
@@ -41,6 +44,7 @@ public class IO {
         swearConfig = JsonSerializable.load(swrcfg,SwearsConfig.class,new SwearsConfig());
         nbtConfig = JsonSerializable.load(nbtcfg,NBTConfig.class,new NBTConfig());
         violationConfig = JsonSerializable.load(violationcfg,ViolationConfig.class,new ViolationConfig());
+        
 
         // Save
         mainConfig.save();
@@ -50,11 +54,17 @@ public class IO {
         swearConfig.save();
         nbtConfig.save();
         violationConfig.save();
+        
+        // Storage
 
         commandBlocks = JsonSerializable.load(cmdWhitelist, CommandBlockStorage.class, new CommandBlockStorage());
         extraStorage = JsonSerializable.load(extraFile, ExtraStorage.class, new ExtraStorage());
+        nbtStorage = JsonSerializable.load(nbtFile,NBTStorage.class,new NBTStorage());
+        
         commandBlocks.save();
         extraStorage.save();
+        nbtStorage.save();
+        
 
         Sentinel.getInstance().getLogger().info("Loading Dictionary (%s)...".formatted(mainConfig.plugin.lang));
 

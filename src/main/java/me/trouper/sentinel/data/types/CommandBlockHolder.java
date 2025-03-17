@@ -8,10 +8,7 @@ import me.trouper.sentinel.utils.DisplayUtils;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
 import me.trouper.sentinel.utils.display.BlockDisplayRaytracer;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.CommandBlock;
@@ -288,8 +285,11 @@ public class CommandBlockHolder {
             }
             if (!preLoaded) where.getChunk().unload();
         }
-
-        if (changesMade) updater.sendMessage(Text.prefix("Successfully updated a &b%s&7.".formatted(Text.cleanName(this.type()))));
+        
+        if (changesMade) {
+            updater.sendMessage(Text.prefix("Successfully updated a &b%s&7.".formatted(Text.cleanName(this.type()))));
+            updater.playSound(updater.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING,1,1.5F);
+        }
         return changesMade;
     }
 
@@ -313,7 +313,10 @@ public class CommandBlockHolder {
 
         }
 
-        if (changesMade) updater.sendMessage(Text.prefix("Successfully updated a &b%s&7.".formatted(Text.cleanName(this.type()))));
+        if (changesMade) {
+            updater.sendMessage(Text.prefix("Successfully updated a &b%s&7.".formatted(Text.cleanName(this.type()))));
+            updater.playSound(updater.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING,1,1.5F);
+        }
         return changesMade;
     }
 
@@ -360,7 +363,10 @@ public class CommandBlockHolder {
             changesMade = true;
         }
 
-        if (changesMade) updater.sendMessage(Text.prefix("Successfully updated a &b%s&7.".formatted(Text.cleanName(this.type()))));
+        if (changesMade) {
+            updater.sendMessage(Text.prefix("Successfully updated a &b%s&7.".formatted(Text.cleanName(this.type()))));
+            updater.playSound(updater.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING,1,1.5F);
+        }
         return changesMade;
     }
 }

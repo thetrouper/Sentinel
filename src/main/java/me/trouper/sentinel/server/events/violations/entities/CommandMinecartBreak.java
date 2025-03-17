@@ -48,7 +48,7 @@ public class CommandMinecartBreak extends AbstractViolation {
 
         if (!Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartBreak.enabled) {
             ServerUtils.verbose("Not enabled, deletion allowed.");
-            holder.delete();
+            if (!holder.isWhitelisted()) holder.delete();
             return;
         }
 

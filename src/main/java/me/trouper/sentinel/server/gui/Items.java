@@ -82,9 +82,16 @@ public class Items {
             .enchant(Enchantment.PROTECTION, 64)
             .flag(ItemFlag.HIDE_ENCHANTS)
             .build();
+    public static final ItemStack NBT = ItemBuilder.create()
+            .material(Material.HONEY_BOTTLE)
+            .name(Text.color("&aNBT Honeypot"))
+            .lore(Text.color("&8&l➥&7 View caught NBT"))
+            .enchant(Enchantment.PROTECTION, 64)
+            .flag(ItemFlag.HIDE_ENCHANTS)
+            .build();
 
     public static ItemStack configItem(String valueName, Material material, String description) {
-        ServerUtils.verbose("Items#configItem: Creating a config item:\n Value Name -> %s\nMaterial in use -> %s".formatted(valueName,material.toString()));
+        ServerUtils.verbose("Creating a config item:\n Value Name -> %s\nMaterial in use -> %s".formatted(valueName,material.toString()));
 
         List<String> desc = Arrays.stream(description.split("\n")).toList();
 

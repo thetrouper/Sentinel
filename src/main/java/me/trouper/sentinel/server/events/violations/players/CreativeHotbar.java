@@ -2,6 +2,7 @@ package me.trouper.sentinel.server.events.violations.players;
 
 import io.github.itzispyder.pdk.plugin.gui.CustomGui;
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.data.storage.NBTStorage;
 import me.trouper.sentinel.server.events.violations.AbstractViolation;
 import me.trouper.sentinel.server.functions.helpers.ActionConfiguration;
 import me.trouper.sentinel.server.functions.itemchecks.ItemCheck;
@@ -41,6 +42,9 @@ public class CreativeHotbar extends AbstractViolation {
         ServerUtils.verbose("NBT: Item has meta");
         if (new ItemCheck().passes(i)) return;
         ServerUtils.verbose("NBT: Item doesn't pass, performing action");
+
+        Sentinel.getInstance().getDirector().io.nbtStorage.caughtItems.put(NBTStorage.toB64(i),p.getUniqueId().toString());
+        Sentinel.getInstance().getDirector().io.nbtStorage.save();
 
         ActionConfiguration.Builder config = new ActionConfiguration.Builder()
                 .setEvent(e)

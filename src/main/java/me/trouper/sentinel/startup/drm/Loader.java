@@ -19,6 +19,7 @@ import me.trouper.sentinel.server.events.violations.blocks.structure.StructureBl
 import me.trouper.sentinel.server.events.violations.command.DangerousCommand;
 import me.trouper.sentinel.server.events.violations.command.LoggedCommand;
 import me.trouper.sentinel.server.events.violations.command.SpecificCommand;
+import me.trouper.sentinel.server.events.violations.entities.CommandMinecartEdit;
 import me.trouper.sentinel.server.events.violations.players.*;
 import me.trouper.sentinel.server.events.violations.whitelist.CommandBlockExecute;
 import me.trouper.sentinel.server.events.extras.ShadowRealmEvents;
@@ -150,6 +151,7 @@ public final class Loader {
         PacketEvents.getAPI().getEventManager().registerListener(new PluginCloakingPacket(), PacketListenerPriority.NORMAL);
         PacketEvents.getAPI().getEventManager().registerListener(new ShadowRealmEvents(), PacketListenerPriority.HIGHEST);
         PacketEvents.getAPI().getEventManager().registerListener(new CommandBlockEdit(), PacketListenerPriority.NORMAL);
+        PacketEvents.getAPI().getEventManager().registerListener(new CommandMinecartEdit(), PacketListenerPriority.NORMAL);
 
         // Events
         new AntiBanEvents().register();

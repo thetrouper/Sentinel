@@ -45,7 +45,7 @@ public class CommandBlockBreak extends AbstractViolation{
 
         if (!Sentinel.getInstance().getDirector().io.violationConfig.commandBlockBreak.enabled) {
             ServerUtils.verbose("Not enabled, deletion allowed.");
-            holder.delete();
+            if (!holder.isWhitelisted()) holder.delete();
             return;
         }
 
