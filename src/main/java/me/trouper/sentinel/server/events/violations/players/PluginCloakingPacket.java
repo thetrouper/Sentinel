@@ -1,9 +1,6 @@
 package me.trouper.sentinel.server.events.violations.players;
 
-import com.github.retrooper.packetevents.event.PacketListenerAbstract;
-import com.github.retrooper.packetevents.event.PacketListenerPriority;
-import com.github.retrooper.packetevents.event.PacketReceiveEvent;
-import com.github.retrooper.packetevents.event.PacketSendEvent;
+import com.github.retrooper.packetevents.event.*;
 import com.github.retrooper.packetevents.protocol.chat.Node;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientTabComplete;
@@ -19,13 +16,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class PluginCloakingPacket extends PacketListenerAbstract {
+public class PluginCloakingPacket implements PacketListener {
 
     public static final List<UUID> tabReplaceQueue = new ArrayList<>();
-
-    public PluginCloakingPacket() {
-        super(PacketListenerPriority.NORMAL);
-    }
 
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {

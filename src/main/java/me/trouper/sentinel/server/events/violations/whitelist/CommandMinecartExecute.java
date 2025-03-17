@@ -2,14 +2,18 @@ package me.trouper.sentinel.server.events.violations.whitelist;
 
 import io.github.itzispyder.pdk.plugin.gui.CustomGui;
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.data.types.CommandBlockHolder;
 import me.trouper.sentinel.server.events.violations.AbstractViolation;
 import me.trouper.sentinel.server.functions.helpers.ActionConfiguration;
+import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.ServerUtils;
 import org.bukkit.entity.minecart.CommandMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.inventory.Inventory;
+
+import java.util.UUID;
 
 public class CommandMinecartExecute extends AbstractViolation {
 
@@ -19,17 +23,13 @@ public class CommandMinecartExecute extends AbstractViolation {
         if (!Sentinel.getInstance().getDirector().io.violationConfig.commandBlockWhitelist.enabled) return;
         //ServerUtils.verbose("Whitelist not disabled");
         if (!(e.getSender() instanceof CommandMinecart s)) return;
-        //ServerUtils.verbose("Sender is command block");
-
+        CommandBlockHolder holder = Sentinel.getInstance().getDirector().whitelistManager.getFromList(s.getUniqueId());
 
         String label = s.getCommand();
         ServerUtils.verbose("Command block is set to %s.".formatted(label));
         label = label.split(" ")[0];
         if (label.startsWith("/")) label = label.substring(1);
         ServerUtils.verbose("It's label is %s.".formatted(label));
-
-        boolean isRestricted = Sentinel.getInstance().getDirector().io.violationConfig.commandBlockWhitelist.disabledCommands.contains(label);
-        boolean canRun = Sentinel.getInstance().getDirector().whitelistManager.isWhitelisted(s);
 
         ActionConfiguration.Builder config = new ActionConfiguration.Builder()
                 .setEvent(e)
@@ -38,7 +38,7 @@ public class CommandMinecartExecute extends AbstractViolation {
                 .removeEntity(Sentinel.getInstance().getDirector().io.violationConfig.commandBlockWhitelist.destroyCart)
                 .logToDiscord(Sentinel.getInstance().getDirector().io.violationConfig.commandBlockWhitelist.logToDiscord);
 
-        if (isRestricted) {
+        if (Sentinel.getInstance().getDirector().io.violationConfig.commandBlockWhitelist.disabledCommands.contains(label)) {
             ServerUtils.verbose("Command cart is using a restricted command.");
 
             runActions(
@@ -47,11 +47,8 @@ public class CommandMinecartExecute extends AbstractViolation {
                     generateMinecartInfo(s),
                     config
             );
-            return;
-        }
-
-        if (!canRun) {
-            ServerUtils.verbose("Command cart can't run.");
+        } else if (holder == null || !holder.isWhitelisted() || !holder.present() || !PlayerUtils.isTrusted(UUID.fromString(holder.owner()))) {
+            ServerUtils.verbose("Command cart can't run. Block is not whitelisted, and/or not trusted.");
 
             runActions(
                     Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormat.formatted(Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.commandBlockWhitelist),

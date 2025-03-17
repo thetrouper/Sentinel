@@ -2,6 +2,7 @@ package me.trouper.sentinel.server.events.violations.blocks.command;
 
 import io.github.itzispyder.pdk.plugin.gui.CustomGui;
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.data.types.CommandBlockHolder;
 import me.trouper.sentinel.server.events.violations.AbstractViolation;
 import me.trouper.sentinel.server.functions.helpers.ActionConfiguration;
 import me.trouper.sentinel.server.gui.Items;
@@ -26,22 +27,24 @@ public class CommandBlockUse extends AbstractViolation {
 
     @EventHandler
     private void onCMDBlockUse(PlayerInteractEvent e) {
-        //ServerUtils.verbose("CommandBlockUse: Detected Interaction");
-        if (!Sentinel.getInstance().getDirector().io.violationConfig.commandBlockUse.enabled) return;
-        //ServerUtils.verbose("CommandBlockUse: Enabled");
         Player p = e.getPlayer();
         if (e.getClickedBlock() == null) return;
         //ServerUtils.verbose("CommandBlockUse: Block isn't null");
         Block b = e.getClickedBlock();
         if (!(ServerUtils.isCommandBlock(b))) return;
         CommandBlock cb = (CommandBlock) b.getState();
+        CommandBlockHolder holder = Sentinel.getInstance().getDirector().whitelistManager.getFromList(cb.getLocation());
         if (PlayerUtils.isTrusted(p)) {
-            if (!Sentinel.getInstance().getDirector().whitelistManager.autoWhitelist.contains(p.getUniqueId())) return;
-            if (Sentinel.getInstance().getDirector().whitelistManager.isWhitelisted(cb)) return;
-            e.setCancelled(true);
-            Sentinel.getInstance().getDirector().whitelistManager.generateHolder(p.getUniqueId(), cb).addToWhitelist();
+            if (Sentinel.getInstance().getDirector().whitelistManager.autoWhitelist.contains(p.getUniqueId())) holder.setWhitelisted(true);
+            holder.update(p);
             return;
         }
+
+        if (!Sentinel.getInstance().getDirector().io.violationConfig.commandBlockUse.enabled) {
+            holder.update(p);
+            return;
+        }
+
         ServerUtils.verbose("CommandBlockUse: Not trusted, performing action");
 
         ActionConfiguration.Builder config = new ActionConfiguration.Builder()

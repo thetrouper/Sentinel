@@ -2,6 +2,7 @@ package me.trouper.sentinel.server.events.violations.entities;
 
 import io.github.itzispyder.pdk.plugin.gui.CustomGui;
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.data.types.CommandBlockHolder;
 import me.trouper.sentinel.server.events.violations.AbstractViolation;
 import me.trouper.sentinel.server.functions.helpers.ActionConfiguration;
 import me.trouper.sentinel.server.gui.Items;
@@ -51,7 +52,7 @@ public class CommandMinecartPlace extends AbstractViolation {
     @EventHandler
     private void onVehicleCreate(VehicleCreateEvent e) {
         //ServerUtils.verbose("Vehicle Creation Event");
-        if (!(e.getVehicle() instanceof CommandMinecart commandMinecart)) return;
+        if (!(e.getVehicle() instanceof CommandMinecart cm)) return;
         if (queuedInteractions.isEmpty()) {
             ServerUtils.verbose("Queue is empty, preventing");
             e.setCancelled(true);
@@ -69,14 +70,17 @@ public class CommandMinecartPlace extends AbstractViolation {
             e.setCancelled(true);
             return;     
         }
-        
+        CommandBlockHolder holder = Sentinel.getInstance().getDirector().whitelistManager.generateHolder(p.getUniqueId(),cm);
         if (PlayerUtils.isTrusted(p)) {
-            ServerUtils.verbose("Player is trusted, allowing.");
-            Sentinel.getInstance().getDirector().whitelistManager.generateHolder(p.getUniqueId(),commandMinecart)
-                    .addToExisting();
+            if (!Sentinel.getInstance().getDirector().whitelistManager.autoWhitelist.contains(p.getUniqueId())) holder.addAndWhitelist();
+            holder.add();
             return;
         }
-        
+
+        if (!Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartPlace.enabled) {
+            holder.add();
+            return;
+        }
 
         ActionConfiguration.Builder config = new ActionConfiguration.Builder()
                 .setEvent(e)
@@ -93,7 +97,7 @@ public class CommandMinecartPlace extends AbstractViolation {
         runActions(
                 Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormatPlayer.formatted(p.getName(), Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.place, Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.commandMinecart),
                 Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormatPlayer.formatted(p.getName(), Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.place, Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.commandMinecart),
-                generateMinecartInfo(commandMinecart),
+                generateMinecartInfo(cm),
                 config
         );
     }
@@ -101,7 +105,6 @@ public class CommandMinecartPlace extends AbstractViolation {
     @EventHandler
     private void onIneteract(PlayerInteractEvent e) {
         //ServerUtils.verbose("Player Interaction Event");
-        if (!Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartPlace.enabled) return;
         //ServerUtils.verbose("MinecartCommandPlace: Check is enabled");
         Player p = e.getPlayer();
         if (e.getItem() == null) return;

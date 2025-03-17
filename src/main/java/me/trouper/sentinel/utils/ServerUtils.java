@@ -37,6 +37,38 @@ public final class ServerUtils {
         },1);
     }
 
+    public static void verbose(int backtrace, String message, Object... args) {
+        if (!Sentinel.getInstance().getDirector().io.mainConfig.debugMode) return;
+        String callerInfo = "Unknown Caller";
+
+        // Capture the stack trace to determine the caller
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        if (stackTrace.length > 2 + backtrace) { // Ensure we have enough depth
+            StackTraceElement caller = stackTrace[2 + backtrace]; // The method that called `verbose()`
+
+            String className = caller.getClassName();
+            className = className.substring(className.lastIndexOf(".") + 1);
+            if (className.contains("-")) {
+                callerInfo = "Protected";
+            } else {
+                callerInfo = className + "." + caller.getMethodName();
+            }
+
+
+        }
+
+        String formattedMessage = message.formatted(args);
+        String log = "[Sentinel] [DEBUG ^ %s] [%s]: %s".formatted(backtrace, callerInfo, formattedMessage);
+        Sentinel.getInstance().getLogger().info(log);
+
+        for (Player trustedPlayer : Bukkit.getOnlinePlayers()) {
+            if (PlayerUtils.isTrusted(trustedPlayer)) {
+                trustedPlayer.sendMessage("§d§lSentinel §7[§bDEBUG§7] §7[§e%s§7] §8» §7%s"
+                        .formatted(callerInfo, formattedMessage));
+            }
+        }
+    }
+
     public static void verbose(String message, Object... args) {
         if (!Sentinel.getInstance().getDirector().io.mainConfig.debugMode) return;
         String callerInfo = "Unknown Caller";

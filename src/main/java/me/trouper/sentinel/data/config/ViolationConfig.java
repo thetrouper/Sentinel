@@ -15,13 +15,15 @@ public class ViolationConfig implements JsonSerializable<SwearsConfig> {
         return file;
     }
 
-    public CommandBlockEdit commandBlockEdit = new CommandBlockEdit();
+
     public CommandBlockWhitelist commandBlockWhitelist = new CommandBlockWhitelist();
     public CommandBlockMinecartPlace commandBlockMinecartPlace = new CommandBlockMinecartPlace();
     public CommandBlockMinecartUse commandBlockMinecartUse = new CommandBlockMinecartUse();
+    public CommandBlockMinecartEdit commandBlockMinecartEdit = new CommandBlockMinecartEdit();
     public CommandBlockMinecartBreak commandBlockMinecartBreak = new CommandBlockMinecartBreak();
     public CommandBlockPlace commandBlockPlace = new CommandBlockPlace();
     public CommandBlockUse commandBlockUse = new CommandBlockUse();
+    public CommandBlockEdit commandBlockEdit = new CommandBlockEdit();
     public CommandBlockBreak commandBlockBreak = new CommandBlockBreak();
     public CommandExecute commandExecute = new CommandExecute();
     public CreativeHotbarAction creativeHotbarAction = new CreativeHotbarAction();
@@ -113,6 +115,16 @@ public class ViolationConfig implements JsonSerializable<SwearsConfig> {
     }
 
     public class CommandBlockEdit {
+        public boolean enabled = true;
+        public boolean deop = true;
+        public boolean logToDiscord = true;
+        public boolean punish = false;
+        public List<String> punishmentCommands = Arrays.asList(
+                "ban %player% ]=- Sentinel -=[ \nYou have been banned for attempting a dangerous action. \nIf you believe this to be a mistake, please contact the server owner."
+        );
+    }
+
+    public class CommandBlockMinecartEdit {
         public boolean enabled = true;
         public boolean deop = true;
         public boolean logToDiscord = true;

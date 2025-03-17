@@ -33,9 +33,10 @@ public class CommandBlockBreak extends AbstractViolation{
         ServerUtils.verbose("CommandBlockBreak: Block is a command block");
         Player p = e.getPlayer();
         CommandBlock cb = (CommandBlock) b.getState();
-        CommandBlockHolder holder = Sentinel.getInstance().getDirector().whitelistManager.generateHolder(p.getUniqueId(),cb);
+        CommandBlockHolder holder = Sentinel.getInstance().getDirector().whitelistManager.getFromList(cb.getLocation());
         if (PlayerUtils.isTrusted(e.getPlayer())) {
-            if (!Sentinel.getInstance().getDirector().whitelistManager.autoWhitelist.contains(p.getUniqueId())) {
+            if (Sentinel.getInstance().getDirector().whitelistManager.autoWhitelist.contains(p.getUniqueId())) {
+                ServerUtils.verbose("Auto Whitelist is on, un-whitelisting the command block.");
                 holder.setWhitelisted(false);
                 holder.delete();
             }
@@ -43,6 +44,7 @@ public class CommandBlockBreak extends AbstractViolation{
         }
 
         if (!Sentinel.getInstance().getDirector().io.violationConfig.commandBlockBreak.enabled) {
+            ServerUtils.verbose("Not enabled, deletion allowed.");
             holder.delete();
             return;
         }

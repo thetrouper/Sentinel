@@ -2,6 +2,7 @@ package me.trouper.sentinel.server.events.violations.entities;
 
 import io.github.itzispyder.pdk.plugin.gui.CustomGui;
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.data.types.CommandBlockHolder;
 import me.trouper.sentinel.server.events.violations.AbstractViolation;
 import me.trouper.sentinel.server.functions.helpers.ActionConfiguration;
 import me.trouper.sentinel.server.gui.Items;
@@ -16,6 +17,7 @@ import org.bukkit.entity.minecart.CommandMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -23,33 +25,39 @@ import java.util.List;
 
 public class CommandMinecartBreak extends AbstractViolation {
     @EventHandler
-    public void onBreak(EntityDamageEvent e) {
-        //ServerUtils.verbose("CommandBlockBreak: Detected the event");
-        if (!Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartBreak.enabled) return;
-        //ServerUtils.verbose("CommandBlockBreak: Changer is a player");
-        if (!(e.getEntity() instanceof CommandMinecart s)) return;
-        if (e.getDamageSource() == null) {
+    public void onBreak(VehicleDamageEvent e) {
+        if (!(e.getVehicle() instanceof CommandMinecart cm)) return;
+        if (e.getAttacker() == null) {
             e.setCancelled(true);
             return;
         }
-        if (e.getDamageSource().getCausingEntity() == null) {
+        if (!(e.getAttacker() instanceof Player p)) {
             e.setCancelled(true);
             return;
         }
-        if (!(e.getDamageSource().getCausingEntity() instanceof Player p)) {
-            e.setCancelled(true);
-            return;
-        }
+
+        CommandBlockHolder holder = Sentinel.getInstance().getDirector().whitelistManager.getFromList(cm.getUniqueId());
         if (PlayerUtils.isTrusted(p)) {
-            if (Sentinel.getInstance().getDirector().whitelistManager.getFromExisting(s.getLocation()).isWhitelisted()) return;
-            Sentinel.getInstance().getDirector().whitelistManager.getFromExisting(s.getLocation()).removeFromExisting();
+            if (Sentinel.getInstance().getDirector().whitelistManager.autoWhitelist.contains(p.getUniqueId())) {
+                ServerUtils.verbose("Auto Whitelist is on, un-whitelisting the command minecart.");
+                holder.setWhitelisted(false);
+                holder.delete();
+            }
             return;
         }
+
+        if (!Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartBreak.enabled) {
+            ServerUtils.verbose("Not enabled, deletion allowed.");
+            holder.delete();
+            return;
+        }
+
+
         ServerUtils.verbose("Not trusted, performing action");
 
         ActionConfiguration.Builder config = new ActionConfiguration.Builder()
                 .setEvent(e)
-                .setEntity(s)
+                .setEntity(cm)
                 .setPlayer(p)
                 .deop(Sentinel.getInstance().getDirector().io.violationConfig.commandBlockBreak.deop)
                 .cancel(true)
@@ -60,7 +68,7 @@ public class CommandMinecartBreak extends AbstractViolation {
         runActions(
                 Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormatPlayer.formatted(p.getName(), Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.brake, Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.commandMinecart),
                 Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormatPlayer.formatted(p.getName(), Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.brake, Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.commandMinecart),
-                generateMinecartInfo(s),
+                generateMinecartInfo(cm),
                 config
         );
     }

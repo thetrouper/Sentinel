@@ -19,9 +19,6 @@ import java.util.Map;
 public final class Auth {
 
     public String authorize(String license, String identifier) {
-        if (true) {
-            return "AUTHORIZED";
-        }
         Map<String, List<String>> licenses = getLicenseList();
         if (licenses == null) return "ERROR";
 

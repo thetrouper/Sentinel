@@ -1,5 +1,7 @@
 package me.trouper.sentinel.startup.drm;
 
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import io.github.itzispyder.pdk.utils.SchedulerUtils;
 import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.data.config.MainConfig;
@@ -38,7 +40,6 @@ public final class Loader {
                         
                         &7Your License Key is &a%s&7.
                         &7Your server ID is &6%s&7.
-                        &7You are &6%s&7.
                         
                         &fIf you have just &apurchased&f the plugin:
                          &8- &7Join the &b&ndiscord&r&7 and open a ticket.
@@ -55,7 +56,7 @@ public final class Loader {
                         &fWoah! You read quite far!
                          &8- &7Want the plugin for cheaper, &nor even for free&r&7?
                          &8- &7DM &b@obvwolf&7 on discord and lets make a deal!
-                        """.formatted(Sentinel.getInstance().license,Sentinel.getInstance().identifier, MainConfig.username));
+                        """.formatted(Sentinel.getInstance().license,Sentinel.getInstance().identifier));
 
     public boolean load(String license, String identifier, boolean coldStart) {
         Sentinel.getInstance().getLogger().info("\n]====---- Requesting Authentication ----====[ \n- License Key: %s\n- Server ID: %s\n".formatted(license,identifier));
@@ -145,9 +146,13 @@ public final class Loader {
         new CallbackCommand().register();
         new ExtraCommand().register();
 
+        // Packets
+        PacketEvents.getAPI().getEventManager().registerListener(new PluginCloakingPacket(), PacketListenerPriority.NORMAL);
+        PacketEvents.getAPI().getEventManager().registerListener(new ShadowRealmEvents(), PacketListenerPriority.HIGHEST);
+        PacketEvents.getAPI().getEventManager().registerListener(new CommandBlockEdit(), PacketListenerPriority.NORMAL);
+
         // Events
         new AntiBanEvents().register();
-        new CommandBlockEdit().register();
         new CommandBlockExecute().register();
         new CommandMinecartPlace().register();
         new CommandMinecartUse().register();

@@ -104,7 +104,7 @@ public class WhitelistGUI {
 
         //ServerUtils.verbose("Type material is %s", type.name());
 
-        String name = holder.loc().isUUID() ?
+        String name = holder.isCart() ?
                 "Minecart: " + holder.loc().toUIID() :
                 String.format("X: %d, Y: %d, Z: %d",
                         (int) holder.loc().x(),
@@ -122,7 +122,7 @@ public class WhitelistGUI {
         //ServerUtils.verbose("Got type");
         lore.add(Text.color("&7Whitelisted: " + (holder.isWhitelisted() ? "&aYes" : "&cNo")));
         //ServerUtils.verbose("Got whitelist status");
-        lore.add(Text.color("&7Present: " + (holder.isPresent() ? "&aYes" : "&cNo")));
+        lore.add(Text.color("&7Present: " + (holder.present() ? "&aYes" : "&cNo")));
         //ServerUtils.verbose("Got Present Status");
         lore.add("");
         lore.add(Text.color("&eClick to manage!"));
@@ -146,8 +146,7 @@ public class WhitelistGUI {
                 .defineMain(e -> e.setCancelled(true))
                 .define(0,createDisplayItem(holder))
                 .define(2, createActionItem(whitelisted ? "Un-Whitelist" : "Whitelist",  whitelisted ? Material.BARRIER : Material.PAPER), e -> {
-                    if (whitelisted) holder.removeFromWhitelist();
-                    else holder.addToWhitelist();
+                    holder.setWhitelisted(!whitelisted);
                     player.playSound(player.getLocation(),Sound.BLOCK_NOTE_BLOCK_PLING,1,1F);
                     openManagementMenu(player,holder);
                 })
@@ -183,18 +182,7 @@ public class WhitelistGUI {
                     player.openInventory(createGUI(player).getInventory());
                 })
                 .define(6,createActionItem("Take Ownership",Material.NAME_TAG), e -> {
-                    CommandBlockHolder updated = new CommandBlockHolder(
-                            player.getUniqueId().toString(),
-                            holder.loc(),
-                            holder.facing(),
-                            holder.type(),
-                            holder.auto(),
-                            holder.conditional(),
-                            holder.command()
-                    );
-                    holder.destroy();
-                    if (whitelisted) updated.addToWhitelist();
-                    updated.restore();
+                    holder.setOwner(player.getUniqueId().toString());
                     player.playSound(player.getLocation(),Sound.ENTITY_VILLAGER_TRADE,1,1F);
                     openManagementMenu(player,holder);
                 })
@@ -241,7 +229,7 @@ public class WhitelistGUI {
     private List<CommandBlockHolder> filterEntries(Player player, FilterOperator operator) {
         Set<Filter> filters = activeFilters.computeIfAbsent(player.getUniqueId(), v -> new HashSet<>());
         ServerUtils.verbose("Filtering entries for %s. Current: ", player,filters.toString());
-        return Sentinel.getInstance().getDirector().io.commandBlocks.existing.stream()
+        return Sentinel.getInstance().getDirector().io.commandBlocks.holders.stream()
                 .filter(holder -> {
                     if (filters.isEmpty()) return true;
 
@@ -258,7 +246,7 @@ public class WhitelistGUI {
                             case IMPULSE -> holder.getType().equals(Material.COMMAND_BLOCK);
                             case WHITELISTED -> holder.isWhitelisted();
                             case NOT_WHITELISTED -> !holder.isWhitelisted();
-                            case NOT_PRESENT -> !holder.isPresent();
+                            case NOT_PRESENT -> !holder.present();
                         };
 
                         result = operator.apply(result, conditionMet);

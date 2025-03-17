@@ -207,14 +207,14 @@ public class SentinelCommand implements CustomCommand {
 
         if (p.getTargetEntity(10) instanceof CommandMinecart cm) {
             Sentinel.getInstance().getDirector().whitelistManager
-                    .generateHolder(p.getUniqueId(), cm).addToWhitelist();
+                    .generateHolder(p.getUniqueId(), cm).addAndWhitelist();
             return;
         }
         Block target = p.getTargetBlock(Set.of(Material.AIR), 10);
         if (ServerUtils.isCommandBlock(target)) {
             CommandBlock cb = (CommandBlock) target.getState();
             Sentinel.getInstance().getDirector().whitelistManager
-                    .generateHolder(p.getUniqueId(), cb).addToWhitelist();
+                    .generateHolder(p.getUniqueId(), cb).addAndWhitelist();
         } else {
             sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.commandBlock.notCommandBlock
                     .formatted(Text.cleanName(target.getType().toString()))));
@@ -228,8 +228,9 @@ public class SentinelCommand implements CustomCommand {
 
         if (p.getTargetEntity(10) instanceof CommandMinecart cm) {
             CommandBlockHolder wb = Sentinel.getInstance().getDirector().whitelistManager
-                    .generateHolder(p.getUniqueId(), cm);
-            if (wb.removeFromWhitelist()) {
+                    .getFromList(cm.getUniqueId());
+            if (wb != null) {
+                wb.setWhitelisted(false);
                 String cleanedType = Text.cleanName(SerialLocation.translate(wb.loc()).getBlock().getType().toString());
                 sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.commandBlock.removeSuccess
                         .formatted(cleanedType, wb.command())));
@@ -242,8 +243,9 @@ public class SentinelCommand implements CustomCommand {
 
         Block target = p.getTargetBlock(Set.of(Material.AIR), 10);
         CommandBlockHolder wb = Sentinel.getInstance().getDirector().whitelistManager
-                .getFromWhitelist(target.getLocation());
-        if (wb != null && wb.removeFromWhitelist()) {
+                .getFromList(target.getLocation());
+        if (wb != null) {
+            wb.setWhitelisted(false);
             String cleanedType = Text.cleanName(SerialLocation.translate(wb.loc()).getBlock().getType().toString());
             sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.commandBlock.removeSuccess
                     .formatted(cleanedType, wb.command())));
@@ -261,10 +263,10 @@ public class SentinelCommand implements CustomCommand {
         var whitelistManager = Sentinel.getInstance().getDirector().whitelistManager;
         if (whitelistManager.autoWhitelist.contains(p.getUniqueId())) {
             whitelistManager.autoWhitelist.remove(p.getUniqueId());
-            sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.commandBlock.autoWhitelistOn));
+            sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.commandBlock.autoWhitelistOff));
         } else {
             whitelistManager.autoWhitelist.add(p.getUniqueId());
-            sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.commandBlock.autoWhitelistOff));
+            sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.commandBlock.autoWhitelistOn));
         }
     }
 

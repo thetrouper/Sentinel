@@ -19,17 +19,15 @@ public class CommandBlockStorage implements JsonSerializable<CommandBlockStorage
         return file;
     }
 
-    public List<CommandBlockHolder> holders = new ArrayList<>() {
-        @Override
-        public boolean add(CommandBlockHolder holder) {
-            for (CommandBlockHolder existing : holders) {
-                if (existing.loc().isSameLocation(holder.loc())) {
-                    super.remove(existing);
-                }
-            }
-            
-            return super.add(holder);
-        }
-    };
+
+    public List<CommandBlockHolder> holders = new ArrayList<>();
+
+    public synchronized boolean remove(CommandBlockHolder holder) {
+        return holders.removeIf(existing -> existing.loc().isSameLocation(holder.loc()));
+    }
+    public synchronized boolean add(CommandBlockHolder holder) {
+        holders.removeIf(existing -> existing.loc().isSameLocation(holder.loc()));
+        return holders.add(holder);
+    }
     
 }

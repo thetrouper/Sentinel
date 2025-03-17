@@ -2,6 +2,7 @@ package me.trouper.sentinel.server.events.violations.entities;
 
 import io.github.itzispyder.pdk.plugin.gui.CustomGui;
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.data.types.CommandBlockHolder;
 import me.trouper.sentinel.server.events.violations.AbstractViolation;
 import me.trouper.sentinel.server.functions.helpers.ActionConfiguration;
 import me.trouper.sentinel.server.gui.Items;
@@ -11,6 +12,7 @@ import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.Material;
+import org.bukkit.block.CommandBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.CommandMinecart;
 import org.bukkit.event.EventHandler;
@@ -25,19 +27,27 @@ public class CommandMinecartUse extends AbstractViolation {
 
     @EventHandler
     private void onCMDBlockMinecartUse(PlayerInteractEntityEvent e) {
-        //ServerUtils.verbose("MinecartCommandUse: Detected Interaction with entity");
-        if (!Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.enabled) return;
-        //ServerUtils.verbose("MinecartCommandUse: Enabled");
         Player p = e.getPlayer();
-        if (!(e.getRightClicked() instanceof CommandMinecart s)) return;
+        if (!(e.getRightClicked() instanceof CommandMinecart cm)) return;
         ServerUtils.verbose("MinecartCommandUse: Entity is minecart command");
-        if (PlayerUtils.isTrusted(p)) return;
-        ServerUtils.verbose("MinecartCommandUse: Not trusted, performing action");
+
+        CommandBlockHolder holder = Sentinel.getInstance().getDirector().whitelistManager.getFromList(cm.getUniqueId());
+        if (PlayerUtils.isTrusted(p)) {
+            if (Sentinel.getInstance().getDirector().whitelistManager.autoWhitelist.contains(p.getUniqueId())) holder.setWhitelisted(true);
+            holder.update(p);
+            e.setCancelled(true);
+            return;
+        }
+
+        if (!Sentinel.getInstance().getDirector().io.violationConfig.commandBlockUse.enabled) {
+            holder.update(p);
+            return;
+        }
 
         ActionConfiguration.Builder config = new ActionConfiguration.Builder()
                 .setEvent(e)
                 .setPlayer(p)
-                .setEntity(s)
+                .setEntity(cm)
                 .cancel(true)
                 .punish(Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.punish)
                 .deop(Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.deop)
@@ -47,7 +57,7 @@ public class CommandMinecartUse extends AbstractViolation {
         runActions(
                 Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormatPlayer.formatted(p.getName(), Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.use, Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.commandMinecart),
                 Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormatPlayer.formatted(p.getName(), Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.use, Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.commandMinecart),
-                generateMinecartInfo(s),
+                generateMinecartInfo(cm),
                 config
         );
     }

@@ -1,6 +1,7 @@
 package me.trouper.sentinel.server.events.extras;
 
 import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.PacketListener;
 import com.github.retrooper.packetevents.event.PacketListenerAbstract;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
@@ -20,7 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public class ShadowRealmEvents extends PacketListenerAbstract implements CustomListener {
+public class ShadowRealmEvents implements CustomListener, PacketListener {
     
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {

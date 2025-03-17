@@ -1,10 +1,12 @@
 package me.trouper.sentinel;
 
 import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import de.tr7zw.changeme.nbtapi.NBT;
 import io.github.itzispyder.pdk.PDK;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import me.trouper.sentinel.server.events.extras.ShadowRealmEvents;
+import me.trouper.sentinel.server.events.violations.blocks.command.CommandBlockEdit;
 import me.trouper.sentinel.server.events.violations.players.PluginCloakingPacket;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
@@ -56,10 +58,6 @@ public final class Sentinel extends JavaPlugin {
 
         getLogger().info("Loading PacketEvents");
         PacketEvents.getAPI().load();
-
-        getLogger().info("Registering PacketEvents");
-        PacketEvents.getAPI().getEventManager().registerListener(new PluginCloakingPacket());
-        PacketEvents.getAPI().getEventManager().registerListener(new ShadowRealmEvents());
     }
     
     @Override

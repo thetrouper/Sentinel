@@ -1,6 +1,8 @@
 package me.trouper.sentinel.server.functions.helpers;
 
+import com.github.retrooper.packetevents.wrapper.PacketWrapper;
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.data.types.CommandBlockHolder;
 import me.trouper.sentinel.data.types.SerialLocation;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.trees.Node;
@@ -226,7 +228,8 @@ public class ActionConfiguration {
             actions.add(config -> {
                 config.restoreBlock = restoreBlock;
                 if (config.block != null) {
-                    if (Sentinel.getInstance().getDirector().whitelistManager.getFromWhitelist(config.block.getLocation()) != null && Sentinel.getInstance().getDirector().whitelistManager.getFromWhitelist(config.block.getLocation()).restore())  {
+                    CommandBlockHolder holder = Sentinel.getInstance().getDirector().whitelistManager.getFromList(config.block.getLocation());
+                    if (holder != null && holder.restore()) {
                         config.actionNode.addTextLine(Sentinel.getInstance().getDirector().io.lang.violations.protections.actionNode.restore);
                     } else {
                         config.actionNode.addTextLine(Sentinel.getInstance().getDirector().io.lang.violations.protections.actionNode.restoreFailed);

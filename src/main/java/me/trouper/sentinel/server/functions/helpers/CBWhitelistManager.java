@@ -5,7 +5,6 @@ import me.trouper.sentinel.data.types.SerialLocation;
 import me.trouper.sentinel.data.types.CommandBlockHolder;
 import me.trouper.sentinel.server.events.admin.WandEvents;
 import me.trouper.sentinel.data.types.Selection;
-import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.Location;
@@ -57,7 +56,7 @@ public class CBWhitelistManager {
         AtomicInteger number = new AtomicInteger();
         selection.forEachBlock(block -> {
             if (block.getType().equals(Material.COMMAND_BLOCK) || block.getType().equals(Material.REPEATING_COMMAND_BLOCK) || block.getType().equals(Material.CHAIN_COMMAND_BLOCK)) {
-                generateHolder(player.getUniqueId(),(CommandBlock) block.getState()).removeFromWhitelist();
+                getFromList(block.getLocation()).setWhitelisted(false);
                 number.getAndIncrement();
             }
         });
@@ -74,7 +73,7 @@ public class CBWhitelistManager {
         AtomicInteger number = new AtomicInteger();
         selection.forEachBlock(block -> {
             if (block.getType().equals(Material.COMMAND_BLOCK) || block.getType().equals(Material.REPEATING_COMMAND_BLOCK) || block.getType().equals(Material.CHAIN_COMMAND_BLOCK)) {
-                generateHolder(player.getUniqueId(),(CommandBlock) block.getState()).destroy();
+                getFromList(block.getLocation()).delete();
                 number.getAndIncrement();
             }
         });
@@ -92,8 +91,7 @@ public class CBWhitelistManager {
         AtomicInteger number = new AtomicInteger();
         selection.forEachBlock(block -> {
             if (ServerUtils.isCommandBlock(block)) {
-                CommandBlock cb = (CommandBlock) block.getState();
-                generateHolder(player.getUniqueId(),cb).addToWhitelist();
+                getFromList(block.getLocation()).addAndWhitelist();
                 number.getAndIncrement();
             }
         });
@@ -104,10 +102,11 @@ public class CBWhitelistManager {
     public int clearAll() {
         int total = 0;
         for (CommandBlockHolder cb : Sentinel.getInstance().getDirector().io.commandBlocks.holders) {
-            cb.removeFromWhitelist();
+            cb.destroy();
+            cb.delete();
             total++;
 
-            if (cb.loc().isUUID()) continue;
+            if (cb.isCart()) continue;
             Location remove = SerialLocation.translate(cb.loc());
             remove.getBlock().setType(Material.AIR);
         }
@@ -118,10 +117,11 @@ public class CBWhitelistManager {
         int total = 0;
         for (CommandBlockHolder cb : Sentinel.getInstance().getDirector().io.commandBlocks.holders) {
             if (!cb.owner().equals(who.toString())) continue;
-            cb.removeFromWhitelist();
+            cb.destroy();
+            cb.delete();
             total++;
 
-            if (cb.loc().isUUID()) continue;
+            if (cb.isCart()) continue;
             Location remove = SerialLocation.translate(cb.loc());
             remove.getBlock().setType(Material.AIR);
         }
@@ -163,4 +163,32 @@ public class CBWhitelistManager {
     public boolean isConditional(CommandBlock cb) {
         return cb.getBlock().getBlockData() instanceof org.bukkit.block.data.type.CommandBlock cbs && cbs.isConditional();
     }
+
+    public CommandBlockHolder getFromList(UUID entityUUID) {
+        for (CommandBlockHolder existing :  Sentinel.getInstance().getDirector().io.commandBlocks.holders) {
+            if (existing.loc().isUUID() && existing.loc().toUIID().equals(entityUUID)) {
+                return existing;
+            }
+        }
+        return null;
+    }
+
+    public CommandBlockHolder getFromList(Location loc) {
+        for (CommandBlockHolder existing :  Sentinel.getInstance().getDirector().io.commandBlocks.holders) {
+            if (existing.loc().isSameLocation(loc)) {
+                return existing;
+            }
+        }
+        return null;
+    }
+
+    public CommandBlockHolder getFromList(SerialLocation loc) {
+        for (CommandBlockHolder existing :  Sentinel.getInstance().getDirector().io.commandBlocks.holders) {
+            if (existing.loc().isSameLocation(loc)) {
+                return existing;
+            }
+        }
+        return null;
+    }
+
 }
