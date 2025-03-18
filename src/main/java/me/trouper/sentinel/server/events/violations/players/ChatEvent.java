@@ -60,7 +60,7 @@ public class ChatEvent implements CustomListener {
                     UrlFilterGUI.updater.invokeCallbacks(e);
                     ProfanityFilterGUI.updater.invokeCallbacks(e);
                     SpamFilterGUI.updater.invokeCallbacks(e);
-                    NewWhitelistGUI.
+                    NewWhitelistGUI.updater.invokeCallbacks(e);
                     DangerousCommand.updater.invokeCallbacks(e);
                     LoggedCommand.updater.invokeCallbacks(e);
                     SpecificCommand.updater.invokeCallbacks(e);

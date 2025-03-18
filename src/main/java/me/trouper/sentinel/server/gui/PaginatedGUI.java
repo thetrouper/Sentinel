@@ -23,6 +23,8 @@ public abstract class PaginatedGUI<T> {
     protected static final Map<UUID, Set<String>> activeFilters = new HashMap<>();
     protected static final Map<UUID, FilterOperator> chosenOperator = new HashMap<>();
 
+    protected abstract CustomGui backGUI();
+    
     public CustomGui createGUI(Player p) {
         ServerUtils.verbose("Creating GUI for player: %s", p.getName());
         int page = currentPages.compute(p.getUniqueId(), (k, v) -> realizePage(p, v == null ? 0 : v));
@@ -40,10 +42,10 @@ public abstract class PaginatedGUI<T> {
     protected abstract String getTitle(Player p);
 
     protected void setupPage(Player p, Inventory inv) {
-        ServerUtils.verbose("Setting up page for player: %s", p.getName());
+        ServerUtils.verbose(1,"Setting up page for player: %s", p.getName());
         int page = currentPages.compute(p.getUniqueId(), (k, v) -> realizePage(p, v == null ? 0 : v));
         List<T> filtered = filterEntries(p, chosenOperator.computeIfAbsent(p.getUniqueId(), v -> FilterOperator.AND));
-        ServerUtils.verbose("Current page: %d, Total entries: %d", page, filtered.size());
+        ServerUtils.verbose(1,"Current page: %d, Total entries: %d", page, filtered.size());
 
         // Clear previous items
         for (int i = 0; i < ITEMS_PER_PAGE; i++) {
@@ -67,7 +69,7 @@ public abstract class PaginatedGUI<T> {
     protected abstract ItemStack createDisplayItem(T item);
 
     protected void openFilterMenu(Player p) {
-        ServerUtils.verbose("Creating filter menu for %s", p);
+        ServerUtils.verbose(1,"Creating filter menu for %s", p);
         Set<String> filters = activeFilters.computeIfAbsent(p.getUniqueId(), k -> new HashSet<>());
 
         CustomGui.GuiBuilder filterGui = CustomGui.create()
@@ -101,6 +103,10 @@ public abstract class PaginatedGUI<T> {
 
     protected void changePage(Player p, int direction) {
         int current = currentPages.getOrDefault(p.getUniqueId(), 0);
+        if (current + direction < 0) {
+            p.openInventory(backGUI().getInventory());
+            return;
+        }
         int newPage = realizePage(p, current + direction);
         currentPages.put(p.getUniqueId(), newPage);
         p.openInventory(createGUI(p).getInventory());
@@ -114,6 +120,9 @@ public abstract class PaginatedGUI<T> {
     }
 
     private ItemStack createNavigationItem(String direction, int pageTo) {
+        if (pageTo < 0) {
+            return Items.BACK;
+        }
         return new ItemBuilder()
                 .material(Material.ARROW)
                 .name(Text.color("&b" + direction + "&7 Page"))

@@ -33,6 +33,11 @@ public class NewWhitelistGUI extends PaginatedGUI<CommandBlockHolder> {
     private static final Map<UUID, String> chosenPlayer = new HashMap<>();
 
     @Override
+    protected CustomGui backGUI() {
+        return new MainGUI().home;
+    }
+
+    @Override
     protected String getTitle(Player p) {
         return Text.color("&6&lCommand Blocks &7(" + getFilterCount(p) + " filters)");
     }
@@ -94,9 +99,26 @@ public class NewWhitelistGUI extends PaginatedGUI<CommandBlockHolder> {
                 e -> {
                     if (e.isLeftClick()) toggleFilter(p, "USER");
                     else if (e.isRightClick()) {
-
+                        queuePlayer(p,(cfg,value)->{
+                            chosenPlayer.put(p.getUniqueId(),value.getAll().toString());
+                        },chosenPlayer.getOrDefault(p.getUniqueId(),"null"));
                     }
-                })
+                });
+    }
+
+    public static ConfigUpdater<AsyncChatEvent, ViolationConfig> updater = new ConfigUpdater<>(Sentinel.getInstance().getDirector().io.violationConfig);
+    protected void queuePlayer(Player player, BiConsumer<ViolationConfig, Args> action, String currentValue) {
+        MainGUI.awaitingCallback.add(player.getUniqueId());
+        player.closeInventory();
+        updater.queuePlayer(player, 20*60, (e)->{
+            e.setCancelled(true);
+            return LegacyComponentSerializer.legacySection().serialize(e.message());
+        }, (cfg, newValue) -> {
+            action.accept(cfg,new Args(newValue.split("\\s+")));
+            player.sendMessage(Text.prefix("Value updated successfully"));
+            openFilterMenu(player);
+        });
+        player.sendMessage(Component.text(Text.prefix("Enter the new value in chat. The value is currently set to &b%s&7. (Click to insert)".formatted(currentValue))).clickEvent(ClickEvent.suggestCommand(currentValue)));
     }
 
     @Override

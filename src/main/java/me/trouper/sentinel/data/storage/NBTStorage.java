@@ -17,30 +17,23 @@ public class NBTStorage implements JsonSerializable<NBTStorage> {
     
     public Map<String, String> caughtItems = new HashMap<>();
 
-    public static ItemStack toItem(String data) {
-        try {
-            byte[] bytes = Base64.getDecoder().decode(data);
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
-            ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream);
-            ItemStack item = (ItemStack) objectInputStream.readObject();
-            objectInputStream.close();
-            return item;
-        } catch (IOException | ClassNotFoundException e) {
-            Sentinel.getInstance().getLogger().warning("Could not deserialize ItemStack: " + e.getMessage());
-            return null;
+    public static ItemStack toItem(String serializedString) {
+        if (serializedString.equals("null")) return null;
+        byte[] decodedBytes = Base64.getDecoder().decode(serializedString);
+        String mapString = new String(decodedBytes);
+        // Remove the curly braces and split by commas to get key-value pairs
+        String[] keyValuePairs = mapString.substring(1, mapString.length() - 1).split(", ");
+        Map<String, Object> deserializedMap = new HashMap<>();
+        for (String pair : keyValuePairs) {
+            String[] keyValue = pair.split("=");
+            deserializedMap.put(keyValue[0], keyValue[1]);
         }
+        ItemStack item = ItemStack.deserialize(deserializedMap);
+        return item;
     }
-
-    public static String toB64(ItemStack item) {
-        try {
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-            objectOutputStream.writeObject(item);
-            objectOutputStream.close();
-            return Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray());
-        } catch (IOException e) {
-            Sentinel.getInstance().getLogger().warning("Could not serialize ItemStack: " + e.getMessage());
-            return null;
-        }
+    
+    public static String toB64(ItemStack itemStack) {
+        Map<String, Object> serializedMap = itemStack.serialize();
+        return Base64.getEncoder().encodeToString(serializedMap.toString().getBytes());
     }
 }

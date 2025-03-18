@@ -5,6 +5,7 @@ import io.github.itzispyder.pdk.plugin.gui.CustomGui;
 import io.github.itzispyder.pdk.utils.misc.Pair;
 import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.data.storage.NBTStorage;
+import me.trouper.sentinel.server.gui.MainGUI;
 import me.trouper.sentinel.server.gui.PaginatedGUI;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
@@ -23,6 +24,11 @@ public class NBTGui extends PaginatedGUI<Map.Entry<String,String>> {
 
     public NBTGui() {
         this.nbtStorage = Sentinel.getInstance().getDirector().io.nbtStorage;
+    }
+
+    @Override
+    protected CustomGui backGUI() {
+        return new MainGUI().home;
     }
 
     @Override
