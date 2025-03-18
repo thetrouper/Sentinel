@@ -16,6 +16,7 @@ import me.trouper.sentinel.server.events.violations.command.DangerousCommand;
 import me.trouper.sentinel.server.events.violations.command.LoggedCommand;
 import me.trouper.sentinel.server.events.violations.command.SpecificCommand;
 import me.trouper.sentinel.server.events.violations.entities.CommandMinecartBreak;
+import me.trouper.sentinel.server.events.violations.entities.CommandMinecartEdit;
 import me.trouper.sentinel.server.events.violations.entities.CommandMinecartPlace;
 import me.trouper.sentinel.server.events.violations.entities.CommandMinecartUse;
 import me.trouper.sentinel.server.events.violations.players.CreativeHotbar;
@@ -41,11 +42,11 @@ public class AntiNukeGUI {
             })
             .define(10,getCheckItem(Material.COMMAND_BLOCK,"Command Block Break"),
                     e->e.getWhoClicked().openInventory(new CommandBlockBreak().getConfigGui().getInventory()))
-            .define(11,getCheckItem(Material.REPEATING_COMMAND_BLOCK,"Command Block Edit"),
+            .define(11,getCheckItem(Material.COMMAND_BLOCK,"Command Block Edit"),
                     e->e.getWhoClicked().openInventory(new CommandBlockEdit().getConfigGui().getInventory()))
-            .define(12,getCheckItem(Material.CHAIN_COMMAND_BLOCK,"Command Block Place"),
+            .define(12,getCheckItem(Material.COMMAND_BLOCK,"Command Block Place"),
                     e->e.getWhoClicked().openInventory(new CommandBlockPlace().getConfigGui().getInventory()))
-            .define(13,getCheckItem(Material.CHAIN_COMMAND_BLOCK,"Command Block Use"),
+            .define(13,getCheckItem(Material.COMMAND_BLOCK,"Command Block Use"),
                     e->e.getWhoClicked().openInventory(new CommandBlockUse().getConfigGui().getInventory()))
             .define(14,getCheckItem(Material.JIGSAW,"Jigsaw Block Break"),
                     e->e.getWhoClicked().openInventory(new JigsawBlockBreak().getConfigGui().getInventory()))
@@ -65,12 +66,14 @@ public class AntiNukeGUI {
                     e->e.getWhoClicked().openInventory(new SpecificCommand().getConfigGui().getInventory()))
             .define(24,getCheckItem(Material.SPYGLASS,"Logged Commands"),
                     e->e.getWhoClicked().openInventory(new LoggedCommand().getConfigGui().getInventory()))
-            .define(25,getCheckItem(Material.TNT_MINECART,"Command Minecart Break"),
+            .define(25,getCheckItem(Material.COMMAND_BLOCK_MINECART,"Command Minecart Break"),
                     e->e.getWhoClicked().openInventory(new CommandMinecartBreak().getConfigGui().getInventory()))
             .define(29,getCheckItem(Material.COMMAND_BLOCK_MINECART,"Command Minecart Place"),
                     e->e.getWhoClicked().openInventory(new CommandMinecartPlace().getConfigGui().getInventory()))
             .define(30,getCheckItem(Material.COMMAND_BLOCK_MINECART,"Command Minecart Use"),
                     e->e.getWhoClicked().openInventory(new CommandMinecartUse().getConfigGui().getInventory()))
+            .define(31,getCheckItem(Material.COMMAND_BLOCK_MINECART,"Command Minecart Edit"),
+                    e->e.getWhoClicked().openInventory(new CommandMinecartEdit().getConfigGui().getInventory()))
             .define(32,getCheckItem(Material.DIAMOND_SWORD,"NBT Item Pull"),
                     e->e.getWhoClicked().openInventory(new CreativeHotbar().getConfigGui().getInventory()))
             .define(33,getCheckItem(Material.EMERALD,"Command Block Whitelist"),

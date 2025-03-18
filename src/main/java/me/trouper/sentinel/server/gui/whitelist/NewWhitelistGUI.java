@@ -24,14 +24,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 public class NewWhitelistGUI extends PaginatedGUI<CommandBlockHolder> {
+
+    private static final Map<UUID, String> chosenPlayer = new HashMap<>();
 
     @Override
     protected String getTitle(Player p) {
@@ -91,6 +90,13 @@ public class NewWhitelistGUI extends PaginatedGUI<CommandBlockHolder> {
         filterGui.define(7, createFilterToggleItem("Chain Command Blocks", Material.CHAIN_COMMAND_BLOCK, filters.contains("CHAIN")), e -> toggleFilter(p, "CHAIN"));
         filterGui.define(8, createFilterToggleItem("Impulse Command Blocks", Material.COMMAND_BLOCK, filters.contains("IMPULSE")), e -> toggleFilter(p, "IMPULSE"));
         filterGui.define(9, createFilterToggleItem("Minecart Commands", Material.COMMAND_BLOCK_MINECART, filters.contains("MINECART")), e -> toggleFilter(p, "MINECART"));
+        filterGui.define(10, createFilterToggleItemValue("Specific Player",Material.BOW,filters.contains("USER"),chosenPlayer.getOrDefault(p.getUniqueId(),"null")),
+                e -> {
+                    if (e.isLeftClick()) toggleFilter(p, "USER");
+                    else if (e.isRightClick()) {
+
+                    }
+                })
     }
 
     @Override
@@ -113,6 +119,7 @@ public class NewWhitelistGUI extends PaginatedGUI<CommandBlockHolder> {
                             case "WHITELISTED" -> holder.isWhitelisted();
                             case "NOT_WHITELISTED" -> !holder.isWhitelisted();
                             case "NOT_PRESENT" -> !holder.present();
+                            case "USER" -> holder.owner().equals(chosenPlayer.get(p.getUniqueId()));
                             default -> false;
                         };
                         result = operator.apply(result, conditionMet);
@@ -200,20 +207,13 @@ public class NewWhitelistGUI extends PaginatedGUI<CommandBlockHolder> {
                 .build();
     }
 
-    public static ConfigUpdater<AsyncChatEvent, ViolationConfig> updater = new ConfigUpdater<>(Sentinel.getInstance().getDirector().io.violationConfig);
-
-    protected void queuePlayer(Player player, BiConsumer<ViolationConfig, Args> action, String currentValue) {
-        MainGUI.awaitingCallback.add(player.getUniqueId());
-        player.closeInventory();
-            updater.queuePlayer(player, 20*60, (e)->{
-                e.setCancelled(true);
-                return LegacyComponentSerializer.legacySection().serialize(e.message());
-            }, (cfg, newValue) -> {
-                action.accept(cfg,new Args(newValue.split("\\s+")));
-                cfg.save();
-                player.sendMessage(Text.prefix("Value updated successfully"));
-                player.openInventory(getConfigGui().getInventory());
-            });
-        player.sendMessage(Component.text(Text.prefix("Enter the new value in chat. The value is currently set to &b%s&7. (Click to insert)".formatted(currentValue))).clickEvent(ClickEvent.suggestCommand(currentValue)));
+    private ItemStack createFilterToggleItemValue(String name, Material mat, boolean active, String value) {
+        return new ItemBuilder()
+                .material(mat)
+                .name(Text.color((active ? "&a" : "&c") + name))
+                .lore(Text.color("&7Value&f: &b" + value))
+                .lore(Text.color("&7Left Click to " + (active ? "disable" : "enable")))
+                .lore(Text.color("&7Right Click to set value."))
+                .build();
     }
 }

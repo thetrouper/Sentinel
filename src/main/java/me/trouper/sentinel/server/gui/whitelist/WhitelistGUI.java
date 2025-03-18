@@ -1,12 +1,20 @@
 package me.trouper.sentinel.server.gui.whitelist;
 
+import io.github.itzispyder.pdk.commands.Args;
 import io.github.itzispyder.pdk.plugin.builders.ItemBuilder;
 import io.github.itzispyder.pdk.plugin.gui.CustomGui;
+import io.github.itzispyder.pdk.utils.misc.config.ConfigUpdater;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.data.config.ViolationConfig;
 import me.trouper.sentinel.data.types.CommandBlockHolder;
 import me.trouper.sentinel.server.gui.Items;
+import me.trouper.sentinel.server.gui.MainGUI;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -17,6 +25,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 public class WhitelistGUI {
@@ -24,7 +33,6 @@ public class WhitelistGUI {
     private static final Map<UUID, Integer> currentPages = new HashMap<>();
     private static final Map<UUID, Set<Filter>> activeFilters = new HashMap<>();
     private static final Map<UUID, FilterOperator> chosenOperator = new HashMap<>();
-    private static final Map<UUID, String> chosenPlayer = new HashMap<>();
 
     public CustomGui createGUI(Player p) {
         ServerUtils.verbose("Creating GUI for player: %s", p.getName());
@@ -208,8 +216,7 @@ public class WhitelistGUI {
     private enum Filter {
         OWNER, CURRENT_WORLD, OTHER_OWNERS,
         MINECART, REPEAT, CHAIN, IMPULSE,
-        WHITELISTED, NOT_WHITELISTED, NOT_PRESENT,
-        USER
+        WHITELISTED, NOT_WHITELISTED, NOT_PRESENT
     }
 
     public enum FilterOperator {
@@ -249,7 +256,6 @@ public class WhitelistGUI {
                             case WHITELISTED -> holder.isWhitelisted();
                             case NOT_WHITELISTED -> !holder.isWhitelisted();
                             case NOT_PRESENT -> !holder.present();
-                            case USER -> holder.owner().equals(chosenPlayer.get(p.getUniqueId()));
                         };
 
                         result = operator.apply(result, conditionMet);
@@ -293,13 +299,6 @@ public class WhitelistGUI {
                         e -> toggleFilter(p, Filter.IMPULSE))
                 .define(9, createFilterToggleItem("Minecart Commands", Material.COMMAND_BLOCK_MINECART, filters.contains(Filter.MINECART)),
                         e -> toggleFilter(p, Filter.MINECART))
-                .define(10, createFilterToggleItemValue("Specific Player",Material.BOW,filters.contains(Filter.USER),chosenPlayer.getOrDefault(p.getUniqueId(),"null")),
-                        e -> {
-                    if (e.isLeftClick()) toggleFilter(p,Filter.USER);
-                    else if (e.isRightClick()) {
-                        Callback
-                    }
-                        })
                 .define(26, Items.BACK,
                         e-> {
                             p.playSound(p.getLocation(),Sound.ITEM_BOOK_PAGE_TURN,1,0.8F);
@@ -318,15 +317,7 @@ public class WhitelistGUI {
                 .build();
     }
 
-    private ItemStack createFilterToggleItemValue(String name, Material mat, boolean active, String value) {
-        return new ItemBuilder()
-                .material(mat)
-                .name(Text.color((active ? "&a" : "&c") + name))
-                .lore(Text.color("&7Value&f: &b" + value))
-                .lore(Text.color("&7Left Click to " + (active ? "disable" : "enable")))
-                .lore(Text.color("&7Right Click to set value."))
-                .build();
-    }
+
 
     private void toggleFilter(Player p, Filter filter) {
         Set<Filter> filters = activeFilters.computeIfAbsent(p.getUniqueId(), k -> new HashSet<>());
@@ -380,4 +371,6 @@ public class WhitelistGUI {
                 .lore(operatorList)
                 .build();
     }
+
+
 }
