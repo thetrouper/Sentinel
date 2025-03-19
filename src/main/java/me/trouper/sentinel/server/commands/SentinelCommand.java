@@ -138,7 +138,7 @@ public class SentinelCommand implements CustomCommand {
 
     /* =======================
        Subcommand: CONFIG
-       ======================= */
+       ======================= */ 
     private void handleConfig(CommandSender sender) {
         Player p = getPlayer(sender);
         if (p == null) return;

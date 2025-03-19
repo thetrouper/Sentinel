@@ -33,7 +33,7 @@ public class PluginCloakingEvents implements CustomListener {
         }
 
         for (String alias : Sentinel.getInstance().getDirector().io.advConfig.commandsWithPluginAccess) {
-            if (!message.startsWith(alias)) continue;
+            if (!message.equals(alias)) continue;
             e.setCancelled(true);
             p.sendMessage(Text.color(Sentinel.getInstance().getDirector().io.lang.permissions.noPlugins));
         }
