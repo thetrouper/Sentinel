@@ -18,6 +18,15 @@ public class AdvancedConfig implements JsonSerializable<AdvancedConfig> {
         file.getParentFile().mkdirs();
         return file;
     }
+    
+    public boolean pluginCloakingWhitelist = false;
+    
+    public List<String> intendedCommands = Arrays.asList(
+            "tpa",
+            "msg",
+            "rtp"
+    );
+    
     public List<String> fakePlugins = Arrays.asList(
             "Nocheatplus",
             "Negativity",

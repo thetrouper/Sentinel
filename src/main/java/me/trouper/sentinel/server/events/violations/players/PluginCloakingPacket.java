@@ -3,6 +3,8 @@ package me.trouper.sentinel.server.events.violations.players;
 import com.github.retrooper.packetevents.event.*;
 import com.github.retrooper.packetevents.protocol.chat.Node;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientChatCommand;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientChatCommandUnsigned;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientTabComplete;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDeclareCommands;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTabComplete;
@@ -15,29 +17,61 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class PluginCloakingPacket implements PacketListener {
 
-    public static final List<UUID> tabReplaceQueue = new ArrayList<>();
-
+    public static final ConcurrentLinkedQueue<UUID> tabReplaceQueue = new ConcurrentLinkedQueue<>();    
+    
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
         if (!Sentinel.getInstance().getDirector().io.mainConfig.plugin.pluginHider) return;
-        if (event.getPacketType() != PacketType.Play.Client.TAB_COMPLETE) return;
+        switch (event.getPacketType()) {
+            case PacketType.Play.Client.TAB_COMPLETE -> {
+                WrapperPlayClientTabComplete wrapper = new WrapperPlayClientTabComplete(event);
+                Player player = (Player) event.getPlayer();
+                if (player == null) return;
+                if (PlayerUtils.isTrusted(player)) return;
 
-        WrapperPlayClientTabComplete wrapper = new WrapperPlayClientTabComplete(event);
-        Player player = (Player) event.getPlayer();
-        if (player == null) return;
-        if (PlayerUtils.isTrusted(player)) return;
+                String text = wrapper.getText();
+                if (text.startsWith("/")) text = text.substring(1);
+                text = text.split(" ")[0];
 
-        String text = wrapper.getText();
-        for (String versionAlias : Sentinel.getInstance().getDirector().io.advConfig.pluginTabCompletions) {
-            if (!text.contains(versionAlias)) continue;
-            ServerUtils.verbose("Caught a version command tab completion. (%s -> %s)".formatted(text,versionAlias));
-            tabReplaceQueue.add(player.getUniqueId());
-            break;
+                List<String> intendedCommands = Sentinel.getInstance().getDirector().io.advConfig.intendedCommands;
+                List<String> pluginTabCompletions = Sentinel.getInstance().getDirector().io.advConfig.pluginTabCompletions;
+
+                if (Sentinel.getInstance().getDirector().io.advConfig.pluginCloakingWhitelist) {
+                    boolean whitelisted = false;
+                    for (String pattern : intendedCommands) {
+                        if (text.matches(pattern)) {
+                            whitelisted = true;
+                            break;
+                        }
+                    }
+                    if (!whitelisted) {
+                        ServerUtils.verbose("Caught a non-whitelisted tab completion. (%s)".formatted(text));
+                        tabReplaceQueue.add(player.getUniqueId());
+                    }
+                }
+
+                for (String pattern : pluginTabCompletions) {
+                    if (text.matches(pattern)) {
+                        ServerUtils.verbose("Caught a plugin listing command tab completion. (%s -> %s)".formatted(text, pattern));
+                        tabReplaceQueue.add(player.getUniqueId());
+                        break;
+                    }
+                }
+            }
+            case PacketType.Play.Client.CHAT_COMMAND, PacketType.Play.Client.CHAT_COMMAND_UNSIGNED -> {
+                WrapperPlayClientChatCommandUnsigned wrapper = new WrapperPlayClientChatCommandUnsigned(event);
+                WrapperPlayClientChatCommand wrappers = new WrapperPlayClientChatCommand(event);
+                wrapper.getCommand();
+                wrappers.getCommand();
+            }
+            default -> {}
         }
     }
+
 
 
 
