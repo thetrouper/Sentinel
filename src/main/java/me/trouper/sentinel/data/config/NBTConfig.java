@@ -4,6 +4,7 @@ import io.github.itzispyder.pdk.utils.misc.config.JsonSerializable;
 import me.trouper.sentinel.Sentinel;
 
 import java.io.File;
+import java.util.List;
 
 public class NBTConfig implements JsonSerializable<NBTConfig> {
     @Override
@@ -13,6 +14,16 @@ public class NBTConfig implements JsonSerializable<NBTConfig> {
         return file;
     }
 
+    public RateLimit rateLimit = new RateLimit();
+    
+    public class RateLimit {
+        public int rateLimitBytes = 16348;
+        public int byteDecay = 1024;
+        public int rateLimitItems = 10;
+        public int itemDecay = 2;
+        public List<String> punishmentCommands = List.of("kick %player% Internal Exception: io.netty.handler.codec.DecoderException: java.lang.RuntimeException: Tried to read NBT tag that was too big; tried to allocate 28391038bytes where max allowed: 16348");
+    }
+    
     public boolean allowName = true;
     public boolean allowLore = true;
     public boolean allowAttributes = false;
@@ -21,6 +32,8 @@ public class NBTConfig implements JsonSerializable<NBTConfig> {
     public boolean allowCustomTools = false;
     public boolean allowBooks = false;
     public boolean allowRecursion = true;
+    public int maxCustomData = 64;
+    
     public int globalMaxEnchant = 5;
     public int maxMending = 1;
     public int maxUnbreaking = 3;

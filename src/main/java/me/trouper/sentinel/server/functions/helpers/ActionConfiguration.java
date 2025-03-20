@@ -45,7 +45,6 @@ public class ActionConfiguration {
         this.punishmentCommands = builder.punishmentCommands;
         this.logToDiscord = builder.logToDiscord;
         this.actionNode = builder.actionNode;
-        // Removed the actions being run here to prevent double execution
     }
 
     public Player getPlayer() {

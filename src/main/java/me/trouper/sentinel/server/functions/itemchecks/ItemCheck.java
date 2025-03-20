@@ -2,6 +2,7 @@ package me.trouper.sentinel.server.functions.itemchecks;
 
 import de.tr7zw.changeme.nbtapi.NBT;
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.data.config.NBTConfig;
 import me.trouper.sentinel.utils.InventoryUtils;
 import me.trouper.sentinel.utils.ServerUtils;
 import org.bukkit.Material;
@@ -17,6 +18,7 @@ public class ItemCheck extends AbstractCheck<ItemStack> {
     @Override
     public boolean passes(ItemStack item) {
         ServerUtils.verbose("Checking item: " + item.getType().name());
+        NBTConfig config = Sentinel.getInstance().getDirector().io.nbtConfig;
 
         // No metadata? Nothing to check.
         if (item.getItemMeta() == null) {
@@ -38,11 +40,11 @@ public class ItemCheck extends AbstractCheck<ItemStack> {
         // NBT-based checks (e.g. custom consumables/tools).
         var nbt = NBT.itemStackToNBT(item);
         var components = nbt.getCompound("components");
-        if (!Sentinel.getInstance().getDirector().io.nbtConfig.allowCustomConsumables && components.getCompound("minecraft:consumable") != null) {
+        if (!config.allowCustomConsumables && components.getCompound("minecraft:consumable") != null) {
             ServerUtils.verbose("Item is consumable and not allowed.");
             return false;
         }
-        if (!Sentinel.getInstance().getDirector().io.nbtConfig.allowCustomTools && components.getCompound("minecraft:tool") != null) {
+        if (!config.allowCustomTools && components.getCompound("minecraft:tool") != null) {
             ServerUtils.verbose("Item is custom tool and not allowed.");
             return false;
         }
@@ -148,32 +150,32 @@ public class ItemCheck extends AbstractCheck<ItemStack> {
         }
 
         // Name, lore, potion, attribute and enchantment checks.
-        if (!Sentinel.getInstance().getDirector().io.nbtConfig.allowName && meta.hasDisplayName()) {
+        if (!config.allowName && meta.hasDisplayName()) {
             ServerUtils.verbose("Custom names not allowed.");
             return false;
         }
-        if (!Sentinel.getInstance().getDirector().io.nbtConfig.allowLore && meta.hasLore()) {
+        if (!config.allowLore && meta.hasLore()) {
             ServerUtils.verbose("Custom lore not allowed.");
             return false;
         }
-        if (!Sentinel.getInstance().getDirector().io.nbtConfig.allowPotions &&
+        if (!config.allowPotions &&
                 (item.getType().equals(Material.POTION) ||
                         item.getType().equals(Material.SPLASH_POTION) ||
                         item.getType().equals(Material.LINGERING_POTION))) {
             ServerUtils.verbose("Potions not allowed.");
             return false;
         }
-        if (!Sentinel.getInstance().getDirector().io.nbtConfig.allowAttributes && meta.hasAttributeModifiers()) {
+        if (!config.allowAttributes && meta.hasAttributeModifiers()) {
             ServerUtils.verbose("Attribute modifiers not allowed.");
             return false;
         }
-        if (Sentinel.getInstance().getDirector().io.nbtConfig.globalMaxEnchant != 0 && new EnchantmentCheck().hasIllegalEnchants(item)) {
+        if (config.globalMaxEnchant != 0 && new EnchantmentCheck().hasIllegalEnchants(item)) {
             ServerUtils.verbose("Illegal enchantments found.");
             return false;
         }
         // Recursion check for use-remainder items.
         if (meta.hasUseRemainder()) {
-            if (!Sentinel.getInstance().getDirector().io.nbtConfig.allowRecursion) {
+            if (!config.allowRecursion) {
                 ServerUtils.verbose("Recursion not allowed.");
                 return false;
             }

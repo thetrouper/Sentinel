@@ -62,12 +62,6 @@ public class PluginCloakingPacket implements PacketListener {
                     }
                 }
             }
-            case PacketType.Play.Client.CHAT_COMMAND, PacketType.Play.Client.CHAT_COMMAND_UNSIGNED -> {
-                WrapperPlayClientChatCommandUnsigned wrapper = new WrapperPlayClientChatCommandUnsigned(event);
-                WrapperPlayClientChatCommand wrappers = new WrapperPlayClientChatCommand(event);
-                wrapper.getCommand();
-                wrappers.getCommand();
-            }
             default -> {}
         }
     }

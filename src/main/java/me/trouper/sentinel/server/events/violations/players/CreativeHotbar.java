@@ -1,11 +1,13 @@
 package me.trouper.sentinel.server.events.violations.players;
 
 import io.github.itzispyder.pdk.plugin.gui.CustomGui;
+import io.github.itzispyder.pdk.utils.misc.Pair;
 import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.data.storage.NBTStorage;
 import me.trouper.sentinel.server.events.violations.AbstractViolation;
 import me.trouper.sentinel.server.functions.helpers.ActionConfiguration;
 import me.trouper.sentinel.server.functions.itemchecks.ItemCheck;
+import me.trouper.sentinel.server.functions.itemchecks.RateLimitCheck;
 import me.trouper.sentinel.server.gui.Items;
 import me.trouper.sentinel.server.gui.MainGUI;
 import me.trouper.sentinel.server.gui.config.AntiNukeGUI;
@@ -28,18 +30,36 @@ public class CreativeHotbar extends AbstractViolation {
     private void onNBTPull(InventoryCreativeEvent e) {
         //ServerUtils.verbose("NBT: Detected creative mode action");
         if (!Sentinel.getInstance().getDirector().io.violationConfig.creativeHotbarAction.enabled) return;
-        ServerUtils.verbose("NBT: Enabled");
+        //ServerUtils.verbose("NBT: Enabled");
         if (!(e.getWhoClicked() instanceof Player p)) return;
-        ServerUtils.verbose("NBT: Clicker is a player");
+        //ServerUtils.verbose("NBT: Clicker is a player");
         if (e.getCursor() == null) return; // Well it threw an exception during testing, so it isn't always false!
-        ServerUtils.verbose("NBT: Cursor isn't null");
+        //ServerUtils.verbose("NBT: Cursor isn't null");
         ItemStack i = e.getCursor();
         if (PlayerUtils.isTrusted(p)) return;
-        ServerUtils.verbose("NBT: Not trusted");
+        //ServerUtils.verbose("NBT: Not trusted");
         if (e.getCursor().getItemMeta() == null) return;
-        ServerUtils.verbose("NBT: Cursor has meta");
+        //ServerUtils.verbose("NBT: Cursor has meta");
         if (!(i.hasItemMeta() && i.getItemMeta() != null)) return;
-        ServerUtils.verbose("NBT: Item has meta");
+        if (!new RateLimitCheck().passes(new Pair<>(p,i))) {
+            ServerUtils.verbose("Player flags rate limit, performing action");
+            ActionConfiguration.Builder config = new ActionConfiguration.Builder()
+                    .setEvent(e)
+                    .setPlayer(p)
+                    .cancel(true)
+                    .punish(true)
+                    .deop(Sentinel.getInstance().getDirector().io.violationConfig.creativeHotbarAction.deop)
+                    .setPunishmentCommands(Sentinel.getInstance().getDirector().io.nbtConfig.rateLimit.punishmentCommands);
+
+            runActions(
+                    Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormatPlayer.formatted(p.getName(), Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.grab, Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.nbtItem),
+                    Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormatPlayer.formatted(p.getName(), Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.grab, Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.nbtItem),
+                    generatePlayerInfo(p),
+                    config
+            );
+            
+            return;
+        }
         if (new ItemCheck().passes(i)) return;
         ServerUtils.verbose("NBT: Item doesn't pass, performing action");
 
