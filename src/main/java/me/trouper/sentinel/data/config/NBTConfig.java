@@ -17,11 +17,11 @@ public class NBTConfig implements JsonSerializable<NBTConfig> {
     public RateLimit rateLimit = new RateLimit();
     
     public class RateLimit {
-        public int rateLimitBytes = 16348;
-        public int byteDecay = 1024;
+        public int rateLimitBytes = 16348; 
+        public int byteDecay = 1024; // Every Minute
         public int rateLimitItems = 10;
-        public int itemDecay = 2;
-        public List<String> punishmentCommands = List.of("kick %player% Internal Exception: io.netty.handler.codec.DecoderException: java.lang.RuntimeException: Tried to read NBT tag that was too big; tried to allocate 28391038bytes where max allowed: 16348");
+        public int itemDecay = 5; // Every 10 seconds
+        public List<String> punishmentCommands = List.of("kick %player% Internal Exception: io.netty.handler.codec.DecoderException: java.lang.RuntimeException: Tried to read NBT tag that was too big; tried to allocate %s bytes where max allowed: %s");
     }
     
     public boolean allowName = true;

@@ -22,6 +22,7 @@ import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CreativeHotbar extends AbstractViolation {
@@ -42,6 +43,11 @@ public class CreativeHotbar extends AbstractViolation {
         //ServerUtils.verbose("NBT: Cursor has meta");
         if (!(i.hasItemMeta() && i.getItemMeta() != null)) return;
         if (!new RateLimitCheck().passes(new Pair<>(p,i))) {
+            List<String> punishmentCommands = new ArrayList<>();
+            for (String punishmentCommand : Sentinel.getInstance().getDirector().io.nbtConfig.rateLimit.punishmentCommands) {
+                punishmentCommands.add(punishmentCommand.formatted());
+            }
+
             ServerUtils.verbose("Player flags rate limit, performing action");
             ActionConfiguration.Builder config = new ActionConfiguration.Builder()
                     .setEvent(e)
@@ -49,8 +55,8 @@ public class CreativeHotbar extends AbstractViolation {
                     .cancel(true)
                     .punish(true)
                     .deop(Sentinel.getInstance().getDirector().io.violationConfig.creativeHotbarAction.deop)
-                    .setPunishmentCommands(Sentinel.getInstance().getDirector().io.nbtConfig.rateLimit.punishmentCommands);
-
+                    .setPunishmentCommands();
+            
             runActions(
                     Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormatPlayer.formatted(p.getName(), Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.grab, Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.nbtItem),
                     Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormatPlayer.formatted(p.getName(), Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.grab, Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.nbtItem),

@@ -184,7 +184,7 @@ public final class Loader {
         Bukkit.getScheduler().runTaskTimer(Sentinel.getInstance(), SpamFilter::decayHeat,0, 20);
         Bukkit.getScheduler().runTaskTimer(Sentinel.getInstance(), ProfanityFilter::decayScore,0,1200);
         Bukkit.getScheduler().runTaskTimer(Sentinel.getInstance(), WandEvents::handleDisplay,0,1);
-        Bukkit.getScheduler().runTaskTimer(Sentinel.getInstance(), RateLimitCheck::decayData,0,20*60);
+        Bukkit.getScheduler().runTaskTimer(Sentinel.getInstance(), RateLimitCheck::decayData,0,1200);
         Bukkit.getScheduler().runTaskTimer(Sentinel.getInstance(), RateLimitCheck::decayItems,0,200);
         
         if (Sentinel.getInstance().getDirector().io.mainConfig.backdoorDetection.enabled) Sentinel.getInstance().getDirector().backdoorDetection.init();

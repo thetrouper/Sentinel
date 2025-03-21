@@ -14,9 +14,32 @@ import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.BundleMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class ItemCheck extends AbstractCheck<ItemStack> {
+    
+    public List<AbstractCheck<ItemStack>> checks;
+    
+    public ItemCheck() {
+        enchantmentCheck = new EnchantmentCheck();
+    }
+    
     @Override
     public boolean passes(ItemStack item) {
+        try {
+            return scan(item);
+        } catch (Exception ex) {
+            Sentinel.getInstance().getLogger().warning("Caught an exception while handling an item check: " + Arrays.toString(ex.getStackTrace()));
+            return false;
+        }
+    }
+
+    private boolean checksPass(ItemStack item) {
+        
+    }
+    
+    private boolean scan(ItemStack item) {
         ServerUtils.verbose("Checking item: " + item.getType().name());
         NBTConfig config = Sentinel.getInstance().getDirector().io.nbtConfig;
 
@@ -188,8 +211,8 @@ public class ItemCheck extends AbstractCheck<ItemStack> {
         ServerUtils.verbose("Item passed all checks.");
         return true;
     }
-
-    public static boolean isSpawnEgg(ItemStack item) {
+    
+    private boolean isSpawnEgg(ItemStack item) {
         return item.getType().name().toLowerCase().contains("spawn_egg");
     }
 }
