@@ -1,8 +1,7 @@
-package me.trouper.sentinel.server.functions.itemchecks;
+package me.trouper.sentinel.server.functions.hotbar.misc;
 
-import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.server.functions.itemchecks.AbstractCheck;
-import me.trouper.sentinel.server.functions.itemchecks.ItemCheck;
+import me.trouper.sentinel.server.functions.hotbar.AbstractCheck;
+import me.trouper.sentinel.server.functions.hotbar.items.ItemCheck;
 import me.trouper.sentinel.utils.InventoryUtils;
 import me.trouper.sentinel.utils.ServerUtils;
 import org.bukkit.inventory.Inventory;
@@ -11,16 +10,20 @@ import org.bukkit.inventory.ItemStack;
 public class InventoryCheck extends AbstractCheck<Inventory> {
 
     @Override
-    public boolean passes(Inventory inventory) {
+    public boolean passes(Inventory inv) {
         ServerUtils.verbose("Running Inventory Check");
-        for (ItemStack item : inventory.getContents()) {
-            if (item == null || item.getType().isAir()) continue;
-            if (!new ItemCheck().passes(item)) {
+
+        for (ItemStack i : inv.getContents()) {
+            if (i == null || i.getType().isAir()) continue;
+            if (!new ItemCheck().passes(i)) {
                 ServerUtils.verbose("Inventory item failed check.");
                 return false;
             }
-            Inventory subInventory = InventoryUtils.getInventory(item);
-            if (subInventory != null && !Sentinel.getInstance().getDirector().io.nbtConfig.allowRecursion) return false;
+            Inventory subInventory = InventoryUtils.getInventory(i);
+            if (subInventory != null && !config.allowRecursion) {
+                ServerUtils.verbose("Recursion is disabled. Failing check.");
+                return false;
+            }
             if (subInventory != null && !passes(subInventory)) {
                 ServerUtils.verbose("Sub-inventory failed check.");
                 return false;
@@ -28,5 +31,5 @@ public class InventoryCheck extends AbstractCheck<Inventory> {
         }
         ServerUtils.verbose("Inventory passed all checks.");
         return true;
-    }
+    } 
 }

@@ -6,8 +6,8 @@ import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.data.storage.NBTStorage;
 import me.trouper.sentinel.server.events.violations.AbstractViolation;
 import me.trouper.sentinel.server.functions.helpers.ActionConfiguration;
-import me.trouper.sentinel.server.functions.itemchecks.ItemCheck;
-import me.trouper.sentinel.server.functions.itemchecks.RateLimitCheck;
+import me.trouper.sentinel.server.functions.hotbar.items.ItemCheck;
+import me.trouper.sentinel.server.functions.hotbar.items.RateLimitCheck;
 import me.trouper.sentinel.server.gui.Items;
 import me.trouper.sentinel.server.gui.MainGUI;
 import me.trouper.sentinel.server.gui.config.AntiNukeGUI;
@@ -45,7 +45,7 @@ public class CreativeHotbar extends AbstractViolation {
         if (!new RateLimitCheck().passes(new Pair<>(p,i))) {
             List<String> punishmentCommands = new ArrayList<>();
             for (String punishmentCommand : Sentinel.getInstance().getDirector().io.nbtConfig.rateLimit.punishmentCommands) {
-                punishmentCommands.add(punishmentCommand.formatted());
+                punishmentCommands.add(punishmentCommand.formatted(RateLimitCheck.dataUsed.get(p.getUniqueId()),Sentinel.getInstance().getDirector().io.nbtConfig.rateLimit.rateLimitBytes));
             }
 
             ServerUtils.verbose("Player flags rate limit, performing action");
@@ -55,7 +55,7 @@ public class CreativeHotbar extends AbstractViolation {
                     .cancel(true)
                     .punish(true)
                     .deop(Sentinel.getInstance().getDirector().io.violationConfig.creativeHotbarAction.deop)
-                    .setPunishmentCommands();
+                    .setPunishmentCommands(punishmentCommands);
             
             runActions(
                     Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormatPlayer.formatted(p.getName(), Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.grab, Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.nbtItem),

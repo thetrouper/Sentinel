@@ -17,6 +17,7 @@ public class NBTConfig implements JsonSerializable<NBTConfig> {
     public RateLimit rateLimit = new RateLimit();
     
     public class RateLimit {
+        public int maxOverhead = 32768; 
         public int rateLimitBytes = 16348; 
         public int byteDecay = 1024; // Every Minute
         public int rateLimitItems = 10;

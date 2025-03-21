@@ -4,7 +4,6 @@ import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import io.github.itzispyder.pdk.utils.SchedulerUtils;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.config.MainConfig;
 import me.trouper.sentinel.server.commands.*;
 import me.trouper.sentinel.server.events.admin.AntiBanEvents;
 import me.trouper.sentinel.server.events.admin.BlockDisplayHideEvent;
@@ -28,7 +27,7 @@ import me.trouper.sentinel.server.events.violations.entities.CommandMinecartPlac
 import me.trouper.sentinel.server.events.violations.entities.CommandMinecartUse;
 import me.trouper.sentinel.server.functions.chatfilter.profanity.ProfanityFilter;
 import me.trouper.sentinel.server.functions.chatfilter.spam.SpamFilter;
-import me.trouper.sentinel.server.functions.itemchecks.RateLimitCheck;
+import me.trouper.sentinel.server.functions.hotbar.items.RateLimitCheck;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.Bukkit;
 
@@ -184,8 +183,8 @@ public final class Loader {
         Bukkit.getScheduler().runTaskTimer(Sentinel.getInstance(), SpamFilter::decayHeat,0, 20);
         Bukkit.getScheduler().runTaskTimer(Sentinel.getInstance(), ProfanityFilter::decayScore,0,1200);
         Bukkit.getScheduler().runTaskTimer(Sentinel.getInstance(), WandEvents::handleDisplay,0,1);
-        Bukkit.getScheduler().runTaskTimer(Sentinel.getInstance(), RateLimitCheck::decayData,0,1200);
-        Bukkit.getScheduler().runTaskTimer(Sentinel.getInstance(), RateLimitCheck::decayItems,0,200);
+        Bukkit.getScheduler().runTaskTimer(Sentinel.getInstance(), new RateLimitCheck()::decayData,0,1200);
+        Bukkit.getScheduler().runTaskTimer(Sentinel.getInstance(), new RateLimitCheck()::decayItems,0,200);
         
         if (Sentinel.getInstance().getDirector().io.mainConfig.backdoorDetection.enabled) Sentinel.getInstance().getDirector().backdoorDetection.init();
 

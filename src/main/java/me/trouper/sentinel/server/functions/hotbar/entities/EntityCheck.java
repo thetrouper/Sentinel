@@ -1,7 +1,9 @@
-package me.trouper.sentinel.server.functions.itemchecks;
+package me.trouper.sentinel.server.functions.hotbar.entities;
 
 import de.tr7zw.changeme.nbtapi.NBT;
-import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.server.functions.hotbar.AbstractCheck;
+import me.trouper.sentinel.server.functions.hotbar.misc.InventoryCheck;
+import me.trouper.sentinel.server.functions.hotbar.items.ItemCheck;
 import me.trouper.sentinel.utils.InventoryUtils;
 import me.trouper.sentinel.utils.ServerUtils;
 import org.bukkit.entity.Entity;
@@ -43,7 +45,7 @@ public class EntityCheck extends AbstractCheck<Entity> {
             }
         }
         if (!entity.getPassengers().isEmpty()) {
-            if (!Sentinel.getInstance().getDirector().io.nbtConfig.allowRecursion) {
+            if (!config.allowRecursion) {
                 ServerUtils.verbose("Entity recursion not allowed.");
                 return false;
             }
@@ -60,7 +62,7 @@ public class EntityCheck extends AbstractCheck<Entity> {
                 ServerUtils.verbose("Entity death time check failed.");
                 failsTiming.set(true);
             }
-            if (nbt.hasTag("Hurttime") && nbt.getInteger("Hurttime") < 1) {
+            if (nbt.hasTag("HurtTime") && nbt.getInteger("HurtTime") < 1) {
                 ServerUtils.verbose("Entity hurt time check failed.");
                 failsTiming.set(true);
             }

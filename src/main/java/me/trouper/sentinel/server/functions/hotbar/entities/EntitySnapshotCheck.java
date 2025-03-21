@@ -1,5 +1,6 @@
-package me.trouper.sentinel.server.functions.itemchecks;
+package me.trouper.sentinel.server.functions.hotbar.entities;
 
+import me.trouper.sentinel.server.functions.hotbar.AbstractCheck;
 import me.trouper.sentinel.utils.ServerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

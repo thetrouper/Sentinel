@@ -1,6 +1,7 @@
-package me.trouper.sentinel.server.functions.itemchecks;
+package me.trouper.sentinel.server.functions.hotbar.items;
 
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.server.functions.hotbar.AbstractCheck;
 import me.trouper.sentinel.utils.ServerUtils;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -10,7 +11,12 @@ import java.util.Map;
 
 import static org.bukkit.enchantments.Enchantment.MENDING;
 
-public class EnchantmentCheck {
+public class EnchantmentCheck extends AbstractCheck<ItemStack> {
+
+    @Override
+    public boolean passes(ItemStack input) {
+        return !hasIllegalEnchants(input);
+    }
 
     public boolean hasIllegalEnchants(ItemStack item) {
         ServerUtils.verbose("Checking item for illegal enchants: ", item.getType().name());
@@ -119,4 +125,6 @@ public class EnchantmentCheck {
 
         return level > maxLevel;
     }
+
+    
 }

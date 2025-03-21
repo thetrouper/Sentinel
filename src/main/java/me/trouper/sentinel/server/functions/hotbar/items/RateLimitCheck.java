@@ -1,16 +1,13 @@
-package me.trouper.sentinel.server.functions.itemchecks;
+package me.trouper.sentinel.server.functions.hotbar.items;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import io.github.itzispyder.pdk.utils.misc.Pair;
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.server.functions.hotbar.AbstractCheck;
 import me.trouper.sentinel.utils.ServerUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitTask;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,20 +33,19 @@ public class RateLimitCheck extends AbstractCheck<Pair<Player,ItemStack>> {
         ServerUtils.verbose("Current Player used items: " + currentUsed);
         currentUsed++;
         itemsUsed.put(uuid,currentUsed);
-        return currentUsed <= Sentinel.getInstance().getDirector().io.nbtConfig.rateLimit.rateLimitItems;
+        return currentUsed <= config.rateLimit.rateLimitItems;
     }
 
 
     private boolean dataLimit(Player player, UUID uuid, ItemStack item) {
-        int itemData = 0;
         int currentData = dataUsed.getOrDefault(uuid,0);
 
         ServerUtils.verbose("Current Player used data: " + currentData);
         try {
             NBTItem nbt = new NBTItem(item);
-            itemData = nbt.toString().length();
+            int itemData = nbt.toString().length();
             ServerUtils.verbose("Item data: " + itemData);
-            currentData += itemData;
+            if (currentData < config.rateLimit.maxOverhead) currentData += itemData;
         } catch (Exception e) {
             Sentinel.getInstance().getLogger().warning("Could not determine size of item. Blocking.");
             Sentinel.getInstance().getLogger().warning(Arrays.toString(e.getStackTrace()));
@@ -60,24 +56,24 @@ public class RateLimitCheck extends AbstractCheck<Pair<Player,ItemStack>> {
 
         ServerUtils.verbose("New Player used data: " + currentData);
 
-        return currentData <= Sentinel.getInstance().getDirector().io.nbtConfig.rateLimit.rateLimitBytes;
+        return currentData <= config.rateLimit.rateLimitBytes;
     }
 
-    public static void decayData() {
+    public void decayData() {
         for (UUID uuid : dataUsed.keySet()) {
             int currentData = dataUsed.get(uuid);
             if (currentData > 0) {
-                currentData -= Sentinel.getInstance().getDirector().io.nbtConfig.rateLimit.byteDecay;
+                currentData -= config.rateLimit.byteDecay;
                 dataUsed.put(uuid, Math.max(0, currentData));
             }
         }
     }
 
-    public static void decayItems() {
+    public void decayItems() {
         for (UUID uuid : itemsUsed.keySet()) {
             int currentItems = itemsUsed.get(uuid);
             if (currentItems > 0) {
-                currentItems -= Sentinel.getInstance().getDirector().io.nbtConfig.rateLimit.itemDecay;
+                currentItems -= config.rateLimit.itemDecay;
                 itemsUsed.put(uuid, Math.max(0, currentItems));
             }
         }
