@@ -1,14 +1,10 @@
 package me.trouper.sentinel.utils;
 
 import me.trouper.sentinel.Sentinel;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.metadata.MetadataValue;
 
 import java.util.ArrayList;
 import java.util.Arrays;

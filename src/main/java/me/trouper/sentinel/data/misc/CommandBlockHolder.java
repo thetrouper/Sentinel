@@ -1,9 +1,8 @@
-package me.trouper.sentinel.data.types;
+package me.trouper.sentinel.data.misc;
 
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientUpdateCommandBlock;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientUpdateCommandBlockMinecart;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.startup.drm.Auth;
 import me.trouper.sentinel.utils.DisplayUtils;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;

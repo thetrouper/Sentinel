@@ -2,8 +2,8 @@ package me.trouper.sentinel.server.functions.hotbar.entities;
 
 import de.tr7zw.changeme.nbtapi.NBT;
 import me.trouper.sentinel.server.functions.hotbar.AbstractCheck;
-import me.trouper.sentinel.server.functions.hotbar.misc.InventoryCheck;
 import me.trouper.sentinel.server.functions.hotbar.items.ItemCheck;
+import me.trouper.sentinel.server.functions.hotbar.misc.InventoryCheck;
 import me.trouper.sentinel.utils.InventoryUtils;
 import me.trouper.sentinel.utils.ServerUtils;
 import org.bukkit.entity.Entity;

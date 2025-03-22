@@ -6,7 +6,6 @@ import io.github.itzispyder.pdk.commands.CustomCommand;
 import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.server.functions.helpers.MessageHandler;
 import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.Bukkit;

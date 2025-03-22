@@ -3,7 +3,6 @@ package me.trouper.sentinel.startup.drm;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.config.AdvancedConfig;
 import me.trouper.sentinel.utils.HashUtils;
 
 import java.io.BufferedReader;

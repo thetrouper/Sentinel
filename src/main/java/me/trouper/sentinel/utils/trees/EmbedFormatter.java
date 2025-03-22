@@ -4,7 +4,7 @@ import io.github.itzispyder.pdk.utils.SchedulerUtils;
 import io.github.itzispyder.pdk.utils.discord.DiscordEmbed;
 import io.github.itzispyder.pdk.utils.discord.DiscordWebhook;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.types.Emojis;
+import me.trouper.sentinel.data.misc.Emojis;
 import me.trouper.sentinel.utils.Text;
 
 import java.io.IOException;

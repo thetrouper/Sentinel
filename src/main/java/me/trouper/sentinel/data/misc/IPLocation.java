@@ -1,4 +1,4 @@
-package me.trouper.sentinel.data.types;
+package me.trouper.sentinel.data.misc;
 
 public class IPLocation {
     private String country;

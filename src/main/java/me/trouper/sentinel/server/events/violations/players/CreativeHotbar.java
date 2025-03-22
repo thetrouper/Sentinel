@@ -3,7 +3,6 @@ package me.trouper.sentinel.server.events.violations.players;
 import io.github.itzispyder.pdk.plugin.gui.CustomGui;
 import io.github.itzispyder.pdk.utils.misc.Pair;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.storage.NBTStorage;
 import me.trouper.sentinel.server.events.violations.AbstractViolation;
 import me.trouper.sentinel.server.functions.helpers.ActionConfiguration;
 import me.trouper.sentinel.server.functions.hotbar.items.ItemCheck;
@@ -24,7 +23,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class CreativeHotbar extends AbstractViolation {
 

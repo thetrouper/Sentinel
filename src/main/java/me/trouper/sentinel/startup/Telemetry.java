@@ -2,7 +2,6 @@ package me.trouper.sentinel.startup;
 
 import io.github.itzispyder.pdk.utils.discord.DiscordEmbed;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.config.MainConfig;
 import me.trouper.sentinel.utils.trees.EmbedFormatter;
 
 import java.net.URI;

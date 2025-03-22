@@ -2,10 +2,12 @@ package me.trouper.sentinel.data.storage;
 
 import io.github.itzispyder.pdk.utils.misc.config.JsonSerializable;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.types.SerialLocation;
+import me.trouper.sentinel.data.misc.SerialLocation;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class ExtraStorage implements JsonSerializable<ExtraStorage> {
     @Override

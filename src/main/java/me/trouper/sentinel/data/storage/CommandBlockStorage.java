@@ -2,14 +2,11 @@ package me.trouper.sentinel.data.storage;
 
 import io.github.itzispyder.pdk.utils.misc.config.JsonSerializable;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.types.CommandBlockHolder;
-import me.trouper.sentinel.data.types.SerialLocation;
+import me.trouper.sentinel.data.misc.CommandBlockHolder;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class CommandBlockStorage implements JsonSerializable<CommandBlockStorage> {
     @Override

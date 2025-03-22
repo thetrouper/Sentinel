@@ -1,4 +1,4 @@
-package me.trouper.sentinel.data.types;
+package me.trouper.sentinel.data.misc;
 
 public class Emojis {
     public static String space = "<:space:1210008300515762238>";

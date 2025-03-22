@@ -3,7 +3,7 @@ package me.trouper.sentinel.utils;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import me.trouper.sentinel.data.types.IPLocation;
+import me.trouper.sentinel.data.misc.IPLocation;
 
 import java.net.InetAddress;
 import java.net.URI;

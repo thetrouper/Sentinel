@@ -11,7 +11,6 @@ import me.trouper.sentinel.utils.InventoryUtils;
 import me.trouper.sentinel.utils.ServerUtils;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 

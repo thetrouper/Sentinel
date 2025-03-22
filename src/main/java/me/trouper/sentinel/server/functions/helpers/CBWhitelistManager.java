@@ -1,10 +1,10 @@
 package me.trouper.sentinel.server.functions.helpers;
 
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.types.SerialLocation;
-import me.trouper.sentinel.data.types.CommandBlockHolder;
+import me.trouper.sentinel.data.misc.CommandBlockHolder;
+import me.trouper.sentinel.data.misc.Selection;
+import me.trouper.sentinel.data.misc.SerialLocation;
 import me.trouper.sentinel.server.events.admin.WandEvents;
-import me.trouper.sentinel.data.types.Selection;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.Location;

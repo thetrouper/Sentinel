@@ -26,17 +26,19 @@ public class ChatGUI {
                 e.getWhoClicked().openInventory(new ConfigGUI().home.getInventory());
             })
             .define(16,PROFANITY_FILTER,e->{
+                ((Player) e.getWhoClicked()).playSound(e.getWhoClicked(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER,1,1.4F);
                 e.getWhoClicked().openInventory(new ProfanityFilterGUI().home.getInventory());
             })
             .define(14,SPAM_FILTER,e->{
+                ((Player) e.getWhoClicked()).playSound(e.getWhoClicked(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER,1,1.4F);
                 e.getWhoClicked().openInventory(new SpamFilterGUI().home.getInventory());
             })
             .define(12,URL_FILTER,e->{
-                ServerUtils.verbose("URL Filter Launching");
+                ((Player) e.getWhoClicked()).playSound(e.getWhoClicked(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER,1,1.4F);
                 e.getWhoClicked().openInventory(new UrlFilterGUI().home.getInventory());
             })
             .define(10,UNICODE_FILTER,e->{
-                ServerUtils.verbose("Unicode Filter Launching");
+                ((Player) e.getWhoClicked()).playSound(e.getWhoClicked(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER,1,1.4F);
                 e.getWhoClicked().openInventory(new UnicodeFilterGUI().home.getInventory());
             })
             .build();

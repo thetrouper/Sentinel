@@ -2,7 +2,7 @@ package me.trouper.sentinel.utils;
 
 import io.github.itzispyder.pdk.utils.misc.Randomizer;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.types.Selection;
+import me.trouper.sentinel.data.misc.Selection;
 import me.trouper.sentinel.utils.display.BlockDisplayRaytracer;
 import org.bukkit.*;
 import org.bukkit.entity.Player;

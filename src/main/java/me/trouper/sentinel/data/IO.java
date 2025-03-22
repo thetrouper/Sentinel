@@ -4,8 +4,8 @@ import io.github.itzispyder.pdk.utils.misc.config.JsonSerializable;
 import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.data.config.*;
 import me.trouper.sentinel.data.config.lang.LanguageFile;
-import me.trouper.sentinel.data.storage.ExtraStorage;
 import me.trouper.sentinel.data.storage.CommandBlockStorage;
+import me.trouper.sentinel.data.storage.ExtraStorage;
 import me.trouper.sentinel.data.storage.NBTStorage;
 
 import java.io.File;

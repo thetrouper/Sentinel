@@ -2,7 +2,7 @@ package me.trouper.sentinel.server.functions.chatfilter.profanity;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.types.Emojis;
+import me.trouper.sentinel.data.misc.Emojis;
 import me.trouper.sentinel.server.functions.chatfilter.FilterResponse;
 import me.trouper.sentinel.server.functions.helpers.Report;
 import me.trouper.sentinel.utils.ServerUtils;

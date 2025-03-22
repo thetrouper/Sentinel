@@ -18,11 +18,11 @@ public class ConfigGUI {
             .onDefine(this::blankPage)
             .defineMain(this::mainClick)
             .define(12, Items.ANTI_NUKE_CONFIG, e->{
-                ((Player) e.getWhoClicked()).playSound(e.getWhoClicked(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER,1,0.8F);
+                ((Player) e.getWhoClicked()).playSound(e.getWhoClicked(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER,1,1F);
                 e.getWhoClicked().openInventory(new AntiNukeGUI().home.getInventory());
             })
             .define(14,Items.CHAT_CONFIG,e->{
-                ((Player) e.getWhoClicked()).playSound(e.getWhoClicked(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER,1,0.8F);
+                ((Player) e.getWhoClicked()).playSound(e.getWhoClicked(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER,1,1F);
                 e.getWhoClicked().openInventory(new ChatGUI().home.getInventory());
             })
             .define(26,Items.BACK,e->{

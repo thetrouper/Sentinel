@@ -7,7 +7,7 @@ import io.github.itzispyder.pdk.utils.misc.config.ConfigUpdater;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.data.config.ViolationConfig;
-import me.trouper.sentinel.data.types.CommandBlockHolder;
+import me.trouper.sentinel.data.misc.CommandBlockHolder;
 import me.trouper.sentinel.server.gui.Items;
 import me.trouper.sentinel.server.gui.MainGUI;
 import me.trouper.sentinel.server.gui.PaginatedGUI;

@@ -1,4 +1,4 @@
-package me.trouper.sentinel.data.types;
+package me.trouper.sentinel.data.misc;
 
 import me.trouper.sentinel.utils.display.BlockDisplayRaytracer;
 import org.bukkit.Location;

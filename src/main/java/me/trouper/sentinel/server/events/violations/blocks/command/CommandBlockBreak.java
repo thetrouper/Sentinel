@@ -2,8 +2,7 @@ package me.trouper.sentinel.server.events.violations.blocks.command;
 
 import io.github.itzispyder.pdk.plugin.gui.CustomGui;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.types.SerialLocation;
-import me.trouper.sentinel.data.types.CommandBlockHolder;
+import me.trouper.sentinel.data.misc.CommandBlockHolder;
 import me.trouper.sentinel.server.events.violations.AbstractViolation;
 import me.trouper.sentinel.server.functions.helpers.ActionConfiguration;
 import me.trouper.sentinel.server.gui.Items;

@@ -8,14 +8,14 @@ import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import io.papermc.paper.chat.ChatRenderer;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.types.SerialLocation;
-import me.trouper.sentinel.data.types.CommandBlockHolder;
+import me.trouper.sentinel.data.misc.CommandBlockHolder;
+import me.trouper.sentinel.data.misc.Selection;
+import me.trouper.sentinel.data.misc.SerialLocation;
 import me.trouper.sentinel.server.events.admin.WandEvents;
 import me.trouper.sentinel.server.functions.chatfilter.profanity.ProfanityFilter;
 import me.trouper.sentinel.server.functions.chatfilter.spam.SpamFilter;
 import me.trouper.sentinel.server.functions.chatfilter.unicode.UnicodeFilter;
 import me.trouper.sentinel.server.functions.chatfilter.url.UrlFilter;
-import me.trouper.sentinel.data.types.Selection;
 import me.trouper.sentinel.server.gui.MainGUI;
 import me.trouper.sentinel.startup.drm.Loader;
 import me.trouper.sentinel.utils.PlayerUtils;
@@ -35,7 +35,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.CommandMinecart;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 @CommandRegistry(value = "sentinel", permission = @Permission("sentinel.staff"), printStackTrace = true)
 public class SentinelCommand implements CustomCommand {

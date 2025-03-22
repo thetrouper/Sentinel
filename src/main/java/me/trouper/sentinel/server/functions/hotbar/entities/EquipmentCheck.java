@@ -4,8 +4,8 @@ import me.trouper.sentinel.server.functions.hotbar.AbstractCheck;
 import me.trouper.sentinel.server.functions.hotbar.items.ItemCheck;
 import me.trouper.sentinel.utils.ServerUtils;
 import org.bukkit.entity.Mob;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 
 public class EquipmentCheck extends AbstractCheck<Mob> {
 

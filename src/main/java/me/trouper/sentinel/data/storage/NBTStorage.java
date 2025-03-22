@@ -1,14 +1,9 @@
 package me.trouper.sentinel.data.storage;
 
-import com.github.retrooper.packetevents.protocol.nbt.serializer.NBTSerializer;
-import de.tr7zw.changeme.nbtapi.NBTContainer;
-import de.tr7zw.changeme.nbtapi.NBTItem;
 import io.github.itzispyder.pdk.plugin.builders.ItemBuilder;
 import io.github.itzispyder.pdk.utils.misc.config.JsonSerializable;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
-import net.md_5.bungee.api.chat.hover.content.ItemSerializer;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;

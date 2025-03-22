@@ -1,9 +1,7 @@
 package me.trouper.sentinel.server.functions.helpers;
 
-import com.github.retrooper.packetevents.wrapper.PacketWrapper;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.types.CommandBlockHolder;
-import me.trouper.sentinel.data.types.SerialLocation;
+import me.trouper.sentinel.data.misc.CommandBlockHolder;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.trees.Node;
 import org.bukkit.Material;

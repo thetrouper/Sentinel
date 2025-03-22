@@ -1,20 +1,15 @@
 package me.trouper.sentinel;
 
 import com.github.retrooper.packetevents.PacketEvents;
-import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import de.tr7zw.changeme.nbtapi.NBT;
 import io.github.itzispyder.pdk.PDK;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
-import me.trouper.sentinel.server.events.extras.ShadowRealmEvents;
-import me.trouper.sentinel.server.events.violations.blocks.command.CommandBlockEdit;
-import me.trouper.sentinel.server.events.violations.players.PluginCloakingPacket;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 

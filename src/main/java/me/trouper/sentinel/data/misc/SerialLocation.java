@@ -1,13 +1,10 @@
-package me.trouper.sentinel.data.types;
+package me.trouper.sentinel.data.misc;
 
 import me.trouper.sentinel.utils.MathUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.UUID;
 
 public record SerialLocation(String world, double x, double y, double z) {

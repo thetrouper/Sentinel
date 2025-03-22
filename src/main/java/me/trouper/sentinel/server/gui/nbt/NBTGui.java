@@ -2,14 +2,6 @@ package me.trouper.sentinel.server.gui.nbt;
 
 import io.github.itzispyder.pdk.plugin.builders.ItemBuilder;
 import io.github.itzispyder.pdk.plugin.gui.CustomGui;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.data.storage.NBTStorage;
 import me.trouper.sentinel.server.gui.MainGUI;
@@ -23,6 +15,9 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class NBTGui
         extends PaginatedGUI<Map.Entry<String, String>> {
