@@ -24,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class CreativeHotbar extends AbstractViolation {
 
@@ -45,7 +46,10 @@ public class CreativeHotbar extends AbstractViolation {
         if (!new RateLimitCheck().passes(new Pair<>(p,i))) {
             List<String> punishmentCommands = new ArrayList<>();
             for (String punishmentCommand : Sentinel.getInstance().getDirector().io.nbtConfig.rateLimit.punishmentCommands) {
-                punishmentCommands.add(punishmentCommand.formatted(RateLimitCheck.dataUsed.get(p.getUniqueId()),Sentinel.getInstance().getDirector().io.nbtConfig.rateLimit.rateLimitBytes));
+                try {
+                    punishmentCommand = punishmentCommand.formatted(RateLimitCheck.dataUsed.get(p.getUniqueId()),Sentinel.getInstance().getDirector().io.nbtConfig.rateLimit.rateLimitBytes);
+                } catch (Exception ignored) {}
+                punishmentCommands.add(punishmentCommand);
             }
 
             ServerUtils.verbose("Player flags rate limit, performing action");
@@ -69,8 +73,7 @@ public class CreativeHotbar extends AbstractViolation {
         if (new ItemCheck().passes(i)) return;
         ServerUtils.verbose("NBT: Item doesn't pass, performing action");
 
-        Sentinel.getInstance().getDirector().io.nbtStorage.caughtItems.put(NBTStorage.toB64(i),p.getUniqueId().toString());
-        Sentinel.getInstance().getDirector().io.nbtStorage.save();
+        Sentinel.getInstance().getDirector().io.nbtStorage.storeItem(i, p.getUniqueId());
 
         ActionConfiguration.Builder config = new ActionConfiguration.Builder()
                 .setEvent(e)

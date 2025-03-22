@@ -24,7 +24,8 @@ public class EmbedFormatter {
             try {
                 webhook.send(spec);
             } catch (IOException e) {
-                Sentinel.getInstance().getLogger().warning(e.getMessage());
+                Sentinel.getInstance().getLogger().info("Discord declined the web request: " + e.getMessage());
+                Sentinel.getInstance().getLogger().info("Please insure your webhook URL is correct, otherwise nothing will be logged to discord.");
                 success.set(false);
                 return;
             }

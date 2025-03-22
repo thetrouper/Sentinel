@@ -76,47 +76,57 @@ public class CommandBlockHolder {
     }
     
     public boolean present() {
-        if (this.loc.isUUID()) {
-            Entity cart = Bukkit.getEntity(this.loc.toUIID());
-            if (!(cart instanceof CommandMinecart cm)) return false;
-            return this.command.equals(cm.getCommand());
-        } else {
-            Location where = loc.translate();
-            boolean preLoaded = where.isChunkLoaded();
-            where.getChunk().load(false);
-            Block b = where.getBlock();
-            if (!(b.getState() instanceof CommandBlock c) || !(b.getBlockData() instanceof org.bukkit.block.data.type.CommandBlock cb)) {
-                ServerUtils.verbose(1,"Block is not present due to not being a command block. Whitelisted: %s",this.isWhitelisted());
-                if (!this.isWhitelisted()) this.delete();
-                return false;
+        try {
+            if (this.loc.isUUID()) {
+                Entity cart = Bukkit.getEntity(this.loc.toUIID());
+                if (!(cart instanceof CommandMinecart cm)) return false;
+                return this.command.equals(cm.getCommand());
+            } else {
+                Location where = loc.translate();
+                boolean preLoaded = where.isChunkLoaded();
+                
+                if (!where.isChunkLoaded()) where.getChunk().load(false);
+                
+                
+                Block b = where.getBlock();
+                if (!(b.getState() instanceof CommandBlock c) || !(b.getBlockData() instanceof org.bukkit.block.data.type.CommandBlock cb)) {
+                    ServerUtils.verbose(1,"Block is not present due to not being a command block. Whitelisted: %s",this.isWhitelisted());
+                    if (!this.isWhitelisted()) this.delete();
+                    return false;
+                }
+                if (!this.getDirection().equals(cb.getFacing())) {
+                    ServerUtils.verbose("Block is not present due to facing mismatch. Should be '%s', is '%s'",this.facing(),cb.getFacing());
+                    if (!this.isWhitelisted()) this.delete();
+                    return false;
+                }
+                if (!this.getType().equals(c.getType())) {
+                    ServerUtils.verbose("Block is not present due to type mismatch. Should be '%s', is '%s'",this.type(),c.getType());
+                    if (!this.isWhitelisted()) this.delete();
+                    return false;
+                }
+                if (!this.command().equals(c.getCommand())) {
+                    ServerUtils.verbose("Block is not present due to command mismatch. Should be '%s', is '%s'",this.command(),c.getCommand());
+                    if (!this.isWhitelisted()) this.delete();
+                    return false;
+                }
+                if (this.isConditional() != cb.isConditional()) {
+                    ServerUtils.verbose("Block is not present due to conditional mismatch.");
+                    if (!this.isWhitelisted()) this.delete();
+                    return false;
+                }
+                if (this.isAuto() != (c.getPersistentDataContainer().getOrDefault(Sentinel.getInstance().getNamespace("auto"), PersistentDataType.BYTE,(byte) 0) == (byte) 1)) {
+                    ServerUtils.verbose("Block is not present due to auto mismatch.");
+                    if (!this.isWhitelisted()) this.delete();
+                    return false;
+                }
+                if (!preLoaded) where.getChunk().unload();
+                return true;
             }
-            if (!this.getDirection().equals(cb.getFacing())) {
-                ServerUtils.verbose("Block is not present due to facing mismatch. Should be '%s', is '%s'",this.facing(),cb.getFacing());
-                if (!this.isWhitelisted()) this.delete();
-                return false;
-            }
-            if (!this.getType().equals(c.getType())) {
-                ServerUtils.verbose("Block is not present due to type mismatch. Should be '%s', is '%s'",this.type(),c.getType());
-                if (!this.isWhitelisted()) this.delete();
-                return false;
-            }
-            if (!this.command().equals(c.getCommand())) {
-                ServerUtils.verbose("Block is not present due to command mismatch. Should be '%s', is '%s'",this.command(),c.getCommand());
-                if (!this.isWhitelisted()) this.delete();
-                return false;
-            }
-            if (this.isConditional() != cb.isConditional()) {
-                ServerUtils.verbose("Block is not present due to conditional mismatch.");
-                if (!this.isWhitelisted()) this.delete();
-                return false;
-            }
-            if (this.isAuto() != (c.getPersistentDataContainer().getOrDefault(Sentinel.getInstance().getNamespace("auto"), PersistentDataType.BYTE,(byte) 0) == (byte) 1)) {
-                ServerUtils.verbose("Block is not present due to auto mismatch.");
-                if (!this.isWhitelisted()) this.delete();
-                return false;
-            }
-            if (!preLoaded) where.getChunk().unload();
-            return true;
+        } catch (IllegalStateException ex) {
+            ServerUtils.verbose("Do not check present command blocks asynchronously. Bukkit has something to say about this.");
+            ex.printStackTrace();
+            ServerUtils.verbose("Not present because the command block is not loaded. I really should make this not call async, and just have a variable that I update every so often...");
+            return false;
         }
     }
     

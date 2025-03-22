@@ -13,10 +13,7 @@ import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.data.types.IPLocation;
 import me.trouper.sentinel.data.types.SerialLocation;
 import me.trouper.sentinel.server.events.extras.ShadowRealmEvents;
-import me.trouper.sentinel.utils.IPUtils;
-import me.trouper.sentinel.utils.ImageUtils;
-import me.trouper.sentinel.utils.Random;
-import me.trouper.sentinel.utils.Text;
+import me.trouper.sentinel.utils.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
@@ -36,6 +33,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ExtraCommand implements CustomCommand {
     @Override
     public void dispatchCommand(CommandSender sender, Command command, String s, Args args) {
+        if (!PlayerUtils.isTrusted(sender)) {
+            sender.sendMessage(Sentinel.getInstance().getDirector().io.lang.permissions.noTrust);
+            return;
+        }
         if (args.getSize() < 2) {
             sender.sendMessage(Text.prefix("""
                     &r&6Extra's &7Guide&f:
@@ -106,7 +107,7 @@ public class ExtraCommand implements CustomCommand {
 
     private void crashPlayer(CommandSender sender, Player victim, String target) {
         var player = PacketEvents.getAPI().getPlayerManager().getUser(victim);
-        player.sendPacket(new WrapperPlayServerUpdateViewDistance(4000));
+        player.sendPacket(new WrapperPlayServerUpdateViewDistance(32000));
         sender.sendMessage(Text.prefix("Crashing %s.".formatted(target)));
     }
 

@@ -31,7 +31,7 @@ import me.trouper.sentinel.server.gui.config.chat.ProfanityFilterGUI;
 import me.trouper.sentinel.server.gui.config.chat.SpamFilterGUI;
 import me.trouper.sentinel.server.gui.config.chat.UnicodeFilterGUI;
 import me.trouper.sentinel.server.gui.config.chat.UrlFilterGUI;
-import me.trouper.sentinel.server.gui.whitelist.NewWhitelistGUI;
+import me.trouper.sentinel.server.gui.whitelist.WhitelistGUI;
 import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.ServerUtils;
 import org.bukkit.entity.Player;
@@ -60,7 +60,7 @@ public class ChatEvent implements CustomListener {
                     UrlFilterGUI.updater.invokeCallbacks(e);
                     ProfanityFilterGUI.updater.invokeCallbacks(e);
                     SpamFilterGUI.updater.invokeCallbacks(e);
-                    NewWhitelistGUI.updater.invokeCallbacks(e);
+                    WhitelistGUI.updater.invokeCallbacks(e);
                     DangerousCommand.updater.invokeCallbacks(e);
                     LoggedCommand.updater.invokeCallbacks(e);
                     SpecificCommand.updater.invokeCallbacks(e);

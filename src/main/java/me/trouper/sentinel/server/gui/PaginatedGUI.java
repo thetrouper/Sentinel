@@ -3,7 +3,6 @@ package me.trouper.sentinel.server.gui;
 import io.github.itzispyder.pdk.plugin.builders.ItemBuilder;
 import io.github.itzispyder.pdk.plugin.gui.CustomGui;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.types.CommandBlockHolder;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.Bukkit;
@@ -13,8 +12,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class PaginatedGUI<T> {
 
@@ -24,6 +25,10 @@ public abstract class PaginatedGUI<T> {
     protected static final Map<UUID, FilterOperator> chosenOperator = new HashMap<>();
 
     protected abstract CustomGui backGUI();
+    protected boolean isAsynchronous() {
+        return false;
+    };
+    
     
     public CustomGui createGUI(Player p) {
         ServerUtils.verbose("Creating GUI for player: %s", p.getName());
@@ -31,7 +36,7 @@ public abstract class PaginatedGUI<T> {
         return CustomGui.create()
                 .title(getTitle(p))
                 .size(54)
-                .onDefine(inv -> setupPage(p, inv))
+                .onDefine(inv -> setupPage(p, inv, isAsynchronous()))
                 .defineMain(e -> handleMainClick(p, e))
                 .define(45, createNavigationItem("Previous", page - 1), e -> changePage(p, -1))
                 .define(49, createFilterItem(p), e -> openFilterMenu(p))
@@ -41,29 +46,63 @@ public abstract class PaginatedGUI<T> {
 
     protected abstract String getTitle(Player p);
 
-    protected void setupPage(Player p, Inventory inv) {
-        ServerUtils.verbose(1,"Setting up page for player: %s", p.getName());
+    protected void setupPage(Player p, Inventory inv, boolean runAsynchronously) {
+        ServerUtils.verbose(1, "Setting up page for player: %s", p.getName());
         int page = currentPages.compute(p.getUniqueId(), (k, v) -> realizePage(p, v == null ? 0 : v));
-        List<T> filtered = filterEntries(p, chosenOperator.computeIfAbsent(p.getUniqueId(), v -> FilterOperator.AND));
-        ServerUtils.verbose(1,"Current page: %d, Total entries: %d", page, filtered.size());
-
-        // Clear previous items
-        for (int i = 0; i < ITEMS_PER_PAGE; i++) {
-            inv.setItem(i, null);
-        }
-
-        // Add paginated items
-        for (int i = page * ITEMS_PER_PAGE; i < (page + 1) * ITEMS_PER_PAGE && i < filtered.size(); i++) {
-            T item = filtered.get(i);
-            inv.setItem(i % ITEMS_PER_PAGE, createDisplayItem(item));
-        }
-
-        // Add persistent bottom items
+        FilterOperator operator = chosenOperator.computeIfAbsent(p.getUniqueId(), v -> FilterOperator.AND);
+        
+        // Add persistent bottom items (navigation and filter)
         inv.setItem(45, createNavigationItem("Previous", realizePage(p, page - 1)));
         inv.setItem(49, createFilterItem(p));
         inv.setItem(53, createNavigationItem("Next", realizePage(p, page + 1)));
-    }
 
+        // Fill the remaining bottom slots with red stained glass
+        for (int slot : new int[]{46, 47, 48, 50, 51, 52}) {
+            inv.setItem(slot, createPlaceholderItem(true));
+        }
+
+        Runnable task = ()->{
+            List<T> filtered = filterEntries(p, operator);
+            int totalEntries = filtered.size();
+            int startIndex = page * ITEMS_PER_PAGE;
+            int endIndex = Math.min(startIndex + ITEMS_PER_PAGE, totalEntries);
+            List<T> pageEntries = filtered.subList(startIndex, endIndex);
+            int pageSize = pageEntries.size();
+
+            AtomicInteger remaining = new AtomicInteger(pageSize);
+
+            // Process each entry and update GUI as each item loads
+            for (int i = 0; i < pageSize; i++) {
+                T entry = pageEntries.get(i);
+                ItemStack displayItem = createDisplayItem(entry);
+                int slot = i;
+
+                Bukkit.getScheduler().runTask(Sentinel.getInstance(), () -> {
+                    inv.setItem(slot, displayItem);
+                    if (remaining.decrementAndGet() == 0) {
+                        // Update remaining main slots and bottom slots to lime
+                        for (int bottomSlot : new int[]{46, 47, 48, 50, 51, 52}) {
+                            inv.setItem(bottomSlot,  createPlaceholderItem(false));
+                        }
+                    }
+                });
+            }
+
+            // Handle case where there are no items
+            if (pageSize == 0) {
+                Bukkit.getScheduler().runTask(Sentinel.getInstance(), () -> {
+                    for (int bottomSlot : new int[]{46, 47, 48, 50, 51, 52}) {
+                        inv.setItem(bottomSlot, createPlaceholderItem(false));
+                    }
+                });
+            }
+        };
+
+        // Start async loading of items
+        if (runAsynchronously) Bukkit.getScheduler().runTaskAsynchronously(Sentinel.getInstance(), task);
+        else task.run();
+    }
+    
     protected abstract void handleMainClick(Player p, InventoryClickEvent e);
 
     protected abstract ItemStack createDisplayItem(T item);
@@ -127,6 +166,15 @@ public abstract class PaginatedGUI<T> {
                 .material(Material.ARROW)
                 .name(Text.color("&b" + direction + "&7 Page"))
                 .lore(Text.color("&7 > &b" + pageTo))
+                .build();
+    }
+
+    private ItemStack createPlaceholderItem(boolean isRed) {
+        Material material = isRed ? Material.RED_STAINED_GLASS_PANE : Material.LIME_STAINED_GLASS_PANE;
+        String name = isRed ? "&cComputing Entries..." : "&aAll Entries Loaded.";
+        return new ItemBuilder()
+                .material(material)
+                .name(Text.color(name))
                 .build();
     }
 

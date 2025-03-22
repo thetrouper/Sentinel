@@ -4,6 +4,7 @@ package me.trouper.sentinel.utils;
 import me.trouper.sentinel.Sentinel;
 import org.bukkit.Location;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -115,7 +116,7 @@ public final class Text {
     }
 
     public static String cleanName(String type) {
-        return type.replaceAll("_"," ").toLowerCase();
+        return type.replaceAll("_"," ").toUpperCase(Locale.US);
     }
 
     public static String formatMillis(long millis) {

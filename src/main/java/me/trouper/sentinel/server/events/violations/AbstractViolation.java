@@ -142,7 +142,6 @@ public abstract class AbstractViolation implements CustomListener {
             itemInfo.addKeyValue(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.hasLore,item.getItemMeta().hasLore() ? Sentinel.getInstance().getDirector().io.lang.generic.yes : Sentinel.getInstance().getDirector().io.lang.generic.no);
             itemInfo.addKeyValue(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.hasAttributes,item.getItemMeta().hasAttributeModifiers() ? Sentinel.getInstance().getDirector().io.lang.generic.yes : Sentinel.getInstance().getDirector().io.lang.generic.no);
             itemInfo.addKeyValue(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.hasEnchants,item.getItemMeta().hasEnchants() ? Sentinel.getInstance().getDirector().io.lang.generic.yes : Sentinel.getInstance().getDirector().io.lang.generic.no);
-            itemInfo.addField(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.nbtStored, FileUtils.createNBTLog(item));
         }
 
         return itemInfo;

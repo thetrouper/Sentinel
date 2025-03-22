@@ -46,63 +46,6 @@ public final class FileUtils {
         }
     }
 
-    public static String createNBTLog(String contents)  {
-        ServerUtils.verbose("FileUtils: Creating NBT log");
-        String fileName = "nbt_log-" + Random.generateID();
-
-        File dataFolder = Sentinel.getInstance().getDirector().io.getDataFolder();
-
-        File loggedNBTFolder = new File(dataFolder,"LoggedNBT");
-        if (!loggedNBTFolder.exists()) {
-            loggedNBTFolder.mkdirs();
-        }
-
-        File file = new File(loggedNBTFolder, fileName + ".txt");
-        try {
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
-            writer.append(contents);
-            writer.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return fileName;
-    }
-
-    public static String createNBTLog(ItemStack i)  {
-        ServerUtils.verbose("FileUtils: Creating NBT log");
-
-        String item = i.getType().name().toLowerCase() + i.getItemMeta().getAsString();
-
-        String fileName = "nbt_log-" + Random.generateID();
-
-        File dataFolder = Sentinel.getInstance().getDirector().io.getDataFolder();
-
-        File loggedNBTFolder = new File(dataFolder,"LoggedNBT");
-        if (!loggedNBTFolder.exists()) {
-            loggedNBTFolder.mkdirs();
-        }
-
-        File file = new File(loggedNBTFolder, fileName + ".txt");
-        try {
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
-            writer.append(item);
-            writer.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return fileName;
-    }
-
 
     public static String createCommandLog(String command)  {
 
