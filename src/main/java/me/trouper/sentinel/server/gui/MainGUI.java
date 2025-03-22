@@ -7,6 +7,8 @@ import me.trouper.sentinel.server.gui.nbt.NBTGui;
 import me.trouper.sentinel.server.gui.whitelist.WhitelistGUI;
 import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.Text;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -31,13 +33,16 @@ public class MainGUI {
             .build();
 
     private void openWhitelist(InventoryClickEvent e) {
+        ((Player) e.getWhoClicked()).playSound(e.getWhoClicked(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER,1,0.8F);
         e.getWhoClicked().openInventory(new WhitelistGUI().createGUI((Player) e.getWhoClicked()).getInventory());
     }
     private void openNBT(InventoryClickEvent e) {
+        ((Player) e.getWhoClicked()).playSound(e.getWhoClicked(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER,1,0.8F);
         e.getWhoClicked().openInventory(new NBTGui().createGUI((Player) e.getWhoClicked()).getInventory());
     }
     
     private void openConfig(InventoryClickEvent e) {
+        ((Player) e.getWhoClicked()).playSound(e.getWhoClicked(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER,1,0.8F);
         e.getWhoClicked().openInventory(new ConfigGUI().home.getInventory());
     }
 

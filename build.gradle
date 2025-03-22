@@ -54,11 +54,19 @@ dependencies {
     implementation("de.tr7zw:item-nbt-api:2.14.1")
 }
 
+static def generateBuildId() {
+    return new Date().format('HH:mm:ss')
+}
+
 processResources {
     filesMatching('plugin.yml') {
-        expand(version: project.version)
+        expand(
+                version: project.version,
+                build: generateBuildId()
+        )
     }
 }
+
 
 task cleanPluginYml {
     doLast {

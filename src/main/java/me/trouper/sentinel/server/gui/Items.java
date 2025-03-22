@@ -40,10 +40,10 @@ public class Items {
             .material(Material.SHIELD)
             .name(Text.color("&6&lSentinel &8&l|&f Anti-Nuke"))
             .lore(" ")
-            .lore(Text.color("&bVersion&7: &f%s".formatted(Sentinel.getInstance().getDescription().getVersion())))
+            .lore(Text.color("&bVersion&7: &f%s".formatted(Sentinel.getInstance().version)))
             .lore(Text.color("&bLicensed to&7: &f%s".formatted(Sentinel.getInstance().nonce)))
             .lore(" ")
-            .lore(Text.color("&e&nAuthor(s)&r&e: &e%s").formatted(Sentinel.getInstance().getDescription().getAuthors()))
+            .lore(Text.color("&e&nAuthor(s)&r&e: &e%s").formatted(Sentinel.getInstance().getPluginMeta().getAuthors()))
             .enchant(Enchantment.PROTECTION,64)
             .flag(ItemFlag.HIDE_ENCHANTS)
             .build();

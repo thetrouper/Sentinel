@@ -8,6 +8,8 @@ import me.trouper.sentinel.server.gui.config.ConfigGUI;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -20,6 +22,7 @@ public class ChatGUI {
             .onDefine(this::blankPage)
             .defineMain(this::mainClick)
             .define(26,Items.BACK,e->{
+                ((Player) e.getWhoClicked()).playSound(e.getWhoClicked(), Sound.ITEM_BOOK_PAGE_TURN, SoundCategory.MASTER,1,1.3F);
                 e.getWhoClicked().openInventory(new ConfigGUI().home.getInventory());
             })
             .define(16,PROFANITY_FILTER,e->{

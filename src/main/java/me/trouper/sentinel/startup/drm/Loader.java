@@ -137,7 +137,7 @@ public final class Loader {
         setLite(false);
 
         // Plugin startup logic
-        Sentinel.getInstance().getLogger().info("Starting Up! (%s)...".formatted(Sentinel.getInstance().getDescription().getVersion()));
+        Sentinel.getInstance().getLogger().info("Starting Up! (%s)...".formatted(Sentinel.getInstance().version));
 
         // Commands
         if (coldStart) new SentinelCommand().register();

@@ -5,14 +5,11 @@ import io.github.itzispyder.pdk.plugin.gui.CustomGui;
 import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -79,11 +76,13 @@ public abstract class PaginatedGUI<T> {
 
                 Bukkit.getScheduler().runTask(Sentinel.getInstance(), () -> {
                     inv.setItem(slot, displayItem);
+                    if (runAsynchronously) p.playSound(p, Sound.UI_HUD_BUBBLE_POP, SoundCategory.MASTER,1,1.1F);
                     if (remaining.decrementAndGet() == 0) {
                         // Update remaining main slots and bottom slots to lime
                         for (int bottomSlot : new int[]{46, 47, 48, 50, 51, 52}) {
                             inv.setItem(bottomSlot,  createPlaceholderItem(false));
                         }
+                        if (runAsynchronously) p.playSound(p,Sound.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.MASTER,1,0.8F);
                     }
                 });
             }
@@ -94,6 +93,7 @@ public abstract class PaginatedGUI<T> {
                     for (int bottomSlot : new int[]{46, 47, 48, 50, 51, 52}) {
                         inv.setItem(bottomSlot, createPlaceholderItem(false));
                     }
+                    if (runAsynchronously) p.playSound(p,Sound.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.MASTER,1,0.8F);
                 });
             }
         };
@@ -123,6 +123,7 @@ public abstract class PaginatedGUI<T> {
         addFilterItems(filterGui, p, filters);
 
         p.openInventory(filterGui.build().getInventory());
+        p.playSound(p,Sound.BLOCK_NOTE_BLOCK_BELL, SoundCategory.MASTER,1,0.8F);
     }
 
     protected abstract void addFilterItems(CustomGui.GuiBuilder filterGui, Player p, Set<String> filters);
@@ -130,19 +131,31 @@ public abstract class PaginatedGUI<T> {
     protected void toggleFilter(Player p, String filter) {
         Set<String> filters = activeFilters.computeIfAbsent(p.getUniqueId(), k -> new HashSet<>());
         ServerUtils.verbose("%s is now toggling the %s filter. Current %s", p, filter, filters);
-        if (filters.contains(filter)) filters.remove(filter);
-        else filters.add(filter);
+        if (filters.contains(filter)) {
+            filters.remove(filter);
+            p.playSound(p,Sound.UI_BUTTON_CLICK, SoundCategory.MASTER,1,0.8F);
+        } else {
+            filters.add(filter);
+            p.playSound(p,Sound.UI_BUTTON_CLICK, SoundCategory.MASTER,1,1F);
+        }
         ServerUtils.verbose("Current filters for %s: %s", p, filters);
+
         openFilterMenu(p);
     }
 
-    protected int getFilterCount(Player p) {
-        return activeFilters.getOrDefault(p.getUniqueId(), new HashSet<>()).size();
+    protected int getFilteredCount(Player p) {
+        return filterEntries(p,chosenOperator.getOrDefault(p.getUniqueId(),FilterOperator.AND)).size();
     }
+
+    private int getFilterCount(Player p) {
+        return activeFilters.get(p.getUniqueId()).size();
+    }
+
 
     protected void changePage(Player p, int direction) {
         int current = currentPages.getOrDefault(p.getUniqueId(), 0);
         if (current + direction < 0) {
+            p.playSound(p, Sound.ITEM_BOOK_PAGE_TURN, SoundCategory.MASTER,1,0.8F);
             p.openInventory(backGUI().getInventory());
             return;
         }

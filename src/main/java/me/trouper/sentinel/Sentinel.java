@@ -28,7 +28,9 @@ public final class Sentinel extends JavaPlugin {
     public String nonce;
     public String ip;
     public int port;
-    
+    public String version;
+    public String build;
+
     /* ]=- Sentinel Startup Flow -=[
     Make sure everything is done in sequence to avoid NullPointerException!
         1. onLoad
@@ -51,6 +53,9 @@ public final class Sentinel extends JavaPlugin {
 
     @Override
     public void onLoad() {
+        version = getPluginMeta().getVersion().split("\\-")[0];
+        build = getPluginMeta().getVersion().split("\\-")[1];
+        getLogger().info("Build ID: %s".formatted(build));
         getLogger().info("\n]======------ Pre-load started ------======[");
 
         getLogger().info("Setting PacketEvents API");
@@ -97,7 +102,7 @@ public final class Sentinel extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         PacketEvents.getAPI().terminate();
-        getLogger().info("Sentinel has disabled! (%s) Your server is now no longer protected!".formatted(getDescription().getVersion()));
+        getLogger().info("Sentinel has disabled! (%s) Your server is now no longer protected!".formatted(version));
     }
 
     public static Sentinel getInstance() {

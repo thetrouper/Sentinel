@@ -39,11 +39,13 @@ public class WhitelistGUI extends PaginatedGUI<CommandBlockHolder> {
 
     @Override
     protected String getTitle(Player p) {
-        return Text.color("&6&lCommand Blocks &7(%s/%s filtered)".formatted(getFilterCount(p),Sentinel.getInstance().getDirector().io.commandBlocks.holders.size()));
+        return Text.color("&6&lCommand Blocks &7(%s/%s filtered)".formatted(getFilteredCount(p),Sentinel.getInstance().getDirector().io.commandBlocks.holders.size()));
     }
 
     @Override
     protected void handleMainClick(Player p, InventoryClickEvent e) {
+        e.setCancelled(true);
+        MainGUI.verify(p);
         int slot = e.getSlot();
         if (slot >= 45) return;
         if (e.getInventory().getItem(slot) == null) return;

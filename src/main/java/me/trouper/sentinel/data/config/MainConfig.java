@@ -12,6 +12,7 @@ public class MainConfig implements JsonSerializable<MainConfig> {
     public transient String user = "%%__USER__%%";
     public transient String username = "%%__USERNAME__%%";
 
+
     @Override
     public File getFile() {
         File file = new File(Sentinel.getInstance().getDirector().io.getDataFolder(), "/main-config.json");
