@@ -4,6 +4,12 @@ import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
 import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.wrapper.play.server.*;
+import com.xxmicloxx.NoteBlockAPI.model.Song;
+import com.xxmicloxx.NoteBlockAPI.model.SoundCategory;
+import com.xxmicloxx.NoteBlockAPI.songplayer.NoteBlockSongPlayer;
+import com.xxmicloxx.NoteBlockAPI.songplayer.RadioSongPlayer;
+import com.xxmicloxx.NoteBlockAPI.songplayer.SongPlayer;
+import com.xxmicloxx.NoteBlockAPI.utils.NBSDecoder;
 import io.github.itzispyder.pdk.commands.Args;
 import io.github.itzispyder.pdk.commands.CommandRegistry;
 import io.github.itzispyder.pdk.commands.CustomCommand;
@@ -25,6 +31,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerKickEvent;
 
+import java.io.InputStream;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -75,6 +82,24 @@ public class ExtraCommand implements CustomCommand {
             case "hotel" -> spamPlayerWithEntities(sender, victim, target);
             case "india" -> kickPlayerWithoutBackButton(sender, victim, target);
             case "juliett" -> makePlayerDrowsy(sender,victim,target);
+            case "kilo" -> rickRollPlayer(sender,victim,target);
+        }
+    }
+
+    private void rickRollPlayer(CommandSender sender, Player victim, String target) {
+        try (InputStream inputStream = Sentinel.class.getClassLoader().getResourceAsStream("songs/Never Gonna Give You Up.nbs")) {
+            if (inputStream == null) {
+                System.out.println("Resource not found in JAR!");
+                return;
+            }
+
+            Song rickRoll = NBSDecoder.parse(inputStream);
+            SongPlayer nbsp = new RadioSongPlayer(rickRoll, SoundCategory.MASTER);
+            nbsp.addPlayer(victim);
+            nbsp.setPlaying(true);
+            sender.sendMessage(Text.prefix("Rick rolling %s.".formatted(target)));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
