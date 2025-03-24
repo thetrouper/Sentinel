@@ -20,6 +20,7 @@ import me.trouper.sentinel.server.events.violations.blocks.structure.StructureBl
 import me.trouper.sentinel.server.events.violations.blocks.structure.StructureBlockPlace;
 import me.trouper.sentinel.server.events.violations.blocks.structure.StructureBlockUse;
 import me.trouper.sentinel.server.events.violations.command.DangerousCommand;
+import me.trouper.sentinel.server.events.violations.command.HiddenCommand;
 import me.trouper.sentinel.server.events.violations.command.LoggedCommand;
 import me.trouper.sentinel.server.events.violations.command.SpecificCommand;
 import me.trouper.sentinel.server.events.violations.entities.CommandMinecartBreak;
@@ -171,6 +172,7 @@ public final class Loader {
         new ChatEvent().register();
         new DangerousCommand().register();
         new LoggedCommand().register();
+        new HiddenCommand().register();
         new SpecificCommand().register();
         new CreativeHotbar().register();
         new TrapCommand().register();

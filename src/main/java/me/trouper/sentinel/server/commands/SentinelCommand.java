@@ -381,13 +381,13 @@ public class SentinelCommand implements CustomCommand {
         switch (sub) {
             case "add" -> {
                 if (!PlayerUtils.checkPermission(sender, "sentinel.false-positive.add")) return;
-                Sentinel.getInstance().getDirector().io.fpConfig.swearWhitelist.add(falsePositive);
+                Sentinel.getInstance().getDirector().io.falsePositiveList.swearWhitelist.add(falsePositive);
                 sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.falsePositive.addSuccess.formatted(falsePositive)));
                 info.addKeyValue("Action", "Add");
             }
             case "remove" -> {
                 if (!PlayerUtils.checkPermission(sender, "sentinel.false-positive.remove")) return;
-                Sentinel.getInstance().getDirector().io.fpConfig.swearWhitelist.remove(falsePositive);
+                Sentinel.getInstance().getDirector().io.falsePositiveList.swearWhitelist.remove(falsePositive);
                 sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.falsePositive.removeSuccess.formatted(falsePositive)));
                 info.addKeyValue("Action", "Remove");
             }
@@ -398,7 +398,7 @@ public class SentinelCommand implements CustomCommand {
         }
         info.addKeyValue("False Positive Edited", falsePositive);
         root.addChild(info);
-        Sentinel.getInstance().getDirector().io.fpConfig.save();
+        Sentinel.getInstance().getDirector().io.falsePositiveList.save();
         Sentinel.getInstance().getLogger().info(ConsoleFormatter.format(root));
         EmbedFormatter.sendEmbed(EmbedFormatter.format(root));
     }

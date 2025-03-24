@@ -5,7 +5,6 @@ import io.github.itzispyder.pdk.plugin.gui.CustomGui;
 import me.trouper.sentinel.server.gui.Items;
 import me.trouper.sentinel.server.gui.MainGUI;
 import me.trouper.sentinel.server.gui.config.ConfigGUI;
-import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.Material;
 import org.bukkit.Sound;

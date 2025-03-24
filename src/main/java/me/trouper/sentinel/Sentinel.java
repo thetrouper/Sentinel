@@ -72,12 +72,6 @@ public final class Sentinel extends JavaPlugin {
         if (!NBT.preloadApi()) {
             getLogger().warning("NBT-API wasn't initialized properly. Sentinel may error out.");
         }
-        boolean NoteBlockAPI = true;
-        if (!Bukkit.getPluginManager().isPluginEnabled("NoteBlockAPI")){
-            getLogger().severe("*** NoteBlockAPI is not installed or not enabled. ***");
-            NoteBlockAPI = false;
-            return;
-        }
 
         getLogger().info("Initializing PDK");
         PDK.init(this);

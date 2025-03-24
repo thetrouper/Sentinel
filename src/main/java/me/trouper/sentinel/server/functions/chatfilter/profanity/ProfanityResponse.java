@@ -200,33 +200,33 @@ public class ProfanityResponse implements FilterResponse {
 
     private static boolean containsSwears(String text) {
         ServerUtils.verbose("ProfanityFilter: Checking for swears");
-        for (String swear : Sentinel.getInstance().getDirector().io.swearConfig.swears) {
+        for (String swear : Sentinel.getInstance().getDirector().io.swearList.swears) {
             if (text.contains(swear)) return true;
         }
 
-        Pattern pattern = Pattern.compile(Sentinel.getInstance().getDirector().io.swearConfig.regexSwears, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(Sentinel.getInstance().getDirector().io.swearList.regexSwears, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(text);
 
-        return matcher.find() && Sentinel.getInstance().getDirector().io.swearConfig.useRegex;
+        return matcher.find() && Sentinel.getInstance().getDirector().io.swearList.useRegex;
     }
 
     private static boolean containsSlurs(String text) {
         ServerUtils.verbose("ProfanityFilter: Checking for slurs");
-        for (String slur : Sentinel.getInstance().getDirector().io.strictConfig.strict) {
+        for (String slur : Sentinel.getInstance().getDirector().io.strictList.strict) {
             if (text.contains(slur)) return true;
         }
 
-        Pattern pattern = Pattern.compile(Sentinel.getInstance().getDirector().io.strictConfig.regexStrict, Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile(Sentinel.getInstance().getDirector().io.strictList.regexStrict, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(text);
 
-        return matcher.find() && Sentinel.getInstance().getDirector().io.strictConfig.useRegex;
+        return matcher.find() && Sentinel.getInstance().getDirector().io.strictList.useRegex;
     }
 
     private static String removeFalsePositives(String text) {
-        for (String falsePositive : Sentinel.getInstance().getDirector().io.fpConfig.swearWhitelist) {
+        for (String falsePositive : Sentinel.getInstance().getDirector().io.falsePositiveList.swearWhitelist) {
             text = text.replace(falsePositive, "");
         }
-        if (Sentinel.getInstance().getDirector().io.fpConfig.useRegex) text = text.replaceAll(Sentinel.getInstance().getDirector().io.fpConfig.regexWhitelist,"");
+        if (Sentinel.getInstance().getDirector().io.falsePositiveList.useRegex) text = text.replaceAll(Sentinel.getInstance().getDirector().io.falsePositiveList.regexWhitelist,"");
         return text;
     }
 
@@ -255,14 +255,14 @@ public class ProfanityResponse implements FilterResponse {
     }
 
     private static String highlightSwears(String text, String start, String end) {
-        for (String swear : Sentinel.getInstance().getDirector().io.swearConfig.swears) {
+        for (String swear : Sentinel.getInstance().getDirector().io.swearList.swears) {
             text = text.replace(swear, start + swear + end);
         }
         return text;
     }
 
     private static String highlightSlurs(String text, String start, String end) {
-        for (String slur : Sentinel.getInstance().getDirector().io.strictConfig.strict) {
+        for (String slur : Sentinel.getInstance().getDirector().io.strictList.strict) {
             text = text.replace(slur, start + slur + end);
         }
         return text;

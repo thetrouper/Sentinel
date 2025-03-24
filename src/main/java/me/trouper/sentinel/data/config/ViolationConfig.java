@@ -2,12 +2,13 @@ package me.trouper.sentinel.data.config;
 
 import io.github.itzispyder.pdk.utils.misc.config.JsonSerializable;
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.data.config.lists.SwearList;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-public class ViolationConfig implements JsonSerializable<SwearsConfig> {
+public class ViolationConfig implements JsonSerializable<SwearList> {
     @Override
     public File getFile() {
         File file = new File(Sentinel.getInstance().getDirector().io.getDataFolder(), "/violation-config.json");

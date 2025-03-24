@@ -2,11 +2,12 @@ package me.trouper.sentinel.server.commands;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
+import com.github.retrooper.packetevents.protocol.player.User;
+import com.github.retrooper.packetevents.protocol.potion.PotionEffect;
 import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.wrapper.play.server.*;
 import com.xxmicloxx.NoteBlockAPI.model.Song;
 import com.xxmicloxx.NoteBlockAPI.model.SoundCategory;
-import com.xxmicloxx.NoteBlockAPI.songplayer.NoteBlockSongPlayer;
 import com.xxmicloxx.NoteBlockAPI.songplayer.RadioSongPlayer;
 import com.xxmicloxx.NoteBlockAPI.songplayer.SongPlayer;
 import com.xxmicloxx.NoteBlockAPI.utils.NBSDecoder;
@@ -26,14 +27,14 @@ import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerKickEvent;
 
 import java.io.InputStream;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @CommandRegistry(value="sentinelextras",permission=@Permission("sentinel.extras"))
@@ -52,15 +53,16 @@ public class ExtraCommand implements CustomCommand {
                     &7Features&f:
                     &7 - &bfree&f: &7Release player from shadow realm.
                     &7 - &balfa&f: &7Reliable, crash player.
-                    &7 - &bbravo&f: &7Reliable, send player to shadow realm.
-                    &7 - &bcharlie&f: &7Reliable, delete player.
+                    &7 - &bbravo&f: &7Send player to shadow realm.
+                    &7 - &bcharlie&f: &7Tell player's client to delete itself.
                     &7 - &bdelta&f: &7Reliable, Lock player's mouse.
                     &7 - &becho&f: &7Unreliable, Inflate player's log.
                     &7 - &bfoxtrot&f: &7Unreliable, Spam player with titles.
-                    &7 - &bgolf&f: &7Reliable, corrupt player chunks.
-                    &7 - &bhotel&f: &7Reliable, spam player with bogus entities.
-                    &7 - &bindia&f: &7Reliable, kick with no back to server list button.
-                    &7 - &bjuliett&f: &7Reliable, make player's screen dim rapidly.
+                    &7 - &bgolf&f: &7Corrupt player chunks.
+                    &7 - &bhotel&f: &7Unreliable, spam player with bogus entities.
+                    &7 - &bindia&f: &7Kick with no back to server list button.
+                    &7 - &bjuliett&f: &7Make player's screen dim rapidly.
+                    &7 - &bkilo&f: &7Rick Roll the player. (Requires NoteBlockAPI)
                     """));
             return;
         }
@@ -86,7 +88,20 @@ public class ExtraCommand implements CustomCommand {
         }
     }
 
+    @Override
+    public void dispatchCompletions(CommandSender commandSender, Command command, String s, CompletionBuilder b) {
+        b.then(b.arg("info"));
+        b.then(b.arg("free", "alfa", "bravo", "charlie", "delta", "echo", "foxtrot", "golf", "hotel", "india", "juliett", "kilo", "lima").then(
+                b.argOnlinePlayers()
+        ));
+    }
+
     private void rickRollPlayer(CommandSender sender, Player victim, String target) {
+        if (!Bukkit.getPluginManager().isPluginEnabled("NoteBlockAPI")){
+            Sentinel.getInstance().getLogger().severe("*** NoteBlockAPI is not installed or not enabled. ***");
+            sender.sendMessage(Text.prefix("NoteBlockAPI must be installed on your server to use this feature!"));
+            return;
+        }
         try (InputStream inputStream = Sentinel.class.getClassLoader().getResourceAsStream("songs/Never Gonna Give You Up.nbs")) {
             if (inputStream == null) {
                 System.out.println("Resource not found in JAR!");
@@ -97,18 +112,10 @@ public class ExtraCommand implements CustomCommand {
             SongPlayer nbsp = new RadioSongPlayer(rickRoll, SoundCategory.MASTER);
             nbsp.addPlayer(victim);
             nbsp.setPlaying(true);
-            sender.sendMessage(Text.prefix("Rick rolling %s.".formatted(target)));
+            sender.sendMessage(Text.prefix("Rick Rolling %s.".formatted(target)));
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void dispatchCompletions(CommandSender commandSender, Command command, String s, CompletionBuilder b) {
-        b.then(b.arg("info"));
-        b.then(b.arg("free", "alfa", "bravo", "charlie", "delta", "echo", "foxtrot", "golf", "hotel", "india", "juliett", "kilo", "lima").then(
-                b.argOnlinePlayers()
-        ));
     }
 
     private void makePlayerDrowsy(CommandSender sender, Player victim, String target) {
@@ -176,9 +183,9 @@ public class ExtraCommand implements CustomCommand {
         Bukkit.getScheduler().runTaskTimerAsynchronously(Sentinel.getInstance(), (t) -> {
             if (!victim.isOnline()) t.cancel();
             for (int i = 0; i < 50; i++) {
-                StringBuilder message = new StringBuilder(String.valueOf(Random.generateID()));
+                StringBuilder message = new StringBuilder(String.valueOf(RandomUtils.generateID()));
                 for (int j = 0; j < 256; j++) {
-                    message.append(String.valueOf(Random.generateID()));
+                    message.append(String.valueOf(RandomUtils.generateID()));
                 }
                 player.sendPacket(new WrapperPlayServerTitle(
                         WrapperPlayServerTitle.TitleAction.SET_TITLE,

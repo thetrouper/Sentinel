@@ -18,10 +18,10 @@ public final class Director {
     public Auth auth;
     public Telemetry telemetry;
     public Injection injection;
+    public IO io;
     public CBWhitelistManager whitelistManager;
     public MessageHandler messageHandler;
     public ReportHandler reportHandler;
-    public IO io;
 
     public Director() {
         Sentinel.getInstance().getLogger().info("Instantiating Systems");
@@ -30,10 +30,10 @@ public final class Director {
         loader = new Loader();
         backdoorDetection = new BackdoorDetection();
         injection = new Injection();
+        io = new IO();
         whitelistManager = new CBWhitelistManager();
         messageHandler = new MessageHandler();
         reportHandler = new ReportHandler();
-        io = new IO();
     }
     
     public void launch() {

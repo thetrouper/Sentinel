@@ -48,7 +48,7 @@ public final class FileUtils {
 
     public static String createCommandLog(String command)  {
 
-        String fileName = "command_log-" + Random.generateID();
+        String fileName = "command_log-" + RandomUtils.generateID();
         File file = new File(Sentinel.getInstance().getDirector().io.getDataFolder() + "/LoggedCommands/" + fileName + ".txt");
         FileValidationUtils.validate(file);
         try {

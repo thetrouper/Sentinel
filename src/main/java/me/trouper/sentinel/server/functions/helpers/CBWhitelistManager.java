@@ -101,7 +101,7 @@ public class CBWhitelistManager {
 
     public int clearAll() {
         int total = 0;
-        for (CommandBlockHolder cb : Sentinel.getInstance().getDirector().io.commandBlocks.holders) {
+        for (CommandBlockHolder cb : Sentinel.getInstance().getDirector().io.whitelistStorage.holders) {
             cb.destroy();
             cb.delete();
             total++;
@@ -115,7 +115,7 @@ public class CBWhitelistManager {
 
     public int clearAll(UUID who) {
         int total = 0;
-        for (CommandBlockHolder cb : Sentinel.getInstance().getDirector().io.commandBlocks.holders) {
+        for (CommandBlockHolder cb : Sentinel.getInstance().getDirector().io.whitelistStorage.holders) {
             if (!cb.owner().equals(who.toString())) continue;
             cb.destroy();
             cb.delete();
@@ -130,7 +130,7 @@ public class CBWhitelistManager {
 
     public int restoreAll() {
         int total = 0;
-        for (CommandBlockHolder cb : Sentinel.getInstance().getDirector().io.commandBlocks.holders) {
+        for (CommandBlockHolder cb : Sentinel.getInstance().getDirector().io.whitelistStorage.holders) {
             if (cb.isWhitelisted() && cb.restore()) total++;
         }
         return total;
@@ -138,7 +138,7 @@ public class CBWhitelistManager {
 
     public int restoreAll(UUID who) {
         int total = 0;
-        for (CommandBlockHolder cb : Sentinel.getInstance().getDirector().io.commandBlocks.holders) {
+        for (CommandBlockHolder cb : Sentinel.getInstance().getDirector().io.whitelistStorage.holders) {
             if (!cb.owner().equals(who.toString())) continue;
             if (cb.isWhitelisted() && cb.restore()) total++;
         }
@@ -165,7 +165,7 @@ public class CBWhitelistManager {
     }
 
     public CommandBlockHolder getFromList(UUID entityUUID) {
-        for (CommandBlockHolder existing :  Sentinel.getInstance().getDirector().io.commandBlocks.holders) {
+        for (CommandBlockHolder existing :  Sentinel.getInstance().getDirector().io.whitelistStorage.holders) {
             if (existing.loc().isUUID() && existing.loc().toUIID().equals(entityUUID)) {
                 return existing;
             }
@@ -174,7 +174,7 @@ public class CBWhitelistManager {
     }
 
     public CommandBlockHolder getFromList(Location loc) {
-        for (CommandBlockHolder existing :  Sentinel.getInstance().getDirector().io.commandBlocks.holders) {
+        for (CommandBlockHolder existing :  Sentinel.getInstance().getDirector().io.whitelistStorage.holders) {
             if (existing.loc().isSameLocation(loc)) {
                 return existing;
             }
@@ -183,7 +183,7 @@ public class CBWhitelistManager {
     }
 
     public CommandBlockHolder getFromList(SerialLocation loc) {
-        for (CommandBlockHolder existing :  Sentinel.getInstance().getDirector().io.commandBlocks.holders) {
+        for (CommandBlockHolder existing :  Sentinel.getInstance().getDirector().io.whitelistStorage.holders) {
             if (existing.loc().isSameLocation(loc)) {
                 return existing;
             }

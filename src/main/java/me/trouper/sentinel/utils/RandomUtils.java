@@ -11,7 +11,7 @@ import java.util.Set;
  * Randomize items from a list
  * @param <T> list of?
  */
-public final class Random<T> {
+public final class RandomUtils<T> {
 
     public static Date getDate(long id) throws ParseException {
         String dateString = String.valueOf(id);
@@ -36,7 +36,7 @@ public final class Random<T> {
      * From array list
      * @param array list
      */
-    public Random(List<T> array) {
+    public RandomUtils(List<T> array) {
         this.array = array;
     }
 
@@ -44,7 +44,7 @@ public final class Random<T> {
      * From set
      * @param array set
      */
-    public Random(Set<T> array) {
+    public RandomUtils(Set<T> array) {
         this.array = new ArrayList<>(array);
     }
 
@@ -52,7 +52,7 @@ public final class Random<T> {
      * From array
      * @param array array
      */
-    public Random(T[] array) {
+    public RandomUtils(T[] array) {
         this.array = List.of(array);
     }
 

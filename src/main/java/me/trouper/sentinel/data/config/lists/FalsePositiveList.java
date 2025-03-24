@@ -1,4 +1,4 @@
-package me.trouper.sentinel.data.config;
+package me.trouper.sentinel.data.config.lists;
 
 import io.github.itzispyder.pdk.utils.misc.config.JsonSerializable;
 import me.trouper.sentinel.Sentinel;
@@ -7,7 +7,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-public class FPConfig implements JsonSerializable<FPConfig> {
+public class FalsePositiveList implements JsonSerializable<FalsePositiveList> {
 
     @Override
     public File getFile() {

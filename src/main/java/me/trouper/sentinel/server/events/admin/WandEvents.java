@@ -172,7 +172,7 @@ public class WandEvents implements CustomListener {
                 });
 
         // Highlight missing command blocks
-        List<CommandBlockHolder> holdersCopy = new ArrayList<>(Sentinel.getInstance().getDirector().io.commandBlocks.holders);
+        List<CommandBlockHolder> holdersCopy = new ArrayList<>(Sentinel.getInstance().getDirector().io.whitelistStorage.holders);
         holdersCopy.forEach(holder -> {
             if (!holder.present() && holder.isWhitelisted()) holder.highlight(p,Material.MAGENTA_CONCRETE_POWDER);
         });

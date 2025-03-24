@@ -46,7 +46,7 @@ public class CommandBlockHolder {
 
     public CommandBlockHolder setOwner(String owner) {
         this.owner = owner;
-        Sentinel.getInstance().getDirector().io.commandBlocks.save();
+        Sentinel.getInstance().getDirector().io.whitelistStorage.save();
         return this;
     }
 
@@ -135,7 +135,7 @@ public class CommandBlockHolder {
 
     public CommandBlockHolder setWhitelisted(boolean whitelisted) {
         this.whitelisted = whitelisted;
-        Sentinel.getInstance().getDirector().io.commandBlocks.save();
+        Sentinel.getInstance().getDirector().io.whitelistStorage.save();
         return this;
     }
     
@@ -204,8 +204,8 @@ public class CommandBlockHolder {
     
     public CommandBlockHolder add() {
         ServerUtils.verbose(1,"Adding command block...");
-        Sentinel.getInstance().getDirector().io.commandBlocks.add(this);
-        Sentinel.getInstance().getDirector().io.commandBlocks.save();
+        Sentinel.getInstance().getDirector().io.whitelistStorage.add(this);
+        Sentinel.getInstance().getDirector().io.whitelistStorage.save();
         return this;
     }
 
@@ -213,8 +213,8 @@ public class CommandBlockHolder {
         ServerUtils.verbose(1,"Deleting & Destroying command block...");
         if (this.loc.isUUID() && Bukkit.getEntity(this.loc.toUIID()) != null) Bukkit.getEntity(this.loc.toUIID()).remove();
         else SerialLocation.translate(this.loc).getBlock().setType(Material.AIR);
-        Sentinel.getInstance().getDirector().io.commandBlocks.remove(this);
-        Sentinel.getInstance().getDirector().io.commandBlocks.save();
+        Sentinel.getInstance().getDirector().io.whitelistStorage.remove(this);
+        Sentinel.getInstance().getDirector().io.whitelistStorage.save();
     }
 
     public void highlight(Player viewer, Material color) {

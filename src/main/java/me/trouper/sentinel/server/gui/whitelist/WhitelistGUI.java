@@ -39,7 +39,7 @@ public class WhitelistGUI extends PaginatedGUI<CommandBlockHolder> {
 
     @Override
     protected String getTitle(Player p) {
-        return Text.color("&6&lCommand Blocks &7(%s/%s filtered)".formatted(getFilteredCount(p),Sentinel.getInstance().getDirector().io.commandBlocks.holders.size()));
+        return Text.color("&6&lCommand Blocks &7(%s/%s filtered)".formatted(getFilteredCount(p),Sentinel.getInstance().getDirector().io.whitelistStorage.holders.size()));
     }
 
     @Override
@@ -127,7 +127,7 @@ public class WhitelistGUI extends PaginatedGUI<CommandBlockHolder> {
     protected List<CommandBlockHolder> filterEntries(Player p, FilterOperator operator) {
         Set<String> filters = activeFilters.computeIfAbsent(p.getUniqueId(), k -> new HashSet<>());
         ServerUtils.verbose("Filtering entries for %s. Current: ", p, filters.toString());
-        return Sentinel.getInstance().getDirector().io.commandBlocks.holders.stream()
+        return Sentinel.getInstance().getDirector().io.whitelistStorage.holders.stream()
                 .filter(holder -> {
                     if (filters.isEmpty()) return true;
                     boolean result = (operator == FilterOperator.AND); // AND starts true, OR starts false

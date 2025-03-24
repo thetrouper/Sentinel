@@ -3,7 +3,7 @@ package me.trouper.sentinel.server.functions.helpers;
 import io.github.itzispyder.pdk.utils.SchedulerUtils;
 import io.github.itzispyder.pdk.utils.discord.DiscordEmbed;
 import me.trouper.sentinel.data.misc.Emojis;
-import me.trouper.sentinel.utils.Random;
+import me.trouper.sentinel.utils.RandomUtils;
 import me.trouper.sentinel.utils.trees.EmbedFormatter;
 import org.bukkit.entity.Player;
 
@@ -15,7 +15,7 @@ public class ReportHandler {
     public Map<Long, Report> reports = new HashMap<>();
 
     public Report initializeReport(String message) {
-        final long reportID = Random.generateID();
+        final long reportID = RandomUtils.generateID();
         LinkedHashMap<String,String> steps = new LinkedHashMap<>();
         steps.put("Original Message", "`%s`".formatted(message));
 
