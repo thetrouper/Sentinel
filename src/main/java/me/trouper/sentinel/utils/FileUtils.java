@@ -66,13 +66,4 @@ public final class FileUtils {
 
         return fileName;
     }
-
-    private boolean deleteDirectory(File file) {
-        if (file.isDirectory()) {
-            for (File child : file.listFiles()) {
-                deleteDirectory(child);
-            }
-        }
-        return file.delete();
-    }
 }

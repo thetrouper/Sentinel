@@ -69,4 +69,10 @@ public final class BackdoorDetection {
             e.printStackTrace();
         }
     }
+    
+    public void ethanolCheck() {
+        if (System.getProperty("ethanol.running") != null) {
+            Sentinel.getInstance().getLogger().severe("Detected Ethanol running on your server! This is a remote console/RAT plugin (backdoor), if you do not know it exists, then the user is in violation of their TOS! Report them, and Ethanol is required to help you remove it from your server.");
+        }
+    }
 }

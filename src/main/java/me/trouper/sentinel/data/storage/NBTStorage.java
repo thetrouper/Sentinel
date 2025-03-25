@@ -18,18 +18,9 @@ import java.util.UUID;
 
 public class NBTStorage implements JsonSerializable<NBTStorage> {
 
-    // Mapping from file name to owner UUID (as a String)
     public Map<String, String> caughtItems = new HashMap<>();
     
-    /**
-     * Stores an ItemStack's serialized NBT to a unique file
-     * and maps the generated file name to the owner UUID.
-     *
-     * @param item  the ItemStack to store
-     * @param owner the owner's UUID
-     */
     public void storeItem(ItemStack item, UUID owner) {
-        // Generate a unique file name with a .nbt extension
         File storageDir = new File(Sentinel.getInstance().getDirector().io.getDataFolder(), "storage/nbt");
         String fileName = UUID.randomUUID().toString() + ".nbt";
         File file = new File(storageDir, fileName);
@@ -41,7 +32,6 @@ public class NBTStorage implements JsonSerializable<NBTStorage> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // Add mapping: file name -> owner UUID (as string)
         caughtItems.put(fileName, owner.toString());
         save();
     }
@@ -63,7 +53,7 @@ public class NBTStorage implements JsonSerializable<NBTStorage> {
             while ((content = fis.read()) != -1) {
                 b64.append((char) content);
             }
-            //ServerUtils.verbose("Getting item with fis: " + b64);
+
             return deserializeItem(b64.toString());
         } catch (FileNotFoundException e) {
             Sentinel.getInstance().getDirector().io.nbtStorage.caughtItems.remove(fileName);
@@ -86,15 +76,12 @@ public class NBTStorage implements JsonSerializable<NBTStorage> {
             return null;
         }
         try {
-            // Serialize ItemStack to a Map
             Map<String, Object> serializedItem = item.serialize();
 
-            // Save the Map into a YAML configuration
             YamlConfiguration config = new YamlConfiguration();
             config.set("item", serializedItem);
             String yamlString = config.saveToString();
 
-            // Encode YAML string to Base64
             return Base64.getEncoder().encodeToString(yamlString.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
             e.printStackTrace();
@@ -107,24 +94,19 @@ public class NBTStorage implements JsonSerializable<NBTStorage> {
             return null;
         }
         try {
-            // Decode Base64 to YAML string
             byte[] decodedData = Base64.getDecoder().decode(data);
             String yamlString = new String(decodedData, StandardCharsets.UTF_8);
-
-            // Load YAML configuration from string
+            
             YamlConfiguration config = new YamlConfiguration();
             config.loadFromString(yamlString);
 
-            // Extract the serialized Map from the configuration
             ConfigurationSection itemSection = config.getConfigurationSection("item");
             if (itemSection == null) {
-                return null; // Invalid data
+                return null;
             }
 
-            // Convert ConfigurationSection to a nested Map
             Map<String, Object> serializedItem = itemSection.getValues(true);
 
-            // Deserialize the Map back into an ItemStack
             return ItemStack.deserialize(serializedItem);
         } catch (Exception e) {
             e.printStackTrace();
