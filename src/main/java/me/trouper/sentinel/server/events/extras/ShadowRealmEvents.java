@@ -68,7 +68,7 @@ public class ShadowRealmEvents implements CustomListener, PacketListener {
         sendFakeRespawn(p);
         Bukkit.getScheduler().runTaskTimerAsynchronously(Sentinel.getInstance(),(t)->{
             if (p == null || !p.isOnline() || !Sentinel.getInstance().getDirector().io.extraStorage.shadowRealm.containsKey(p.getUniqueId())) t.cancel();
-            sendFakePosition(p,0,666,0);
+            sendFakePosition(p,0,32767,0);
             sendCloseScreen(p);
         },1,1);
     }
@@ -88,11 +88,12 @@ public class ShadowRealmEvents implements CustomListener, PacketListener {
         player.sendPacket(packet);
     }
 
-    public static void sendFakePosition(Player victim, double x, double y, double z) {
-        if (victim == null || !victim.isOnline()) return;
+    public static boolean sendFakePosition(Player victim, double x, double y, double z) {
+        if (victim == null || !victim.isOnline()) return false;
         var player = PacketEvents.getAPI().getPlayerManager().getUser(victim);
-        if (player == null) return;
+        if (player == null) return false;
         WrapperPlayServerPlayerPositionAndLook packet = new WrapperPlayServerPlayerPositionAndLook(x,y,z,0,90, RelativeFlag.NONE.getMask(),0,false);
         player.sendPacket(packet);
+        return true;
     }
 }

@@ -176,7 +176,7 @@ task obfuscate(type: JavaExec) {
 
     // Arguments to pass to the obfuscator (e.g., input and output directories)
     args = [
-            '--config', '.\\obf\\config.json'
+            '--config', 'obf/config.json'
     ]
 }
 
