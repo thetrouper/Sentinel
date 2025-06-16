@@ -4,6 +4,7 @@ import io.github.itzispyder.pdk.utils.ServerUtils;
 import io.papermc.paper.chat.ChatRenderer;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.server.Main;
 import me.trouper.sentinel.server.commands.SentinelCommand;
 import me.trouper.sentinel.server.events.violations.players.ChatEvent;
 import net.kyori.adventure.chat.SignedMessage;
@@ -13,7 +14,7 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-public class MessageHandler {
+public class MessageHandler implements Main {
     public final Map<UUID,UUID> replyMap = new HashMap<>();
     public void messagePlayer(Player sender, Player receiver, String message) {
         AsyncChatEvent checkEvent = new AsyncChatEvent(true,sender, new HashSet<>(Arrays.asList(receiver, sender)), ChatRenderer.defaultRenderer(),Component.text(message),Component.text(message), SignedMessage.system(message,Component.text(message)));
@@ -21,8 +22,8 @@ public class MessageHandler {
         new ChatEvent().handleEvent(checkEvent);
         if (checkEvent.isCancelled()) return;
 
-        sender.sendMessage(Sentinel.getInstance().getDirector().io.lang.playerInteraction.messageSent.formatted(receiver.getName(),message));
-        receiver.sendMessage(Sentinel.getInstance().getDirector().io.lang.playerInteraction.messageReceived.formatted(sender.getName(),message));
+        sender.sendMessage(main.dir().io.lang.playerInteraction.messageSent.formatted(receiver.getName(),message)); // This "sendMessage" call is correct
+        receiver.sendMessage(main.dir().io.lang.playerInteraction.messageReceived.formatted(sender.getName(),message)); // This "sendMessage" call is correct
         replyMap.put(receiver.getUniqueId(),sender.getUniqueId());
         sendSpy(sender,receiver,message);
     }
@@ -32,9 +33,9 @@ public class MessageHandler {
 
             if (SentinelCommand.spyMap.getOrDefault(player.getUniqueId(),false)) {
                 TextComponent notification = Component
-                        .text(Sentinel.getInstance().getDirector().io.lang.socialSpy.spyMessage.formatted(sender.getName(),receiver.getName()))
-                        .hoverEvent(Component.text(Sentinel.getInstance().getDirector().io.lang.socialSpy.spyMessageHover.formatted(sender.getName(),receiver.getName(),message)));
-                player.sendMessage(notification);
+                        .text(main.dir().io.lang.socialSpy.spyMessage.formatted(sender.getName(),receiver.getName()))
+                        .hoverEvent(Component.text(main.dir().io.lang.socialSpy.spyMessageHover.formatted(sender.getName(),receiver.getName(),message)));
+                player.sendMessage(notification); // This "sendMessage" call is correct
             }
         });
     }

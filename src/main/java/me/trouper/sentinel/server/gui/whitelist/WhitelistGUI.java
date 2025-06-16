@@ -5,14 +5,13 @@ import io.github.itzispyder.pdk.plugin.builders.ItemBuilder;
 import io.github.itzispyder.pdk.plugin.gui.CustomGui;
 import io.github.itzispyder.pdk.utils.misc.config.ConfigUpdater;
 import io.papermc.paper.event.player.AsyncChatEvent;
-import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.data.config.ViolationConfig;
-import me.trouper.sentinel.data.misc.CommandBlockHolder;
+import me.trouper.sentinel.data.types.CommandBlockHolder;
 import me.trouper.sentinel.server.gui.Items;
 import me.trouper.sentinel.server.gui.MainGUI;
 import me.trouper.sentinel.server.gui.PaginatedGUI;
 import me.trouper.sentinel.utils.ServerUtils;
-import me.trouper.sentinel.utils.Text;
+import me.trouper.sentinel.utils.OldTXT;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -39,7 +38,7 @@ public class WhitelistGUI extends PaginatedGUI<CommandBlockHolder> {
 
     @Override
     protected String getTitle(Player p) {
-        return Text.color("&6&lCommand Blocks &7(%s/%s filtered)".formatted(getFilteredCount(p),Sentinel.getInstance().getDirector().io.whitelistStorage.holders.size()));
+        return OldTXT.color("&6&lCommand Blocks &7(%s/%s filtered)".formatted(getFilteredCount(p),main.dir().io.whitelistStorage.holders.size()));
     }
 
     @Override
@@ -67,20 +66,20 @@ public class WhitelistGUI extends PaginatedGUI<CommandBlockHolder> {
                 String.format("X: %d, Y: %d, Z: %d",
                         (int) holder.loc().x(),
                         (int) holder.loc().y(),
-                        (int) holder.loc().z());
+                        (int) holder.loc().z()); 
 
         List<String> lore = new ArrayList<>();
-        lore.add(Text.color("&7Owner: " + Bukkit.getOfflinePlayer(holder.owner()).getName()));
-        lore.add(Text.color("&7Command: &f" + holder.command()));
-        lore.add(Text.color("&7Type: &f" + holder.type()));
-        lore.add(Text.color("&7Whitelisted: " + (holder.isWhitelisted() ? "&aYes" : "&cNo")));
-        lore.add(Text.color("&7Present: " + (holder.present() ? "&aYes" : "&cNo")));
+        lore.add(OldTXT.color("&7Owner: " + Bukkit.getOfflinePlayer(holder.owner()).getName()));
+        lore.add(OldTXT.color("&7Command: &f" + holder.command()));
+        lore.add(OldTXT.color("&7Type: &f" + holder.type()));
+        lore.add(OldTXT.color("&7Whitelisted: " + (holder.isWhitelisted() ? "&aYes" : "&cNo")));
+        lore.add(OldTXT.color("&7Present: " + (holder.present() ? "&aYes" : "&cNo")));
         lore.add("");
-        lore.add(Text.color("&eClick to manage!"));
+        lore.add(OldTXT.color("&eClick to manage!"));
 
         return new ItemBuilder()
                 .material(type)
-                .name(Text.color("&b" + name))
+                .name(OldTXT.color("&b" + name))
                 .lore(lore)
                 .build();
     }
@@ -108,7 +107,7 @@ public class WhitelistGUI extends PaginatedGUI<CommandBlockHolder> {
                 });
     }
 
-    public static ConfigUpdater<AsyncChatEvent, ViolationConfig> updater = new ConfigUpdater<>(Sentinel.getInstance().getDirector().io.violationConfig);
+    public static ConfigUpdater<AsyncChatEvent, ViolationConfig> updater = new ConfigUpdater<>(main.dir().io.violationConfig);
     protected void queuePlayer(Player player, BiConsumer<ViolationConfig, Args> action, String currentValue) {
         MainGUI.awaitingCallback.add(player.getUniqueId());
         player.closeInventory();
@@ -117,51 +116,48 @@ public class WhitelistGUI extends PaginatedGUI<CommandBlockHolder> {
             return LegacyComponentSerializer.legacySection().serialize(e.message());
         }, (cfg, newValue) -> {
             action.accept(cfg,new Args(newValue.split("\\s+")));
-            player.sendMessage(Text.prefix("Value updated successfully"));
+            messageAny(player,"Value updated successfully");
             openFilterMenu(player);
         });
-        player.sendMessage(Component.text(Text.prefix("Enter the new value in chat. The value is currently set to &b%s&7. (Click to insert)".formatted(currentValue))).clickEvent(ClickEvent.suggestCommand(currentValue)));
+        message(player,Component.text("Enter the new value in chat. The value is currently set to {0}. (Click to insert)").clickEvent(ClickEvent.suggestCommand(currentValue)),Component.text(currentValue));
     }
 
     @Override
     protected List<CommandBlockHolder> filterEntries(Player p, FilterOperator operator) {
         Set<String> filters = activeFilters.computeIfAbsent(p.getUniqueId(), k -> new HashSet<>());
         ServerUtils.verbose("Filtering entries for %s. Current: ", p, filters.toString());
-        return Sentinel.getInstance().getDirector().io.whitelistStorage.holders.stream()
-                .filter(holder -> {
-                    if (filters.isEmpty()) return true;
-                    boolean result = (operator == FilterOperator.AND); // AND starts true, OR starts false
-                    for (String filter : filters) {
-                        boolean conditionMet = switch (filter) {
-                            case "OWNER" -> holder.owner().equals(p.getUniqueId().toString());
-                            case "CURRENT_WORLD" -> holder.loc().world().equals(p.getWorld().getName());
-                            case "OTHER_OWNERS" -> !holder.owner().equals(p.getUniqueId().toString());
-                            case "MINECART" -> holder.getType().equals(Material.COMMAND_BLOCK_MINECART);
-                            case "REPEAT" -> holder.getType().equals(Material.REPEATING_COMMAND_BLOCK);
-                            case "CHAIN" -> holder.getType().equals(Material.CHAIN_COMMAND_BLOCK);
-                            case "IMPULSE" -> holder.getType().equals(Material.COMMAND_BLOCK);
-                            case "WHITELISTED" -> holder.isWhitelisted();
-                            case "NOT_WHITELISTED" -> !holder.isWhitelisted();
-                            case "NOT_PRESENT" -> !holder.present();
-                            case "USER" -> holder.owner().equals(chosenPlayer.get(p.getUniqueId()));
-                            default -> false;
-                        };
-                        result = operator.apply(result, conditionMet);
-                        // Early exit for AND (false means no need to check further)
-                        if (operator == FilterOperator.AND && !result) return false;
-                        // Early exit for OR (true means we already pass)
-                        if (operator == FilterOperator.OR && result) return true;
-                    }
-                    return result;
-                })
-                .collect(Collectors.toList());
+        return main.dir().io.whitelistStorage.holders.stream().filter(holder -> {
+            if (filters.isEmpty()) return true;
+            boolean result = (operator == FilterOperator.AND); // AND starts true, OR starts false
+            for (String filter : filters) {
+                boolean conditionMet = switch (filter) {
+                    case "OWNER" -> holder.owner().equals(p.getUniqueId().toString());
+                    case "OTHER_OWNERS" -> !holder.owner().equals(p.getUniqueId().toString());
+                    case "USER" -> holder.owner().equals(chosenPlayer.get(p.getUniqueId()));
+                    case "CURRENT_WORLD" -> holder.loc().world().equals(p.getWorld().getName());
+                    case "MINECART" -> holder.getType().equals(Material.COMMAND_BLOCK_MINECART);
+                    case "REPEAT" -> holder.getType().equals(Material.REPEATING_COMMAND_BLOCK);
+                    case "CHAIN" -> holder.getType().equals(Material.CHAIN_COMMAND_BLOCK);
+                    case "IMPULSE" -> holder.getType().equals(Material.COMMAND_BLOCK);
+                    case "WHITELISTED" -> holder.isWhitelisted();
+                    case "NOT_WHITELISTED" -> !holder.isWhitelisted();
+                    case "NOT_PRESENT" -> !holder.present();
+                    default -> false;
+                };
+                result = operator.apply(result, conditionMet);
+                if (operator == FilterOperator.AND && !result) return false;
+                if (operator == FilterOperator.OR && result) return true;
+            }
+            return result;
+        })
+        .collect(Collectors.toList());
     }
 
     private void openManagementMenu(Player p, CommandBlockHolder holder) {
         ServerUtils.verbose("Opening management menu for %s", holder.owner());
         boolean whitelisted = holder.isWhitelisted();
         CustomGui menu = CustomGui.create()
-                .title(Text.color("&l ⬇ &6&lManaging Command Block"))
+                .title(OldTXT.color("&l ⬇ &6&lManaging Command Block"))
                 .size(9)
                 .defineMain(e -> e.setCancelled(true))
                 .define(0, createDisplayItem(holder))
@@ -218,26 +214,8 @@ public class WhitelistGUI extends PaginatedGUI<CommandBlockHolder> {
     private ItemStack createActionItem(String name, Material mat) {
         return new ItemBuilder()
                 .material(mat)
-                .name(Text.color("&b" + name))
-                .lore(Text.color("&7Click to " + name.toLowerCase()))
-                .build();
-    }
-
-    private ItemStack createFilterToggleItem(String name, Material mat, boolean active) {
-        return new ItemBuilder()
-                .material(mat)
-                .name(Text.color((active ? "&a" : "&c") + name))
-                .lore(Text.color("&7Click to " + (active ? "disable" : "enable")))
-                .build();
-    }
-
-    private ItemStack createFilterToggleItemValue(String name, Material mat, boolean active, String value) {
-        return new ItemBuilder()
-                .material(mat)
-                .name(Text.color((active ? "&a" : "&c") + name))
-                .lore(Text.color("&7Value&f: &b" + value))
-                .lore(Text.color("&7Left Click to " + (active ? "disable" : "enable")))
-                .lore(Text.color("&7Right Click to set value."))
+                .name(OldTXT.color("&b" + name))
+                .lore(OldTXT.color("&7Click to " + name.toLowerCase()))
                 .build();
     }
 }

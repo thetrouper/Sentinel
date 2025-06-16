@@ -2,23 +2,25 @@ package me.trouper.sentinel.server.functions.chatfilter.profanity;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.misc.Emojis;
+import me.trouper.sentinel.data.types.Emojis;
 import me.trouper.sentinel.server.functions.chatfilter.FilterResponse;
 import me.trouper.sentinel.server.functions.helpers.Report;
+import me.trouper.sentinel.utils.FormatUtils;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
 
-import java.util.regex.Matcher;
+import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class ProfanityResponse implements FilterResponse {
 
-    private AsyncChatEvent event;
+    private final AsyncChatEvent event;
     private String originalMessage;
     private String processedMessage;
-    private Report report;
+    private final Report report;
     private Severity severity;
     private boolean blocked;
     private boolean punished;
@@ -37,21 +39,13 @@ public class ProfanityResponse implements FilterResponse {
     public Player getPlayer() {
         return event.getPlayer();
     }
-    
+
     public AsyncChatEvent getEvent() {
         return event;
     }
 
-    public void setEvent(AsyncChatEvent event) {
-        this.event = event;
-    }
-
     public String getOriginalMessage() {
         return originalMessage;
-    }
-
-    public void setOriginalMessage(String originalMessage) {
-        this.originalMessage = originalMessage;
     }
 
     public String getProcessedMessage() {
@@ -64,10 +58,6 @@ public class ProfanityResponse implements FilterResponse {
 
     public Report getReport() {
         return report;
-    }
-
-    public void setReport(Report report) {
-        this.report = report;
     }
 
     public Severity getSeverity() {
@@ -93,189 +83,157 @@ public class ProfanityResponse implements FilterResponse {
     public void setPunished(boolean punished) {
         this.punished = punished;
     }
-
+    
     public static ProfanityResponse generate(AsyncChatEvent e) {
         if (e.isCancelled()) {
-            ServerUtils.verbose("Profanity response opening: Event is canceled.");
+            ServerUtils.verbose("Profanity response: Event is already cancelled.");
         }
 
-        String message = LegacyComponentSerializer.legacySection().serialize(e.message());
-        Report report = Sentinel.getInstance().getDirector().reportHandler.initializeReport(message);
-        Severity severity = Severity.SAFE;
+        String message = PlainTextComponentSerializer.plainText().serialize(e.message());
+        Report report = main.dir().reportHandler.initializeReport(message);
+        ProfanityResponse response = new ProfanityResponse(e, message, message, report, Severity.SAFE, false, false);
+        Severity currentSeverity;
 
-        ProfanityResponse response = new ProfanityResponse(e,message,null,report,severity,false,false);
+        // Stage 1: Basic check on lowercased text
+        String processedText = Text.removeColors(message).toLowerCase();
+        report.getStepsTaken().put("Lowercased", processedText);
+        ServerUtils.verbose("ProfanityFilter: Lowercased: " + processedText);
+        currentSeverity = checkProfanity(processedText, Severity.LOW);
+        if (currentSeverity != Severity.SAFE) return finalizeResponse(response, processedText, "Lowercased", currentSeverity);
 
-        String text = Text.removeFirstColor(message);
-        response.setOriginalMessage(text);
-
-        // 1:
-        String lowercasedText = text.toLowerCase();
-        response.getReport().getStepsTaken().put("Lowercased", lowercasedText);
-        response.setProcessedMessage(highlightProfanity(lowercasedText,"<hs>", "<he>"));
-        ServerUtils.verbose("ProfanityFilter:  Lowercased: " + lowercasedText);
+        // Stage 2: Mask allowed words
+        processedText = maskValidWords(processedText);
+        report.getStepsTaken().put("Masked Valid Words", processedText);
+        ServerUtils.verbose("ProfanityFilter: Masked Valid Words: " + processedText);
 
 
-        // 2:
-        String cleanedText = removeFalsePositives(lowercasedText);
-        response.getReport().getStepsTaken().put("Remove False Positives", cleanedText);
-        response.setProcessedMessage(highlightProfanity(cleanedText,"<hs>", "<he>"));
-        ServerUtils.verbose(("ProfanityFilter: Removed False positives: " + cleanedText));
+        // Stage 3: Convert LeetSpeak (e.g., @ -> a, 3 -> e)
+        processedText = convertLeetSpeakCharacters(processedText);
+        report.getStepsTaken().put("Convert LeetSpeak", processedText);
+        ServerUtils.verbose("ProfanityFilter: Leet Converted: " + processedText);
+        currentSeverity = checkProfanity(processedText, Severity.MEDIUM_LOW);
+        if (currentSeverity != Severity.SAFE) return finalizeResponse(response, processedText, "Convert LeetSpeak", currentSeverity);
 
-        response.setSeverity(checkProfanity(cleanedText, Severity.LOW));
-        if (response.getSeverity() != Severity.SAFE) {
-            response.getReport().getStepsTaken().replace("Remove False Positives", "%s %s".formatted(
-                    highlightProfanity(cleanedText,"||","||"),
-                    Emojis.alarm));
-            return response;
-        }
+        // Stage 4: Strip special characters
+        processedText = stripSpecialCharacters(processedText);
+        report.getStepsTaken().put("Remove Special Characters", processedText);
+        ServerUtils.verbose("ProfanityFilter: Specials Removed: " + processedText);
+        currentSeverity = checkProfanity(processedText, Severity.MEDIUM);
+        if (currentSeverity != Severity.SAFE) return finalizeResponse(response, processedText, "Remove Special Characters", currentSeverity);
 
-        // 4:
-        String convertedText = convertLeetSpeakCharacters(cleanedText);
-        response.getReport().getStepsTaken().put("Convert LeetSpeak", convertedText);
-        response.setProcessedMessage(highlightProfanity(convertedText,"<hs>", "<he>"));
-        ServerUtils.verbose(("ProfanityFilter: Leet Converted: " + convertedText));
+        // Stage 5: Simplify repeating letters (e.g., heeeello -> helo)
+        processedText = simplifyRepeatingLetters(processedText);
+        report.getStepsTaken().put("Remove Repeats", processedText);
+        ServerUtils.verbose("ProfanityFilter: Removed Repeating: " + processedText);
+        currentSeverity = checkProfanity(processedText, Severity.MEDIUM_HIGH);
+        if (currentSeverity != Severity.SAFE) return finalizeResponse(response, processedText, "Remove Repeats", currentSeverity);
 
-        response.setSeverity(checkProfanity(convertedText, Severity.MEDIUM_LOW));
-        if (response.getSeverity() != Severity.SAFE) {
-            response.getReport().getStepsTaken().replace("Convert LeetSpeak", "%s %s".formatted(
-                    highlightProfanity(cleanedText,"||","||"),
-                    Emojis.alarm));
-            return response;
-        }
+        // Stage 6: Remove all spaces and remaining punctuation
+        processedText = removePunctuation(processedText);
+        report.getStepsTaken().put("Remove Punctuation", processedText);
+        ServerUtils.verbose("ProfanityFilter: Remove Punctuation: " + processedText);
+        currentSeverity = checkProfanity(processedText, Severity.HIGH);
+        if (currentSeverity != Severity.SAFE) return finalizeResponse(response, processedText, "Remove Punctuation", currentSeverity);
 
-        // 6:
-        String strippedText = stripSpecialCharacters(convertedText);
-        response.getReport().getStepsTaken().put("Remove Special Characters", strippedText);
-        response.setProcessedMessage(highlightProfanity(strippedText,"<hs>", "<he>"));
-        ServerUtils.verbose(("ProfanityFilter: Specials Removed: " + strippedText));
-
-        response.setSeverity(checkProfanity(strippedText, Severity.MEDIUM));
-        if (response.getSeverity() != Severity.SAFE) {
-            response.getReport().getStepsTaken().replace("Remove Special Characters", "%s %s".formatted(
-                    highlightProfanity(cleanedText,"||","||"),
-                    Emojis.alarm));
-            return response;
-        }
-
-        // 8:
-        String simplifiedText = simplifyRepeatingLetters(strippedText);
-        response.getReport().getStepsTaken().put("Remove Repeats", simplifiedText);
-        response.setProcessedMessage(highlightProfanity(simplifiedText,"<hs>", "<he>"));
-        ServerUtils.verbose(("ProfanityFilter: Removed Repeating: " + simplifiedText));
-
-        response.setSeverity(checkProfanity(simplifiedText, Severity.MEDIUM_HIGH));
-        if (response.getSeverity() != Severity.SAFE) {
-            response.getReport().getStepsTaken().replace("Remove Repeats", "%s %s".formatted(
-                    highlightProfanity(cleanedText,"||","||"),
-                    Emojis.alarm));
-            return response;
-        }
-
-        // 10:
-        String finalText = removePeriodsAndSpaces(simplifiedText);
-        response.getReport().getStepsTaken().put("Remove Punctuation", finalText);
-        response.setProcessedMessage(highlightProfanity(finalText,"<hs>", "<he>"));
-        ServerUtils.verbose(("ProfanityFilter: Remove Punctuation: " + finalText));
-
-        response.setSeverity(checkProfanity(finalText, Severity.HIGH));
-        if (response.getSeverity() != Severity.SAFE) {
-            response.getReport().getStepsTaken().replace("Remove Punctuation", "%s %s".formatted(
-                    highlightProfanity(cleanedText,"||","||"),
-                    Emojis.alarm));
-            return response;
-        }
-
-        ServerUtils.verbose(("ProfanityFilter: Finished " + finalText));
-        if (e.isCancelled()) {
-            ServerUtils.verbose("Profanity response closing: Event is canceled.");
-        }
+        ServerUtils.verbose("ProfanityFilter: Finished. No profanity detected.");
         return response;
     }
-
-    private static Severity checkProfanity(String text, Severity backup) {
+    
+    private static ProfanityResponse finalizeResponse(ProfanityResponse response, String text, String stage, Severity severity) {
+        response.setSeverity(severity);
+        String highlightedText = highlightAllProfanity(text, "||", "||");
+        response.getReport().getStepsTaken().replace(stage, "%s %s".formatted(highlightedText, Emojis.alarm));
+        response.setProcessedMessage(highlightAllProfanity(text,"█HS█","█HE█"));
+        ServerUtils.verbose("ProfanityFilter: Flagged at stage '%s' with severity '%s'", stage, severity)
+;
+        return response;
+    }
+    
+    private static Severity checkProfanity(String text, Severity current) {
         if (containsSlurs(text)) return Severity.SLUR;
-        if (containsSwears(text)) return backup;
+        if (containsSwears(text)) return current;
         return Severity.SAFE;
     }
 
     private static boolean containsSwears(String text) {
-        ServerUtils.verbose("ProfanityFilter: Checking for swears");
-        for (String swear : Sentinel.getInstance().getDirector().io.swearList.swears) {
+        ServerUtils.verbose("ProfanityFilter: Checking for swears in: " + text);
+        for (String swear : main.dir().io.swearList.swears) {
             if (text.contains(swear)) return true;
         }
-
-        Pattern pattern = Pattern.compile(Sentinel.getInstance().getDirector().io.swearList.regexSwears, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(text);
-
-        return matcher.find() && Sentinel.getInstance().getDirector().io.swearList.useRegex;
+        if (main.dir().io.swearList.useRegex) {
+            Pattern pattern = Pattern.compile(main.dir().io.swearList.regexSwears, Pattern.CASE_INSENSITIVE);
+            return pattern.matcher(text).find();
+        }
+        return false;
     }
 
     private static boolean containsSlurs(String text) {
-        ServerUtils.verbose("ProfanityFilter: Checking for slurs");
-        for (String slur : Sentinel.getInstance().getDirector().io.strictList.strict) {
+        ServerUtils.verbose("ProfanityFilter: Checking for slurs in: " + text);
+        for (String slur : main.dir().io.strictList.strict) {
             if (text.contains(slur)) return true;
         }
-
-        Pattern pattern = Pattern.compile(Sentinel.getInstance().getDirector().io.strictList.regexStrict, Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(text);
-
-        return matcher.find() && Sentinel.getInstance().getDirector().io.strictList.useRegex;
-    }
-
-    private static String removeFalsePositives(String text) {
-        for (String falsePositive : Sentinel.getInstance().getDirector().io.falsePositiveList.swearWhitelist) {
-            text = text.replace(falsePositive, "");
+        if (main.dir().io.strictList.useRegex) {
+            Pattern pattern = Pattern.compile(main.dir().io.strictList.regexStrict, Pattern.CASE_INSENSITIVE);
+            return pattern.matcher(text).find();
         }
-        if (Sentinel.getInstance().getDirector().io.falsePositiveList.useRegex) text = text.replaceAll(Sentinel.getInstance().getDirector().io.falsePositiveList.regexWhitelist,"");
-        return text;
+        return false;
+    }
+    
+    private static String maskValidWords(String text) {
+        String result = text;
+        for (String falsePositive : main.dir().io.falsePositiveList.swearWhitelist) {
+            result = result.replace(falsePositive, "█SW█");
+        }
+        if (main.dir().io.falsePositiveList.useRegex) {
+            result = result.replaceAll(main.dir().io.falsePositiveList.regexWhitelist, "█RW█");
+        }
+        for (String falsePositive : main.dir().io.falsePositiveList.cleanWords) {
+            result = result.replace(falsePositive, "█CW█");
+        }
+        return result;
     }
 
     private static String convertLeetSpeakCharacters(String text) {
-        text = Text.fromLeetString(text);
+        Map<String, String> dictionary = Sentinel.getInstance().getDirector().io.advConfig.leetPatterns;
+
+        for (String key : dictionary.keySet()) {
+            if (!text.contains(key)) continue;
+            try {
+                if (key.equals("$")) {
+                    text = text.replaceAll("\\$", "s");
+                }
+                else {
+                    text = text.replaceAll(key, dictionary.get(key));
+                }
+            } catch (PatternSyntaxException ex) {
+                String regex = "[" + key + "]";
+                text = text.replaceAll(regex, dictionary.get(key));
+            }
+        }
         return text;
     }
 
     private static String stripSpecialCharacters(String text) {
-        text = text.replaceAll("[^A-Za-z0-9.,!?;:'\"()\\[\\]{}]", "").trim();
-        return text;
+        return text.replaceAll("(?!█[A-Z]{2}█)[^a-zA-Z0-9\\s,.?!█]", "");
     }
 
     private static String simplifyRepeatingLetters(String text) {
-        text = Text.replaceRepeatingLetters(text);
-        return text;
+        return FormatUtils.replaceRepeatingLetters(text);
     }
 
-    private static String removePeriodsAndSpaces(String text) {
-        return text.replaceAll("[^A-Za-z0-9]", "").replace(" ", "");
+    private static String removePunctuation(String text) {
+        return text.replaceAll("[.,!?\\s]", "");
     }
-
-    private static String highlightProfanity(String text, String start, String end) {
-        String highlightedSwears = highlightSwears(fullSimplify(text), start, end);
-        return Text.color(highlightSlurs(highlightedSwears, start, end));
-    }
-
-    private static String highlightSwears(String text, String start, String end) {
-        for (String swear : Sentinel.getInstance().getDirector().io.swearList.swears) {
-            text = text.replace(swear, start + swear + end);
-        }
-        return text;
-    }
-
-    private static String highlightSlurs(String text, String start, String end) {
-        for (String slur : Sentinel.getInstance().getDirector().io.strictList.strict) {
-            text = text.replace(slur, start + slur + end);
-        }
-        return text;
-    }
-
-    private static String fullSimplify(String text) {
-        String lowercasedText = text.toLowerCase();
-        String cleanedText = removeFalsePositives(lowercasedText);
-        String convertedText =convertLeetSpeakCharacters(cleanedText);
-        String strippedText = stripSpecialCharacters(convertedText);
-        String simplifiedText = simplifyRepeatingLetters(strippedText);
-        return removePeriodsAndSpaces(simplifiedText);
-    }
-
     
+    private static String highlightAllProfanity(String text, String start, String end) {
+        String result = text;
+        for (String slur : main.dir().io.strictList.strict) {
+            result = result.replace(slur, start + slur + end);
+        }
+
+        for (String swear : main.dir().io.swearList.swears) {
+            result = result.replace(swear, start + swear + end);
+        }
+        return Text.legacyColor(result);
+    }
 }

@@ -2,32 +2,30 @@ package me.trouper.sentinel.server.commands;
 
 import io.github.itzispyder.pdk.commands.Args;
 import io.github.itzispyder.pdk.commands.CommandRegistry;
-import io.github.itzispyder.pdk.commands.CustomCommand;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.utils.PlayerUtils;
-import me.trouper.sentinel.utils.Text;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 @CommandRegistry(value = "reop")
-public class ReopCommand implements CustomCommand {
+public class ReopCommand implements QuickCommand {
     @Override
     public void dispatchCommand(CommandSender sender, Command command, String s, Args args) {
         Player p = (Player) sender;
-        if (PlayerUtils.isTrusted(p) && Sentinel.getInstance().getDirector().io.mainConfig.plugin.reopCommand) {
+        if (PlayerUtils.isTrusted(p) && main.dir().io.mainConfig.plugin.reopCommand) {
             if (!p.isOp()) {
-                p.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.permissions.elevatingPerms));
-                Sentinel.getInstance().getLogger().info(Sentinel.getInstance().getDirector().io.lang.permissions.logElevatingPerms.formatted(p.getName()));
+                successAny(sender,main.dir().io.lang.permissions.elevatingPerms);
+                Sentinel.getInstance().getLogger().info(main.dir().io.lang.permissions.logElevatingPerms.formatted(p.getName()));
                 p.setOp(true);
             } else {
-                p.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.permissions.alreadyOp));
-                Sentinel.getInstance().getLogger().info(Sentinel.getInstance().getDirector().io.lang.permissions.logAlreadyOp.formatted(p.getName()));
+                infoAny(sender,main.dir().io.lang.permissions.alreadyOp);
+                Sentinel.getInstance().getLogger().info(main.dir().io.lang.permissions.logAlreadyOp.formatted(p.getName()));
                 p.setOp(true);
             }
         } else {
-            p.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.permissions.noTrust));
+            errorAny(sender,main.dir().io.lang.permissions.noTrust);
         }
 
     }

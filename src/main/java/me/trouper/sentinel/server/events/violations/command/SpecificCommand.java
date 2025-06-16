@@ -8,6 +8,7 @@ import me.trouper.sentinel.server.gui.Items;
 import me.trouper.sentinel.server.gui.MainGUI;
 import me.trouper.sentinel.server.gui.config.AntiNukeGUI;
 import me.trouper.sentinel.utils.PlayerUtils;
+import me.trouper.sentinel.utils.OldTXT;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -26,19 +27,18 @@ public class SpecificCommand extends AbstractViolation {
         String label = e.getMessage().substring(1).split(" ")[0];
         String args = e.getMessage();
 
-        if (label.contains(":") && Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.specific.enabled) {
+        if (label.contains(":") && main.dir().io.violationConfig.commandExecute.specific.enabled) {
             e.setCancelled(true);
             ActionConfiguration.Builder config = new ActionConfiguration.Builder()
                     .setEvent(e)
                     .setPlayer(p)
                     .cancel(true)
-                    .punish(Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.specific.punish)
-                    .setPunishmentCommands(Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.specific.punishmentCommands)
-                    .logToDiscord(Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.specific.logToDiscord);
+                    .punish(main.dir().io.violationConfig.commandExecute.specific.punish)
+                    .setPunishmentCommands(main.dir().io.violationConfig.commandExecute.specific.punishmentCommands)
+                    .logToDiscord(main.dir().io.violationConfig.commandExecute.specific.logToDiscord);
 
             runActions(
-                    Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormatPlayer.formatted(p.getName(), Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.run, Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.specificCommand),
-                    Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormatPlayer.formatted(p.getName(), Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.run, Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.specificCommand),
+                    Text.format(Text.Pallet.WARNING,main.dir().io.lang.violations.protections.rootName.rootNameFormatPlayer,p.getName(), main.dir().io.lang.violations.protections.rootName.run, main.dir().io.lang.violations.protections.rootName.specificCommand),
                     generateCommandInfo(args, p),
                     config
             );
@@ -48,7 +48,7 @@ public class SpecificCommand extends AbstractViolation {
     @Override
     public CustomGui getConfigGui() {
         return CustomGui.create()
-                .title(Text.color("&6&lSentinel &8»&0 Specific Command Check"))
+                .title(OldTXT.color("&6&lSentinel &8»&0 Specific Command Check"))
                 .size(27)
                 .onDefine(this::getMainPage)
                 .defineMain(this::onClick)
@@ -65,7 +65,7 @@ public class SpecificCommand extends AbstractViolation {
         }
 
         ItemStack top = Items.RED;
-        if (Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.specific.enabled) {
+        if (main.dir().io.violationConfig.commandExecute.specific.enabled) {
             top = Items.GREEN;
         }
 
@@ -74,10 +74,10 @@ public class SpecificCommand extends AbstractViolation {
         }
 
         inv.setItem(26,Items.BACK);
-        inv.setItem(4,Items.booleanItem(Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.specific.enabled,Items.configItem("Check Toggle", Material.CLOCK,"Enable/Disable this check entirely")));
-        inv.setItem(11,Items.booleanItem(Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.specific.punish,Items.configItem("Punish",Material.REDSTONE_TORCH,"If this check will run the punishment commands")));
-        inv.setItem(13,Items.booleanItem(Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.specific.logToDiscord,Items.configItem("Log",Material.OAK_LOG,"If this check will produce a log to discord")));
-        inv.setItem(15,Items.stringListItem(Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.specific.punishmentCommands,Material.DIAMOND_AXE,"Commands","Commands that will flag this check"));
+        inv.setItem(4,Items.booleanItem(main.dir().io.violationConfig.commandExecute.specific.enabled,Items.configItem("Check Toggle", Material.CLOCK,"Enable/Disable this check entirely")));
+        inv.setItem(11,Items.booleanItem(main.dir().io.violationConfig.commandExecute.specific.punish,Items.configItem("Punish",Material.REDSTONE_TORCH,"If this check will run the punishment commands")));
+        inv.setItem(13,Items.booleanItem(main.dir().io.violationConfig.commandExecute.specific.logToDiscord,Items.configItem("Log",Material.OAK_LOG,"If this check will produce a log to discord")));
+        inv.setItem(15,Items.stringListItem(main.dir().io.violationConfig.commandExecute.specific.punishmentCommands,Material.DIAMOND_AXE,"Commands","Commands that will flag this check"));
     }
 
     @Override
@@ -86,31 +86,31 @@ public class SpecificCommand extends AbstractViolation {
         if (!MainGUI.verify((Player) e.getWhoClicked())) return;
         switch (e.getSlot()) {
             case 4 -> {
-                Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.specific.enabled = !Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.specific.enabled;
+                main.dir().io.violationConfig.commandExecute.specific.enabled = !main.dir().io.violationConfig.commandExecute.specific.enabled;
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
             case 13 -> {
-                Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.specific.logToDiscord = !Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.specific.logToDiscord;
+                main.dir().io.violationConfig.commandExecute.specific.logToDiscord = !main.dir().io.violationConfig.commandExecute.specific.logToDiscord;
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
             case 11 -> {
-                Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.specific.punish = !Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.specific.punish;
+                main.dir().io.violationConfig.commandExecute.specific.punish = !main.dir().io.violationConfig.commandExecute.specific.punish;
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
 
             case 15 -> {
                 if (e.isLeftClick()) {
                     queuePlayer((Player) e.getWhoClicked(), (cfg, args) -> {
                         cfg.commandExecute.specific.punishmentCommands.add(args.getAll().toString());
-                    },"" + Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.specific.punishmentCommands);
+                    },"" + main.dir().io.violationConfig.commandExecute.specific.punishmentCommands);
                     return;
                 }
-                Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.specific.punishmentCommands.clear();
+                main.dir().io.violationConfig.commandExecute.specific.punishmentCommands.clear();
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
         }
     }

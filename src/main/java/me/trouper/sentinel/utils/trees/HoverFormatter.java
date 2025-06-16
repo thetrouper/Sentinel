@@ -1,66 +1,107 @@
 package me.trouper.sentinel.utils.trees;
 
-import me.trouper.sentinel.utils.Text;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 import java.util.Map;
 
 public class HoverFormatter {
 
-    public static String format(Node node) {
-        StringBuilder sb = new StringBuilder();
-        formatNode(sb, node, 0);
-        return Text.color(sb.toString());
+    public static Component format(Node node) {
+        return formatNode(node, 0);
     }
 
-    private static void formatNode(StringBuilder sb, Node node, int level) {
+    public static String formatLegacy(Node node) {
+        Component component = format(node);
+        return LegacyComponentSerializer.legacyAmpersand().serialize(component);
+    }
+
+    private static Component formatNode(Node node, int level) {
+        Component result = Component.empty();
+
         if (level == 0) {
-            //sb.append("&#3B3B3B]&#565656=&#717171=&#8C8C8C-&#A7A7A7- &6&l").append(node.title).append("&r &#A7A7A7-&#8C8C8C-&#717171=&#565656=&#3B3B3B[\n");
-            sb.append("&8]==-- &6&l").append(node.title).append("&r &8--==[\n&r");
+            Component titleLine = Component.text("]==-- ")
+                    .color(NamedTextColor.DARK_GRAY)
+                    .append(node.title.color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD))
+                    .append(Component.text(" --==[").color(NamedTextColor.DARK_GRAY))
+                    .append(Component.newline());
+            result = result.append(titleLine);
         } else {
-            sb.append("&f&l").append(node.title).append("\n");
+            Component childTitle = node.title
+                    .color(NamedTextColor.WHITE)
+                    .decorate(TextDecoration.BOLD)
+                    .append(Component.newline());
+            result = result.append(childTitle);
         }
 
-        for (String text : node.texts) {
-            text = text.replace("<hs>","&e&n");
-            text = text.replace("<he>","&r&b");
+        for (Component text : node.texts) {
+            Component processedText = processHighlightTags(text);
             if (level == 0) {
-                sb.append("&7").append(text).append("\n");
+                result = result.append(processedText.color(NamedTextColor.GRAY))
+                        .append(Component.newline());
             } else {
-                sb.append(" &8&l➥&r &7").append(text).append("\n");
+                result = result.append(Component.text(" ➥ ")
+                                .color(NamedTextColor.DARK_GRAY)
+                                .decorate(TextDecoration.BOLD))
+                        .append(processedText.color(NamedTextColor.GRAY))
+                        .append(Component.newline());
             }
         }
 
-        for (Map.Entry<String, String> entry : node.values.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            key = key.replace("<hs>","&e&n");
-            key = key.replace("<he>","&r&b");
-            value = value.replace("<hs>","&e&n");
-            value = value.replace("<he>","&r&b");
+        for (Map.Entry<Component, Component> entry : node.values.entrySet()) {
+            Component key = processHighlightTags(entry.getKey());
+            Component value = processHighlightTags(entry.getValue());
+
             if (level == 0) {
-                sb.append("&7").append(key).append("&8: &b").append(value).append("\n&r");
+                result = result.append(key.color(NamedTextColor.GRAY))
+                        .append(Component.text(": ").color(NamedTextColor.DARK_GRAY))
+                        .append(value.color(NamedTextColor.AQUA))
+                        .append(Component.newline());
             } else {
-                sb.append(" &8&l➥&r &7").append(key).append("&8: &b").append(value).append("\n&r");
+                result = result.append(Component.text(" ➥ ")
+                                .color(NamedTextColor.DARK_GRAY)
+                                .decorate(TextDecoration.BOLD))
+                        .append(key.color(NamedTextColor.GRAY))
+                        .append(Component.text(": ").color(NamedTextColor.DARK_GRAY))
+                        .append(value.color(NamedTextColor.AQUA))
+                        .append(Component.newline());
             }
         }
 
-        for (Map.Entry<String, String> entry : node.fields.entrySet()) {
-            String key = entry.getKey();
-            String value = entry.getValue();
-            key = key.replace("<hs>","&e&n");
-            key = key.replace("<he>","&r&b");
-            value = value.replace("<hs>","&e&n");
-            value = value.replace("<he>","&r&b");
+        for (Map.Entry<Component, Component> entry : node.fields.entrySet()) {
+            Component key = processHighlightTags(entry.getKey());
+            Component value = processHighlightTags(entry.getValue());
+
             if (level == 0) {
-                sb.append("&7").append(key).append("&8:\n&b ").append(value).append("\n&r");
+                result = result.append(key.color(NamedTextColor.GRAY))
+                        .append(Component.text(":").color(NamedTextColor.DARK_GRAY))
+                        .append(Component.newline())
+                        .append(Component.text(" ").append(value.color(NamedTextColor.AQUA)))
+                        .append(Component.newline());
             } else {
-                sb.append(" &8&l➥&r &7").append(key).append("&8:\n  &b ").append(value).append("\n&r");
+                result = result.append(Component.text(" ➥ ")
+                                .color(NamedTextColor.DARK_GRAY)
+                                .decorate(TextDecoration.BOLD))
+                        .append(key.color(NamedTextColor.GRAY))
+                        .append(Component.text(":").color(NamedTextColor.DARK_GRAY))
+                        .append(Component.newline())
+                        .append(Component.text("  ")
+                                .append(value.color(NamedTextColor.AQUA)))
+                        .append(Component.newline());
             }
         }
 
         for (Node child : node.children) {
-            formatNode(sb, child, level + 1);
+            result = result.append(formatNode(child, level + 1));
         }
+
+        return result;
+    }
+
+    private static Component processHighlightTags(Component component) {
+        // TODO: Process legacy highlight tags
+        return component;
     }
 }
-

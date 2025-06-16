@@ -24,7 +24,7 @@ import me.trouper.sentinel.server.events.violations.whitelist.CommandBlockExecut
 import me.trouper.sentinel.server.gui.Items;
 import me.trouper.sentinel.server.gui.MainGUI;
 import me.trouper.sentinel.utils.ServerUtils;
-import me.trouper.sentinel.utils.Text;
+import me.trouper.sentinel.utils.OldTXT;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -33,7 +33,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class AntiNukeGUI {
     public final CustomGui home = CustomGui.create()
-            .title(Text.color("&6&lSentinel &8»&0 Choose a check"))
+            .title(OldTXT.color("&6&lSentinel &8»&0 Choose a check"))
             .size(9*5)
             .onDefine(this::blankPage)
             .defineMain(this::mainClick)
@@ -95,8 +95,8 @@ public class AntiNukeGUI {
     private static ItemStack getCheckItem(Material item, String name) {
         return ItemBuilder.create()
                 .material(item)
-                .name(Text.color("&b" + name))
-                .lore(Text.color("&8&l➥&7 Modify this check"))
+                .name(OldTXT.color("&b" + name))
+                .lore(OldTXT.color("&8&l➥&7 Modify this check"))
                 .build();
     }
 }

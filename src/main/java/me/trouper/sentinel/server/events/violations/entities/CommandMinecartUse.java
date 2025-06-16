@@ -1,8 +1,7 @@
 package me.trouper.sentinel.server.events.violations.entities;
 
 import io.github.itzispyder.pdk.plugin.gui.CustomGui;
-import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.misc.CommandBlockHolder;
+import me.trouper.sentinel.data.types.CommandBlockHolder;
 import me.trouper.sentinel.server.events.violations.AbstractViolation;
 import me.trouper.sentinel.server.functions.helpers.ActionConfiguration;
 import me.trouper.sentinel.server.gui.Items;
@@ -10,6 +9,7 @@ import me.trouper.sentinel.server.gui.MainGUI;
 import me.trouper.sentinel.server.gui.config.AntiNukeGUI;
 import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.ServerUtils;
+import me.trouper.sentinel.utils.OldTXT;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -30,15 +30,15 @@ public class CommandMinecartUse extends AbstractViolation {
         if (!(e.getRightClicked() instanceof CommandMinecart cm)) return;
         ServerUtils.verbose("MinecartCommandUse: Entity is minecart command");
 
-        CommandBlockHolder holder = Sentinel.getInstance().getDirector().whitelistManager.getFromList(cm.getUniqueId());
+        CommandBlockHolder holder = main.dir().whitelistManager.getFromList(cm.getUniqueId());
         if (PlayerUtils.isTrusted(p)) {
-            if (Sentinel.getInstance().getDirector().whitelistManager.autoWhitelist.contains(p.getUniqueId())) holder.setWhitelisted(true);
+            if (main.dir().whitelistManager.autoWhitelist.contains(p.getUniqueId())) holder.setWhitelisted(true);
             holder.update(p);
             e.setCancelled(true);
             return;
         }
 
-        if (!Sentinel.getInstance().getDirector().io.violationConfig.commandBlockUse.enabled) {
+        if (!main.dir().io.violationConfig.commandBlockUse.enabled) {
             holder.update(p);
             return;
         }
@@ -48,14 +48,13 @@ public class CommandMinecartUse extends AbstractViolation {
                 .setPlayer(p)
                 .setEntity(cm)
                 .cancel(true)
-                .punish(Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.punish)
-                .deop(Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.deop)
-                .setPunishmentCommands(Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.punishmentCommands)
-                .logToDiscord(Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.logToDiscord);
+                .punish(main.dir().io.violationConfig.commandBlockMinecartUse.punish)
+                .deop(main.dir().io.violationConfig.commandBlockMinecartUse.deop)
+                .setPunishmentCommands(main.dir().io.violationConfig.commandBlockMinecartUse.punishmentCommands)
+                .logToDiscord(main.dir().io.violationConfig.commandBlockMinecartUse.logToDiscord);
 
         runActions(
-                Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormatPlayer.formatted(p.getName(), Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.use, Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.commandMinecart),
-                Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormatPlayer.formatted(p.getName(), Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.use, Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.commandMinecart),
+                Text.format(Text.Pallet.WARNING,main.dir().io.lang.violations.protections.rootName.rootNameFormatPlayer,p.getName(), main.dir().io.lang.violations.protections.rootName.use, main.dir().io.lang.violations.protections.rootName.commandMinecart),
                 generateMinecartInfo(cm),
                 config
         );
@@ -64,7 +63,7 @@ public class CommandMinecartUse extends AbstractViolation {
     @Override
     public CustomGui getConfigGui() {
         return CustomGui.create()
-                .title(Text.color("&6&lSentinel &8»&0 Command Cart Use"))
+                .title(OldTXT.color("&6&lSentinel &8»&0 Command Cart Use"))
                 .size(27)
                 .onDefine(this::getMainPage)
                 .defineMain(this::onClick)
@@ -81,7 +80,7 @@ public class CommandMinecartUse extends AbstractViolation {
         }
 
         ItemStack ring = Items.RED;
-        if (Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.enabled) {
+        if (main.dir().io.violationConfig.commandBlockMinecartUse.enabled) {
             ring = Items.GREEN;
         }
 
@@ -92,11 +91,11 @@ public class CommandMinecartUse extends AbstractViolation {
         }
 
         inv.setItem(26,Items.BACK);
-        inv.setItem(13,Items.booleanItem(Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.enabled,Items.configItem("Check Toggle", Material.CLOCK,"Enable/Disable this check entirely")));
-        inv.setItem(2,Items.booleanItem(Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.deop,Items.configItem("De-Op",Material.END_CRYSTAL,"Remove the user's operator privileges")));
-        inv.setItem(20,Items.booleanItem(Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.logToDiscord,Items.configItem("Log",Material.OAK_LOG,"If this check will produce a log to discord")));
-        inv.setItem(6,Items.booleanItem(Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.punish,Items.configItem("Punish",Material.REDSTONE_TORCH,"Run the punishment commands")));
-        inv.setItem(24,Items.stringListItem(Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.punishmentCommands,Material.DIAMOND_AXE,"Punishment Commands","Commands that will be ran \nif this check is flagged."));
+        inv.setItem(13,Items.booleanItem(main.dir().io.violationConfig.commandBlockMinecartUse.enabled,Items.configItem("Check Toggle", Material.CLOCK,"Enable/Disable this check entirely")));
+        inv.setItem(2,Items.booleanItem(main.dir().io.violationConfig.commandBlockMinecartUse.deop,Items.configItem("De-Op",Material.END_CRYSTAL,"Remove the user's operator privileges")));
+        inv.setItem(20,Items.booleanItem(main.dir().io.violationConfig.commandBlockMinecartUse.logToDiscord,Items.configItem("Log",Material.OAK_LOG,"If this check will produce a log to discord")));
+        inv.setItem(6,Items.booleanItem(main.dir().io.violationConfig.commandBlockMinecartUse.punish,Items.configItem("Punish",Material.REDSTONE_TORCH,"Run the punishment commands")));
+        inv.setItem(24,Items.stringListItem(main.dir().io.violationConfig.commandBlockMinecartUse.punishmentCommands,Material.DIAMOND_AXE,"Punishment Commands","Commands that will be ran \nif this check is flagged."));
     }
 
     @Override
@@ -105,36 +104,36 @@ public class CommandMinecartUse extends AbstractViolation {
         if (!MainGUI.verify((Player) e.getWhoClicked())) return;
         switch (e.getSlot()) {
             case 13 -> {
-                Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.enabled = !Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.enabled;
+                main.dir().io.violationConfig.commandBlockMinecartUse.enabled = !main.dir().io.violationConfig.commandBlockMinecartUse.enabled;
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
             case 2 -> {
-                Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.deop = !Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.deop;
+                main.dir().io.violationConfig.commandBlockMinecartUse.deop = !main.dir().io.violationConfig.commandBlockMinecartUse.deop;
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
             case 20 -> {
-                Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.logToDiscord = !Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.logToDiscord;
+                main.dir().io.violationConfig.commandBlockMinecartUse.logToDiscord = !main.dir().io.violationConfig.commandBlockMinecartUse.logToDiscord;
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
             case 6 -> {
-                Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.punish = !Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.punish;
+                main.dir().io.violationConfig.commandBlockMinecartUse.punish = !main.dir().io.violationConfig.commandBlockMinecartUse.punish;
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
 
             case 24 -> {
                 if (e.isLeftClick()) {
                     queuePlayer((Player) e.getWhoClicked(), (cfg, args) -> {
                         cfg.commandBlockMinecartUse.punishmentCommands.add(args.getAll().toString());
-                    },"" + Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.punishmentCommands);
+                    },"" + main.dir().io.violationConfig.commandBlockMinecartUse.punishmentCommands);
                     return;
                 }
-                Sentinel.getInstance().getDirector().io.violationConfig.commandBlockMinecartUse.punishmentCommands.clear();
+                main.dir().io.violationConfig.commandBlockMinecartUse.punishmentCommands.clear();
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
         }
     }

@@ -24,7 +24,6 @@ public class MainConfig implements JsonSerializable<MainConfig> {
     public boolean telemetry = true;
 
     public Plugin plugin = new Plugin();
-    public BackdoorDetection backdoorDetection = new BackdoorDetection();
     public Chat chat = new Chat();
 
     public class Plugin {
@@ -39,12 +38,6 @@ public class MainConfig implements JsonSerializable<MainConfig> {
         public boolean reopCommand = false;
         public boolean pluginHider = true;
         public String identifier = "My Server (Edit in main-config.json)";
-    }
-
-    public class BackdoorDetection {
-        public boolean enabled = false;
-        public boolean setupMode = true;
-        public boolean keepSetupMode = true;
     }
 
     public class Chat {

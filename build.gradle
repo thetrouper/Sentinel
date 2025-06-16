@@ -4,6 +4,7 @@ import java.nio.file.Paths
 plugins {
     id 'java'
     id 'com.gradleup.shadow' version '9.0.0-beta10'
+    id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
 group = project.group
@@ -47,17 +48,16 @@ repositories {
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.0")
-    compileOnly "io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT"
+    compileOnly "io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT"
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'org.ow2.asm:asm-commons:9.5'
     implementation files("libs/PDK-1.4.0.jar")
-    compileOnly 'com.github.koca2000:NoteBlockAPI:1.6.3'
-    implementation "com.github.retrooper:packetevents-spigot:2.7.0"
-    implementation("de.tr7zw:item-nbt-api:2.14.1")
+    implementation "com.github.retrooper:packetevents-spigot:2.8.0"
+    implementation("de.tr7zw:item-nbt-api:2.15.0")
 }
 
 static def generateBuildId() {
-    return new Date().format('HH:mm:ss')
+    return new Date().format('HH:mm:ss dd/MM/yyyy')
 }
 
 processResources {
@@ -69,99 +69,46 @@ processResources {
     }
 }
 
-
-task cleanPluginYml {
-    doLast {
-        def jarFile = shadowJar.archiveFile.get().asFile
-        def tempDir = file("$buildDir/tmpCleanJar")
-        tempDir.mkdirs()
-
-        // Unpack the jar into a temporary directory
-        copy {
-            from zipTree(jarFile)
-            into tempDir
-        }
-
-        // Delete any plugin.yml files from anywhere in the unpacked directory
-        fileTree(tempDir).matching {
-            include '**/plugin.yml'
-        }.each { file ->
-            file.delete()
-        }
-
-        // Repackage the jar without the plugin.yml files
-        ant.zip(destfile: jarFile, basedir: tempDir)
-        delete tempDir
-    }
-}
-
-task injectPluginYml {
-    doLast {
-        def jarFile = shadowJar.archiveFile.get().asFile
-        def tempDir = file("$buildDir/tmpJar")
-        tempDir.mkdirs()
-
-        // Unpack the jar that has been cleaned
-        copy {
-            from zipTree(jarFile)
-            into tempDir
-        }
-
-        // Copy the already filtered plugin.yml from processed resources
-        copy {
-            from file("$buildDir/resources/main/plugin.yml")
-            into tempDir
-        }
-
-        // Repackage the jar with the updated contents
-        ant.zip(destfile: jarFile, basedir: tempDir)
-        delete tempDir
-    }
-}
-
 shadowJar {
     archiveClassifier.set('')
     minimize()
-
     mergeServiceFiles()
 
-    exclude 'plugin.yml'
+    filesMatching('**/plugin.yml') { fileCopyDetails ->
+        def content = fileCopyDetails.file.text
+        def lines = content.split('\n')
+
+        if (lines.length == 0 || !lines[0].trim().equals('name: SentinelAntiNuke')) {
+            fileCopyDetails.exclude()
+        }
+    }
+
 
     relocate("com.github.retrooper.packetevents", "me.trouper.sentinel.packetevents.api")
     relocate("io.github.retrooper.packetevents", "me.trouper.sentinel.packetevents.impl")
     relocate("de.tr7zw.changeme.nbtapi", "me.trouper.sentinel.nbtapi.api")
-    
 }
-
 
 task copyLibs {
     doLast {
-        // Define the source directory (Gradle cache) and the target directory
-        def sourceDir = Paths.get("C:/Users/crvic/.gradle/caches/modules-2/files-2.1")
-        def targetDir = Paths.get("${buildDir}/../deps") // Output directory
+        def sourceDir = Paths.get("${System.getProperty('user.home')}/.gradle/caches/modules-2/files-2.1")
+        def targetDir = Paths.get("${buildDir}/../deps")
 
-        // Create the target directory if it doesn't exist
         if (!Files.exists(targetDir)) {
             Files.createDirectories(targetDir)
         }
 
-        // Recursively traverse the source directory and copy JAR files
         Files.walk(sourceDir)
                 .filter { Files.isRegularFile(it) && it.toString().endsWith(".jar") }
                 .forEach { jarFile ->
-                    // Extract the file name (without the directory structure)
                     def fileName = jarFile.fileName.toString()
-
-                    // Define the target file path (flat structure)
                     def targetFile = targetDir.resolve(fileName)
 
-                    // Handle duplicate file names (if any)
                     if (Files.exists(targetFile)) {
                         println "Skipping duplicate file: ${fileName}"
                         return
                     }
 
-                    // Copy the JAR file to the target directory
                     Files.copy(jarFile, targetFile)
                     println "Copied: ${jarFile} -> ${targetFile}"
                 }
@@ -171,25 +118,17 @@ task copyLibs {
 }
 
 task obfuscate(type: JavaExec) {
-    // Path to the obfuscator JAR
     classpath = files('obf/grunt-main.jar')
-
-    // Arguments to pass to the obfuscator (e.g., input and output directories)
     args = [
             '--config', 'obf/config.json'
     ]
 }
 
 tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
     if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
         options.release = targetJavaVersion
     }
-}
-
-compileJava.options.encoding("UTF-8")
-
-tasks.withType(JavaCompile) {
-    options.encoding = "UTF-8"
 }
 
 test {
@@ -198,5 +137,11 @@ test {
 
 build {
     dependsOn(shadowJar)
-    dependsOn injectPluginYml
+}
+
+tasks {
+    runServer {
+        dependsOn(shadowJar)
+        minecraftVersion("1.21.5")
+    }
 }

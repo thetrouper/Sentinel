@@ -1,5 +1,6 @@
 package me.trouper.sentinel.server.functions.hotbar.items;
 
+import de.tr7zw.changeme.nbtapi.NBT;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import io.github.itzispyder.pdk.utils.misc.Pair;
 import me.trouper.sentinel.Sentinel;
@@ -25,10 +26,10 @@ public class RateLimitCheck extends AbstractCheck<Pair<Player,ItemStack>> {
         UUID uuid = player.getUniqueId();
         ItemStack item = input.right;
                 
-        return itemLimit(player,uuid,item) && dataLimit(player,uuid,item);
+        return itemLimit(uuid,item) && dataLimit(uuid,item);
     }
 
-    private boolean itemLimit(Player player, UUID uuid, ItemStack item) {
+    private boolean itemLimit(UUID uuid, ItemStack item) {
         int currentUsed = itemsUsed.getOrDefault(uuid,0);
         ServerUtils.verbose("Current Player used items: " + currentUsed);
         currentUsed++;
@@ -37,13 +38,12 @@ public class RateLimitCheck extends AbstractCheck<Pair<Player,ItemStack>> {
     }
 
 
-    private boolean dataLimit(Player player, UUID uuid, ItemStack item) {
+    private boolean dataLimit(UUID uuid, ItemStack item) {
         int currentData = dataUsed.getOrDefault(uuid,0);
 
         ServerUtils.verbose("Current Player used data: " + currentData);
         try {
-            NBTItem nbt = new NBTItem(item);
-            int itemData = nbt.toString().length();
+            int itemData = NBT.readNbt(item).toString().length();
             ServerUtils.verbose("Item data: " + itemData);
             if (currentData < config.rateLimit.maxOverhead) currentData += itemData;
         } catch (Exception e) {

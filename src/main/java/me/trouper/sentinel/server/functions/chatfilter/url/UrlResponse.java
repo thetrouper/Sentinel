@@ -2,12 +2,11 @@ package me.trouper.sentinel.server.functions.chatfilter.url;
 
 import io.github.retrooper.packetevents.adventure.serializer.legacy.LegacyComponentSerializer;
 import io.papermc.paper.event.player.AsyncChatEvent;
-import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.misc.Emojis;
+import me.trouper.sentinel.data.types.Emojis;
 import me.trouper.sentinel.server.functions.chatfilter.FilterResponse;
 import me.trouper.sentinel.server.functions.helpers.Report;
+import me.trouper.sentinel.utils.FormatUtils;
 import me.trouper.sentinel.utils.ServerUtils;
-import me.trouper.sentinel.utils.Text;
 import org.bukkit.entity.Player;
 
 import java.util.regex.Matcher;
@@ -35,9 +34,9 @@ public class UrlResponse implements FilterResponse {
         }
 
         String message = LegacyComponentSerializer.legacySection().serialize(e.message());
-        Report report = Sentinel.getInstance().getDirector().reportHandler.initializeReport(message);
+        Report report = main.dir().reportHandler.initializeReport(message);
         UrlResponse response = new UrlResponse(e,message,message,report,false,false);
-        for (String allowed : Sentinel.getInstance().getDirector().io.mainConfig.chat.urlFilter.whitelist) {
+        for (String allowed : main.dir().io.mainConfig.chat.urlFilter.whitelist) {
             message = message.replaceAll(allowed,"");
         }
 
@@ -45,7 +44,7 @@ public class UrlResponse implements FilterResponse {
                 message
         ));
 
-        String urlRegex = Sentinel.getInstance().getDirector().io.mainConfig.chat.urlFilter.regex;
+        String urlRegex = main.dir().io.mainConfig.chat.urlFilter.regex;
 
         Pattern pattern = Pattern.compile(urlRegex, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(message);
@@ -55,12 +54,12 @@ public class UrlResponse implements FilterResponse {
         ));
 
         if (matcher.find()) {
-            String highlighted = Text.regexHighlighter(message,Sentinel.getInstance().getDirector().io.mainConfig.chat.urlFilter.regex," > "," < ");
+            String highlighted = FormatUtils.regexHighlighter(message,main.dir().io.mainConfig.chat.urlFilter.regex,"█HS█","█HE█");
             ServerUtils.verbose("Caught URL: " + highlighted);
             response.getReport().getStepsTaken().replace("Anti-URL", "`%s` %s".formatted(highlighted, Emojis.alarm));
 
             response.setBlocked(true);
-            response.setPunished(Sentinel.getInstance().getDirector().io.mainConfig.chat.urlFilter.punished);
+            response.setPunished(main.dir().io.mainConfig.chat.urlFilter.punished);
             response.setHighlightedMessage(highlighted);
         }
 

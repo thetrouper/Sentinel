@@ -1,18 +1,15 @@
 package me.trouper.sentinel.server.events.violations;
 
 import io.github.itzispyder.pdk.commands.Args;
-import io.github.itzispyder.pdk.events.CustomListener;
 import io.github.itzispyder.pdk.plugin.gui.CustomGui;
 import io.github.itzispyder.pdk.utils.misc.config.ConfigUpdater;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.data.config.ViolationConfig;
+import me.trouper.sentinel.server.events.QuickListener;
 import me.trouper.sentinel.server.functions.helpers.ActionConfiguration;
 import me.trouper.sentinel.server.gui.MainGUI;
-import me.trouper.sentinel.utils.FileUtils;
-import me.trouper.sentinel.utils.PlayerUtils;
-import me.trouper.sentinel.utils.ServerUtils;
-import me.trouper.sentinel.utils.Text;
+import me.trouper.sentinel.utils.*;
 import me.trouper.sentinel.utils.trees.ConsoleFormatter;
 import me.trouper.sentinel.utils.trees.EmbedFormatter;
 import me.trouper.sentinel.utils.trees.HoverFormatter;
@@ -30,15 +27,16 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.text.Format;
 import java.util.function.BiConsumer;
 
-public abstract class AbstractViolation implements CustomListener {
+public abstract class AbstractViolation implements QuickListener {
 
     public abstract CustomGui getConfigGui();
     public abstract void getMainPage(Inventory inv);
     public abstract void onClick(InventoryClickEvent e);
     
-    public static ConfigUpdater<AsyncChatEvent, ViolationConfig> updater = new ConfigUpdater<>(Sentinel.getInstance().getDirector().io.violationConfig);
+    public static ConfigUpdater<AsyncChatEvent, ViolationConfig> updater = new ConfigUpdater<>(main.dir().io.violationConfig);
 
     protected void queuePlayer(Player player, BiConsumer<ViolationConfig, Args> action, String currentValue) {
         MainGUI.awaitingCallback.add(player.getUniqueId());
@@ -49,13 +47,13 @@ public abstract class AbstractViolation implements CustomListener {
         }, (cfg, newValue) -> {
             action.accept(cfg,new Args(newValue.split("\\s+")));
             cfg.save();
-            player.sendMessage(Text.prefix("Value updated successfully"));
+            successAny(player,"Value updated successfully");
             player.openInventory(getConfigGui().getInventory());
         });
-        player.sendMessage(Component.text(Text.prefix("Enter the new value in chat. The value is currently set to &b%s&7. (Click to insert)".formatted(currentValue))).clickEvent(ClickEvent.suggestCommand(currentValue)));
+        message(player,Component.text("Enter the new value in chat. The value is currently set to {0}. (Click to insert)").clickEvent(ClickEvent.suggestCommand(currentValue)),Component.text(currentValue));
     }
 
-    public void runActions(String rootName, String rootNamePlayer, Node violationInfo, ActionConfiguration.Builder configuration) {
+    public void runActions(Component rootName, Node violationInfo, ActionConfiguration.Builder configuration) {
         ActionConfiguration config = configuration.build();
 
         Node root = new Node("Sentinel");
@@ -67,101 +65,101 @@ public abstract class AbstractViolation implements CustomListener {
 
         root.addChild(configuration.getActionNode());
 
-        notifyTrusted(root,(rootNamePlayer == null || rootNamePlayer.isBlank()) ? rootName : rootNamePlayer);
+        notifyTrusted(root, rootName);
         if (configuration.isLoggedToDiscord()) EmbedFormatter.sendEmbed(EmbedFormatter.format(root));
         Sentinel.getInstance().getLogger().info(ConsoleFormatter.format(root));
     }
 
-    public void notifyTrusted(Node root, String rootNamePlayer) {
+    public void notifyTrusted(Node root, Component rootNamePlayer) {
         PlayerUtils.forEachTrusted(trusted -> {
-                trusted.sendMessage(Component.text(Text.prefix(rootNamePlayer)).hoverEvent(Component.text(HoverFormatter.format(root)).asHoverEvent()));
+                message(trusted,rootNamePlayer.hoverEvent(HoverFormatter.format(root).asHoverEvent()));
         });
     }
 
     public Node generatePlayerInfo(Player p) {
-        Node playerInfo = new Node(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.playerInfo);
-        playerInfo.addKeyValue(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.name, p.getName());
-        playerInfo.addKeyValue(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.uuid, p.getUniqueId().toString());
-        playerInfo.addKeyValue(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.operator, p.isOp() ? Sentinel.getInstance().getDirector().io.lang.generic.yes : Sentinel.getInstance().getDirector().io.lang.generic.no);
-        playerInfo.addField(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.locationField, Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.locationFormat.formatted(Math.round(p.getX()), Math.round(p.getY()), Math.round(p.getZ())));
+        Node playerInfo = new Node(main.dir().io.lang.violations.protections.infoNode.playerInfo);
+        playerInfo.addKeyValue(main.dir().io.lang.violations.protections.infoNode.name, p.getName());
+        playerInfo.addKeyValue(main.dir().io.lang.violations.protections.infoNode.uuid, p.getUniqueId().toString());
+        playerInfo.addKeyValue(main.dir().io.lang.violations.protections.infoNode.operator, p.isOp() ? main.dir().io.lang.generic.yes : main.dir().io.lang.generic.no);
+        playerInfo.addField(Component.text(main.dir().io.lang.violations.protections.infoNode.locationField), FormatUtils.formatLoc(p.getLocation()));
 
         return playerInfo;
     }
 
     public static Node generateBlockInfo(Block block) {
-        Node blockInfo = new Node(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.blockInfo);
-        blockInfo.addTextLine(Text.cleanName(block.getType().toString()));
-        blockInfo.addKeyValue(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.worldField,block.getWorld().getName());
-        blockInfo.addField(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.blockLocationField,Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.locationFormat.formatted(block.getX(), block.getY(), block.getZ()));
+        Node blockInfo = new Node(main.dir().io.lang.violations.protections.infoNode.blockInfo);
+        blockInfo.addTextLine(FormatUtils.formatType(block.getType().toString()));
+        blockInfo.addKeyValue(main.dir().io.lang.violations.protections.infoNode.worldField,block.getWorld().getName());
+        blockInfo.addField(Component.text(main.dir().io.lang.violations.protections.infoNode.blockLocationField),FormatUtils.formatLoc(block.getLocation()));
 
         return blockInfo;
     }
 
     public Node generateCommandBlockInfo(CommandBlock commandBlock) {
-        Node commandBlockInfo = new Node(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.blockInfo);
-        commandBlockInfo.addTextLine(Text.cleanName(commandBlock.getType().toString()));
-        commandBlockInfo.addKeyValue(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.worldField,commandBlock.getWorld().getName());
-        commandBlockInfo.addField(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.blockLocationField,Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.locationFormat.formatted(commandBlock.getX(), commandBlock.getY(), commandBlock.getZ()));
+        Node commandBlockInfo = new Node(main.dir().io.lang.violations.protections.infoNode.blockInfo);
+        commandBlockInfo.addTextLine(FormatUtils.formatType(commandBlock.getType().toString()));
+        commandBlockInfo.addKeyValue(main.dir().io.lang.violations.protections.infoNode.worldField,commandBlock.getWorld().getName());
+        commandBlockInfo.addField(Component.text(main.dir().io.lang.violations.protections.infoNode.blockLocationField), FormatUtils.formatLoc(commandBlock.getLocation()));
 
         String command = commandBlock.getCommand();
         if (command == null || command.isBlank()) {
             return commandBlockInfo;
         } else if (command.length() <= 128) {
-            commandBlockInfo.addField(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.commandField, command);
+            commandBlockInfo.addField(main.dir().io.lang.violations.protections.infoNode.commandField, command);
         } else {
-            commandBlockInfo.addField(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.commandTooLargeField, FileUtils.createCommandLog(command));
+            commandBlockInfo.addField(main.dir().io.lang.violations.protections.infoNode.commandTooLargeField, FileUtils.createCommandLog(command));
         }
 
         return commandBlockInfo;
     }
 
     public Node generateMinecartInfo(CommandMinecart entity) {
-        Node minecartInfo = new Node(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.minecartInfo);
-        minecartInfo.addTextLine(Text.cleanName(entity.getType().toString()));
-        minecartInfo.addKeyValue(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.worldField,entity.getWorld().getName());
-        minecartInfo.addField(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.cartLocationField,Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.locationFormat.formatted(Math.round(entity.getX()), Math.round(entity.getY()), Math.round(entity.getZ())));
+        Node minecartInfo = new Node(main.dir().io.lang.violations.protections.infoNode.minecartInfo);
+        minecartInfo.addTextLine(FormatUtils.formatType(entity.getType().toString()));
+        minecartInfo.addKeyValue(main.dir().io.lang.violations.protections.infoNode.worldField,entity.getWorld().getName());
+        minecartInfo.addField(Component.text(main.dir().io.lang.violations.protections.infoNode.cartLocationField),FormatUtils.formatLoc(entity.getLocation()));
 
         String command = entity.getCommand();
         if (command == null || command.isBlank()) {
             return minecartInfo;
         } else if (command.length() <= 128) {
-            minecartInfo.addField(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.commandField, command);
+            minecartInfo.addField(main.dir().io.lang.violations.protections.infoNode.commandField, command);
         } else {
-            minecartInfo.addField(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.commandTooLargeField, FileUtils.createCommandLog(command));
+            minecartInfo.addField(main.dir().io.lang.violations.protections.infoNode.commandTooLargeField, FileUtils.createCommandLog(command));
         }
 
         return minecartInfo;
     }
 
     public Node generateItemInfo(ItemStack item) {
-        Node itemInfo = new Node(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.itemInfo);
-        itemInfo.addTextLine(Text.cleanName(item.getType().toString()));
-        itemInfo.addKeyValue(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.hasMeta,item.hasItemMeta() ? Sentinel.getInstance().getDirector().io.lang.generic.yes : Sentinel.getInstance().getDirector().io.lang.generic.no);
+        Node itemInfo = new Node(main.dir().io.lang.violations.protections.infoNode.itemInfo);
+        itemInfo.addTextLine(FormatUtils.formatType(item.getType().toString()));
+        itemInfo.addKeyValue(main.dir().io.lang.violations.protections.infoNode.hasMeta,item.hasItemMeta() ? main.dir().io.lang.generic.yes : main.dir().io.lang.generic.no);
         if (item.hasItemMeta()) {
-            itemInfo.addKeyValue(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.hasName,item.getItemMeta().hasCustomName() ? Sentinel.getInstance().getDirector().io.lang.generic.yes : Sentinel.getInstance().getDirector().io.lang.generic.no);
-            itemInfo.addKeyValue(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.hasLore,item.getItemMeta().hasLore() ? Sentinel.getInstance().getDirector().io.lang.generic.yes : Sentinel.getInstance().getDirector().io.lang.generic.no);
-            itemInfo.addKeyValue(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.hasAttributes,item.getItemMeta().hasAttributeModifiers() ? Sentinel.getInstance().getDirector().io.lang.generic.yes : Sentinel.getInstance().getDirector().io.lang.generic.no);
-            itemInfo.addKeyValue(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.hasEnchants,item.getItemMeta().hasEnchants() ? Sentinel.getInstance().getDirector().io.lang.generic.yes : Sentinel.getInstance().getDirector().io.lang.generic.no);
+            itemInfo.addKeyValue(main.dir().io.lang.violations.protections.infoNode.hasName,item.getItemMeta().hasCustomName() ? main.dir().io.lang.generic.yes : main.dir().io.lang.generic.no);
+            itemInfo.addKeyValue(main.dir().io.lang.violations.protections.infoNode.hasLore,item.getItemMeta().hasLore() ? main.dir().io.lang.generic.yes : main.dir().io.lang.generic.no);
+            itemInfo.addKeyValue(main.dir().io.lang.violations.protections.infoNode.hasAttributes,item.getItemMeta().hasAttributeModifiers() ? main.dir().io.lang.generic.yes : main.dir().io.lang.generic.no);
+            itemInfo.addKeyValue(main.dir().io.lang.violations.protections.infoNode.hasEnchants,item.getItemMeta().hasEnchants() ? main.dir().io.lang.generic.yes : main.dir().io.lang.generic.no);
         }
 
         return itemInfo;
     }
 
     public Node generateCommandInfo(String command, Player executor) {
-        Node commandInfo = new Node(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.commandInfo);
+        Node commandInfo = new Node(main.dir().io.lang.violations.protections.infoNode.commandInfo);
         String name = command.split(" ")[0].substring(1);
         ServerUtils.verbose("Command Name: " + name);
         Command executed = Bukkit.getServer().getCommandMap().getCommand(name);
 
-        commandInfo.addKeyValue(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.name,name);
+        commandInfo.addKeyValue(main.dir().io.lang.violations.protections.infoNode.name,name);
         if (command.length() <= 128) {
-            commandInfo.addField(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.commandField, command);
+            commandInfo.addField(main.dir().io.lang.violations.protections.infoNode.commandField, command);
         } else {
-            commandInfo.addField(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.commandTooLargeField, FileUtils.createCommandLog(command));
+            commandInfo.addField(main.dir().io.lang.violations.protections.infoNode.commandTooLargeField, FileUtils.createCommandLog(command));
         }
         if (executed == null || executed.getPermission() == null) return commandInfo;
-        commandInfo.addKeyValue(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.permissionRequired,executed.getPermission());
-        commandInfo.addKeyValue(Sentinel.getInstance().getDirector().io.lang.violations.protections.infoNode.permissionSatisfied,executor.hasPermission(executed.getPermission()) ? Sentinel.getInstance().getDirector().io.lang.generic.yes : Sentinel.getInstance().getDirector().io.lang.generic.no);
+        commandInfo.addKeyValue(main.dir().io.lang.violations.protections.infoNode.permissionRequired,executed.getPermission());
+        commandInfo.addKeyValue(main.dir().io.lang.violations.protections.infoNode.permissionSatisfied,executor.hasPermission(executed.getPermission()) ? main.dir().io.lang.generic.yes : main.dir().io.lang.generic.no);
 
         return commandInfo;
     }

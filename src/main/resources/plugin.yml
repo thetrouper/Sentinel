@@ -7,15 +7,12 @@ prefix: 'Sentinel'
 description: Detect, Block, and Ban players who attempt to grief your server.
 website: https://thetrouper.github.io/
 softdepend:
-  - ProtocolLib
-  - ProtocolSupport
   - ViaVersion
   - ViaBackwards
   - ViaRewind
   - Geyser-Spigot
   - NoChatReports
-  - NoteBlockAPI
-load: POSTWORLD
+load: STARTUP
 permissions:
   sentinel.admin:
     description: Allows access to all Sentinel admin commands.
@@ -31,16 +28,16 @@ permissions:
       sentinel.false-positive: true
   sentinel.false-positive:
     description: Allows the user to manage false positives.
-    default: false
+    default: op
     children:
       sentinel.false-positive.add: true
       sentinel.false-positive.remove: true
   sentinel.false-positive.add:
     description: Allows the user to add a false positive.
-    default: false
+    default: op
   sentinel.false-positive.remove:
     description: Allows the user to remove a false positive.
-    default: false
+    default: op
   sentinel.debug:
     description: Allows the user to toggle debug mode.
     default: op
@@ -49,10 +46,10 @@ permissions:
     default: op
   sentinel.commandblock:
     description: Allows the user to manage command blocks.
-    default: false
+    default: op
   sentinel.socialspy:
     description: Allows the user to spy on social interactions.
-    default: false
+    default: op
   sentinel.callbacks:
     description: Allows access to all Sentinel callback commands.
     default: op
@@ -60,7 +57,7 @@ permissions:
       sentinel.callbacks.fpreport: true
   sentinel.callbacks.fpreport:
     description: Allows the user to report false positives.
-    default: false
+    default: op
   sentinel.message:
     description: Allows the user to send messages.
     default: true
@@ -69,7 +66,7 @@ permissions:
     default: true
   sentinel.chatfilter:
     description: Parent permission for all chat-related features.
-    default: false
+    default: op
     children:
       sentinel.chatfilter.profanity: true
       sentinel.chatfilter.spam: true
@@ -77,52 +74,52 @@ permissions:
       sentinel.chatfilter.url: true
   sentinel.chatfilter.profanity:
     description: Parent permission for profanity filter features.
-    default: false
+    default: op
     children:
       sentinel.chatfilter.profanity.view: true
       sentinel.chatfilter.profanity.bypass: true
   sentinel.chatfilter.profanity.view:
     description: Allows the user to view profanity filter logs.
-    default: false
+    default: op
   sentinel.chatfilter.profanity.bypass:
     description: Allows the user to bypass the profanity filter.
-    default: false
+    default: op
   sentinel.chatfilter.spam:
     description: Parent permission for spam filter features.
-    default: false
+    default: op
     children:
       sentinel.chatfilter.spam.view: true
       sentinel.chatfilter.spam.bypass: true
   sentinel.chatfilter.spam.view:
     description: Allows the user to view spam filter logs.
-    default: false
+    default: op
   sentinel.chatfilter.spam.bypass:
     description: Allows the user to bypass the spam filter.
-    default: false
+    default: op
   sentinel.chatfilter.unicode:
     description: Parent permission for unicode filter features.
-    default: false
+    default: op
     children:
       sentinel.chatfilter.unicode.view: true
       sentinel.chatfilter.unicode.bypass: true
   sentinel.chatfilter.unicode.view:
     description: Allows the user to view unicode filter logs.
-    default: false
+    default: op
   sentinel.chatfilter.unicode.bypass:
     description: Allows the user to bypass the unicode filter.
-    default: false
+    default: op
   sentinel.chatfilter.url:
     description: Parent permission for URL filter features.
-    default: false
+    default: op
     children:
       sentinel.chatfilter.url.view: true
       sentinel.chatfilter.url.bypass: true
   sentinel.chatfilter.url.view:
     description: Allows the user to view URL filter logs.
-    default: false
+    default: op
   sentinel.chatfilter.url.bypass:
     description: Allows the user to bypass the URL filter.
-    default: false
+    default: op
 commands:
   sentinel:
     description: Main command for Sentinel.

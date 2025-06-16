@@ -6,7 +6,7 @@ import me.trouper.sentinel.server.gui.config.ConfigGUI;
 import me.trouper.sentinel.server.gui.nbt.NBTGui;
 import me.trouper.sentinel.server.gui.whitelist.WhitelistGUI;
 import me.trouper.sentinel.utils.PlayerUtils;
-import me.trouper.sentinel.utils.Text;
+import me.trouper.sentinel.utils.OldTXT;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -22,7 +22,7 @@ public class MainGUI {
     public static Set<UUID> awaitingCallback = new HashSet<>();
 
     public final CustomGui home = CustomGui.create()
-            .title(Text.color("&6&lSentinel &8»&0 Home"))
+            .title(OldTXT.color("&6&lSentinel &8»&0 Home"))
             .size(27)
             .onDefine(this::blankPage)
             .defineMain(this::mainClick)

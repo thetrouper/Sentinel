@@ -2,13 +2,14 @@ package me.trouper.sentinel.server.events.admin;
 
 import io.github.itzispyder.pdk.events.CustomListener;
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.server.events.QuickListener;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public class BlockDisplayHideEvent implements CustomListener {
+public class BlockDisplayHideEvent implements QuickListener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {

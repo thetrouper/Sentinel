@@ -26,7 +26,7 @@ public class EnchantmentCheck extends AbstractCheck<ItemStack> {
             for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
                 Enchantment enchantment = entry.getKey();
                 int level = entry.getValue();
-                if (level > Sentinel.getInstance().getDirector().io.nbtConfig.globalMaxEnchant || isOverLimit(enchantment, level)) {
+                if (level > main.dir().io.nbtConfig.globalMaxEnchant || isOverLimit(enchantment, level)) {
                     return true;
                 }
             }
@@ -35,92 +35,92 @@ public class EnchantmentCheck extends AbstractCheck<ItemStack> {
     }
 
     public static boolean isOverLimit(Enchantment enchantment, int level) {
-        int maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.globalMaxEnchant;
+        int maxLevel = main.dir().io.nbtConfig.globalMaxEnchant;
 
         if (enchantment.equals(MENDING)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxMending;
+            maxLevel = main.dir().io.nbtConfig.maxMending;
         } else if (enchantment.equals(Enchantment.UNBREAKING)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxUnbreaking;
+            maxLevel = main.dir().io.nbtConfig.maxUnbreaking;
         } else if (enchantment.equals(Enchantment.VANISHING_CURSE)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxCurseOfVanishing;
+            maxLevel = main.dir().io.nbtConfig.maxCurseOfVanishing;
         } else if (enchantment.equals(Enchantment.BINDING_CURSE)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxCurseOfBinding;
+            maxLevel = main.dir().io.nbtConfig.maxCurseOfBinding;
         } else if (enchantment.equals(Enchantment.AQUA_AFFINITY)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxAquaAffinity;
+            maxLevel = main.dir().io.nbtConfig.maxAquaAffinity;
         } else if (enchantment.equals(Enchantment.PROTECTION)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxProtection;
+            maxLevel = main.dir().io.nbtConfig.maxProtection;
         } else if (enchantment.equals(Enchantment.BLAST_PROTECTION)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxBlastProtection;
+            maxLevel = main.dir().io.nbtConfig.maxBlastProtection;
         } else if (enchantment.equals(Enchantment.DEPTH_STRIDER)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxDepthStrider;
+            maxLevel = main.dir().io.nbtConfig.maxDepthStrider;
         } else if (enchantment.equals(Enchantment.FEATHER_FALLING)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxFeatherFalling;
+            maxLevel = main.dir().io.nbtConfig.maxFeatherFalling;
         } else if (enchantment.equals(Enchantment.FIRE_PROTECTION)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxFireProtection;
+            maxLevel = main.dir().io.nbtConfig.maxFireProtection;
         } else if (enchantment.equals(Enchantment.FROST_WALKER)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxFrostWalker;
+            maxLevel = main.dir().io.nbtConfig.maxFrostWalker;
         } else if (enchantment.equals(Enchantment.PROJECTILE_PROTECTION)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxProjectileProtection;
+            maxLevel = main.dir().io.nbtConfig.maxProjectileProtection;
         } else if (enchantment.equals(Enchantment.RESPIRATION)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxRespiration;
+            maxLevel = main.dir().io.nbtConfig.maxRespiration;
         } else if (enchantment.equals(Enchantment.SOUL_SPEED)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxSoulSpeed;
+            maxLevel = main.dir().io.nbtConfig.maxSoulSpeed;
         } else if (enchantment.equals(Enchantment.THORNS)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxThorns;
+            maxLevel = main.dir().io.nbtConfig.maxThorns;
         } else if (enchantment.equals(Enchantment.SWEEPING_EDGE)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxSweepingEdge;
+            maxLevel = main.dir().io.nbtConfig.maxSweepingEdge;
         } else if (enchantment.equals(Enchantment.SWIFT_SNEAK)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxSwiftSneak;
+            maxLevel = main.dir().io.nbtConfig.maxSwiftSneak;
         } else if (enchantment.equals(Enchantment.BANE_OF_ARTHROPODS)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxBaneOfArthropods;
+            maxLevel = main.dir().io.nbtConfig.maxBaneOfArthropods;
         } else if (enchantment.equals(Enchantment.FIRE_ASPECT)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxFireAspect;
+            maxLevel = main.dir().io.nbtConfig.maxFireAspect;
         } else if (enchantment.equals(Enchantment.LOOTING)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxLooting;
+            maxLevel = main.dir().io.nbtConfig.maxLooting;
         } else if (enchantment.equals(Enchantment.IMPALING)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxImpaling;
+            maxLevel = main.dir().io.nbtConfig.maxImpaling;
         } else if (enchantment.equals(Enchantment.KNOCKBACK)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxKnockback;
+            maxLevel = main.dir().io.nbtConfig.maxKnockback;
         } else if (enchantment.equals(Enchantment.SHARPNESS)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxSharpness;
+            maxLevel = main.dir().io.nbtConfig.maxSharpness;
         } else if (enchantment.equals(Enchantment.SMITE)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxSmite;
+            maxLevel = main.dir().io.nbtConfig.maxSmite;
         } else if (enchantment.equals(Enchantment.CHANNELING)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxChanneling;
+            maxLevel = main.dir().io.nbtConfig.maxChanneling;
         } else if (enchantment.equals(Enchantment.FLAME)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxFlame;
+            maxLevel = main.dir().io.nbtConfig.maxFlame;
         } else if (enchantment.equals(Enchantment.INFINITY)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxInfinity;
+            maxLevel = main.dir().io.nbtConfig.maxInfinity;
         } else if (enchantment.equals(Enchantment.LOYALTY)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxLoyalty;
+            maxLevel = main.dir().io.nbtConfig.maxLoyalty;
         } else if (enchantment.equals(Enchantment.RIPTIDE)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxRiptide;
+            maxLevel = main.dir().io.nbtConfig.maxRiptide;
         } else if (enchantment.equals(Enchantment.MULTISHOT)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxMultishot;
+            maxLevel = main.dir().io.nbtConfig.maxMultishot;
         } else if (enchantment.equals(Enchantment.PIERCING)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxPiercing;
+            maxLevel = main.dir().io.nbtConfig.maxPiercing;
         } else if (enchantment.equals(Enchantment.POWER)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxPower;
+            maxLevel = main.dir().io.nbtConfig.maxPower;
         } else if (enchantment.equals(Enchantment.PUNCH)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxPunch;
+            maxLevel = main.dir().io.nbtConfig.maxPunch;
         } else if (enchantment.equals(Enchantment.QUICK_CHARGE)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxQuickCharge;
+            maxLevel = main.dir().io.nbtConfig.maxQuickCharge;
         } else if (enchantment.equals(Enchantment.EFFICIENCY)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxEfficiency;
+            maxLevel = main.dir().io.nbtConfig.maxEfficiency;
         } else if (enchantment.equals(Enchantment.FORTUNE)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxFortune;
+            maxLevel = main.dir().io.nbtConfig.maxFortune;
         } else if (enchantment.equals(Enchantment.LUCK_OF_THE_SEA)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxLuckOfTheSea;
+            maxLevel = main.dir().io.nbtConfig.maxLuckOfTheSea;
         } else if (enchantment.equals(Enchantment.LURE)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxLure;
+            maxLevel = main.dir().io.nbtConfig.maxLure;
         } else if (enchantment.equals(Enchantment.SILK_TOUCH)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxSilkTouch;
+            maxLevel = main.dir().io.nbtConfig.maxSilkTouch;
         } else if (enchantment.equals(Enchantment.BREACH)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxBreach;
+            maxLevel = main.dir().io.nbtConfig.maxBreach;
         } else if (enchantment.equals(Enchantment.DENSITY)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxDensity;
+            maxLevel = main.dir().io.nbtConfig.maxDensity;
         } else if (enchantment.equals(Enchantment.WIND_BURST)) {
-            maxLevel = Sentinel.getInstance().getDirector().io.nbtConfig.maxWindBurst;
+            maxLevel = main.dir().io.nbtConfig.maxWindBurst;
         }
 
         return level > maxLevel;

@@ -9,6 +9,7 @@ import me.trouper.sentinel.server.gui.MainGUI;
 import me.trouper.sentinel.server.gui.config.AntiNukeGUI;
 import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.ServerUtils;
+import me.trouper.sentinel.utils.OldTXT;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -25,7 +26,7 @@ public class JigsawBlockBreak extends AbstractViolation {
 
     @EventHandler
     public void onPlace(BlockBreakEvent e) {
-        if (!Sentinel.getInstance().getDirector().io.violationConfig.commandBlockPlace.enabled) return;
+        if (!main.dir().io.violationConfig.commandBlockPlace.enabled) return;
         Player p = e.getPlayer();
         Block b = e.getBlock();
         if (b == null) return;
@@ -38,16 +39,15 @@ public class JigsawBlockBreak extends AbstractViolation {
         ActionConfiguration.Builder config = new ActionConfiguration.Builder()
                 .setEvent(e)
                 .setPlayer(p)
-                .deop(Sentinel.getInstance().getDirector().io.violationConfig.jigsawBlockBreak.deop)
+                .deop(main.dir().io.violationConfig.jigsawBlockBreak.deop)
                 .cancel(true)
                 .setEvent(e)
-                .punish(Sentinel.getInstance().getDirector().io.violationConfig.jigsawBlockBreak.punish)
-                .setPunishmentCommands(Sentinel.getInstance().getDirector().io.violationConfig.jigsawBlockBreak.punishmentCommands)
-                .logToDiscord(Sentinel.getInstance().getDirector().io.violationConfig.jigsawBlockBreak.logToDiscord);
+                .punish(main.dir().io.violationConfig.jigsawBlockBreak.punish)
+                .setPunishmentCommands(main.dir().io.violationConfig.jigsawBlockBreak.punishmentCommands)
+                .logToDiscord(main.dir().io.violationConfig.jigsawBlockBreak.logToDiscord);
 
         runActions(
-                Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormatPlayer.formatted(p.getName(), Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.brake, Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.jigsawBlock),
-                Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormatPlayer.formatted(p.getName(), Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.brake, Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.jigsawBlock),
+                Text.format(Text.Pallet.WARNING,main.dir().io.lang.violations.protections.rootName.rootNameFormatPlayer,p.getName(), main.dir().io.lang.violations.protections.rootName.brake, main.dir().io.lang.violations.protections.rootName.jigsawBlock),
                 generateBlockInfo(b),
                 config
         );
@@ -56,7 +56,7 @@ public class JigsawBlockBreak extends AbstractViolation {
     @Override
     public CustomGui getConfigGui() {
         return CustomGui.create()
-                .title(Text.color("&6&lSentinel &8»&0 Jigsaw Block Break"))
+                .title(OldTXT.color("&6&lSentinel &8»&0 Jigsaw Block Break"))
                 .size(27)
                 .onDefine(this::getMainPage)
                 .defineMain(this::onClick)
@@ -73,7 +73,7 @@ public class JigsawBlockBreak extends AbstractViolation {
         }
 
         ItemStack ring = Items.RED;
-        if (Sentinel.getInstance().getDirector().io.violationConfig.jigsawBlockBreak.enabled) {
+        if (main.dir().io.violationConfig.jigsawBlockBreak.enabled) {
             ring = Items.GREEN;
         }
 
@@ -84,11 +84,11 @@ public class JigsawBlockBreak extends AbstractViolation {
         }
 
         inv.setItem(26,Items.BACK);
-        inv.setItem(13,Items.booleanItem(Sentinel.getInstance().getDirector().io.violationConfig.jigsawBlockBreak.enabled,Items.configItem("Check Toggle",Material.CLOCK,"Enable/Disable this check entirely")));
-        inv.setItem(2,Items.booleanItem(Sentinel.getInstance().getDirector().io.violationConfig.jigsawBlockBreak.deop,Items.configItem("De-Op",Material.END_CRYSTAL,"Remove the user's operator privileges")));
-        inv.setItem(20,Items.booleanItem(Sentinel.getInstance().getDirector().io.violationConfig.jigsawBlockBreak.logToDiscord,Items.configItem("Log",Material.OAK_LOG,"If this check will produce a log to discord")));
-        inv.setItem(6,Items.booleanItem(Sentinel.getInstance().getDirector().io.violationConfig.jigsawBlockBreak.punish,Items.configItem("Punish",Material.REDSTONE_TORCH,"Run the punishment commands")));
-        inv.setItem(24,Items.stringListItem(Sentinel.getInstance().getDirector().io.violationConfig.jigsawBlockBreak.punishmentCommands,Material.DIAMOND_AXE,"Punishment Commands","Commands that will be ran \nif this check is flagged."));
+        inv.setItem(13,Items.booleanItem(main.dir().io.violationConfig.jigsawBlockBreak.enabled,Items.configItem("Check Toggle",Material.CLOCK,"Enable/Disable this check entirely")));
+        inv.setItem(2,Items.booleanItem(main.dir().io.violationConfig.jigsawBlockBreak.deop,Items.configItem("De-Op",Material.END_CRYSTAL,"Remove the user's operator privileges")));
+        inv.setItem(20,Items.booleanItem(main.dir().io.violationConfig.jigsawBlockBreak.logToDiscord,Items.configItem("Log",Material.OAK_LOG,"If this check will produce a log to discord")));
+        inv.setItem(6,Items.booleanItem(main.dir().io.violationConfig.jigsawBlockBreak.punish,Items.configItem("Punish",Material.REDSTONE_TORCH,"Run the punishment commands")));
+        inv.setItem(24,Items.stringListItem(main.dir().io.violationConfig.jigsawBlockBreak.punishmentCommands,Material.DIAMOND_AXE,"Punishment Commands","Commands that will be ran \nif this check is flagged."));
     }
 
     @Override
@@ -97,36 +97,36 @@ public class JigsawBlockBreak extends AbstractViolation {
         if (!MainGUI.verify((Player) e.getWhoClicked())) return;
         switch (e.getSlot()) {
             case 13 -> {
-                Sentinel.getInstance().getDirector().io.violationConfig.jigsawBlockBreak.enabled = !Sentinel.getInstance().getDirector().io.violationConfig.jigsawBlockBreak.enabled;
+                main.dir().io.violationConfig.jigsawBlockBreak.enabled = !main.dir().io.violationConfig.jigsawBlockBreak.enabled;
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
             case 2 -> {
-                Sentinel.getInstance().getDirector().io.violationConfig.jigsawBlockBreak.deop = !Sentinel.getInstance().getDirector().io.violationConfig.jigsawBlockBreak.deop;
+                main.dir().io.violationConfig.jigsawBlockBreak.deop = !main.dir().io.violationConfig.jigsawBlockBreak.deop;
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
             case 20 -> {
-                Sentinel.getInstance().getDirector().io.violationConfig.jigsawBlockBreak.logToDiscord = !Sentinel.getInstance().getDirector().io.violationConfig.jigsawBlockBreak.logToDiscord;
+                main.dir().io.violationConfig.jigsawBlockBreak.logToDiscord = !main.dir().io.violationConfig.jigsawBlockBreak.logToDiscord;
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
             case 6 -> {
-                Sentinel.getInstance().getDirector().io.violationConfig.jigsawBlockBreak.punish = !Sentinel.getInstance().getDirector().io.violationConfig.jigsawBlockBreak.punish;
+                main.dir().io.violationConfig.jigsawBlockBreak.punish = !main.dir().io.violationConfig.jigsawBlockBreak.punish;
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
 
             case 24 -> {
                 if (e.isLeftClick()) {
                     queuePlayer((Player) e.getWhoClicked(), (cfg, args) -> {
                         cfg.jigsawBlockBreak.punishmentCommands.add(args.getAll().toString());
-                    },"" + Sentinel.getInstance().getDirector().io.violationConfig.jigsawBlockBreak.punishmentCommands);
+                    },"" + main.dir().io.violationConfig.jigsawBlockBreak.punishmentCommands);
                     return;
                 }
-                Sentinel.getInstance().getDirector().io.violationConfig.jigsawBlockBreak.punishmentCommands.clear();
+                main.dir().io.violationConfig.jigsawBlockBreak.punishmentCommands.clear();
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
         }
     }

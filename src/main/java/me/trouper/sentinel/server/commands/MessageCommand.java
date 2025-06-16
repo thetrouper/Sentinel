@@ -2,12 +2,9 @@ package me.trouper.sentinel.server.commands;
 
 import io.github.itzispyder.pdk.commands.Args;
 import io.github.itzispyder.pdk.commands.CommandRegistry;
-import io.github.itzispyder.pdk.commands.CustomCommand;
 import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
-import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.utils.PlayerUtils;
-import me.trouper.sentinel.utils.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -17,17 +14,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @CommandRegistry(value = "sentinelmessage",permission = @Permission("sentinel.message"),printStackTrace = true)
-public class MessageCommand implements CustomCommand {
+public class MessageCommand implements QuickCommand {
     @Override
     public void dispatchCommand(CommandSender sender, Command command, String s, Args args) {
         Player p = (Player) sender;
         Player r = null;
         if (args.getSize() == 0) {
-            p.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.playerInteraction.noOnlinePlayer));
+            errorAny(sender,main.dir().io.lang.playerInteraction.noOnlinePlayer);
             return;
         }
         if (args.getSize() == 1) {
-            p.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.playerInteraction.noMessageProvided));
+            errorAny(sender,main.dir().io.lang.playerInteraction.noMessageProvided);
             return;
         }
         r = Bukkit.getPlayer(args.get(0).toString());
@@ -35,8 +32,8 @@ public class MessageCommand implements CustomCommand {
         String msg = args.getAll(1).toString().trim();
 
         if (PlayerUtils.checkPermission(sender,"sentinel.message") && r != null) {
-            Sentinel.getInstance().getDirector().messageHandler.messagePlayer(p,r,msg);
-        } else if (r == null) p.sendMessage(Text.prefix((Sentinel.getInstance().getDirector().io.lang.playerInteraction.noOnlinePlayer)));
+            main.dir().messageHandler.messagePlayer(p,r,msg);
+        } else if (r == null) errorAny(sender,main.dir().io.lang.playerInteraction.noOnlinePlayer);
     }
 
     @Override

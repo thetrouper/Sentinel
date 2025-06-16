@@ -3,14 +3,15 @@ package me.trouper.sentinel.server.functions.chatfilter;
 import io.github.itzispyder.pdk.utils.discord.DiscordEmbed;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.server.Main;
 import me.trouper.sentinel.utils.trees.ConsoleFormatter;
 import me.trouper.sentinel.utils.trees.EmbedFormatter;
 import me.trouper.sentinel.utils.trees.Node;
 
-public abstract class AbstractActionHandler<T extends FilterResponse> {
+public abstract class AbstractActionHandler<T extends FilterResponse> implements Main {
 
     public void run(T response) {
-        Sentinel.getInstance().getDirector().reportHandler.reports.put(response.getReport().getId(), response.getReport());
+        main.dir().reportHandler.reports.put(response.getReport().getId(), response.getReport());
         Node tree = buildTree(response);
 
         if (response.isBlocked()) {

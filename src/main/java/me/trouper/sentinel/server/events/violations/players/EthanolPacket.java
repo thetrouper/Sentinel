@@ -11,13 +11,16 @@ import org.bukkit.inventory.Inventory;
 
 public class EthanolPacket extends AbstractViolation implements PacketListener {
 
-
+    
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
         if (!event.getPacketType().equals(PacketType.Play.Client.PLUGIN_MESSAGE)) return;
         WrapperPlayClientPluginMessage packet = new WrapperPlayClientPluginMessage(event);
         String channel = packet.getChannelName();
-        if (channel.equals())
+        if (channel.equals("auth_res")) {
+            // TODO: Finish Ethanol Detection
+            System.out.println("Detected ethanol, but I haven't coded the way to stop it yet.");
+        }
     }
 
     @Override

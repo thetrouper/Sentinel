@@ -1,12 +1,12 @@
 package me.trouper.sentinel.server.functions.helpers;
 
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.misc.CommandBlockHolder;
-import me.trouper.sentinel.data.misc.Selection;
-import me.trouper.sentinel.data.misc.SerialLocation;
+import me.trouper.sentinel.data.types.CommandBlockHolder;
+import me.trouper.sentinel.data.types.Selection;
+import me.trouper.sentinel.data.types.SerialLocation;
+import me.trouper.sentinel.server.Main;
 import me.trouper.sentinel.server.events.admin.WandEvents;
 import me.trouper.sentinel.utils.ServerUtils;
-import me.trouper.sentinel.utils.Text;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class CBWhitelistManager {
+public class CBWhitelistManager implements Main {
 
     public Set<UUID> autoWhitelist = new HashSet<>();
 
@@ -50,7 +50,7 @@ public class CBWhitelistManager {
     public void removeSelectionFromWhitelist(Player player) {
         Selection selection = WandEvents.selections.get(player.getUniqueId());
         if (selection == null || !selection.isComplete()) {
-            player.sendMessage(Text.prefix("You must set 2 points first."));
+            errorAny(player,"You must set 2 points first.");
             return;
         }
         AtomicInteger number = new AtomicInteger();
@@ -61,13 +61,13 @@ public class CBWhitelistManager {
             }
         });
 
-        player.sendMessage(Text.prefix("Removed all &b%s&7 command blocks from the whitelist in your selection.".formatted(number.get())));
+        successAny(player,"Removed all {0} command blocks from the whitelist in your selection.",number.get());
     }
 
     public void deleteSelection(Player player) {
         Selection selection = WandEvents.selections.get(player.getUniqueId());
         if (selection == null || !selection.isComplete()) {
-            player.sendMessage(Text.prefix("You must set 2 points first."));
+            errorAny(player,"You must set 2 points first.");
             return;
         }
         AtomicInteger number = new AtomicInteger();
@@ -78,13 +78,13 @@ public class CBWhitelistManager {
             }
         });
 
-        player.sendMessage(Text.prefix("Deleted all &b%s&7 command blocks from the whitelist in your selection.".formatted(number.get())));
+        successAny(player,"Deleted all {0} command blocks from the whitelist in your selection.",number.get());
     }
 
     public void addSelectionToWhitelist(Player player) {
         Selection selection = WandEvents.selections.get(player.getUniqueId());
         if (selection == null || !selection.isComplete()) {
-            player.sendMessage(Text.prefix("You must set 2 points first."));
+            errorAny(player,"You must set 2 points first.");
             return;
         }
 
@@ -96,12 +96,12 @@ public class CBWhitelistManager {
             }
         });
 
-        player.sendMessage(Text.prefix("Whitelisted all &b%s&7 command blocks in your selection.".formatted(number.get())));
+        successAny(player,"Whitelisted all {0} command blocks in your selection.",number.get());
     }
 
     public int clearAll() {
         int total = 0;
-        for (CommandBlockHolder cb : Sentinel.getInstance().getDirector().io.whitelistStorage.holders) {
+        for (CommandBlockHolder cb : main.dir().io.whitelistStorage.holders) {
             cb.destroy();
             cb.delete();
             total++;
@@ -115,7 +115,7 @@ public class CBWhitelistManager {
 
     public int clearAll(UUID who) {
         int total = 0;
-        for (CommandBlockHolder cb : Sentinel.getInstance().getDirector().io.whitelistStorage.holders) {
+        for (CommandBlockHolder cb : main.dir().io.whitelistStorage.holders) {
             if (!cb.owner().equals(who.toString())) continue;
             cb.destroy();
             cb.delete();
@@ -130,7 +130,7 @@ public class CBWhitelistManager {
 
     public int restoreAll() {
         int total = 0;
-        for (CommandBlockHolder cb : Sentinel.getInstance().getDirector().io.whitelistStorage.holders) {
+        for (CommandBlockHolder cb : main.dir().io.whitelistStorage.holders) {
             if (cb.isWhitelisted() && cb.restore()) total++;
         }
         return total;
@@ -138,7 +138,7 @@ public class CBWhitelistManager {
 
     public int restoreAll(UUID who) {
         int total = 0;
-        for (CommandBlockHolder cb : Sentinel.getInstance().getDirector().io.whitelistStorage.holders) {
+        for (CommandBlockHolder cb : main.dir().io.whitelistStorage.holders) {
             if (!cb.owner().equals(who.toString())) continue;
             if (cb.isWhitelisted() && cb.restore()) total++;
         }
@@ -165,7 +165,7 @@ public class CBWhitelistManager {
     }
 
     public CommandBlockHolder getFromList(UUID entityUUID) {
-        for (CommandBlockHolder existing :  Sentinel.getInstance().getDirector().io.whitelistStorage.holders) {
+        for (CommandBlockHolder existing :  main.dir().io.whitelistStorage.holders) {
             if (existing.loc().isUUID() && existing.loc().toUIID().equals(entityUUID)) {
                 return existing;
             }
@@ -174,7 +174,7 @@ public class CBWhitelistManager {
     }
 
     public CommandBlockHolder getFromList(Location loc) {
-        for (CommandBlockHolder existing :  Sentinel.getInstance().getDirector().io.whitelistStorage.holders) {
+        for (CommandBlockHolder existing :  main.dir().io.whitelistStorage.holders) {
             if (existing.loc().isSameLocation(loc)) {
                 return existing;
             }
@@ -183,7 +183,7 @@ public class CBWhitelistManager {
     }
 
     public CommandBlockHolder getFromList(SerialLocation loc) {
-        for (CommandBlockHolder existing :  Sentinel.getInstance().getDirector().io.whitelistStorage.holders) {
+        for (CommandBlockHolder existing :  main.dir().io.whitelistStorage.holders) {
             if (existing.loc().isSameLocation(loc)) {
                 return existing;
             }

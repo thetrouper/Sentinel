@@ -4,6 +4,7 @@ import com.github.retrooper.packetevents.PacketEvents;
 import de.tr7zw.changeme.nbtapi.NBT;
 import io.github.itzispyder.pdk.PDK;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
+import me.trouper.sentinel.server.Director;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
@@ -81,14 +82,6 @@ public final class Sentinel extends JavaPlugin {
 
         Sentinel.getInstance().getLogger().info("Instantiating Director");
         director = new Director();
-
-        getLogger().info("Deleting Residual Block Displays");
-        List<World> worlds = Bukkit.getWorlds();
-        List<Entity> entities = new ArrayList<>();
-        for (World world : worlds) {
-            entities.addAll(world.getEntities().stream().filter(entity -> entity.getScoreboardTags().contains("./Sentinel/ Block Display")).toList());
-            entities.forEach(Entity::remove);
-        }
 
         director.launch();
     }

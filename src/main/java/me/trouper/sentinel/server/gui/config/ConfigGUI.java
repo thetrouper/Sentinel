@@ -4,7 +4,7 @@ import io.github.itzispyder.pdk.plugin.gui.CustomGui;
 import me.trouper.sentinel.server.gui.Items;
 import me.trouper.sentinel.server.gui.MainGUI;
 import me.trouper.sentinel.server.gui.config.chat.ChatGUI;
-import me.trouper.sentinel.utils.Text;
+import me.trouper.sentinel.utils.OldTXT;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
@@ -13,7 +13,7 @@ import org.bukkit.inventory.Inventory;
 
 public class ConfigGUI {
     public final CustomGui home = CustomGui.create()
-            .title(Text.color("&6&lSentinel &8»&0 Config Home"))
+            .title(OldTXT.color("&6&lSentinel &8»&0 Config Home"))
             .size(27)
             .onDefine(this::blankPage)
             .defineMain(this::mainClick)

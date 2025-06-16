@@ -7,12 +7,14 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.BlockDisplay;
 import org.bukkit.entity.Display;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
 import org.joml.AxisAngle4f;
 import org.joml.Vector3f;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -20,6 +22,11 @@ public class BlockDisplayRaytracer {
 
     private static final Sentinel system = Sentinel.getInstance();
 
+    public static void cleanup(World world) {
+        List<Entity> entities = new ArrayList<>(world.getEntities().stream().filter(entity -> entity.getScoreboardTags().contains("./Sentinel/ Block Display")).toList());
+        entities.forEach(Entity::remove);
+    }
+    
     public static void outline(Material display, Location location, long stayTime, List<Player> viewers) {
         outline(display, location, 0.05, stayTime, viewers);
     }

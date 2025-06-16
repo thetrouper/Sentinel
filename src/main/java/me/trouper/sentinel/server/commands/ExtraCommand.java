@@ -2,23 +2,21 @@ package me.trouper.sentinel.server.commands;
 
 import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.protocol.entity.type.EntityTypes;
-import com.github.retrooper.packetevents.protocol.player.User;
-import com.github.retrooper.packetevents.protocol.potion.PotionEffect;
 import com.github.retrooper.packetevents.util.Vector3d;
 import com.github.retrooper.packetevents.wrapper.play.server.*;
-import com.xxmicloxx.NoteBlockAPI.model.Song;
-import com.xxmicloxx.NoteBlockAPI.model.SoundCategory;
-import com.xxmicloxx.NoteBlockAPI.songplayer.RadioSongPlayer;
-import com.xxmicloxx.NoteBlockAPI.songplayer.SongPlayer;
-import com.xxmicloxx.NoteBlockAPI.utils.NBSDecoder;
+//import com.xxmicloxx.NoteBlockAPI.model.Song;
+//import com.xxmicloxx.NoteBlockAPI.model.SoundCategory;
+//import com.xxmicloxx.NoteBlockAPI.songplayer.RadioSongPlayer;
+//import com.xxmicloxx.NoteBlockAPI.songplayer.SongPlayer;
+//import com.xxmicloxx.NoteBlockAPI.utils.NBSDecoder;
 import io.github.itzispyder.pdk.commands.Args;
 import io.github.itzispyder.pdk.commands.CommandRegistry;
-import io.github.itzispyder.pdk.commands.CustomCommand;
 import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.misc.IPLocation;
-import me.trouper.sentinel.data.misc.SerialLocation;
+import me.trouper.sentinel.data.types.IPLocation;
+import me.trouper.sentinel.data.types.SerialLocation;
+import me.trouper.sentinel.server.commands.extras.AbstractExtra;
 import me.trouper.sentinel.server.events.extras.ShadowRealmEvents;
 import me.trouper.sentinel.utils.*;
 import net.kyori.adventure.text.Component;
@@ -27,244 +25,82 @@ import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerKickEvent;
 
-import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@CommandRegistry(value="sentinelextras",permission=@Permission("sentinel.extras"))
-public class ExtraCommand implements CustomCommand {
+@CommandRegistry(value="sentinelextras",permission=@Permission("sentinel.extras"),printStackTrace = true)
+public class ExtraCommand implements QuickCommand {
+    
+    public final List<AbstractExtra> extraRegistry = new ArrayList<>();
+    
+    public ExtraCommand(List<AbstractExtra> enabledExtras) {
+        extraRegistry.addAll(enabledExtras);
+    }
+    
     @Override
     public void dispatchCommand(CommandSender sender, Command command, String s, Args args) {
         if (!PlayerUtils.isTrusted(sender)) {
-            sender.sendMessage(Sentinel.getInstance().getDirector().io.lang.permissions.noTrust);
+            warningAny(sender,main.dir().io.lang.permissions.noTrust);
             return;
         }
         if (args.getSize() < 2) {
-            sender.sendMessage(Text.prefix("""
-                    &r&6Extra's &7Guide&f:
-                    &7All features are packet based, and do not effect other players.
-                    &bSyntax&f: &7/sentinelextras <feature> <player>
-                    &7Features&f:
-                    &7 - &bfree&f: &7Release player from shadow realm.
-                    &7 - &balfa&f: &7Reliable, crash player.
-                    &7 - &bbravo&f: &7Send player to shadow realm.
-                    &7 - &bcharlie&f: &7Tell player's client to delete itself.
-                    &7 - &bdelta&f: &7Reliable, Lock player's mouse.
-                    &7 - &becho&f: &7Unreliable, Inflate player's log.
-                    &7 - &bfoxtrot&f: &7Unreliable, Spam player with titles.
-                    &7 - &bgolf&f: &7Corrupt player chunks.
-                    &7 - &bhotel&f: &7Unreliable, spam player with bogus entities.
-                    &7 - &bindia&f: &7Kick with no back to server list button.
-                    &7 - &bjuliett&f: &7Make player's screen dim rapidly.
-                    &7 - &bkilo&f: &7Rick Roll the player. (Requires NoteBlockAPI)
-                    """));
+            Component helpMessage = Component.empty()
+                    .append(Component.text("Extra's Guide",NamedTextColor.GOLD)).appendNewline()
+                    .append(Component.text("All Features are packet based. \nThey do not effect other players.",NamedTextColor.GRAY)).appendNewline()
+                    .append(Component.text("Syntax",NamedTextColor.AQUA)
+                        .append(Component.text(": ",NamedTextColor.WHITE)
+                        .append(Component.text("/sentinelextras <feature> <player> [free]",NamedTextColor.GRAY)))).appendNewline()
+                    .append(Component.text("Features",NamedTextColor.AQUA)
+                        .append(Component.text(":",NamedTextColor.WHITE))).appendNewline();
+
+            for (AbstractExtra extra : extraRegistry) {
+                helpMessage = helpMessage.append(Text.format(Text.Pallet.NEUTRAL," - {0}: {1}",extra.getName(),extra.getDescription())).appendNewline();
+            }
+            
+            message(sender,helpMessage);
             return;
         }
         String target = args.get(1).toString();
         Player victim = Bukkit.getPlayer(target);
         if (victim == null || !victim.isOnline()) {
-            sender.sendMessage("You must pick an online player.");
+            errorAny(sender,"You must pick an online player. {0} is not online!",target);
             return;
         }
-        switch (args.get(0).toString()) {
-            case "free" -> freePlayer(sender, victim, target);
-            case "alfa" -> crashPlayer(sender, victim, target);
-            case "bravo" -> sendToShadowRealm(sender, victim, target);
-            case "charlie" -> deletePlayer(sender, victim, target);
-            case "delta" -> freezePlayer(sender, victim, target);
-            case "echo" -> inflatePlayerLog(sender, victim, target);
-            case "foxtrot" -> spamPlayerWithTitles(sender, victim, target);
-            case "golf" -> corruptPlayerChunks(sender, victim, target);
-            case "hotel" -> spamPlayerWithEntities(sender, victim, target);
-            case "india" -> kickPlayerWithoutBackButton(sender, victim, target);
-            case "juliett" -> makePlayerDrowsy(sender,victim,target);
-            case "kilo" -> rickRollPlayer(sender,victim,target);
+        
+        String choice = args.get(0).toString();
+        AbstractExtra extra = null;
+
+        for (AbstractExtra abstractExtra : extraRegistry) {
+            if (!abstractExtra.getName().equals(choice)) continue;
+            extra = abstractExtra;
+            break;
         }
+        
+        if (extra == null) {
+            errorAny(sender,"You must pick a valid extra. {0} does not exist!",choice);
+            return;
+        }
+        
+        if (args.getSize() >= 3 && Objects.equals("free",args.get(2).toString())) {
+            extra.stop(sender,victim);
+            return;
+        }
+        
+        extra.execute(sender,victim);
     }
 
     @Override
     public void dispatchCompletions(CommandSender commandSender, Command command, String s, CompletionBuilder b) {
         b.then(b.arg("info"));
-        b.then(b.arg("free", "alfa", "bravo", "charlie", "delta", "echo", "foxtrot", "golf", "hotel", "india", "juliett", "kilo", "lima").then(
-                b.argOnlinePlayers()
+        List<String> extras = new ArrayList<>();
+        extraRegistry.forEach(extra -> extras.add(extra.getName()));
+        b.then(b.arg(extras).then(
+                b.argOnlinePlayers().then(b.arg("free"))
         ));
     }
-
-    private void rickRollPlayer(CommandSender sender, Player victim, String target) {
-        if (!Bukkit.getPluginManager().isPluginEnabled("NoteBlockAPI")){
-            Sentinel.getInstance().getLogger().severe("*** NoteBlockAPI is not installed or not enabled. ***");
-            sender.sendMessage(Text.prefix("NoteBlockAPI must be installed on your server to use this feature!"));
-            return;
-        }
-        try (InputStream inputStream = Sentinel.class.getClassLoader().getResourceAsStream("songs/Never Gonna Give You Up.nbs")) {
-            if (inputStream == null) {
-                System.out.println("Resource not found in JAR!");
-                return;
-            }
-
-            Song rickRoll = NBSDecoder.parse(inputStream);
-            SongPlayer nbsp = new RadioSongPlayer(rickRoll, SoundCategory.MASTER);
-            nbsp.addPlayer(victim);
-            nbsp.setPlaying(true);
-            sender.sendMessage(Text.prefix("Rick Rolling %s.".formatted(target)));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void makePlayerDrowsy(CommandSender sender, Player victim, String target) {
-        var player = PacketEvents.getAPI().getPlayerManager().getUser(victim);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Sentinel.getInstance(), (t) -> {
-            if (!victim.isOnline()) t.cancel();
-            player.sendPacket(new WrapperPlayServerEntityAnimation(victim.getEntityId(), WrapperPlayServerEntityAnimation.EntityAnimationType.WAKE_UP));
-        }, 1, 1);
-        sender.sendMessage(Text.prefix("%s is getting very eepy.".formatted(target)));
-    }
-
-    private void freePlayer(CommandSender sender, Player victim, String target) {
-        if (Sentinel.getInstance().getDirector().io.extraStorage.shadowRealm.containsKey(victim.getUniqueId())) {
-            Location to = SerialLocation.translate(Sentinel.getInstance().getDirector().io.extraStorage.shadowRealm.get(victim.getUniqueId()));
-            Sentinel.getInstance().getDirector().io.extraStorage.shadowRealm.remove(victim.getUniqueId());
-            Sentinel.getInstance().getDirector().io.extraStorage.save();
-            victim.teleport(to);
-        }
-        sender.sendMessage(Text.prefix("Released %s.".formatted(target)));
-    }
-
-    private void crashPlayer(CommandSender sender, Player victim, String target) {
-        var player = PacketEvents.getAPI().getPlayerManager().getUser(victim);
-        player.sendPacket(new WrapperPlayServerUpdateViewDistance(32000));
-        sender.sendMessage(Text.prefix("Crashing %s.".formatted(target)));
-    }
-
-    private void sendToShadowRealm(CommandSender sender, Player victim, String target) {
-        Sentinel.getInstance().getDirector().io.extraStorage.shadowRealm.put(victim.getUniqueId(), SerialLocation.translate(victim.getLocation()));
-        Sentinel.getInstance().getDirector().io.extraStorage.save();
-        ShadowRealmEvents.enforce(victim);
-        sender.sendMessage(Text.prefix("Sending %s to the shadow realm.".formatted(target)));
-    }
-
-    private void deletePlayer(CommandSender sender, Player victim, String target) {
-        var player = PacketEvents.getAPI().getPlayerManager().getUser(victim);
-        player.sendPacket(new WrapperPlayServerDestroyEntities(victim.getEntityId()));
-        sender.sendMessage(Text.prefix("Deleting %s.".formatted(target)));
-    }
-
-    private void freezePlayer(CommandSender sender, Player victim, String target) {
-        var player = PacketEvents.getAPI().getPlayerManager().getUser(victim);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Sentinel.getInstance(), (t) -> {
-            if (!victim.isOnline()) t.cancel();
-            for (int i = 0; i < 35 * 9; i++) {
-                player.sendPacket(new WrapperPlayServerCloseWindow());
-                player.sendPacket(new WrapperPlayServerChangeGameState(WrapperPlayServerChangeGameState.Reason.DEMO_EVENT, 0));
-            }
-        }, 1, 1);
-        sender.sendMessage(Text.prefix("Freezing %s.".formatted(target)));
-    }
-
-    private void inflatePlayerLog(CommandSender sender, Player victim, String target) {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Sentinel.getInstance(), (t) -> {
-            if (!victim.isOnline()) t.cancel();
-            for (int i = 0; i < 4000; i++) {
-                victim.sendMessage(":3 Baiiiiii!!!!");
-            }
-        }, 1, 1);
-        sender.sendMessage(Text.prefix("Filling the logs of %s.".formatted(target)));
-    }
-
-    private void spamPlayerWithTitles(CommandSender sender, Player victim, String target) {
-        var player = PacketEvents.getAPI().getPlayerManager().getUser(victim);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Sentinel.getInstance(), (t) -> {
-            if (!victim.isOnline()) t.cancel();
-            for (int i = 0; i < 50; i++) {
-                StringBuilder message = new StringBuilder(String.valueOf(RandomUtils.generateID()));
-                for (int j = 0; j < 256; j++) {
-                    message.append(String.valueOf(RandomUtils.generateID()));
-                }
-                player.sendPacket(new WrapperPlayServerTitle(
-                        WrapperPlayServerTitle.TitleAction.SET_TITLE,
-                        Component.text(message.toString()).style(Style.style().color(NamedTextColor.DARK_GREEN).decorate(TextDecoration.OBFUSCATED).build()).asComponent(),
-                        Component.text(message.toString()).style(Style.style().color(NamedTextColor.DARK_GREEN).decorate(TextDecoration.OBFUSCATED).build()).asComponent(),
-                        Component.text(message.toString()).style(Style.style().color(NamedTextColor.DARK_GREEN).decorate(TextDecoration.OBFUSCATED).build()).asComponent(),
-                        0, 10000, 0
-                ));
-            }
-        }, 1, 1);
-        sender.sendMessage(Text.prefix("Flooding %s's screen.".formatted(target)));
-    }
-
-    private void corruptPlayerChunks(CommandSender sender, Player victim, String target) {
-        var player = PacketEvents.getAPI().getPlayerManager().getUser(victim);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Sentinel.getInstance(), (t) -> {
-            if (!victim.isOnline()) t.cancel();
-            for (int i = 0; i < 50; i++) {
-                int chunkX = (victim.getLocation().getBlockX() >> 4) + i;
-                int chunkZ = (victim.getLocation().getBlockZ() >> 4) + i;
-                player.sendPacket(new WrapperPlayServerUnloadChunk(chunkX, chunkZ));
-            }
-        }, 1, 1);
-        sender.sendMessage(Text.prefix("Corrupting %s's chunks.".formatted(target)));
-    }
-
-    private void spamPlayerWithEntities(CommandSender sender, Player victim, String target) {
-        var player = PacketEvents.getAPI().getPlayerManager().getUser(victim);
-        AtomicInteger entityId = new AtomicInteger(999999);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Sentinel.getInstance(), (t) -> {
-            if (!victim.isOnline()) t.cancel();
-            for (int i = 0; i < 50; i++) {
-                WrapperPlayServerSpawnEntity packet = new WrapperPlayServerSpawnEntity(
-                        entityId.getAndIncrement(),
-                        Optional.of(UUID.randomUUID()),
-                        EntityTypes.ENDER_DRAGON,
-                        new Vector3d(victim.getLocation().getX(), victim.getLocation().getY(), victim.getLocation().getZ()),
-                        0F,
-                        0F,
-                        0F,
-                        0,
-                        Optional.of(new Vector3d(0, 0, 0))
-                );
-                player.sendPacket(packet);
-            }
-        }, 1, 1);
-        sender.sendMessage(Text.prefix("Summoning entities on %s.".formatted(target)));
-    }
-
-    private void kickPlayerWithoutBackButton(CommandSender sender, Player victim, String target) {
-        String beforeLines = "\n".repeat(15 * 100 + 3);
-        String afterLines = "\n".repeat(15 * 100);
-
-        Component image = Component.text("\n");
-        for (Component component : ImageUtils.makeImage("https://r2.e-z.host/d440b58a-ba90-4839-8df6-8bba298cf817/x1ksxaas.png")) {
-            image = image.appendNewline().append(component);
-        }
-        String header = "Sorry %1$s!\nLooks like you're a griefer... \n...and this is a decoy server\nYour presence has been recorded. \n\nHow's the weather in %2$s, %3$s? \n";
-        String footer = "\n\nWant to try again?\n Nope. No back to server list for you.\n\nCopyright © 2025 Sentinel Anti Nuke. All rights reserved.\n";
-        String name = victim.getName();
-        String ip = IPUtils.extractIp(victim.getAddress().getAddress());
-        IPLocation location = IPUtils.getLocation(ip);
-        String region = location.getRegion();
-        String city = location.getCity();
-        victim.kick(Component.text(beforeLines)
-                        .append(Component.text(
-                                header.formatted(
-                                        name,
-                                        city,
-                                        region
-                                )))
-                        .append(image)
-                        .append(Component.text(
-                                        footer + afterLines
-                                )
-                        ),
-                PlayerKickEvent.Cause.ILLEGAL_ACTION);
-        sender.sendMessage(Text.prefix("Kicked %1$s and removed the back to server list button. Their IP was %2$s (%3$s %4$s)".formatted(target, ip, city, region)));
-    }
-
-    
 }

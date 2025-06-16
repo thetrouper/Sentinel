@@ -2,14 +2,11 @@ package me.trouper.sentinel.server.commands;
 
 import io.github.itzispyder.pdk.commands.Args;
 import io.github.itzispyder.pdk.commands.CommandRegistry;
-import io.github.itzispyder.pdk.commands.CustomCommand;
 import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import io.github.itzispyder.pdk.utils.misc.Cooldown;
-import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.server.functions.helpers.Report;
 import me.trouper.sentinel.utils.PlayerUtils;
-import me.trouper.sentinel.utils.Text;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,7 +14,7 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 
 @CommandRegistry(value = "sentinelcallback", permission = @Permission("sentinel.callbacks"), printStackTrace = true)
-public class CallbackCommand implements CustomCommand {
+public class CallbackCommand implements QuickCommand {
 
     Cooldown<UUID> fpReportCooldown = new Cooldown<>();
 
@@ -28,18 +25,18 @@ public class CallbackCommand implements CustomCommand {
             case "fpreport" -> {
                 if (!PlayerUtils.checkPermission(sender,"sentinel.callbacks.fpreport")) return;
                 if (fpReportCooldown.isOnCooldown(p.getUniqueId()) && !p.isOp()) {
-                    p.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.cooldown.onCooldown + fpReportCooldown.getCooldown(p.getUniqueId())));
+                    warningAny(sender,main.lang().cooldown.onCooldown,fpReportCooldown.getCooldownSec(p.getUniqueId()));
                     return;
                 }
                 long id = args.get(1).toLong();
-                Report report = Sentinel.getInstance().getDirector().reportHandler.reports.get(id);
+                Report report = main.dir().reportHandler.reports.get(id);
                 if (report == null) {
-                    p.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.reports.noReport));
+                    errorAny(sender,main.lang().reports.noReport);
                     return;
                 }
-                p.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.reports.reportingFalsePositive));
-                Sentinel.getInstance().getDirector().reportHandler.sendReport(p,report);
-                p.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.reports.falsePositiveSuccess));
+                infoAny(sender,main.lang().reports.reportingFalsePositive);
+                main.dir().reportHandler.sendReport(p,report);
+                successAny(sender,main.lang().reports.falsePositiveSuccess);
             }
         }
     }

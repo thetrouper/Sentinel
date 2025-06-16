@@ -1,6 +1,6 @@
 {
   "Settings": {
-    "Input": "/home/wolf/IdeaProjects/Sentinel/build/libs/Sentinel-1.0.0.jar",
+    "Input": "./build/libs/Sentinel-1.0.0.jar",
     "Output": "./build/libs/Sentinel-1.0.0-alfa.jar",
     "Libraries": [
       "./deps"

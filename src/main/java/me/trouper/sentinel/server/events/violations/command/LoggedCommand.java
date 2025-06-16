@@ -8,6 +8,7 @@ import me.trouper.sentinel.server.gui.Items;
 import me.trouper.sentinel.server.gui.MainGUI;
 import me.trouper.sentinel.server.gui.config.AntiNukeGUI;
 import me.trouper.sentinel.utils.PlayerUtils;
+import me.trouper.sentinel.utils.OldTXT;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -28,14 +29,13 @@ public class LoggedCommand extends AbstractViolation {
         String label = e.getMessage().substring(1).split(" ")[0];
         String args = e.getMessage();
 
-        if (Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.logged.commands.contains(label) && Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.logged.enabled) {
+        if (main.dir().io.violationConfig.commandExecute.logged.commands.contains(label) && main.dir().io.violationConfig.commandExecute.logged.enabled) {
             ActionConfiguration.Builder config = new ActionConfiguration.Builder()
                     .setPlayer(p)
-                    .logToDiscord(Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.logged.logToDiscord);
+                    .logToDiscord(main.dir().io.violationConfig.commandExecute.logged.logToDiscord);
 
             runActions(
-                    Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormatPlayer.formatted(p.getName(), Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.run, Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.loggedCommand),
-                    Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormatPlayer.formatted(p.getName(), Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.run, Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.loggedCommand),
+                    Text.format(Text.Pallet.WARNING,main.dir().io.lang.violations.protections.rootName.rootNameFormatPlayer,p.getName(), main.dir().io.lang.violations.protections.rootName.run, main.dir().io.lang.violations.protections.rootName.loggedCommand),
                     generateCommandInfo(args, p),
                     config
             );
@@ -46,7 +46,7 @@ public class LoggedCommand extends AbstractViolation {
     @Override
     public CustomGui getConfigGui() {
         return CustomGui.create()
-                .title(Text.color("&6&lSentinel &8»&0 Logged Command Check"))
+                .title(OldTXT.color("&6&lSentinel &8»&0 Logged Command Check"))
                 .size(27)
                 .onDefine(this::getMainPage)
                 .defineMain(this::onClick)
@@ -63,7 +63,7 @@ public class LoggedCommand extends AbstractViolation {
         }
 
         ItemStack ring = Items.RED;
-        if (Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.logged.enabled) {
+        if (main.dir().io.violationConfig.commandExecute.logged.enabled) {
             ring = Items.GREEN;
         }
 
@@ -74,9 +74,9 @@ public class LoggedCommand extends AbstractViolation {
         }
 
         inv.setItem(26,Items.BACK);
-        inv.setItem(13,Items.booleanItem(Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.logged.enabled,Items.configItem("Check Toggle", Material.CLOCK,"Enable/Disable this check entirely")));
-        inv.setItem(11,Items.booleanItem(Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.logged.logToDiscord,Items.configItem("Log to Discord",Material.OAK_LOG,"If this check will log to discord")));
-        inv.setItem(15,Items.stringListItem(Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.logged.commands,Material.CRIMSON_HANGING_SIGN,"Commands","Commands that will flag this check"));
+        inv.setItem(13,Items.booleanItem(main.dir().io.violationConfig.commandExecute.logged.enabled,Items.configItem("Check Toggle", Material.CLOCK,"Enable/Disable this check entirely")));
+        inv.setItem(11,Items.booleanItem(main.dir().io.violationConfig.commandExecute.logged.logToDiscord,Items.configItem("Log to Discord",Material.OAK_LOG,"If this check will log to discord")));
+        inv.setItem(15,Items.stringListItem(main.dir().io.violationConfig.commandExecute.logged.commands,Material.CRIMSON_HANGING_SIGN,"Commands","Commands that will flag this check"));
     }
 
     @Override
@@ -85,25 +85,25 @@ public class LoggedCommand extends AbstractViolation {
         if (!MainGUI.verify((Player) e.getWhoClicked())) return;
         switch (e.getSlot()) {
             case 13 -> {
-                Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.logged.enabled = !Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.logged.enabled;
+                main.dir().io.violationConfig.commandExecute.logged.enabled = !main.dir().io.violationConfig.commandExecute.logged.enabled;
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
             case 11 -> {
-                Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.logged.logToDiscord = !Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.logged.logToDiscord;
+                main.dir().io.violationConfig.commandExecute.logged.logToDiscord = !main.dir().io.violationConfig.commandExecute.logged.logToDiscord;
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
             case 15 -> {
                 if (e.isLeftClick()) {
                     queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> {
                         cfg.commandExecute.logged.commands.add(args.getAll().toString());
-                    },"" + Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.logged.commands);
+                    },"" + main.dir().io.violationConfig.commandExecute.logged.commands);
                     return;
                 }
-                Sentinel.getInstance().getDirector().io.violationConfig.commandExecute.logged.commands.clear();
+                main.dir().io.violationConfig.commandExecute.logged.commands.clear();
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
         }
     }

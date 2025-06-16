@@ -9,6 +9,7 @@ import me.trouper.sentinel.server.gui.MainGUI;
 import me.trouper.sentinel.server.gui.config.AntiNukeGUI;
 import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.ServerUtils;
+import me.trouper.sentinel.utils.OldTXT;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -25,7 +26,7 @@ public class StructureBlockBreak extends AbstractViolation {
 
     @EventHandler
     public void onPlace(BlockBreakEvent e) {
-        if (!Sentinel.getInstance().getDirector().io.violationConfig.commandBlockPlace.enabled) return;
+        if (!main.dir().io.violationConfig.commandBlockPlace.enabled) return;
         Player p = e.getPlayer();
         Block b = e.getBlock();
         if (b == null) return;
@@ -38,16 +39,15 @@ public class StructureBlockBreak extends AbstractViolation {
         ActionConfiguration.Builder config = new ActionConfiguration.Builder()
                 .setEvent(e)
                 .setPlayer(p)
-                .deop(Sentinel.getInstance().getDirector().io.violationConfig.structureBlockBreak.deop)
+                .deop(main.dir().io.violationConfig.structureBlockBreak.deop)
                 .cancel(true)
                 .setEvent(e)
-                .punish(Sentinel.getInstance().getDirector().io.violationConfig.structureBlockBreak.punish)
-                .setPunishmentCommands(Sentinel.getInstance().getDirector().io.violationConfig.structureBlockBreak.punishmentCommands)
-                .logToDiscord(Sentinel.getInstance().getDirector().io.violationConfig.structureBlockBreak.logToDiscord);
+                .punish(main.dir().io.violationConfig.structureBlockBreak.punish)
+                .setPunishmentCommands(main.dir().io.violationConfig.structureBlockBreak.punishmentCommands)
+                .logToDiscord(main.dir().io.violationConfig.structureBlockBreak.logToDiscord);
 
         runActions(
-                Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormatPlayer.formatted(p.getName(), Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.brake, Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.structureBlock),
-                Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.rootNameFormatPlayer.formatted(p.getName(), Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.brake, Sentinel.getInstance().getDirector().io.lang.violations.protections.rootName.structureBlock),
+                Text.format(Text.Pallet.WARNING,main.dir().io.lang.violations.protections.rootName.rootNameFormatPlayer,p.getName(), main.dir().io.lang.violations.protections.rootName.brake, main.dir().io.lang.violations.protections.rootName.structureBlock),
                 generateBlockInfo(b),
                 config
         );
@@ -57,7 +57,7 @@ public class StructureBlockBreak extends AbstractViolation {
     @Override
     public CustomGui getConfigGui() {
         return CustomGui.create()
-                .title(Text.color("&6&lSentinel &8»&0 Structure Block Break"))
+                .title(OldTXT.color("&6&lSentinel &8»&0 Structure Block Break"))
                 .size(27)
                 .onDefine(this::getMainPage)
                 .defineMain(this::onClick)
@@ -74,7 +74,7 @@ public class StructureBlockBreak extends AbstractViolation {
         }
 
         ItemStack ring = Items.RED;
-        if (Sentinel.getInstance().getDirector().io.violationConfig.structureBlockBreak.enabled) {
+        if (main.dir().io.violationConfig.structureBlockBreak.enabled) {
             ring = Items.GREEN;
         }
 
@@ -85,11 +85,11 @@ public class StructureBlockBreak extends AbstractViolation {
         }
 
         inv.setItem(26,Items.BACK);
-        inv.setItem(13,Items.booleanItem(Sentinel.getInstance().getDirector().io.violationConfig.structureBlockBreak.enabled,Items.configItem("Check Toggle",Material.CLOCK,"Enable/Disable this check entirely")));
-        inv.setItem(2,Items.booleanItem(Sentinel.getInstance().getDirector().io.violationConfig.structureBlockBreak.deop,Items.configItem("De-Op",Material.END_CRYSTAL,"Remove the user's operator privileges")));
-        inv.setItem(20,Items.booleanItem(Sentinel.getInstance().getDirector().io.violationConfig.structureBlockBreak.logToDiscord,Items.configItem("Log",Material.OAK_LOG,"If this check will produce a log to discord")));
-        inv.setItem(6,Items.booleanItem(Sentinel.getInstance().getDirector().io.violationConfig.structureBlockBreak.punish,Items.configItem("Punish",Material.REDSTONE_TORCH,"Run the punishment commands")));
-        inv.setItem(24,Items.stringListItem(Sentinel.getInstance().getDirector().io.violationConfig.structureBlockBreak.punishmentCommands,Material.DIAMOND_AXE,"Punishment Commands","Commands that will be ran \nif this check is flagged."));
+        inv.setItem(13,Items.booleanItem(main.dir().io.violationConfig.structureBlockBreak.enabled,Items.configItem("Check Toggle",Material.CLOCK,"Enable/Disable this check entirely")));
+        inv.setItem(2,Items.booleanItem(main.dir().io.violationConfig.structureBlockBreak.deop,Items.configItem("De-Op",Material.END_CRYSTAL,"Remove the user's operator privileges")));
+        inv.setItem(20,Items.booleanItem(main.dir().io.violationConfig.structureBlockBreak.logToDiscord,Items.configItem("Log",Material.OAK_LOG,"If this check will produce a log to discord")));
+        inv.setItem(6,Items.booleanItem(main.dir().io.violationConfig.structureBlockBreak.punish,Items.configItem("Punish",Material.REDSTONE_TORCH,"Run the punishment commands")));
+        inv.setItem(24,Items.stringListItem(main.dir().io.violationConfig.structureBlockBreak.punishmentCommands,Material.DIAMOND_AXE,"Punishment Commands","Commands that will be ran \nif this check is flagged."));
     }
 
     @Override
@@ -98,36 +98,36 @@ public class StructureBlockBreak extends AbstractViolation {
         if (!MainGUI.verify((Player) e.getWhoClicked())) return;
         switch (e.getSlot()) {
             case 13 -> {
-                Sentinel.getInstance().getDirector().io.violationConfig.structureBlockBreak.enabled = !Sentinel.getInstance().getDirector().io.violationConfig.structureBlockBreak.enabled;
+                main.dir().io.violationConfig.structureBlockBreak.enabled = !main.dir().io.violationConfig.structureBlockBreak.enabled;
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
             case 2 -> {
-                Sentinel.getInstance().getDirector().io.violationConfig.structureBlockBreak.deop = !Sentinel.getInstance().getDirector().io.violationConfig.structureBlockBreak.deop;
+                main.dir().io.violationConfig.structureBlockBreak.deop = !main.dir().io.violationConfig.structureBlockBreak.deop;
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
             case 20 -> {
-                Sentinel.getInstance().getDirector().io.violationConfig.structureBlockBreak.logToDiscord = !Sentinel.getInstance().getDirector().io.violationConfig.structureBlockBreak.logToDiscord;
+                main.dir().io.violationConfig.structureBlockBreak.logToDiscord = !main.dir().io.violationConfig.structureBlockBreak.logToDiscord;
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
             case 6 -> {
-                Sentinel.getInstance().getDirector().io.violationConfig.structureBlockBreak.punish = !Sentinel.getInstance().getDirector().io.violationConfig.structureBlockBreak.punish;
+                main.dir().io.violationConfig.structureBlockBreak.punish = !main.dir().io.violationConfig.structureBlockBreak.punish;
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
 
             case 24 -> {
                 if (e.isLeftClick()) {
                     queuePlayer((Player) e.getWhoClicked(), (cfg, args) -> {
                         cfg.structureBlockBreak.punishmentCommands.add(args.getAll().toString());
-                    },"" + Sentinel.getInstance().getDirector().io.violationConfig.structureBlockBreak.punishmentCommands);
+                    },"" + main.dir().io.violationConfig.structureBlockBreak.punishmentCommands);
                     return;
                 }
-                Sentinel.getInstance().getDirector().io.violationConfig.structureBlockBreak.punishmentCommands.clear();
+                main.dir().io.violationConfig.structureBlockBreak.punishmentCommands.clear();
                 getMainPage(e.getInventory());
-                Sentinel.getInstance().getDirector().io.violationConfig.save();
+                main.dir().io.violationConfig.save();
             }
         }
     }

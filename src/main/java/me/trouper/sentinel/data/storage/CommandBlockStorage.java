@@ -2,7 +2,7 @@ package me.trouper.sentinel.data.storage;
 
 import io.github.itzispyder.pdk.utils.misc.config.JsonSerializable;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.misc.CommandBlockHolder;
+import me.trouper.sentinel.data.types.CommandBlockHolder;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -30,17 +30,17 @@ public final class PlayerUtils {
         return (sender instanceof Player p && isTrusted(p)) || sender instanceof ConsoleCommandSender;
     }
 
-    public static boolean playerCheck(CommandSender sender) {
+    public static boolean isConsoleCheck(CommandSender sender) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.permissions.playersOnly));
-            return false;
+            Text.messageAny(Text.Pallet.ERROR,sender,Sentinel.getInstance().getDirector().io.lang.permissions.playersOnly);
+            return true;
         }
-        return true;
+        return false;
     }
 
     public static boolean checkPermission(CommandSender sender, String permission) {
         if (sender instanceof ConsoleCommandSender || (sender instanceof Player p && p.hasPermission(permission))) return true;
-        sender.sendMessage(Sentinel.getInstance().getDirector().io.lang.permissions.noPermission);
+        Text.messageAny(Text.Pallet.ERROR,sender,Sentinel.getInstance().getDirector().io.lang.permissions.noPermission);
         return false;
     }
 
@@ -63,19 +63,9 @@ public final class PlayerUtils {
         getStaff().forEach(consumer);
     }
     public static void forEachTrusted(Consumer<Player> consumer) {
-        getStaff().forEach(consumer);
+        getTrusted().forEach(consumer);
     }
-
-    public static void dmEachPlayer(Predicate<Player> condition, String dm) {
-        forEachPlayer(p -> {
-            if (condition.test(p)) p.sendMessage(dm);
-        });
-    }
-
-    public static void dmEachPlayer(String dm) {
-        forEachPlayer(p -> p.sendMessage(dm));
-    }
-
+    
     public static void forEachSpecified(Iterable<Player> players, Consumer<Player> consumer) {
         players.forEach(consumer);
     }

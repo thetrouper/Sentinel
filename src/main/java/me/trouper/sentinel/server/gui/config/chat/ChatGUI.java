@@ -5,7 +5,7 @@ import io.github.itzispyder.pdk.plugin.gui.CustomGui;
 import me.trouper.sentinel.server.gui.Items;
 import me.trouper.sentinel.server.gui.MainGUI;
 import me.trouper.sentinel.server.gui.config.ConfigGUI;
-import me.trouper.sentinel.utils.Text;
+import me.trouper.sentinel.utils.OldTXT;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -16,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class ChatGUI {
     public final CustomGui home = CustomGui.create()
-            .title(Text.color("&6&lSentinel &8»&0 Edit a Filter"))
+            .title(OldTXT.color("&6&lSentinel &8»&0 Edit a Filter"))
             .size(27)
             .onDefine(this::blankPage)
             .defineMain(this::mainClick)
@@ -55,25 +55,25 @@ public class ChatGUI {
 
     private static final ItemStack PROFANITY_FILTER = ItemBuilder.create()
             .material(Material.COAL)
-            .name(Text.color("&bProfanity Filter"))
-            .lore(Text.color("&8&l➥&7 Edit Score Settings"))
+            .name(OldTXT.color("&bProfanity Filter"))
+            .lore(OldTXT.color("&8&l➥&7 Edit Score Settings"))
             .build();
 
     private static final ItemStack SPAM_FILTER = ItemBuilder.create()
             .material(Material.PORKCHOP)
-            .name(Text.color("&bSpam Filter"))
-            .lore(Text.color("&8&l➥&7 Edit Heat Settings"))
+            .name(OldTXT.color("&bSpam Filter"))
+            .lore(OldTXT.color("&8&l➥&7 Edit Heat Settings"))
             .build();
 
     private static final ItemStack UNICODE_FILTER = ItemBuilder.create()
             .material(Material.PAPER)
-            .name(Text.color("&bUnicode Filter"))
-            .lore(Text.color("&8&l➥&7 Edit regex"))
+            .name(OldTXT.color("&bUnicode Filter"))
+            .lore(OldTXT.color("&8&l➥&7 Edit regex"))
             .build();
 
     private static final ItemStack URL_FILTER = ItemBuilder.create()
             .material(Material.CHAIN)
-            .name(Text.color("&bURL Filter"))
-            .lore(Text.color("&8&l➥&7 Edit regex"))
+            .name(OldTXT.color("&bURL Filter"))
+            .lore(OldTXT.color("&8&l➥&7 Edit regex"))
             .build();
 }

@@ -2,7 +2,7 @@ package me.trouper.sentinel.server.functions.helpers;
 
 import io.github.itzispyder.pdk.utils.SchedulerUtils;
 import io.github.itzispyder.pdk.utils.discord.DiscordEmbed;
-import me.trouper.sentinel.data.misc.Emojis;
+import me.trouper.sentinel.data.types.Emojis;
 import me.trouper.sentinel.utils.RandomUtils;
 import me.trouper.sentinel.utils.trees.EmbedFormatter;
 import org.bukkit.entity.Player;

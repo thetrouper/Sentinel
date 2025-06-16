@@ -9,6 +9,7 @@ import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientTa
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDeclareCommands;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTabComplete;
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.server.Main;
 import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.ServerUtils;
 import org.bukkit.entity.Player;
@@ -19,13 +20,13 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class PluginCloakingPacket implements PacketListener {
+public class PluginCloakingPacket implements Main, PacketListener {
 
     public static final ConcurrentLinkedQueue<UUID> tabReplaceQueue = new ConcurrentLinkedQueue<>();    
     
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {
-        if (!Sentinel.getInstance().getDirector().io.mainConfig.plugin.pluginHider) return;
+        if (!main.dir().io.mainConfig.plugin.pluginHider) return;
         switch (event.getPacketType()) {
             case PacketType.Play.Client.TAB_COMPLETE -> {
                 WrapperPlayClientTabComplete wrapper = new WrapperPlayClientTabComplete(event);
@@ -37,10 +38,10 @@ public class PluginCloakingPacket implements PacketListener {
                 if (text.startsWith("/")) text = text.substring(1);
                 text = text.split(" ")[0];
 
-                List<String> intendedCommands = Sentinel.getInstance().getDirector().io.advConfig.intendedCommands;
-                List<String> pluginTabCompletions = Sentinel.getInstance().getDirector().io.advConfig.pluginTabCompletions;
+                List<String> intendedCommands = main.dir().io.advConfig.intendedCommands;
+                List<String> pluginTabCompletions = main.dir().io.advConfig.pluginTabCompletions;
 
-                if (Sentinel.getInstance().getDirector().io.advConfig.pluginCloakingWhitelist) {
+                if (main.dir().io.advConfig.pluginCloakingWhitelist) {
                     boolean whitelisted = false;
                     for (String pattern : intendedCommands) {
                         if (text.matches(pattern)) {
@@ -49,14 +50,16 @@ public class PluginCloakingPacket implements PacketListener {
                         }
                     }
                     if (!whitelisted) {
-                        ServerUtils.verbose("Caught a non-whitelisted tab completion. (%s)".formatted(text));
+                        ServerUtils.verbose("Caught a non-whitelisted tab completion. (%s)", text)
+;
                         tabReplaceQueue.add(player.getUniqueId());
                     }
                 }
 
                 for (String pattern : pluginTabCompletions) {
                     if (text.matches(pattern)) {
-                        ServerUtils.verbose("Caught a plugin listing command tab completion. (%s -> %s)".formatted(text, pattern));
+                        ServerUtils.verbose("Caught a plugin listing command tab completion. (%s -> %s)", text, pattern)
+;
                         tabReplaceQueue.add(player.getUniqueId());
                         break;
                     }
@@ -71,7 +74,7 @@ public class PluginCloakingPacket implements PacketListener {
 
     @Override
     public void onPacketSend(PacketSendEvent event) {
-        if (!Sentinel.getInstance().getDirector().io.mainConfig.plugin.pluginHider) return;
+        if (!main.dir().io.mainConfig.plugin.pluginHider) return;
 
         Player player = (Player) event.getPlayer();
         if (player == null) return;
@@ -84,7 +87,7 @@ public class PluginCloakingPacket implements PacketListener {
                     ServerUtils.verbose("Player was queued for replacement, setting tab completions.");
                     WrapperPlayServerTabComplete wrapper = new WrapperPlayServerTabComplete(event);
                     List<WrapperPlayServerTabComplete.CommandMatch> matches = new ArrayList<>();
-                    for (String fakePlugin : Sentinel.getInstance().getDirector().io.advConfig.fakePlugins) {
+                    for (String fakePlugin : main.dir().io.advConfig.fakePlugins) {
                         matches.add(new WrapperPlayServerTabComplete.CommandMatch(fakePlugin));
                     }
                     wrapper.setCommandMatches(matches);

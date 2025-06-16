@@ -4,6 +4,7 @@ import io.github.itzispyder.pdk.events.CustomListener;
 import io.github.itzispyder.pdk.utils.SchedulerUtils;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.server.events.QuickListener;
 import me.trouper.sentinel.server.events.violations.blocks.command.CommandBlockBreak;
 import me.trouper.sentinel.server.events.violations.blocks.command.CommandBlockEdit;
 import me.trouper.sentinel.server.events.violations.blocks.command.CommandBlockPlace;
@@ -31,6 +32,7 @@ import me.trouper.sentinel.server.gui.config.chat.ProfanityFilterGUI;
 import me.trouper.sentinel.server.gui.config.chat.SpamFilterGUI;
 import me.trouper.sentinel.server.gui.config.chat.UnicodeFilterGUI;
 import me.trouper.sentinel.server.gui.config.chat.UrlFilterGUI;
+import me.trouper.sentinel.server.gui.nbt.NBTGui;
 import me.trouper.sentinel.server.gui.whitelist.WhitelistGUI;
 import me.trouper.sentinel.utils.PlayerUtils;
 import me.trouper.sentinel.utils.ServerUtils;
@@ -39,11 +41,12 @@ import org.bukkit.event.EventHandler;
 
 import java.util.function.Consumer;
 
-public class ChatEvent implements CustomListener {
+public class ChatEvent implements QuickListener {
 
     @EventHandler
     private void onChat(AsyncChatEvent e) {
-        ServerUtils.verbose("Chat event sanity check:\n Canceled %s".formatted(e.isCancelled()));
+        ServerUtils.verbose("Chat event sanity check:\n Canceled %s", e.isCancelled()
+);
         handleEvent(e);
     }
 
@@ -61,6 +64,7 @@ public class ChatEvent implements CustomListener {
                     ProfanityFilterGUI.updater.invokeCallbacks(e);
                     SpamFilterGUI.updater.invokeCallbacks(e);
                     WhitelistGUI.updater.invokeCallbacks(e);
+                    NBTGui.updater.invokeCallbacks(e);
                     DangerousCommand.updater.invokeCallbacks(e);
                     LoggedCommand.updater.invokeCallbacks(e);
                     SpecificCommand.updater.invokeCallbacks(e);
@@ -87,41 +91,46 @@ public class ChatEvent implements CustomListener {
 
         Player p = e.getPlayer();
 
-        ServerUtils.verbose("Chat event start after trust check:\n Canceled %s".formatted(e.isCancelled()));
+        ServerUtils.verbose("Chat event start after trust check:\n Canceled %s", e.isCancelled()
+);
 
         handle(p,
                 "sentinel.chatfilter.unicode.bypass",
-                Sentinel.getInstance().getDirector().io.mainConfig.chat.unicodeFilter.enabled, "unicode",
+                main.dir().io.mainConfig.chat.unicodeFilter.enabled, "unicode",
                 e,
                 UnicodeFilter::handleUnicodeFilter);
 
-        ServerUtils.verbose("Chat event middle after unicode:\n Canceled %s".formatted(e.isCancelled()));
+        ServerUtils.verbose("Chat event middle after unicode:\n Canceled %s", e.isCancelled()
+);
 
         handle(p,
                 "sentinel.chatfilter.url.bypass",
-                Sentinel.getInstance().getDirector().io.mainConfig.chat.urlFilter.enabled, "url",
+                main.dir().io.mainConfig.chat.urlFilter.enabled, "url",
                 e,
                 UrlFilter::handleUrlFilter);
 
-        ServerUtils.verbose("Chat event middle after URL:\n Canceled %s".formatted(e.isCancelled()));
+        ServerUtils.verbose("Chat event middle after URL:\n Canceled %s", e.isCancelled()
+);
 
         handle(p,
                 "sentinel.chatfilter.spam.bypass",
-                Sentinel.getInstance().getDirector().io.mainConfig.chat.spamFilter.enabled,
+                main.dir().io.mainConfig.chat.spamFilter.enabled,
                 "spam",
                 e,
                 SpamFilter::handleSpamFilter);
 
-        ServerUtils.verbose("Chat event middle after spam:\n Canceled %s".formatted(e.isCancelled()));
+        ServerUtils.verbose("Chat event middle after spam:\n Canceled %s", e.isCancelled()
+);
 
         handle(p,
-                "sentinel.chatfilter.swear.bypass",
-                Sentinel.getInstance().getDirector().io.mainConfig.chat.profanityFilter.enabled,
+                "sentinel.chatfilter.profanity.bypass",
+                main.dir().io.mainConfig.chat.profanityFilter.enabled,
                 "swear",
                 e,
                 ProfanityFilter::handleProfanityFilter);
 
-        ServerUtils.verbose("Chat event ending after swear:\n Canceled %s".formatted(e.isCancelled()));
+        ServerUtils.verbose("Chat event ending after swear:\n Canceled %s", e.isCancelled()
+);
     }
 
     private static void handle(Player p, String permission, boolean isEnabled, String eventType, AsyncChatEvent e, Consumer<AsyncChatEvent> handler) {

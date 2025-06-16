@@ -100,7 +100,6 @@ public final class ServerUtils {
             URL url = new URL(apiUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-
             connection.setRequestMethod("GET");
 
             int responseCode = connection.getResponseCode();

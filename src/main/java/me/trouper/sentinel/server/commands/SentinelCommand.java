@@ -2,25 +2,25 @@ package me.trouper.sentinel.server.commands;
 
 import io.github.itzispyder.pdk.commands.Args;
 import io.github.itzispyder.pdk.commands.CommandRegistry;
-import io.github.itzispyder.pdk.commands.CustomCommand;
 import io.github.itzispyder.pdk.commands.Permission;
 import io.github.itzispyder.pdk.commands.completions.CompletionBuilder;
 import io.papermc.paper.chat.ChatRenderer;
 import io.papermc.paper.event.player.AsyncChatEvent;
-import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.misc.CommandBlockHolder;
-import me.trouper.sentinel.data.misc.Selection;
-import me.trouper.sentinel.data.misc.SerialLocation;
+import me.trouper.sentinel.data.types.CommandBlockHolder;
+import me.trouper.sentinel.data.types.NBTHolder;
+import me.trouper.sentinel.data.types.Selection;
+import me.trouper.sentinel.data.types.SerialLocation;
 import me.trouper.sentinel.server.events.admin.WandEvents;
+import me.trouper.sentinel.server.events.violations.players.CreativeHotbar;
 import me.trouper.sentinel.server.functions.chatfilter.profanity.ProfanityFilter;
 import me.trouper.sentinel.server.functions.chatfilter.spam.SpamFilter;
 import me.trouper.sentinel.server.functions.chatfilter.unicode.UnicodeFilter;
 import me.trouper.sentinel.server.functions.chatfilter.url.UrlFilter;
+import me.trouper.sentinel.server.functions.hotbar.items.ItemCheck;
+import me.trouper.sentinel.server.gui.Items;
 import me.trouper.sentinel.server.gui.MainGUI;
 import me.trouper.sentinel.startup.drm.Loader;
-import me.trouper.sentinel.utils.PlayerUtils;
-import me.trouper.sentinel.utils.ServerUtils;
-import me.trouper.sentinel.utils.Text;
+import me.trouper.sentinel.utils.*;
 import me.trouper.sentinel.utils.trees.ConsoleFormatter;
 import me.trouper.sentinel.utils.trees.EmbedFormatter;
 import me.trouper.sentinel.utils.trees.Node;
@@ -34,6 +34,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.minecart.CommandMinecart;
+import org.bukkit.event.inventory.InventoryCreativeEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +44,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @CommandRegistry(value = "sentinel", permission = @Permission("sentinel.staff"), printStackTrace = true)
-public class SentinelCommand implements CustomCommand {
+public class SentinelCommand implements QuickCommand {
 
     // Constants for usage messages
     private static final String USAGE_SENTINEL = "Usage: /sentinel <wand|reload|config|false-positive|debug|commandblock|socialspy>";
@@ -58,7 +61,7 @@ public class SentinelCommand implements CustomCommand {
             processCommand(sender, command, s, args);
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
-            sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.plugin.invalidArgs));
+            errorAny(sender, main.lang().plugin.invalidArgs);
         }
     }
 
@@ -68,28 +71,48 @@ public class SentinelCommand implements CustomCommand {
         b.then(b.arg("config"));
         b.then(b.arg("wand"));
         b.then(b.arg("reload"));
-        b.then(b.arg("false-positive").then(b.arg("add", "remove")));
-        b.then(b.arg("debug").then(b.arg("lang", "toggle", "chat")));
-        b.then(b.arg("commandblock", "cb").then(
-                        b.arg("add", "remove", "auto"))
-                .then(b.arg("selection")
-                        .then(b.arg("add", "remove", "delete", "deselect", "pos1", "pos2")))
-                .then(b.arg("restore")
-                        .then(b.arg("<player>", "all")))
-                .then(b.arg("clear")
-                        .then(b.arg("<player>", "all"))));
+
+        b.then(
+                b.arg("false-positive")
+                        .then(b.arg("add", "remove"))
+        );
+
+        b.then(
+                
+                b.arg("debug")
+                        .then(b.arg("lang", "toggle", "chat"))
+                        .then(b.arg("nbt")
+                                        .then(b.arg("system","store","filter")))
+        );
+
+        b.then(
+                b.arg("commandblock", "cb")
+                        .then(b.arg("add", "remove", "auto"))
+                        .then(
+                                b.arg("selection")
+                                        .then(b.arg("add", "remove", "delete", "deselect", "pos1", "pos2"))
+                        )
+                        .then(
+                                b.arg("restore")
+                                        .then(b.arg("<player>", "all"))
+                        )
+                        .then(
+                                b.arg("clear")
+                                        .then(b.arg("<player>", "all"))
+                        )
+        );
     }
 
     /* Main Command Processing */
     private void processCommand(CommandSender sender, Command command, String label, Args args) {
         // Lite mode check
-        if (Sentinel.getInstance().getDirector().loader.isLite()) {
+        if (main.dir().loader.isLite()) {
             handleLiteMessage(sender, args);
             return;
         }
 
         if (args.isEmpty()) {
-            sender.sendMessage(Text.prefix(USAGE_SENTINEL));
+            infoAny(sender, USAGE_SENTINEL);
             return;
         }
 
@@ -102,16 +125,15 @@ public class SentinelCommand implements CustomCommand {
             case "debug" -> handleDebugCommand(sender, args);
             case "false-positive" -> handleFalsePositive(sender, args);
             case "socialspy" -> handleSocialSpy(sender);
-            default -> sender.sendMessage(Text.prefix("Invalid sub-command. " + USAGE_SENTINEL));
+            default -> errorAny(sender, "Invalid sub-command. %s", USAGE_SENTINEL);
         }
     }
 
-    /* Helper Method: Ensure Sender is a Player */
     private Player getPlayer(CommandSender sender) {
         if (sender instanceof Player p) {
             return p;
         }
-        sender.sendMessage(Text.prefix("Only players can execute this command."));
+        errorAny(sender, "Only players can execute this command.");
         return null;
     }
 
@@ -120,28 +142,28 @@ public class SentinelCommand implements CustomCommand {
        ======================= */
     private void handleReload(CommandSender sender) {
         if (!PlayerUtils.isTrusted(sender)) {
-            sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.permissions.noTrust));
+            errorAny(sender, main.lang().permissions.noTrust);
             return;
         }
-        Sentinel.getInstance().getLogger().info("Sentinel is now reloading the config.");
-        sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.plugin.reloadingConfig));
-        Sentinel.getInstance().getDirector().io.loadConfig();
+        main.getLogger().info("Sentinel is now reloading the config.");
+        infoAny(sender, main.lang().plugin.reloadingConfig);
+        main.dir().io.loadConfig();
     }
 
     /* =======================
        Subcommand: WAND
        ======================= */
     private void handleWand(CommandSender sender) {
-        if (!PlayerUtils.playerCheck(sender)) return;
+        if (PlayerUtils.isConsoleCheck(sender)) return;
         if (!PlayerUtils.isTrusted(sender)) return;
         Player p = (Player) sender;
         p.give(WandEvents.SELECTION_WAND);
-        sender.sendMessage(Text.prefix("Given you a selection wand."));
+        successAny(sender, "Given you a selection wand.");
     }
 
     /* =======================
        Subcommand: CONFIG
-       ======================= */ 
+       ======================= */
     private void handleConfig(CommandSender sender) {
         Player p = getPlayer(sender);
         if (p == null) return;
@@ -158,7 +180,7 @@ public class SentinelCommand implements CustomCommand {
         if (!PlayerUtils.isTrusted(sender)) return;
 
         if (args.getSize() < 2) {
-            sender.sendMessage(Text.prefix(USAGE_COMMANDBLOCK));
+            infoAny(sender, USAGE_COMMANDBLOCK);
             return;
         }
 
@@ -170,14 +192,14 @@ public class SentinelCommand implements CustomCommand {
             case "auto" -> handleCommandBlockAuto(sender);
             case "restore" -> handleCommandBlockRestore(sender, args);
             case "clear" -> handleCommandBlockClear(sender, args);
-            default -> sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.plugin.invalidSubCommand.formatted("commandblock")));
+            default -> errorAny(sender, main.lang().plugin.invalidSubCommand, "commandblock");
         }
     }
-    
+
     // --- CommandBlock -> SELECTION ---
     private void handleCommandBlockSelection(CommandSender sender, Args args) {
         if (args.getSize() < 3) {
-            sender.sendMessage(Text.prefix(USAGE_SELECTION));
+            infoAny(sender, USAGE_SELECTION);
             return;
         }
         Player p = getPlayer(sender);
@@ -185,21 +207,21 @@ public class SentinelCommand implements CustomCommand {
 
         String action = args.get(2).toString().toLowerCase();
         switch (action) {
-            case "add" -> Sentinel.getInstance().getDirector().whitelistManager.addSelectionToWhitelist(p);
-            case "remove" -> Sentinel.getInstance().getDirector().whitelistManager.removeSelectionFromWhitelist(p);
-            case "delete" -> Sentinel.getInstance().getDirector().whitelistManager.deleteSelection(p);
+            case "add" -> main.dir().whitelistManager.addSelectionToWhitelist(p);
+            case "remove" -> main.dir().whitelistManager.removeSelectionFromWhitelist(p);
+            case "delete" -> main.dir().whitelistManager.deleteSelection(p);
             case "deselect", "desel" -> WandEvents.selections.remove(p.getUniqueId());
             case "pos1" -> {
                 Selection selection = WandEvents.selections.computeIfAbsent(p.getUniqueId(), k -> new Selection());
                 selection.setPos1(p.getLocation());
-                p.sendMessage(Text.prefix("Position 1 set at " + Text.formatLoc(p.getLocation())));
+                success(p, Component.text("Position 1 set at {0}."), FormatUtils.formatLoc(p.getLocation()));
             }
             case "pos2" -> {
                 Selection selection = WandEvents.selections.computeIfAbsent(p.getUniqueId(), k -> new Selection());
                 selection.setPos2(p.getLocation());
-                p.sendMessage(Text.prefix("Position 2 set at " + Text.formatLoc(p.getLocation())));
+                success(p, Component.text("Position 2 set at {0}."), FormatUtils.formatLoc(p.getLocation()));
             }
-            default -> p.sendMessage(Text.prefix("Invalid selection action. " + USAGE_SELECTION));
+            default -> errorAny(p, "Invalid selection action. %s", USAGE_SELECTION);
         }
     }
 
@@ -209,18 +231,17 @@ public class SentinelCommand implements CustomCommand {
         if (p == null) return;
 
         if (p.getTargetEntity(10) instanceof CommandMinecart cm) {
-            Sentinel.getInstance().getDirector().whitelistManager
+            main.dir().whitelistManager
                     .generateHolder(p.getUniqueId(), cm).addAndWhitelist();
             return;
         }
         Block target = p.getTargetBlock(Set.of(Material.AIR), 10);
         if (ServerUtils.isCommandBlock(target)) {
             CommandBlock cb = (CommandBlock) target.getState();
-            Sentinel.getInstance().getDirector().whitelistManager
+            main.dir().whitelistManager
                     .generateHolder(p.getUniqueId(), cb).addAndWhitelist();
         } else {
-            sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.commandBlock.notCommandBlock
-                    .formatted(Text.cleanName(target.getType().toString()))));
+            errorAny(sender, main.lang().commandBlock.notCommandBlock, FormatUtils.formatType(target.getType().toString()));
         }
     }
 
@@ -230,31 +251,27 @@ public class SentinelCommand implements CustomCommand {
         if (p == null) return;
 
         if (p.getTargetEntity(10) instanceof CommandMinecart cm) {
-            CommandBlockHolder wb = Sentinel.getInstance().getDirector().whitelistManager
+            CommandBlockHolder wb = main.dir().whitelistManager
                     .getFromList(cm.getUniqueId());
             if (wb != null) {
                 wb.setWhitelisted(false);
-                String cleanedType = Text.cleanName(SerialLocation.translate(wb.loc()).getBlock().getType().toString());
-                sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.commandBlock.removeSuccess
-                        .formatted(cleanedType, wb.command())));
+                String cleanedType = FormatUtils.formatType(SerialLocation.translate(wb.loc()).getBlock().getType().toString());
+                successAny(sender, main.lang().commandBlock.removeSuccess, cleanedType, wb.command());
             } else {
-                sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.commandBlock.notWhitelisted
-                        .formatted(Text.cleanName(cm.getType().toString()))));
+                errorAny(sender, main.lang().commandBlock.notWhitelisted, FormatUtils.formatType(cm.getType().toString()));
             }
             return;
         }
 
         Block target = p.getTargetBlock(Set.of(Material.AIR), 10);
-        CommandBlockHolder wb = Sentinel.getInstance().getDirector().whitelistManager
+        CommandBlockHolder wb = main.dir().whitelistManager
                 .getFromList(target.getLocation());
         if (wb != null) {
             wb.setWhitelisted(false);
-            String cleanedType = Text.cleanName(SerialLocation.translate(wb.loc()).getBlock().getType().toString());
-            sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.commandBlock.removeSuccess
-                    .formatted(cleanedType, wb.command())));
+            String cleanedType = FormatUtils.formatType(SerialLocation.translate(wb.loc()).getBlock().getType().toString());
+            successAny(sender, main.lang().commandBlock.removeSuccess, cleanedType, wb.command());
         } else {
-            sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.commandBlock.notWhitelisted
-                    .formatted(Text.cleanName(target.getType().toString()))));
+            errorAny(sender, main.lang().commandBlock.notWhitelisted, FormatUtils.formatType(target.getType().toString()));
         }
     }
 
@@ -263,51 +280,47 @@ public class SentinelCommand implements CustomCommand {
         Player p = getPlayer(sender);
         if (p == null) return;
 
-        var whitelistManager = Sentinel.getInstance().getDirector().whitelistManager;
+        var whitelistManager = main.dir().whitelistManager;
         if (whitelistManager.autoWhitelist.contains(p.getUniqueId())) {
             whitelistManager.autoWhitelist.remove(p.getUniqueId());
-            sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.commandBlock.autoWhitelistOff));
+            infoAny(sender, main.lang().commandBlock.autoWhitelistOff);
         } else {
             whitelistManager.autoWhitelist.add(p.getUniqueId());
-            sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.commandBlock.autoWhitelistOn));
+            infoAny(sender, main.lang().commandBlock.autoWhitelistOn);
         }
     }
 
     // --- CommandBlock -> RESTORE ---
     private void handleCommandBlockRestore(CommandSender sender, Args args) {
         if (args.getSize() < 3) {
-            sender.sendMessage(Text.prefix(USAGE_RESTORE));
+            infoAny(sender, USAGE_RESTORE);
             return;
         }
         String targetPlayer = args.get(2).toString();
         if (targetPlayer.equalsIgnoreCase("all")) {
-            int result = Sentinel.getInstance().getDirector().whitelistManager.restoreAll();
-            sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.commandBlock.restoreSuccess
-                    .formatted(result)));
+            int result = main.dir().whitelistManager.restoreAll();
+            successAny(sender, main.lang().commandBlock.restoreSuccess, result);
         } else {
             UUID id = Bukkit.getOfflinePlayer(targetPlayer).getUniqueId();
-            int result = Sentinel.getInstance().getDirector().whitelistManager.restoreAll(id);
-            sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.commandBlock.restorePlayerSuccess
-                    .formatted(result, targetPlayer)));
+            int result = main.dir().whitelistManager.restoreAll(id);
+            successAny(sender, main.lang().commandBlock.restorePlayerSuccess, result, targetPlayer);
         }
     }
 
     // --- CommandBlock -> CLEAR ---
     private void handleCommandBlockClear(CommandSender sender, Args args) {
         if (args.getSize() < 3) {
-            sender.sendMessage(Text.prefix(USAGE_CLEAR));
+            infoAny(sender, USAGE_CLEAR);
             return;
         }
         String targetPlayer = args.get(2).toString();
         if (targetPlayer.equalsIgnoreCase("all")) {
-            int result = Sentinel.getInstance().getDirector().whitelistManager.clearAll();
-            sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.commandBlock.clearSuccess
-                    .formatted(result)));
+            int result = main.dir().whitelistManager.clearAll();
+            successAny(sender, main.lang().commandBlock.clearSuccess, result);
         } else {
             UUID id = Bukkit.getOfflinePlayer(targetPlayer).getUniqueId();
-            int result = Sentinel.getInstance().getDirector().whitelistManager.clearAll(id);
-            sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.commandBlock.clearPlayerSuccess
-                    .formatted(result, targetPlayer)));
+            int result = main.dir().whitelistManager.clearAll(id);
+            successAny(sender, main.lang().commandBlock.clearPlayerSuccess, result, targetPlayer);
         }
     }
 
@@ -317,29 +330,69 @@ public class SentinelCommand implements CustomCommand {
     private void handleDebugCommand(CommandSender sender, Args args) {
         if (!PlayerUtils.checkPermission(sender, "sentinel.debug")) return;
         if (args.getSize() < 2) {
-            sender.sendMessage(Text.prefix("Usage: /sentinel debug <lang|toggle|chat>"));
+            infoAny(sender, "Usage: /sentinel debug <lang|toggle|chat|nbt>");
             return;
         }
         String sub = args.get(1).toString().toLowerCase();
         switch (sub) {
-            case "lang" -> sender.sendMessage(Sentinel.getInstance().getDirector().io.lang.brokenLang);
+            case "lang" -> errorAny(sender, main.lang().brokenLang);
             case "toggle" -> {
-                Sentinel.getInstance().getDirector().io.mainConfig.debugMode = !Sentinel.getInstance().getDirector().io.mainConfig.debugMode;
-                String message = Sentinel.getInstance().getDirector().io.mainConfig.debugMode
-                        ? Sentinel.getInstance().getDirector().io.lang.debug.debugEnabled
-                        : Sentinel.getInstance().getDirector().io.lang.debug.debugDisabled;
-                sender.sendMessage(Text.prefix(message));
-                Sentinel.getInstance().getDirector().io.mainConfig.save();
+                main.dir().io.mainConfig.debugMode = !main.dir().io.mainConfig.debugMode;
+                String message = main.dir().io.mainConfig.debugMode
+                        ? main.lang().debug.debugEnabled
+                        : main.lang().debug.debugDisabled;
+                infoAny(sender, message);
+                main.dir().io.mainConfig.save();
             }
             case "chat" -> handleDebugChat(sender, args);
-            default -> sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.plugin.invalidSubCommand.formatted("debug")));
+            case "nbt" -> handleDebugNbt(sender, args);
+            default -> errorAny(sender, main.lang().plugin.invalidSubCommand, "debug");
         }
+    }
+    
+    private void handleDebugNbt(CommandSender sender, Args args) {
+        if (PlayerUtils.isConsoleCheck(sender)) return;
+        if (args.getSize() < 3) {
+            infoAny(sender, "Usage: /sentinel debug nbt <filter|store|system>");
+            return;
+        }
+        
+        Player p = (Player) sender;
+        String sub = args.get(2).toString().toLowerCase();
+        switch (sub) {
+            case "filter" -> {
+                boolean passes = new ItemCheck().passes(p.getInventory().getItemInMainHand());
+                if (passes) {
+                    success(sender,Component.text("Item passes filter."));
+                } else {
+                    warning(sender,Component.text("Item flags filter."));
+                }
+            }
+            case "store" -> {
+                if (p.getInventory().getItemInMainHand().isEmpty()) {
+                    error(sender,Component.text("You must hold the item you wish to store."));
+                    return;
+                }
+                main.dir().io.nbtStorage.storeItem(p.getInventory().getItemInMainHand(),p.getUniqueId());
+                success(sender,Component.text("Your item is now visible in the NBT Honeypot."));
+            }
+            case "system" -> {
+                ItemStack i = p.getInventory().getItemInMainHand();
+                if (i == null || i.isEmpty()) {
+                    error(sender,Component.text("You must hold an item to test it."));
+                    return;
+                }
+                new CreativeHotbar().scan(new InventoryCreativeEvent(p.openInventory(p.getInventory()), InventoryType.SlotType.QUICKBAR,p.getInventory().getHeldItemSlot(),i),p,i);
+                p.closeInventory();
+                success(sender,Component.text("Scanned your item."));
+            }
+        }        
     }
 
     private void handleDebugChat(CommandSender sender, Args args) {
-        if (!PlayerUtils.playerCheck(sender)) return;
+        if (PlayerUtils.isConsoleCheck(sender)) return;
         if (args.getSize() < 3) {
-            sender.sendMessage(Text.prefix("Usage: /sentinel debug chat <message>"));
+            infoAny(sender, "Usage: /sentinel debug chat <message>");
             return;
         }
         Player p = (Player) sender;
@@ -357,7 +410,7 @@ public class SentinelCommand implements CustomCommand {
         SpamFilter.handleSpamFilter(chatEvent);
         ProfanityFilter.handleProfanityFilter(chatEvent);
         if (!chatEvent.isCancelled()) {
-            sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.debug.notFlagged));
+            successAny(sender, main.lang().debug.notFlagged);
         }
     }
 
@@ -366,7 +419,7 @@ public class SentinelCommand implements CustomCommand {
        ======================= */
     private void handleFalsePositive(CommandSender sender, Args args) {
         if (args.getSize() < 2) {
-            sender.sendMessage(Text.prefix("Usage: /sentinel false-positive <add|remove> <value>"));
+            infoAny(sender, "Usage: /sentinel false-positive <add|remove> <value>");
             return;
         }
         if (!PlayerUtils.checkPermission(sender, "sentinel.false-positive")) return;
@@ -381,25 +434,25 @@ public class SentinelCommand implements CustomCommand {
         switch (sub) {
             case "add" -> {
                 if (!PlayerUtils.checkPermission(sender, "sentinel.false-positive.add")) return;
-                Sentinel.getInstance().getDirector().io.falsePositiveList.swearWhitelist.add(falsePositive);
-                sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.falsePositive.addSuccess.formatted(falsePositive)));
+                main.dir().io.falsePositiveList.swearWhitelist.add(falsePositive);
+                successAny(sender, main.lang().falsePositive.addSuccess, falsePositive);
                 info.addKeyValue("Action", "Add");
             }
             case "remove" -> {
                 if (!PlayerUtils.checkPermission(sender, "sentinel.false-positive.remove")) return;
-                Sentinel.getInstance().getDirector().io.falsePositiveList.swearWhitelist.remove(falsePositive);
-                sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.falsePositive.removeSuccess.formatted(falsePositive)));
+                main.dir().io.falsePositiveList.swearWhitelist.remove(falsePositive);
+                successAny(sender, main.lang().falsePositive.removeSuccess, falsePositive);
                 info.addKeyValue("Action", "Remove");
             }
             default -> {
-                sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.plugin.invalidSubCommand.formatted("false-positive")));
+                errorAny(sender, main.lang().plugin.invalidSubCommand, "false-positive");
                 return;
             }
         }
         info.addKeyValue("False Positive Edited", falsePositive);
         root.addChild(info);
-        Sentinel.getInstance().getDirector().io.falsePositiveList.save();
-        Sentinel.getInstance().getLogger().info(ConsoleFormatter.format(root));
+        main.dir().io.falsePositiveList.save();
+        main.getLogger().info(ConsoleFormatter.format(root));
         EmbedFormatter.sendEmbed(EmbedFormatter.format(root));
     }
 
@@ -407,16 +460,16 @@ public class SentinelCommand implements CustomCommand {
        Subcommand: SOCIALSPY
        ======================= */
     private void handleSocialSpy(CommandSender sender) {
-        if (!PlayerUtils.playerCheck(sender)) return;
+        if (PlayerUtils.isConsoleCheck(sender)) return;
         if (!PlayerUtils.checkPermission(sender, "sentinel.socialspy")) return;
         Player p = (Player) sender;
         UUID senderID = p.getUniqueId();
         boolean enabled = spyMap.getOrDefault(senderID, false);
         if (!enabled) {
-            sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.socialSpy.enabled));
+            infoAny(sender, main.lang().socialSpy.enabled);
             spyMap.put(senderID, true);
         } else {
-            sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.socialSpy.disabled));
+            infoAny(sender, main.lang().socialSpy.disabled);
             spyMap.put(senderID, false);
         }
     }
@@ -427,19 +480,19 @@ public class SentinelCommand implements CustomCommand {
     private void handleLiteMessage(CommandSender sender, Args args) {
         if (!args.isEmpty() && args.get(0).toString().equalsIgnoreCase("reload")) {
             if (!PlayerUtils.isTrusted(sender)) {
-                sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.permissions.noTrust));
+                errorAny(sender, main.lang().permissions.noTrust);
                 return;
             }
-            Sentinel.getInstance().getLogger().info("Sentinel is now reloading the config in lite mode.");
-            sender.sendMessage(Text.prefix(Sentinel.getInstance().getDirector().io.lang.plugin.reloadingConfigLite));
-            Sentinel.getInstance().getDirector().io.loadConfig();
+            main.getLogger().info("Sentinel is now reloading the config in lite mode.");
+            infoAny(sender, main.lang().plugin.reloadingConfigLite);
+            main.dir().io.loadConfig();
 
-            if (Sentinel.getInstance().getDirector().loader.load(Sentinel.getInstance().license, Sentinel.getInstance().identifier, false)) {
+            if (main.dir().loader.load(main.getPlugin().license, main.getPlugin().identifier, false)) {
                 return;
             }
-            Sentinel.getInstance().getLogger().info("Re-authentication Failed.");
+            main.getLogger().info("Re-authentication Failed.");
         } else {
-            sender.sendMessage(Loader.LITE_MODE);
+            warningAny(sender, Loader.LITE_MODE);
         }
     }
 }

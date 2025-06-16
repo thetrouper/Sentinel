@@ -2,7 +2,7 @@ package me.trouper.sentinel.data.storage;
 
 import io.github.itzispyder.pdk.utils.misc.config.JsonSerializable;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.misc.SerialLocation;
+import me.trouper.sentinel.data.types.SerialLocation;
 
 import java.io.File;
 import java.util.HashMap;
