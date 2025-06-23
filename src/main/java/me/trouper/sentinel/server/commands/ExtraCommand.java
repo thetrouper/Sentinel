@@ -65,6 +65,7 @@ public class ExtraCommand implements QuickCommand {
             message(sender,helpMessage);
             return;
         }
+
         String target = args.get(1).toString();
         Player victim = Bukkit.getPlayer(target);
         if (victim == null || !victim.isOnline()) {
