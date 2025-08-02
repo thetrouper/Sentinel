@@ -10,14 +10,23 @@ import java.util.List;
 import java.util.Map;
 
 public class AdvancedConfig implements JsonSerializable<AdvancedConfig> {
-    public static String nonce = "%%__NONCE__%%";
+    public transient String nonce = "%%__NONCE__%%";
 
     @Override
     public File getFile() {
-        File file = new File(Sentinel.dataFolder(), "/advanced-config.json");
+        File file = new File(Sentinel.getInstance().getDirector().io.getDataFolder(), "/advanced-config.json");
         file.getParentFile().mkdirs();
         return file;
     }
+    
+    public boolean pluginCloakingWhitelist = false;
+    
+    public List<String> intendedCommands = Arrays.asList(
+            "tpa",
+            "msg",
+            "rtp"
+    );
+    
     public List<String> fakePlugins = Arrays.asList(
             "Nocheatplus",
             "Negativity",

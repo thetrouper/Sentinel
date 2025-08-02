@@ -1,15 +1,16 @@
 package me.trouper.sentinel.server.functions.chatfilter.profanity;
 
 import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.server.Main;
 
-public enum Severity {
-    LOW(Sentinel.mainConfig.chat.profanityFilter.lowScore),
-    MEDIUM_LOW(Sentinel.mainConfig.chat.profanityFilter.mediumLowScore),
-    MEDIUM(Sentinel.mainConfig.chat.profanityFilter.mediumScore),
-    MEDIUM_HIGH(Sentinel.mainConfig.chat.profanityFilter.mediumHighScore),
-    HIGH(Sentinel.mainConfig.chat.profanityFilter.highScore),
-    REGEX(Sentinel.mainConfig.chat.profanityFilter.regexScore),
-    SLUR(Sentinel.mainConfig.chat.profanityFilter.highScore),
+public enum Severity implements Main {
+    LOW(main.dir().io.mainConfig.chat.profanityFilter.lowScore),
+    MEDIUM_LOW(main.dir().io.mainConfig.chat.profanityFilter.mediumLowScore),
+    MEDIUM(main.dir().io.mainConfig.chat.profanityFilter.mediumScore),
+    MEDIUM_HIGH(main.dir().io.mainConfig.chat.profanityFilter.mediumHighScore),
+    HIGH(main.dir().io.mainConfig.chat.profanityFilter.highScore),
+    REGEX(main.dir().io.mainConfig.chat.profanityFilter.regexScore),
+    SLUR(main.dir().io.mainConfig.chat.profanityFilter.highScore),
     SAFE(0);
 
     private final int score;

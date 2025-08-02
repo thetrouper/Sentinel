@@ -1,10 +1,17 @@
 package me.trouper.sentinel.server.gui;
 
-import io.github.itzispyder.pdk.plugin.builders.ItemBuilder;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.startup.Auth;
+import me.trouper.sentinel.utils.ItemBuilder;
 import me.trouper.sentinel.utils.ServerUtils;
+import me.trouper.sentinel.utils.OldTXT;
 import me.trouper.sentinel.utils.Text;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -18,137 +25,171 @@ public class Items {
 
     public static final ItemStack BLANK = ItemBuilder.create()
             .material(Material.LIGHT_GRAY_STAINED_GLASS_PANE)
-            .name(Text.color("&7"))
+            .displayName(Component.empty())
             .build();
 
     public static final ItemStack GREEN = ItemBuilder.create()
             .material(Material.LIME_STAINED_GLASS_PANE)
-            .name(Text.color("&7"))
+            .displayName(Component.empty())
             .build();
 
     public static final ItemStack RED = ItemBuilder.create()
             .material(Material.RED_STAINED_GLASS_PANE)
-            .name(Text.color("&7"))
+            .displayName(Component.empty())
             .build();
 
     public static final ItemStack BACK = ItemBuilder.create()
             .material(Material.ARROW)
-            .name(Text.color("&cBack"))
-            .lore(Text.color("&8&l➥&7 Return to the previous page"))
+            .displayName(Component.text("Back",NamedTextColor.RED).decoration(TextDecoration.ITALIC,false))
+            .loreComponent(Text.color("&8&l➥&7 Return to the previous page"))
             .build();
 
     public static final ItemStack CREDITS = ItemBuilder.create()
             .material(Material.SHIELD)
-            .name(Text.color("&6&lSentinel &8&l|&f Anti-Nuke"))
-            .lore(" ")
-            .lore(Text.color("&bVersion&7: &f%s".formatted(Sentinel.getInstance().getDescription().getVersion())))
-            .lore(Text.color("&bLicensed to&7: &f%s".formatted(Sentinel.getInstance().nonce)))
-            .lore(" ")
-            .lore(Text.color("&e&nAuthor(s)&r&e: &e%s").formatted(Sentinel.getInstance().getDescription().getAuthors()))
+            .displayName(Text.color("&6&lSentinel &8&l|&f Anti-Nuke").decoration(TextDecoration.ITALIC,false))
+            .loreComponent(
+                    Component.empty(),
+                    Text.color("&bVersion&7: &f%s".formatted(Sentinel.getInstance().version)),
+                    Text.color("&bLicensed to&7: &f%s".formatted(Sentinel.getInstance().nonce)),
+                    Component.empty(),
+                    Text.color("&e&nAuthor(s)&r&e: &e%s".formatted(Sentinel.getInstance().getPluginMeta().getAuthors()))
+            )
             .enchant(Enchantment.PROTECTION,64)
-            .flag(ItemFlag.HIDE_ENCHANTS)
+            .flags(ItemFlag.HIDE_ENCHANTS)
             .build();
 
     public static final ItemStack CONFIG = ItemBuilder.create()
+            .displayName(Component.text("Edit Config",Style.style(TextDecoration.BOLD, NamedTextColor.GOLD)).decoration(TextDecoration.ITALIC,false))
             .material(Material.PISTON)
-            .name(Text.color("&6&lEdit Config"))
-            .lore(Text.color("&8&l➥&7 Click this if you hate JSON."))
+            .loreComponent(Text.color("&8&l➥&7 Click this if you hate JSON."))
             .enchant(Enchantment.PROTECTION,64)
-            .flag(ItemFlag.HIDE_ENCHANTS)
+            .flags(ItemFlag.HIDE_ENCHANTS)
             .build();
 
     public static final ItemStack CHAT_CONFIG = ItemBuilder.create()
             .material(Material.HOPPER)
-            .name(Text.color("&bChat Config"))
-            .lore(Text.color("&8&l➥&7 Spam Filter"))
-            .lore(Text.color("&8&l➥&7 Profanity Filter"))
-            .lore(Text.color("&8&l➥&7 Regex Filters"))
+            .displayName(Component.text("Chat Config",NamedTextColor.AQUA).decoration(TextDecoration.ITALIC,false))
+            .loreComponent(
+                    Text.color("&8&l➥&7 Spam Filter"),
+                    Text.color("&8&l➥&7 Profanity Filter"),
+                    Text.color("&8&l➥&7 Unicode Filter"),
+                    Text.color("&8&l➥&7 URL Filter")
+            )
             .enchant(Enchantment.PROTECTION,64)
-            .flag(ItemFlag.HIDE_ENCHANTS)
+            .flags(ItemFlag.HIDE_ENCHANTS)
             .build();
 
     public static final ItemStack ANTI_NUKE_CONFIG = ItemBuilder.create()
             .material(Material.TNT)
-            .name(Text.color("&cAnti-Nuke Config"))
-            .lore(Text.color("&8&l➥&7 Command Block Whitelist"))
-            .lore(Text.color("&8&l➥&7 Command Block editing"))
-            .lore(Text.color("&8&l➥&7 Command Block placing"))
-            .lore(Text.color("&8&l➥&7 Command Block using"))
-            .lore(Text.color("&8&l➥&7 Command Block Minecart placing"))
-            .lore(Text.color("&8&l➥&7 Command Block Minecart using"))
-            .lore(Text.color("&8&l➥&7 Creative Hotbar Items"))
-            .enchant(Enchantment.PROTECTION,64)
-            .flag(ItemFlag.HIDE_ENCHANTS)
+            .displayName(Component.text("Anti-Nuke Config", NamedTextColor.RED).decoration(TextDecoration.ITALIC,false))
+            .loreComponent(Text.color("&8&l➥&7 Manage all violations"))
+            .enchant(Enchantment.PROTECTION, 64)
+            .flags(ItemFlag.HIDE_ENCHANTS)
+            .build();
+
+    public static final ItemStack WHITELIST = ItemBuilder.create()
+            .material(Material.TNT)
+            .displayName(Component.text("Command Block Whitelist", NamedTextColor.GREEN).decoration(TextDecoration.ITALIC,false))
+            .loreComponent(Text.color("&8&l➥&7 Manage running command blocks"))
+            .enchant(Enchantment.PROTECTION, 64)
+            .flags(ItemFlag.HIDE_ENCHANTS)
+            .build();
+
+    public static final ItemStack NBT = ItemBuilder.create()
+            .material(Material.HONEY_BOTTLE)
+            .displayName(Component.text("NBT Honeypot", NamedTextColor.GREEN).decoration(TextDecoration.ITALIC,false))
+            .loreComponent(Text.color("&8&l➥&7 View caught NBT"))
+            .enchant(Enchantment.PROTECTION, 64)
+            .flags(ItemFlag.HIDE_ENCHANTS)
             .build();
 
     public static ItemStack configItem(String valueName, Material material, String description) {
-        ServerUtils.verbose("Items#configItem: Creating a config item:\n Value Name -> %s\nMaterial in use -> %s".formatted(valueName,material.toString()));
+        ServerUtils.verbose("Creating a config item:\n Value Name -> %s\nMaterial in use -> %s",
+                valueName, material.toString());
 
         List<String> desc = Arrays.stream(description.split("\n")).toList();
 
-        ItemBuilder item = ItemBuilder.create();
-        item.material(material);
-        item.name(Text.color("&6%s".formatted(valueName)));
+        ItemBuilder item = ItemBuilder.create()
+                .material(material)
+                .displayName(Component.text(valueName, NamedTextColor.GOLD).decoration(TextDecoration.ITALIC,false));
+
         for (String s : desc) {
-            item.lore(Text.color("&e%s".formatted(s)));
+            item.loreComponent(Component.text(s, NamedTextColor.YELLOW));
         }
-        item.lore(Text.color("&8&l➥&7 Click to set a &nnew&r&7 value."));
-        item.lore(Text.color("&8&l➥&7 Current Value: &b_ORIGINAL_"));
+
+        item.loreComponent(
+                Text.color("&8&l➥&7 Click to set a &nnew&r&7 value."),
+                Text.color("&8&l➥&7 Current Value: &b_ORIGINAL_")
+        );
 
         return item.build();
     }
 
-
-
     public static ItemStack stringListItem(Iterable<String> values, Material material, String valueName, String description) {
-        ServerUtils.verbose("Items#stringListItem: Creating a config item:\n Value Name -> %s\nMaterial in use -> %s".formatted(valueName,material.toString()));
-        ItemBuilder itemBuilder = ItemBuilder.create();
-        itemBuilder.material(material);
-        itemBuilder.name(Text.color("&6%s".formatted(valueName)));
+        ServerUtils.verbose("Items#stringListItem: Creating a config item:\n Value Name -> %s\nMaterial in use -> %s",
+                valueName, material.toString());
+
+        ItemBuilder itemBuilder = ItemBuilder.create()
+                .material(material)
+                .displayName(Component.text(valueName, NamedTextColor.GOLD).decoration(TextDecoration.ITALIC,false));
+
         List<String> desc = Arrays.stream(description.split("\n")).toList();
         for (String s : desc) {
-            itemBuilder.lore(Text.color("&e%s".formatted(s)));
+            itemBuilder.loreComponent(Component.text(s, NamedTextColor.YELLOW));
         }
-        itemBuilder.lore(Text.color("&8&l➥&7 Left-Click to add a new value."));
-        itemBuilder.lore(Text.color("&8&l➥&7 Right-Click to clear values."));
-        itemBuilder.lore(Text.color("&8&l➥&7 Current Values: "));
-        itemBuilder.flag(ItemFlag.HIDE_ATTRIBUTES);
+
+        itemBuilder.loreComponent(
+                Text.color("&8&l➥&7 Left-Click to add a new value."),
+                Text.color("&8&l➥&7 Right-Click to clear values."),
+                Text.color("&8&l➥&7 Current Values: ")
+        ).flags(ItemFlag.HIDE_ATTRIBUTES);
 
         for (String value : values) {
-            itemBuilder.lore(Text.color("&9 - &b%s".formatted(value)));
+            itemBuilder.loreComponent(
+                    Component.text(" - ", NamedTextColor.BLUE)
+                            .append(Component.text(value, NamedTextColor.AQUA))
+            );
         }
 
         return itemBuilder.build();
     }
 
     public static ItemStack stringItem(String originalValue, ItemStack originalItem) {
-        ServerUtils.verbose("Items#stringItem Creating a string item:\n Value -> %s".formatted(originalValue));
+        ServerUtils.verbose("Items#stringItem Creating a string item:\n Value -> %s", originalValue);
 
         if (originalItem == null || !originalItem.hasItemMeta()) return originalItem;
         ItemMeta meta = originalItem.getItemMeta();
-        if (meta == null || !meta.hasLore()) return originalItem;
-        List<String> lore = meta.getLore();
+        if (meta == null) return originalItem;
+
+        List<Component> lore = meta.lore();
         if (lore == null) return originalItem;
 
         for (int i = 0; i < lore.size(); i++) {
-            String line = lore.get(i);
-            ServerUtils.verbose("Items#stringItem Looping through lore line: %s/%s".formatted(i,lore.size()));
-            if (line.contains("_ORIGINAL_")) {
+            Component line = lore.get(i);
+            String plainText = PlainTextComponentSerializer.plainText().serialize(line);
+
+            ServerUtils.verbose("Items#stringItem Looping through lore line: %s/%s", i, lore.size());
+
+            if (plainText.contains("_ORIGINAL_")) {
                 try {
-                    ServerUtils.verbose("Items#stringItem Found a lore on line %s, making replacement value".formatted(i));
-                    String replace = line.replace("_ORIGINAL_", originalValue);
-                    ServerUtils.verbose("Items#stringItem After replacement -> %s".formatted(replace));
-                    lore.set(i,replace);
-                    ServerUtils.verbose("Items#stringItem Just replaced line %s -> %s".formatted(i,lore.get(i)));
+                    ServerUtils.verbose("Items#stringItem Found a lore on line %s, making replacement value", i);
+
+                    Component newLine = line.replaceText(TextReplacementConfig.builder()
+                            .matchLiteral("_ORIGINAL_")
+                            .replacement(originalValue)
+                            .build());
+
+                    lore.set(i, newLine);
+                    ServerUtils.verbose("Items#stringItem Just replaced line %s", i);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            ServerUtils.verbose("Items#stringItem end of loop %s. continue?".formatted(i));
+            ServerUtils.verbose("Items#stringItem end of loop %s. continue?", i);
         }
 
         ServerUtils.verbose("Items#stringItem Broke out of loop, setting the lore");
-        meta.setLore(lore);
+        meta.lore(lore);
         ServerUtils.verbose("Items#stringItem Setting the meta");
         originalItem.setItemMeta(meta);
         ServerUtils.verbose("Items#stringItem Returning the item");
@@ -156,70 +197,52 @@ public class Items {
     }
 
     public static ItemStack booleanItem(boolean originalValue, ItemStack originalItem) {
-        ServerUtils.verbose("Items#booleanItem Creating a string item:\n Value -> %s".formatted(originalValue));
-
-        if (originalItem == null || !originalItem.hasItemMeta()) return originalItem;
-        ItemMeta meta = originalItem.getItemMeta();
-        if (meta == null || !meta.hasLore()) return originalItem;
-        List<String> lore = meta.getLore();
-        if (lore == null) return originalItem;
-
-        for (int i = 0; i < lore.size(); i++) {
-            String line = lore.get(i);
-            ServerUtils.verbose("Items#booleanItem Looping through lore line: %s/%s".formatted(i,lore.size()));
-            if (line.contains("_ORIGINAL_")) {
-                try {
-                    ServerUtils.verbose("Items#booleanItem Found a lore on line %s, making replacement value".formatted(i));
-                    String replace = line.replace("_ORIGINAL_", "" + originalValue);
-                    ServerUtils.verbose("Items#booleanItem After replacement -> %s".formatted(replace));
-                    lore.set(i,replace);
-                    ServerUtils.verbose("Items#booleanItem Just replaced line %s -> %s".formatted(i,lore.get(i)));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            ServerUtils.verbose("Items#booleanItem end of loop %s. continue?".formatted(i));
-        }
-
-        ServerUtils.verbose("Items#booleanItem Broke out of loop, setting the lore");
-        meta.setLore(lore);
-        ServerUtils.verbose("Items#booleanItem Setting the meta");
-        originalItem.setItemMeta(meta);
-        ServerUtils.verbose("Items#booleanItem Returning the item");
-        return originalItem;
+        return replaceOriginalValue(String.valueOf(originalValue), originalItem, "booleanItem");
     }
 
     public static ItemStack intItem(int originalValue, ItemStack originalItem) {
-        ServerUtils.verbose("Items#intitem Creating a string item:\n Value -> %s".formatted(originalValue));
+        return replaceOriginalValue(String.valueOf(originalValue), originalItem, "intItem");
+    }
+
+    private static ItemStack replaceOriginalValue(String value, ItemStack originalItem, String methodName) {
+        ServerUtils.verbose("Items#%s Creating item with value: %s", methodName, value);
 
         if (originalItem == null || !originalItem.hasItemMeta()) return originalItem;
         ItemMeta meta = originalItem.getItemMeta();
-        if (meta == null || !meta.hasLore()) return originalItem;
-        List<String> lore = meta.getLore();
+        if (meta == null) return originalItem;
+
+        List<Component> lore = meta.lore();
         if (lore == null) return originalItem;
 
         for (int i = 0; i < lore.size(); i++) {
-            String line = lore.get(i);
-            ServerUtils.verbose("Items#intitem Looping through lore line: %s/%s".formatted(i,lore.size()));
-            if (line.contains("_ORIGINAL_")) {
+            Component line = lore.get(i);
+            String plainText = PlainTextComponentSerializer.plainText().serialize(line);
+
+            ServerUtils.verbose("Items#%s Looping through lore line: %s/%s", methodName, i, lore.size());
+
+            if (plainText.contains("_ORIGINAL_")) {
                 try {
-                    ServerUtils.verbose("Items#intitem Found a lore on line %s, making replacement value".formatted(i));
-                    String replace = line.replace("_ORIGINAL_", "" + originalValue);
-                    ServerUtils.verbose("Items#intitem After replacement -> %s".formatted(replace));
-                    lore.set(i,replace);
-                    ServerUtils.verbose("Items#intitem Just replaced line %s -> %s".formatted(i,lore.get(i)));
+                    ServerUtils.verbose("Items#%s Found a lore on line %s, making replacement value", methodName, i);
+
+                    Component newLine = line.replaceText(TextReplacementConfig.builder()
+                            .matchLiteral("_ORIGINAL_")
+                            .replacement(value)
+                            .build());
+
+                    lore.set(i, newLine);
+                    ServerUtils.verbose("Items#%s Just replaced line %s", methodName, i);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            ServerUtils.verbose("Items#intitem end of loop %s. continue?".formatted(i));
+            ServerUtils.verbose("Items#%s end of loop %s. continue?", methodName, i);
         }
 
-        ServerUtils.verbose("Items#intitem Broke out of loop, setting the lore");
-        meta.setLore(lore);
-        ServerUtils.verbose("Items#intitem Setting the meta");
+        ServerUtils.verbose("Items#%s Broke out of loop, setting the lore", methodName);
+        meta.lore(lore);
+        ServerUtils.verbose("Items#%s Setting the meta", methodName);
         originalItem.setItemMeta(meta);
-        ServerUtils.verbose("Items#intitem Returning the item");
+        ServerUtils.verbose("Items#%s Returning the item", methodName);
         return originalItem;
     }
 }

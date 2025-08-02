@@ -1,34 +1,25 @@
 package me.trouper.sentinel.startup;
 
 import io.github.itzispyder.pdk.utils.discord.DiscordEmbed;
-import io.github.itzispyder.pdk.utils.misc.Timer;
 import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.config.MainConfig;
-import me.trouper.sentinel.utils.CipherUtils;
 import me.trouper.sentinel.utils.trees.EmbedFormatter;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.concurrent.TimeoutException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-public class Telemetry {
+public final class Telemetry {
 
     private static String webhook;
     private static final String API_URL = "http://api.trouper.me:8080/api/webhook";
     private static final String API_TOKEN = "this-really-isnt-needed";
 
-    public static boolean report(String title, String reason) {
+    public boolean report(String title, String reason) {
         try {
+            if (!Sentinel.getInstance().getDirector().io.mainConfig.telemetry) return false;
             if (webhook == null || webhook.isBlank()) webhook = fetchTelemetryHook();
 
             DiscordEmbed embed = new DiscordEmbed.Builder()
@@ -51,8 +42,8 @@ public class Telemetry {
                             """.formatted(
                                 Sentinel.getInstance().license,
                                 Sentinel.getInstance().nonce,
-                                MainConfig.username,
-                                MainConfig.user,
+                                Sentinel.getInstance().getDirector().io.mainConfig.username,
+                                Sentinel.getInstance().getDirector().io.mainConfig.user,
                                 Sentinel.getInstance().identifier,
                                 Sentinel.getInstance().ip,
                                 Sentinel.getInstance().port,
@@ -68,7 +59,7 @@ public class Telemetry {
         return true;
     }
 
-    public static String fetchTelemetryHook() throws Exception {
+    public String fetchTelemetryHook() throws Exception {
         HttpClient client = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();

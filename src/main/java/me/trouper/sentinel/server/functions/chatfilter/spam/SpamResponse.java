@@ -2,10 +2,9 @@ package me.trouper.sentinel.server.functions.chatfilter.spam;
 
 import io.github.retrooper.packetevents.adventure.serializer.legacy.LegacyComponentSerializer;
 import io.papermc.paper.event.player.AsyncChatEvent;
-import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.server.functions.helpers.FalsePositiveReporting;
 import me.trouper.sentinel.server.functions.chatfilter.FilterResponse;
 import me.trouper.sentinel.server.functions.helpers.Report;
+import me.trouper.sentinel.utils.FormatUtils;
 import me.trouper.sentinel.utils.MathUtils;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
@@ -40,9 +39,9 @@ public class SpamResponse implements FilterResponse {
         }
 
         String message = LegacyComponentSerializer.legacySection().serialize(e.message());
-        Report report = FalsePositiveReporting.initializeReport(message);
+        Report report = main.dir().reportHandler.initializeReport(message);
 
-        message = Text.removeFirstColor(message);
+        message = Text.removeColors(message);
         String previousMessage = lastMessageMap.getOrDefault(e.getPlayer().getUniqueId(),"/* Placeholder Message from Sentinel */");
 
         SpamResponse response = new SpamResponse(e,message,previousMessage,0,0,report,false,false);
@@ -52,25 +51,25 @@ public class SpamResponse implements FilterResponse {
         response.setSimilarity(similarity);
         report.getStepsTaken().put("Calculated Similarity: ","%s".formatted(similarity));
 
-        int addHeat = Sentinel.mainConfig.chat.spamFilter.defaultGain;
-        if (similarity > Sentinel.mainConfig.chat.spamFilter.blockSimilarity) {
-            addHeat = Sentinel.mainConfig.chat.spamFilter.highGain;
-            response.getReport().getStepsTaken().put("Similarity is greater than %s%%".formatted(Sentinel.mainConfig.chat.spamFilter.blockSimilarity), "That is %s heat. (Auto-Block due to configured value)".formatted(addHeat));
+        int addHeat = main.dir().io.mainConfig.chat.spamFilter.defaultGain;
+        if (similarity > main.dir().io.mainConfig.chat.spamFilter.blockSimilarity) {
+            addHeat = main.dir().io.mainConfig.chat.spamFilter.highGain;
+            response.getReport().getStepsTaken().put("Similarity is greater than %s%%".formatted(main.dir().io.mainConfig.chat.spamFilter.blockSimilarity), "That is %s heat. (Auto-Block due to configured value)".formatted(addHeat));
             response.setHeatAdded(addHeat);
             return response;
         } else if (similarity > 90) {
-            addHeat = Sentinel.mainConfig.chat.spamFilter.highGain;
+            addHeat = main.dir().io.mainConfig.chat.spamFilter.highGain;
             response.getReport().getStepsTaken().put("Similarity is greater than 90%", "That is %s heat.".formatted(addHeat));
             response.setHeatAdded(addHeat);
             return response;
         } else if (similarity > 50) {
-            addHeat = Sentinel.mainConfig.chat.spamFilter.mediumGain;
+            addHeat = main.dir().io.mainConfig.chat.spamFilter.mediumGain;
             response.getReport().getStepsTaken().put("Similarity is greater than 50%", "That is %s heat.".formatted(addHeat));
             response.setHeatAdded(addHeat);
             return response;
         } else if (similarity > 25) {
             response.getReport().getStepsTaken().put("Similarity is greater than 25%", "That is %s heat.".formatted(addHeat));
-            addHeat = Sentinel.mainConfig.chat.spamFilter.lowGain;
+            addHeat = main.dir().io.mainConfig.chat.spamFilter.lowGain;
             response.setHeatAdded(addHeat);
             return response;
         }

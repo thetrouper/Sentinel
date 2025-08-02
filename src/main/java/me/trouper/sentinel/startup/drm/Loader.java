@@ -1,0 +1,146 @@
+package me.trouper.sentinel.startup.drm;
+
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
+import io.github.itzispyder.pdk.utils.SchedulerUtils;
+import me.trouper.sentinel.Sentinel;
+import me.trouper.sentinel.server.commands.*;
+import me.trouper.sentinel.server.events.admin.AntiBanEvents;
+import me.trouper.sentinel.server.events.admin.BlockDisplayHideEvent;
+import me.trouper.sentinel.server.events.admin.WandEvents;
+import me.trouper.sentinel.server.events.extras.ShadowRealmEvents;
+import me.trouper.sentinel.server.events.violations.blocks.command.CommandBlockBreak;
+import me.trouper.sentinel.server.events.violations.blocks.command.CommandBlockEdit;
+import me.trouper.sentinel.server.events.violations.blocks.command.CommandBlockPlace;
+import me.trouper.sentinel.server.events.violations.blocks.command.CommandBlockUse;
+import me.trouper.sentinel.server.events.violations.blocks.jigsaw.JigsawBlockBreak;
+import me.trouper.sentinel.server.events.violations.blocks.jigsaw.JigsawBlockPlace;
+import me.trouper.sentinel.server.events.violations.blocks.jigsaw.JigsawBlockUse;
+import me.trouper.sentinel.server.events.violations.blocks.structure.StructureBlockBreak;
+import me.trouper.sentinel.server.events.violations.blocks.structure.StructureBlockPlace;
+import me.trouper.sentinel.server.events.violations.blocks.structure.StructureBlockUse;
+import me.trouper.sentinel.server.events.violations.command.DangerousCommand;
+import me.trouper.sentinel.server.events.violations.command.LoggedCommand;
+import me.trouper.sentinel.server.events.violations.command.SpecificCommand;
+import me.trouper.sentinel.server.events.violations.entities.CommandMinecartBreak;
+import me.trouper.sentinel.server.events.violations.entities.CommandMinecartEdit;
+import me.trouper.sentinel.server.events.violations.entities.CommandMinecartPlace;
+import me.trouper.sentinel.server.events.violations.entities.CommandMinecartUse;
+import me.trouper.sentinel.server.events.violations.players.ChatEvent;
+import me.trouper.sentinel.server.events.violations.players.CreativeHotbar;
+import me.trouper.sentinel.server.events.violations.players.PluginCloakingEvents;
+import me.trouper.sentinel.server.events.violations.players.PluginCloakingPacket;
+import me.trouper.sentinel.server.events.violations.whitelist.CommandBlockExecute;
+import me.trouper.sentinel.server.functions.chatfilter.profanity.ProfanityFilter;
+import me.trouper.sentinel.server.functions.chatfilter.spam.SpamFilter;
+import me.trouper.sentinel.server.functions.hotbar.items.RateLimitCheck;
+import me.trouper.sentinel.startup.Launcher;
+import me.trouper.sentinel.utils.OldTXT;
+import me.trouper.sentinel.utils.Text;
+import org.bukkit.Bukkit;
+
+public final class Loader {
+
+    private boolean lite = false;
+    private final Launcher launcher = new Launcher();
+    
+    public boolean isLite() {
+        return lite;
+    }
+
+    public void setLite(boolean lite) {
+        this.lite = lite;
+    }
+    
+    public static final String LITE_MODE = OldTXT.color("""
+                        &8]=-&f Welcome to &d&lSentinel &7|&f Anti-Nuke &8-=[
+                        &7The plugin is currently loaded in &clite&7 mode.
+                        
+                        &7Your License Key is &a%s&7.
+                        &7Your server ID is &6%s&7.
+                        
+                        &fIf you have just &apurchased&f the plugin:
+                         &8- &7Join the &b&ndiscord&r&7 and open a ticket.
+                         &8- &7https://discord.gg/Xh6BAzNtxY
+                         &8- &7You will then receive a license key.
+                        &fIf you have &cnot&f purchased the plugin:
+                         &8- &7Then purchase it :D
+                         &8- &7It wont do anything in this state!
+                         &8- &7(Its only 5$)
+                        &fIf you are reading this from a decompiler:
+                         &8- &7Please stop trying to crack the plugin and purchase it!
+                         &8- &7Your time spent trying to bypass my DRM could be spent at a minimum wage job.
+                         &8- &7There you will make 7$ an hour! (As oppose to 5$ for multiple hours of cracking)
+                        &fWoah! You read quite far!
+                         &8- &7Want the plugin for cheaper, &nor even for free&r&7?
+                         &8- &7DM &b@obvwolf&7 on discord and lets make a deal!
+                        """.formatted(Sentinel.getInstance().license,Sentinel.getInstance().identifier));
+
+    public boolean load(String license, String identifier, boolean coldStart) {
+        Sentinel.getInstance().getLogger().info("\n]====---- Requesting Authentication ----====[ \n- License Key: %s\n- Server ID: %s\n".formatted(license,identifier));
+        try {
+            Sentinel.getInstance().getLogger().info("Auth Requested...");
+            // TODO: Remove Auth Bypass before Release!!!!
+            switch ("AUTHORIZED"/*Sentinel.getInstance().getDirector().auth.authorize(license,identifier)*/) {
+                case "AUTHORIZED" -> {
+                    Sentinel.getInstance().getLogger().info("\n]======----- Auth Success! -----======[");
+                    setLite(false);
+                    launcher.startup(coldStart);
+                    return true;
+                }
+                case "MINEHUT" -> {
+                    boolean minehutStatus = Sentinel.getInstance().getDirector().telemetry.report("Dynamic IP server has authorized.","Success.");
+                    if (minehutStatus) {
+                        Sentinel.getInstance().getLogger().info("Dynamic IP auth Success!");
+                        setLite(false);
+                        launcher.startup(coldStart);
+                        return true;
+                    } else {
+                        Sentinel.getInstance().getLogger().info("Dynamic IP Failure. Make sure telemetry is enabled in main-config.json. If it still doesn't work, contact a developer.");
+                        if (coldStart) {
+                            setLite(true);
+                            launcher.liteStart("How is this even possible?");
+                        }
+                    }
+                }
+                case "INVALID-ID" -> {
+                    Sentinel.getInstance().getLogger().info("Authentication Failure, You have not whitelisted this server ID yet.");
+                    if (coldStart) {
+                        setLite(true);
+                        launcher.liteStart("They have not whitelisted their server ID yet. (License exists, no ID)");
+                    }
+                }
+                case "UNREGISTERED" -> {
+                    Sentinel.getInstance().getLogger().warning("Authentication Failure, YOU SHALL NOT PASS! License: %s Server ID: %s".formatted(license,identifier));
+                    if (coldStart) {
+                        setLite(true);
+                        launcher.liteStart("They do not have a license key");
+                    }
+                }
+                case "ERROR" -> {
+                    Sentinel.getInstance().getLogger().warning("Hmmmmmm thats not right... License: %s Server ID: %s\nPlease report the above stacktrace.".formatted(license,identifier));
+                    if (coldStart) {
+                        setLite(true);
+                        launcher.liteStart("An expected error occurred which prevented them from launching");
+                    }
+                }
+                default -> {
+                    Sentinel.getInstance().getLogger().warning("Achievement unlocked: How did we get here? License: %s Server ID: %s\nPlease report the above stacktrace.".formatted(license,identifier));
+                    if (coldStart) {
+                        setLite(true);
+                        launcher.liteStart("An unexpected error occured which prevented them from launching");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Sentinel.getInstance().getLogger().info("WTFFFF ARE YOU DOING MAN??????");
+            if (coldStart) {
+                setLite(true);
+                launcher.liteStart("An exception was thrown, then caught.");
+            }
+        }
+        
+        return false;
+    }
+}

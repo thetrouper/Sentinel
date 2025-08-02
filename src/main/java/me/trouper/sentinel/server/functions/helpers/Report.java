@@ -37,4 +37,8 @@ public class Report {
     public void setStepsTaken(LinkedHashMap<String, String> stepsTaken) {
         this.stepsTaken = stepsTaken;
     }
+
+    public void addStep(String name, String step) {
+        getStepsTaken().put(name,step);
+    }
 }

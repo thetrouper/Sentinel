@@ -3,18 +3,21 @@ import java.nio.file.Paths
 
 plugins {
     id 'java'
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id 'com.gradleup.shadow' version '9.0.0-beta10'
+    id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
 group = project.group
 version = project.version
 
-jar {
-    from {
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        configurations.runtimeClasspath.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
+def targetJavaVersion = 21
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
 }
 
@@ -36,105 +39,76 @@ repositories {
         url = 'https://oss.sonatype.org/content/groups/public/'
     }
     maven {
-        url = uri("https://repo.codemc.io/repository/maven-releases/")
+        name = "CodeMC"
+        url = uri("https://repo.codemc.io/repository/maven-public/")
     }
-    maven {
-        url = uri("https://repo.codemc.io/repository/maven-snapshots/")
-    }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-    compileOnly "io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT"
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.0")
+    compileOnly "io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT"
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'org.ow2.asm:asm-commons:9.5'
-    implementation files("deps/PDK-1.4.0.jar")
-    implementation "com.github.retrooper:packetevents-spigot:2.7.0"
+    implementation files("libs/PDK-1.4.0.jar")
+    implementation "com.github.retrooper:packetevents-spigot:2.8.0"
+    implementation("de.tr7zw:item-nbt-api:2.15.0")
 }
 
-def targetJavaVersion = 21
-java {
-    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    sourceCompatibility = javaVersion
-    targetCompatibility = javaVersion
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
-    if (JavaVersion.current() < javaVersion) {
-        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
-    }
+static def generateBuildId() {
+    return new Date().format('HH:mm:ss dd/MM/yyyy')
 }
-
-tasks.withType(JavaCompile).configureEach {
-    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
-        options.release = targetJavaVersion
-    }
-}
-
-tasks.register('copyDeps', Copy) {
-    from configurations.runtimeClasspath
-    into 'build/deps'
-    include '*.jar'
-}
-
 
 processResources {
-    def props = [version: version]
-    inputs.properties props
-    filteringCharset 'UTF-8'
     filesMatching('plugin.yml') {
-        expand props
+        expand(
+                version: project.version,
+                build: generateBuildId()
+        )
     }
 }
 
-compileJava.options.encoding("UTF-8")
+shadowJar {
+    archiveClassifier.set('')
+    minimize()
+    mergeServiceFiles()
 
-tasks.withType(JavaCompile) {
-    options.encoding = "UTF-8"
-}
+    filesMatching('**/plugin.yml') { fileCopyDetails ->
+        def content = fileCopyDetails.file.text
+        def lines = content.split('\n')
 
-tasks.shadowJar {
+        if (lines.length == 0 || !lines[0].trim().equals('name: SentinelAntiNuke')) {
+            fileCopyDetails.exclude()
+        }
+    }
+
+
     relocate("com.github.retrooper.packetevents", "me.trouper.sentinel.packetevents.api")
     relocate("io.github.retrooper.packetevents", "me.trouper.sentinel.packetevents.impl")
-}
-
-task obfuscate(type: JavaExec) {
-    // Specify the main class in the obfuscator JAR (if required)
-
-    // Path to the obfuscator JAR
-    classpath = files('obf/grunt-main.jar')
-
-    // Arguments to pass to the obfuscator (e.g., input and output directories)
-    args = [
-            '--config', '.\\obf\\config.json'
-    ]
+    relocate("de.tr7zw.changeme.nbtapi", "me.trouper.sentinel.nbtapi.api")
 }
 
 task copyLibs {
     doLast {
-        // Define the source directory (Gradle cache) and the target directory
-        def sourceDir = Paths.get("C:/Users/crvic/.gradle/caches/modules-2/files-2.1")
-        def targetDir = Paths.get("${buildDir}/../deps") // Output directory
+        def sourceDir = Paths.get("${System.getProperty('user.home')}/.gradle/caches/modules-2/files-2.1")
+        def targetDir = Paths.get("${buildDir}/../deps")
 
-        // Create the target directory if it doesn't exist
         if (!Files.exists(targetDir)) {
             Files.createDirectories(targetDir)
         }
 
-        // Recursively traverse the source directory and copy JAR files
         Files.walk(sourceDir)
                 .filter { Files.isRegularFile(it) && it.toString().endsWith(".jar") }
                 .forEach { jarFile ->
-                    // Extract the file name (without the directory structure)
                     def fileName = jarFile.fileName.toString()
-
-                    // Define the target file path (flat structure)
                     def targetFile = targetDir.resolve(fileName)
 
-                    // Handle duplicate file names (if any)
                     if (Files.exists(targetFile)) {
                         println "Skipping duplicate file: ${fileName}"
                         return
                     }
 
-                    // Copy the JAR file to the target directory
                     Files.copy(jarFile, targetFile)
                     println "Copied: ${jarFile} -> ${targetFile}"
                 }
@@ -143,6 +117,31 @@ task copyLibs {
     }
 }
 
+task obfuscate(type: JavaExec) {
+    classpath = files('obf/grunt-main.jar')
+    args = [
+            '--config', 'obf/config.json'
+    ]
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release = targetJavaVersion
+    }
+}
+
 test {
     useJUnitPlatform()
+}
+
+build {
+    dependsOn(shadowJar)
+}
+
+tasks {
+    runServer {
+        dependsOn(shadowJar)
+        minecraftVersion("1.21.5")
+    }
 }

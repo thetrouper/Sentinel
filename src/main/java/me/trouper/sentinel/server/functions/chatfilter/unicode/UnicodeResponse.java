@@ -2,11 +2,10 @@ package me.trouper.sentinel.server.functions.chatfilter.unicode;
 
 import io.github.retrooper.packetevents.adventure.serializer.legacy.LegacyComponentSerializer;
 import io.papermc.paper.event.player.AsyncChatEvent;
-import me.trouper.sentinel.Sentinel;
-import me.trouper.sentinel.data.Emojis;
-import me.trouper.sentinel.server.functions.helpers.FalsePositiveReporting;
+import me.trouper.sentinel.data.types.Emojis;
 import me.trouper.sentinel.server.functions.chatfilter.FilterResponse;
 import me.trouper.sentinel.server.functions.helpers.Report;
+import me.trouper.sentinel.utils.FormatUtils;
 import me.trouper.sentinel.utils.ServerUtils;
 import me.trouper.sentinel.utils.Text;
 import org.bukkit.entity.Player;
@@ -38,29 +37,31 @@ public class UnicodeResponse implements FilterResponse {
         }
 
         String message = LegacyComponentSerializer.legacySection().serialize(e.message());
-        message = Text.removeFirstColor(message);
-        Report report = FalsePositiveReporting.initializeReport(message);
+        message = Text.removeColors(message);
+        Report report = main.dir().reportHandler.initializeReport(message);
 
-        UnicodeResponse response = new UnicodeResponse(e,message,message,report,false,false);
+        UnicodeResponse response = new UnicodeResponse(e, message, message, report, false, false);
 
-        String disallowedRegex = Sentinel.mainConfig.chat.unicodeFilter.regex;
-        ServerUtils.verbose("Regex: %s\nMessage: %s".formatted(disallowedRegex,message));
-
+        String disallowedRegex = main.dir().io.mainConfig.chat.unicodeFilter.regex;
         Pattern pattern = Pattern.compile(disallowedRegex, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(message);
-        ServerUtils.verbose("Matcher result %s\nGroup 1: %s".formatted(matcher.find(),matcher.find() ? matcher.group() : ""));
+        
+        boolean found = matcher.find();
 
-        response.getReport().getStepsTaken().put("Anti-URL", "`%s`".formatted(
-                message
-        ));
+        ServerUtils.verbose("Matcher result: %s",found);
+        if (found) {
+            ServerUtils.verbose("Group 1: %s",matcher.group());
+        }
 
-        if (matcher.find()) {
-            ServerUtils.verbose("Unicode Filter: Caught Unicode: " + disallowedRegex);
+        response.getReport().getStepsTaken().put("Anti-Unicode", "`" + message + "`");
+        
+        if (found) {
+            ServerUtils.verbose("Unicode Filter: Caught Unicode using regex: " + disallowedRegex);
             response.getReport().getStepsTaken().replace("Anti-Unicode", "`%s` %s".formatted(message, Emojis.alarm));
 
             response.setBlocked(true);
-            response.setPunished(Sentinel.mainConfig.chat.unicodeFilter.punished);
-            response.setHighlightedMessage(Text.regexHighlighter(message,Sentinel.mainConfig.chat.unicodeFilter.regex," > ", " < "));
+            response.setPunished(main.dir().io.mainConfig.chat.unicodeFilter.punished);
+            response.setHighlightedMessage(FormatUtils.regexHighlighter(message, disallowedRegex, "█HS█", "█HE█"));
         }
 
         return response;

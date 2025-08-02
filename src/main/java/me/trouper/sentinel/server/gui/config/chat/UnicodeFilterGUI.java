@@ -4,13 +4,12 @@ import io.github.itzispyder.pdk.commands.Args;
 import io.github.itzispyder.pdk.plugin.gui.CustomGui;
 import io.github.itzispyder.pdk.utils.misc.config.ConfigUpdater;
 import io.papermc.paper.event.player.AsyncChatEvent;
-import me.trouper.sentinel.Sentinel;
 import me.trouper.sentinel.data.config.MainConfig;
+import me.trouper.sentinel.server.Main;
 import me.trouper.sentinel.server.gui.Items;
 import me.trouper.sentinel.server.gui.MainGUI;
-import me.trouper.sentinel.server.gui.config.ChatGUI;
 import me.trouper.sentinel.utils.ServerUtils;
-import me.trouper.sentinel.utils.Text;
+import me.trouper.sentinel.utils.OldTXT;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -22,10 +21,10 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.function.BiConsumer;
 
-public class UnicodeFilterGUI {
+public class UnicodeFilterGUI implements Main {
 
     public final CustomGui home = CustomGui.create()
-            .title(Text.color("&6&lSentinel &8»&0 Editing Unicode Filter"))
+            .title(OldTXT.color("&6&lSentinel &8»&0 Editing Unicode Filter"))
             .size(36)
             .onDefine(this::blankPage)
             .defineMain(this::mainClick)
@@ -41,7 +40,7 @@ public class UnicodeFilterGUI {
         }
         ServerUtils.verbose("Unicode Filter GUI blank!");
         ItemStack top = Items.RED;
-        if (Sentinel.mainConfig.chat.unicodeFilter.enabled) {
+        if (main.dir().io.mainConfig.chat.unicodeFilter.enabled) {
             top = Items.GREEN;
         }
 
@@ -49,11 +48,11 @@ public class UnicodeFilterGUI {
             inv.setItem(i,top);
         }
 
-        inv.setItem(3,Items.booleanItem(Sentinel.mainConfig.chat.unicodeFilter.enabled, Items.configItem("Unicode Filter Toggle", Material.CLOCK,"Enable or Disable the whole Unicode filter")));
-        inv.setItem(5,Items.booleanItem(Sentinel.mainConfig.chat.unicodeFilter.silent, Items.configItem("Silent Mode",Material.FEATHER,"Whether to notify players that their messages \nwere blocked. Enabling could help deter bypassing.")));
-        inv.setItem(20,Items.booleanItem(Sentinel.mainConfig.chat.unicodeFilter.punished,Items.configItem("Punished",Material.IRON_BARS,"Toggles execution of punishment commands.")));
-        inv.setItem(22,Items.stringItem(Sentinel.mainConfig.chat.unicodeFilter.regex,Items.configItem("Allowed Char Regex",Material.DISPENSER,"Toggles execution of punishment commands.")));
-        inv.setItem(24,Items.stringListItem(Sentinel.mainConfig.chat.unicodeFilter.punishCommands,Material.DIAMOND_AXE,"Punishment Commands","Commands which will be executed if punishment is enabled."));
+        inv.setItem(3,Items.booleanItem(main.dir().io.mainConfig.chat.unicodeFilter.enabled, Items.configItem("Unicode Filter Toggle", Material.CLOCK,"Enable or Disable the whole Unicode filter")));
+        inv.setItem(5,Items.booleanItem(main.dir().io.mainConfig.chat.unicodeFilter.silent, Items.configItem("Silent Mode",Material.FEATHER,"Whether to notify players that their messages \nwere blocked. Enabling could help deter bypassing.")));
+        inv.setItem(20,Items.booleanItem(main.dir().io.mainConfig.chat.unicodeFilter.punished,Items.configItem("Punished",Material.IRON_BARS,"Toggles execution of punishment commands.")));
+        inv.setItem(22,Items.stringItem(main.dir().io.mainConfig.chat.unicodeFilter.regex,Items.configItem("Allowed Char Regex",Material.DISPENSER,"Toggles execution of punishment commands.")));
+        inv.setItem(24,Items.stringListItem(main.dir().io.mainConfig.chat.unicodeFilter.punishCommands,Material.DIAMOND_AXE,"Punishment Commands","Commands which will be executed if punishment is enabled."));
 
     }
 
@@ -63,41 +62,41 @@ public class UnicodeFilterGUI {
 
         switch (e.getSlot()) {
             case 3 -> {
-                Sentinel.mainConfig.chat.unicodeFilter.enabled = !Sentinel.mainConfig.chat.unicodeFilter.enabled;
-                Sentinel.mainConfig.save();
+                main.dir().io.mainConfig.chat.unicodeFilter.enabled = !main.dir().io.mainConfig.chat.unicodeFilter.enabled;
+                main.dir().io.mainConfig.save();
                 blankPage(e.getInventory());
             }
 
             case 5 -> {
-                Sentinel.mainConfig.chat.unicodeFilter.silent = !Sentinel.mainConfig.chat.unicodeFilter.silent;
-                Sentinel.mainConfig.save();
+                main.dir().io.mainConfig.chat.unicodeFilter.silent = !main.dir().io.mainConfig.chat.unicodeFilter.silent;
+                main.dir().io.mainConfig.save();
                 blankPage(e.getInventory());
             }
 
             case 20 -> {
-                Sentinel.mainConfig.chat.unicodeFilter.punished = !Sentinel.mainConfig.chat.unicodeFilter.punished;
-                Sentinel.mainConfig.save();
+                main.dir().io.mainConfig.chat.unicodeFilter.punished = !main.dir().io.mainConfig.chat.unicodeFilter.punished;
+                main.dir().io.mainConfig.save();
                 blankPage(e.getInventory());
             }
 
-            case 22 -> queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> cfg.chat.unicodeFilter.regex = args.getAll().toString(),Sentinel.mainConfig.chat.unicodeFilter.regex);
+            case 22 -> queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> cfg.chat.unicodeFilter.regex = args.getAll().toString(),main.dir().io.mainConfig.chat.unicodeFilter.regex);
 
             case 24 -> {
                 if (e.isLeftClick()) {
                     queuePlayer((Player) e.getWhoClicked(), (cfg,args) -> {
                         cfg.chat.unicodeFilter.punishCommands.add(args.getAll().toString());
-                    },"" + Sentinel.mainConfig.chat.unicodeFilter.punishCommands);
+                    },"" + main.dir().io.mainConfig.chat.unicodeFilter.punishCommands);
                     return;
                 }
-                Sentinel.mainConfig.chat.unicodeFilter.punishCommands.clear();
+                main.dir().io.mainConfig.chat.unicodeFilter.punishCommands.clear();
                 blankPage(e.getInventory());
-                Sentinel.mainConfig.save();
+                main.dir().io.mainConfig.save();
 
             }
         }
     }
 
-    public static ConfigUpdater<AsyncChatEvent, MainConfig> updater = new ConfigUpdater<>(Sentinel.mainConfig);
+    public static ConfigUpdater<AsyncChatEvent, MainConfig> updater = new ConfigUpdater<>(main.dir().io.mainConfig);
 
     private void queuePlayer(Player player, BiConsumer<MainConfig, Args> action, String currentValue) {
         MainGUI.awaitingCallback.add(player.getUniqueId());
@@ -108,9 +107,9 @@ public class UnicodeFilterGUI {
         }, (cfg, newValue) -> {
             action.accept(cfg,new Args(newValue.split("\\s+")));
             cfg.save();
-            player.sendMessage(Text.prefix("Value updated successfully"));
+            messageAny(player,"Value updated successfully");
             player.openInventory(home.getInventory());
         });
-        player.sendMessage(Component.text(Text.prefix("Enter the new value in chat. The value is currently set to &b%s&7. (Click to insert)".formatted(currentValue))).clickEvent(ClickEvent.suggestCommand(currentValue)));
+        message(player,Component.text("Enter the new value in chat. The value is currently set to {0}. (Click to insert)").clickEvent(ClickEvent.suggestCommand(currentValue)),Component.text(currentValue));
     }
 }

@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Sentinel.iml" filepath="$PROJECT_DIR$/.idea/modules/Sentinel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/'me.trouper'.Sentinel.main.iml" filepath="$PROJECT_DIR$/.idea/modules/'me.trouper'.Sentinel.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/'me.trouper'.Sentinel.test.iml" filepath="$PROJECT_DIR$/.idea/modules/'me.trouper'.Sentinel.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/IJ.IdeaProjects.Sentinel.main.iml" filepath="$PROJECT_DIR$/.idea/modules/IJ.IdeaProjects.Sentinel.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Sentinel.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Sentinel.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Sentinel.test.iml" filepath="$PROJECT_DIR$/.idea/modules/Sentinel.test.iml" />
     </modules>
